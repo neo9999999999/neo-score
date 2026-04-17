@@ -11,6 +11,7 @@ const RL=r=>r==="BOTH"?"TP2":r==="TP1"?"TP1":r==="SL"?"SL":"기간만료";
 const BL=b=>b==="ATH"?"사상최고":b==="52W"?"52주":b==="120D"?"120일":"비신고";
 const BC=b=>b==="ATH"?"#dc2626":b==="52W"?"#2563eb":b==="120D"?"#d97706":"#94a3b8";
 const API_URL="https://sector-api-pink.vercel.app/api/screening";
+const HIST_URL="https://sector-api-pink.vercel.app/api/history";
 const TRACK_API="https://sector-api-pink.vercel.app/api/track";
 const PRICE_API="https://sector-api-pink.vercel.app/api/daily-price";
 const SYS_PROMPT=`당신은 종가돌파매매 전문 AI 분석가입니다. 차트 이미지를 분석하여 NEO-SCORE 등급을 판정합니다.\n\n## 분석 항목 (14점 스케일)\n가점: 기관+외인동시(+3) · 외인만(+2) · 윗꼬리0.5%이하(+2)/2%이하(+1) · 거래대금200억이하(+2)/500억이하(+1) · 등락률25%+(+2)/20%+(+1) · 코스닥(+1) · 사상최고가(+1) · 소폭돌파0-3%(+2) · 매물대돌파(+1)\n감점: 윗꼬리7%+(-1) · 1500억+(-1) · ETF(-3) · 초강력돌파15%+(-1)\n\n## 등급\nS(9+): TP15/50 SL13 풀사이즈 | A(7-8): TP15/50 SL13 기본 | B(5-6): TP12/50 SL13 소량 | X(4이하): 매수금지\n\n## 응답 형식 (반드시 JSON)\n{"name":"종목명","grade":"S/A/B/X","score":점수,"change":등락률,"upperWick":윗꼬리,"amount":거래대금억,"investor":"기관+외인/외인/기관","breakType":"ATH/52W/120D","ema50":"상승/하락","tp1":15,"tp2":50,"sl":13,"summary":"[S/A/B/X등급] 이 종목이 좋은/위험한 핵심이유 + 구체적 근거 2-3줄. 9점+(S)=강력한패턴+엔트리조건충족+구체적이유, 7-8점(A)=신뢰도높음+미충족조건명시, 5-6점(B)=기본요건만충족+부정적요소명시, 4점이하(X)=패턴미충족+구체적부족사유","details":[{"item":"항목명","point":점수,"reason":"이유"}]}`;
@@ -32,8 +33,9 @@ export default function App(){
   const [page,setPage]=useState("today");
   const [history,setHistory]=useState(()=>{try{return JSON.parse(localStorage.getItem("neo_history")||"[]")}catch{return[]}});
   const [todaySignals,setTodaySignals]=useState([]);
-  const saveHistory=useCallback((entry)=>{setHistory(prev=>{const next=[entry,...prev];localStorage.setItem("neo_history",JSON.stringify(next));return next});setPage("history")},[]);
-  const clearHistory=useCallback(()=>{setHistory([]);localStorage.removeItem("neo_history")},[]);
+  useEffect(()=>{fetch(HIST_URL).then(r=>r.json()).then(d=>{if(d&&Array.isArray(d.history)){setHistory(d.history);window.__historySha=d.sha;try{localStorage.setItem("neo_history",JSON.stringify(d.history))}catch(_){}}}).catch(()=>{})},[]);
+  const saveHistory=useCallback((entry)=>{setHistory(prev=>{const next=[entry,...prev];localStorage.setItem("neo_history",JSON.stringify(next));fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:next,sha:window.__historySha})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{});return next});setPage("history")},[]);
+  const clearHistory=useCallback(()=>{setHistory([]);localStorage.removeItem("neo_history");fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:[]})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{})},[]);
   return(
     <div style={{background:"#fff",minHeight:"100vh",fontFamily:"-apple-system,'Pretendard',sans-serif",color:"#1e293b",fontSize:15,paddingBottom:68}}>
       <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
