@@ -34779,6 +34779,66 @@
    "tp2_date": null,
    "sl_date": null,
    "result": "TO"
+  },
+  {
+   "code": "002360",
+   "name": "SH에너지화학",
+   "market": "KOSPI",
+   "date": "20260303",
+   "open": 452,
+   "high": 483,
+   "low": 413,
+   "close": 480,
+   "prev_close": 372,
+   "change_pct": 29.03,
+   "volume": 41092739,
+   "amount": 19075779449,
+   "peak_pct": 26.04,
+   "trough_pct": -21.67,
+   "tp1_date": "20260304",
+   "tp2_date": null,
+   "sl_date": "20260305",
+   "result": "TP1"
+  },
+  {
+   "code": "002360",
+   "name": "SH에너지화학",
+   "market": "KOSPI",
+   "date": "20260304",
+   "open": 485,
+   "high": 605,
+   "low": 443,
+   "close": 550,
+   "prev_close": 480,
+   "change_pct": 14.58,
+   "volume": 81325884,
+   "amount": 45416995014,
+   "peak_pct": 1.82,
+   "trough_pct": -31.64,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260305",
+   "result": "SL"
+  },
+  {
+   "code": "002360",
+   "name": "SH에너지화학",
+   "market": "KOSPI",
+   "date": "20260319",
+   "open": 405,
+   "high": 475,
+   "low": 403,
+   "close": 444,
+   "prev_close": 387,
+   "change_pct": 14.73,
+   "volume": 47968825,
+   "amount": 21358740893,
+   "peak_pct": 8.11,
+   "trough_pct": -12.39,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260324",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -35519,7 +35579,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:41:39.375Z",
    "new_signals": 0
+  },
+  {
+   "year": "2026",
+   "start": 855,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:42:13.671Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T14:41:39.375Z"
+ "last_updated": "2026-04-18T14:42:13.671Z"
 }
