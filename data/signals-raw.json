@@ -32239,6 +32239,46 @@
    "tp2_date": null,
    "sl_date": "20260415",
    "result": "SL"
+  },
+  {
+   "code": "177350",
+   "name": "베셀",
+   "market": "KOSDAQ",
+   "date": "20260318",
+   "open": 1100,
+   "high": 1413,
+   "low": 1098,
+   "close": 1413,
+   "prev_close": 1087,
+   "change_pct": 29.99,
+   "volume": 13290862,
+   "amount": 18013298867,
+   "peak_pct": 29.94,
+   "trough_pct": -27.32,
+   "tp1_date": "20260319",
+   "tp2_date": null,
+   "sl_date": "20260324",
+   "result": "TP1"
+  },
+  {
+   "code": "177350",
+   "name": "베셀",
+   "market": "KOSDAQ",
+   "date": "20260323",
+   "open": 1300,
+   "high": 1670,
+   "low": 1296,
+   "close": 1485,
+   "prev_close": 1325,
+   "change_pct": 12.08,
+   "volume": 14697371,
+   "amount": 22484381324,
+   "peak_pct": 0,
+   "trough_pct": -30.84,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260324",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -33123,7 +33163,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:52:40.616Z",
    "new_signals": 3
+  },
+  {
+   "year": "2026",
+   "start": 2700,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:53:16.076Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T15:52:40.616Z"
+ "last_updated": "2026-04-18T15:53:16.076Z"
 }
