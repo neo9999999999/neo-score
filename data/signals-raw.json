@@ -35419,6 +35419,46 @@
    "tp2_date": null,
    "sl_date": "20260406",
    "result": "SL"
+  },
+  {
+   "code": "012205",
+   "name": "계양전기우",
+   "market": "KOSPI",
+   "date": "20260402",
+   "open": 7800,
+   "high": 9030,
+   "low": 7100,
+   "close": 9030,
+   "prev_close": 6950,
+   "change_pct": 29.93,
+   "volume": 1262751,
+   "amount": 11019654185,
+   "peak_pct": 65.34,
+   "trough_pct": -15.5,
+   "tp1_date": "20260403",
+   "tp2_date": null,
+   "sl_date": "20260409",
+   "result": "TP1"
+  },
+  {
+   "code": "012205",
+   "name": "계양전기우",
+   "market": "KOSPI",
+   "date": "20260403",
+   "open": 10290,
+   "high": 11730,
+   "low": 9500,
+   "close": 11730,
+   "prev_close": 9030,
+   "change_pct": 29.9,
+   "volume": 3314860,
+   "amount": 36660058825,
+   "peak_pct": 27.28,
+   "trough_pct": -34.95,
+   "tp1_date": "20260406",
+   "tp2_date": null,
+   "sl_date": "20260407",
+   "result": "TP1"
   }
  ],
  "chunks": [
@@ -36249,7 +36289,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:47:29.882Z",
    "new_signals": 0
+  },
+  {
+   "year": "2026",
+   "start": 1005,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:48:04.898Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T14:47:29.882Z"
+ "last_updated": "2026-04-18T14:48:04.898Z"
 }
