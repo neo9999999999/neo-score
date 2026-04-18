@@ -10699,6 +10699,66 @@
    "tp2_date": null,
    "sl_date": "20260304",
    "result": "TP1"
+  },
+  {
+   "code": "308100",
+   "name": "형지글로벌",
+   "market": "KOSDAQ",
+   "date": "20260407",
+   "open": 940,
+   "high": 1222,
+   "low": 931,
+   "close": 1222,
+   "prev_close": 940,
+   "change_pct": 30,
+   "volume": 10408464,
+   "amount": 12504022128,
+   "peak_pct": 9.98,
+   "trough_pct": -20.38,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260408",
+   "result": "SL"
+  },
+  {
+   "code": "130740",
+   "name": "티피씨글로벌",
+   "market": "KOSDAQ",
+   "date": "20260121",
+   "open": 2065,
+   "high": 2690,
+   "low": 1976,
+   "close": 2690,
+   "prev_close": 2070,
+   "change_pct": 29.95,
+   "volume": 4022166,
+   "amount": 10242626325,
+   "peak_pct": 29.93,
+   "trough_pct": -23.61,
+   "tp1_date": "20260122",
+   "tp2_date": null,
+   "sl_date": "20260126",
+   "result": "TP1"
+  },
+  {
+   "code": "130740",
+   "name": "티피씨글로벌",
+   "market": "KOSDAQ",
+   "date": "20260122",
+   "open": 2955,
+   "high": 3495,
+   "low": 2800,
+   "close": 3120,
+   "prev_close": 2690,
+   "change_pct": 15.99,
+   "volume": 12102088,
+   "amount": 39521437693,
+   "peak_pct": 0,
+   "trough_pct": -34.13,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260123",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -11016,7 +11076,16 @@
    "to": "20261231",
    "ts": "2026-04-18T08:16:46.649Z",
    "new_signals": 2
+  },
+  {
+   "year": "2026",
+   "start": 2670,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T08:17:25.590Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T08:16:46.649Z"
+ "last_updated": "2026-04-18T08:17:25.590Z"
 }
