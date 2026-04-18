@@ -11079,6 +11079,26 @@
    "tp2_date": null,
    "sl_date": "20260206",
    "result": "SL"
+  },
+  {
+   "code": "225430",
+   "name": "케이엠제약",
+   "market": "KOSDAQ",
+   "date": "20260401",
+   "open": 862,
+   "high": 1066,
+   "low": 778,
+   "close": 909,
+   "prev_close": 820,
+   "change_pct": 10.85,
+   "volume": 37322807,
+   "amount": 35961901246,
+   "peak_pct": 7.81,
+   "trough_pct": -43.45,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260402",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -11450,7 +11470,16 @@
    "to": "20261231",
    "ts": "2026-04-18T08:20:51.895Z",
    "new_signals": 5
+  },
+  {
+   "year": "2026",
+   "start": 2760,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T08:21:29.367Z",
+   "new_signals": 1
   }
  ],
- "last_updated": "2026-04-18T08:20:51.895Z"
+ "last_updated": "2026-04-18T08:21:29.367Z"
 }
