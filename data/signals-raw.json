@@ -30579,6 +30579,46 @@
    "tp2_date": null,
    "sl_date": "20260210",
    "result": "SL"
+  },
+  {
+   "code": "258790",
+   "name": "소프트캠프",
+   "market": "KOSDAQ",
+   "date": "20260416",
+   "open": 1660,
+   "high": 1943,
+   "low": 1555,
+   "close": 1943,
+   "prev_close": 1495,
+   "change_pct": 29.97,
+   "volume": 7906133,
+   "amount": 14463169277,
+   "peak_pct": 17.86,
+   "trough_pct": -17.14,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260417",
+   "result": "SL"
+  },
+  {
+   "code": "455180",
+   "name": "케이지에이",
+   "market": "KOSDAQ",
+   "date": "20260126",
+   "open": 3555,
+   "high": 4300,
+   "low": 3505,
+   "close": 3840,
+   "prev_close": 3475,
+   "change_pct": 10.5,
+   "volume": 3184096,
+   "amount": 12658633826,
+   "peak_pct": 3.78,
+   "trough_pct": -19.01,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260205",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -31310,7 +31350,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:42:54.804Z",
    "new_signals": 5
+  },
+  {
+   "year": "2026",
+   "start": 2445,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:43:26.850Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T15:42:54.804Z"
+ "last_updated": "2026-04-18T15:43:26.850Z"
 }
