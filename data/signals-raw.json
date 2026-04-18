@@ -33919,6 +33919,66 @@
    "tp2_date": null,
    "sl_date": "20260327",
    "result": "SL"
+  },
+  {
+   "code": "004440",
+   "name": "삼일씨엔에스",
+   "market": "KOSPI",
+   "date": "20260325",
+   "open": 7690,
+   "high": 8980,
+   "low": 7540,
+   "close": 8980,
+   "prev_close": 6910,
+   "change_pct": 29.96,
+   "volume": 1353279,
+   "amount": 11450860870,
+   "peak_pct": 23.27,
+   "trough_pct": -19.93,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260409",
+   "result": "SL"
+  },
+  {
+   "code": "004440",
+   "name": "삼일씨엔에스",
+   "market": "KOSPI",
+   "date": "20260326",
+   "open": 9390,
+   "high": 11070,
+   "low": 8710,
+   "close": 9950,
+   "prev_close": 8980,
+   "change_pct": 10.8,
+   "volume": 2489764,
+   "amount": 24404881335,
+   "peak_pct": 9.95,
+   "trough_pct": -27.74,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260403",
+   "result": "SL"
+  },
+  {
+   "code": "009200",
+   "name": "무림페이퍼",
+   "market": "KOSPI",
+   "date": "20260416",
+   "open": 2125,
+   "high": 2685,
+   "low": 2090,
+   "close": 2560,
+   "prev_close": 2115,
+   "change_pct": 21.04,
+   "volume": 27241200,
+   "amount": 69294610158,
+   "peak_pct": 0,
+   "trough_pct": -15.23,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260417",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -34578,7 +34638,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:36:21.857Z",
    "new_signals": 8
+  },
+  {
+   "year": "2026",
+   "start": 720,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:36:55.753Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T14:36:21.857Z"
+ "last_updated": "2026-04-18T14:36:55.753Z"
 }
