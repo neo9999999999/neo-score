@@ -27039,6 +27039,66 @@
    "tp2_date": null,
    "sl_date": null,
    "result": "TO"
+  },
+  {
+   "code": "000545",
+   "name": "흥국화재우",
+   "market": "KOSPI",
+   "date": "20250411",
+   "open": 12930,
+   "high": 15300,
+   "low": 12930,
+   "close": 15300,
+   "prev_close": 11770,
+   "change_pct": 29.99,
+   "volume": 767674,
+   "amount": 11072742070,
+   "peak_pct": 52.61,
+   "trough_pct": -49.02,
+   "tp1_date": "20250415",
+   "tp2_date": null,
+   "sl_date": "20250417",
+   "result": "TP1"
+  },
+  {
+   "code": "000545",
+   "name": "흥국화재우",
+   "market": "KOSPI",
+   "date": "20250417",
+   "open": 13200,
+   "high": 18100,
+   "low": 12810,
+   "close": 18100,
+   "prev_close": 13930,
+   "change_pct": 29.94,
+   "volume": 2387902,
+   "amount": 37599232740,
+   "peak_pct": 29.01,
+   "trough_pct": -58.67,
+   "tp1_date": "20250418",
+   "tp2_date": null,
+   "sl_date": "20250422",
+   "result": "TP1"
+  },
+  {
+   "code": "000545",
+   "name": "흥국화재우",
+   "market": "KOSPI",
+   "date": "20250430",
+   "open": 9680,
+   "high": 12000,
+   "low": 9600,
+   "close": 10800,
+   "prev_close": 9500,
+   "change_pct": 13.68,
+   "volume": 983561,
+   "amount": 10793188065,
+   "peak_pct": 20.83,
+   "trough_pct": -32.5,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250502",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -27797,7 +27857,16 @@
    "to": "20251231",
    "ts": "2026-04-18T08:58:57.213Z",
    "new_signals": 2
+  },
+  {
+   "year": "2025",
+   "start": 1020,
+   "size": 15,
+   "from": "20250101",
+   "to": "20251231",
+   "ts": "2026-04-18T08:59:59.176Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T08:58:57.213Z"
+ "last_updated": "2026-04-18T08:59:59.176Z"
 }
