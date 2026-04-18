@@ -32519,6 +32519,26 @@
    "tp2_date": null,
    "sl_date": "20260402",
    "result": "SL"
+  },
+  {
+   "code": "043100",
+   "name": "알파AI",
+   "market": "KOSDAQ",
+   "date": "20260114",
+   "open": 1700,
+   "high": 2210,
+   "low": 1700,
+   "close": 1900,
+   "prev_close": 1700,
+   "change_pct": 11.76,
+   "volume": 9233398,
+   "amount": 18649580063,
+   "peak_pct": 36.58,
+   "trough_pct": -9.47,
+   "tp1_date": "20260128",
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TP1"
   }
  ],
  "chunks": [
@@ -33457,7 +33477,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:56:03.271Z",
    "new_signals": 0
+  },
+  {
+   "year": "2026",
+   "start": 2790,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:56:38.095Z",
+   "new_signals": 1
   }
  ],
- "last_updated": "2026-04-18T15:56:03.271Z"
+ "last_updated": "2026-04-18T15:56:38.095Z"
 }
