@@ -33719,6 +33719,46 @@
    "tp2_date": null,
    "sl_date": "20260206",
    "result": "SL"
+  },
+  {
+   "code": "109070",
+   "name": "주성코퍼레이션",
+   "market": "KOSPI",
+   "date": "20260323",
+   "open": 1280,
+   "high": 1570,
+   "low": 1156,
+   "close": 1357,
+   "prev_close": 1225,
+   "change_pct": 10.78,
+   "volume": 17314142,
+   "amount": 24166463243,
+   "peak_pct": 110.02,
+   "trough_pct": -13.41,
+   "tp1_date": "20260413",
+   "tp2_date": "20260415",
+   "sl_date": "20260324",
+   "result": "BOTH"
+  },
+  {
+   "code": "109070",
+   "name": "주성코퍼레이션",
+   "market": "KOSPI",
+   "date": "20260414",
+   "open": 2310,
+   "high": 2310,
+   "low": 2080,
+   "close": 2310,
+   "prev_close": 1778,
+   "change_pct": 29.92,
+   "volume": 8454532,
+   "amount": 19193781374,
+   "peak_pct": 23.38,
+   "trough_pct": -27.23,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260416",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -34360,7 +34400,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:35:15.343Z",
    "new_signals": 7
+  },
+  {
+   "year": "2026",
+   "start": 690,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:35:48.559Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T14:35:15.343Z"
+ "last_updated": "2026-04-18T14:35:48.559Z"
 }
