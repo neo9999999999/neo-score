@@ -26979,6 +26979,26 @@
    "tp2_date": null,
    "sl_date": "20251002",
    "result": "SL"
+  },
+  {
+   "code": "006345",
+   "name": "대원전선우",
+   "market": "KOSPI",
+   "date": "20250113",
+   "open": 4430,
+   "high": 5360,
+   "low": 4365,
+   "close": 5360,
+   "prev_close": 4130,
+   "change_pct": 29.78,
+   "volume": 4191032,
+   "amount": 20574902695,
+   "peak_pct": 2.61,
+   "trough_pct": -19.87,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250114",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -27719,7 +27739,16 @@
    "to": "20251231",
    "ts": "2026-04-18T08:57:07.593Z",
    "new_signals": 7
+  },
+  {
+   "year": "2025",
+   "start": 990,
+   "size": 15,
+   "from": "20250101",
+   "to": "20251231",
+   "ts": "2026-04-18T08:58:04.019Z",
+   "new_signals": 1
   }
  ],
- "last_updated": "2026-04-18T08:57:07.593Z"
+ "last_updated": "2026-04-18T08:58:04.019Z"
 }
