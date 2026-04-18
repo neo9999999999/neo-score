@@ -35119,6 +35119,66 @@
    "tp2_date": null,
    "sl_date": "20260417",
    "result": "TP1"
+  },
+  {
+   "code": "023150",
+   "name": "MH에탄올",
+   "market": "KOSPI",
+   "date": "20260403",
+   "open": 4220,
+   "high": 5470,
+   "low": 4200,
+   "close": 5050,
+   "prev_close": 4210,
+   "change_pct": 19.95,
+   "volume": 2454288,
+   "amount": 12805628037,
+   "peak_pct": 23.37,
+   "trough_pct": -11.78,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260408",
+   "result": "SL"
+  },
+  {
+   "code": "009810",
+   "name": "플레이그램",
+   "market": "KOSPI",
+   "date": "20260210",
+   "open": 1430,
+   "high": 1696,
+   "low": 1350,
+   "close": 1350,
+   "prev_close": 261,
+   "change_pct": 417.24,
+   "volume": 6682631,
+   "amount": 10397651968,
+   "peak_pct": 8.15,
+   "trough_pct": -26.96,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260212",
+   "result": "SL"
+  },
+  {
+   "code": "009460",
+   "name": "한창제지",
+   "market": "KOSPI",
+   "date": "20260327",
+   "open": 590,
+   "high": 721,
+   "low": 560,
+   "close": 626,
+   "prev_close": 555,
+   "change_pct": 12.79,
+   "volume": 39106075,
+   "amount": 26974003883,
+   "peak_pct": 26.68,
+   "trough_pct": -15.5,
+   "tp1_date": "20260330",
+   "tp2_date": null,
+   "sl_date": "20260331",
+   "result": "TP1"
   }
  ],
  "chunks": [
@@ -35886,7 +35946,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:43:21.867Z",
    "new_signals": 10
+  },
+  {
+   "year": "2026",
+   "start": 900,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:44:01.186Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T14:43:21.867Z"
+ "last_updated": "2026-04-18T14:44:01.186Z"
 }
