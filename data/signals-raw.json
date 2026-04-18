@@ -31319,6 +31319,66 @@
    "tp2_date": null,
    "sl_date": "20260121",
    "result": "SL"
+  },
+  {
+   "code": "054220",
+   "name": "비츠로시스",
+   "market": "KOSDAQ",
+   "date": "20260209",
+   "open": 477,
+   "high": 617,
+   "low": 470,
+   "close": 577,
+   "prev_close": 476,
+   "change_pct": 21.22,
+   "volume": 33223272,
+   "amount": 19197003754,
+   "peak_pct": 73.14,
+   "trough_pct": -11.96,
+   "tp1_date": "20260212",
+   "tp2_date": null,
+   "sl_date": "20260210",
+   "result": "SL"
+  },
+  {
+   "code": "054220",
+   "name": "비츠로시스",
+   "market": "KOSDAQ",
+   "date": "20260224",
+   "open": 740,
+   "high": 929,
+   "low": 730,
+   "close": 929,
+   "prev_close": 715,
+   "change_pct": 29.93,
+   "volume": 27855637,
+   "amount": 25041718007,
+   "peak_pct": 7.53,
+   "trough_pct": -40.26,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260225",
+   "result": "SL"
+  },
+  {
+   "code": "236810",
+   "name": "엔비티",
+   "market": "KOSDAQ",
+   "date": "20260116",
+   "open": 2100,
+   "high": 2560,
+   "low": 2080,
+   "close": 2195,
+   "prev_close": 1970,
+   "change_pct": 11.42,
+   "volume": 5836717,
+   "amount": 14213528110,
+   "peak_pct": 7.52,
+   "trough_pct": -13.44,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260121",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -32113,7 +32173,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:46:47.916Z",
    "new_signals": 7
+  },
+  {
+   "year": "2026",
+   "start": 2550,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:47:26.140Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T15:46:47.916Z"
+ "last_updated": "2026-04-18T15:47:26.140Z"
 }
