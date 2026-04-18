@@ -34719,6 +34719,66 @@
    "tp2_date": null,
    "sl_date": null,
    "result": "TP1"
+  },
+  {
+   "code": "316670",
+   "name": "KIWOOM 코스닥150",
+   "market": "KOSPI",
+   "date": "20260126",
+   "open": 8455,
+   "high": 9195,
+   "low": 8430,
+   "close": 9195,
+   "prev_close": 8280,
+   "change_pct": 11.05,
+   "volume": 1144957,
+   "amount": 10183184362,
+   "peak_pct": 29.91,
+   "trough_pct": -1.79,
+   "tp1_date": "20260129",
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TP1"
+  },
+  {
+   "code": "026940",
+   "name": "부국철강",
+   "market": "KOSPI",
+   "date": "20260409",
+   "open": 2035,
+   "high": 2675,
+   "low": 2035,
+   "close": 2675,
+   "prev_close": 2060,
+   "change_pct": 29.85,
+   "volume": 19536438,
+   "amount": 49785653735,
+   "peak_pct": 22.06,
+   "trough_pct": -5.98,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TO"
+  },
+  {
+   "code": "026940",
+   "name": "부국철강",
+   "market": "KOSPI",
+   "date": "20260414",
+   "open": 2625,
+   "high": 3265,
+   "low": 2550,
+   "close": 2945,
+   "prev_close": 2610,
+   "change_pct": 12.84,
+   "volume": 26336614,
+   "amount": 80626672172,
+   "peak_pct": 0,
+   "trough_pct": -8.66,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TO"
   }
  ],
  "chunks": [
@@ -35441,7 +35501,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:40:27.915Z",
    "new_signals": 5
+  },
+  {
+   "year": "2026",
+   "start": 825,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:41:02.969Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T14:40:27.915Z"
+ "last_updated": "2026-04-18T14:41:02.969Z"
 }
