@@ -26459,6 +26459,66 @@
    "tp2_date": null,
    "sl_date": "20250916",
    "result": "SL"
+  },
+  {
+   "code": "004270",
+   "name": "남성",
+   "market": "KOSPI",
+   "date": "20250227",
+   "open": 1146,
+   "high": 1313,
+   "low": 1133,
+   "close": 1249,
+   "prev_close": 1093,
+   "change_pct": 14.27,
+   "volume": 8582493,
+   "amount": 10828366749,
+   "peak_pct": 3.36,
+   "trough_pct": -18.57,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250305",
+   "result": "SL"
+  },
+  {
+   "code": "011090",
+   "name": "에넥스",
+   "market": "KOSPI",
+   "date": "20250403",
+   "open": 787,
+   "high": 915,
+   "low": 786,
+   "close": 915,
+   "prev_close": 704,
+   "change_pct": 29.97,
+   "volume": 34767623,
+   "amount": 30586919113,
+   "peak_pct": 20.11,
+   "trough_pct": -27.1,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250404",
+   "result": "SL"
+  },
+  {
+   "code": "003495",
+   "name": "대한항공우",
+   "market": "KOSPI",
+   "date": "20250514",
+   "open": 23950,
+   "high": 30400,
+   "low": 23800,
+   "close": 27950,
+   "prev_close": 23450,
+   "change_pct": 19.19,
+   "volume": 740784,
+   "amount": 21029903150,
+   "peak_pct": 0,
+   "trough_pct": -20.57,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250515",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -27163,7 +27223,16 @@
    "to": "20251231",
    "ts": "2026-04-18T08:53:34.945Z",
    "new_signals": 15
+  },
+  {
+   "year": "2025",
+   "start": 930,
+   "size": 15,
+   "from": "20250101",
+   "to": "20251231",
+   "ts": "2026-04-18T08:54:33.954Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T08:53:34.945Z"
+ "last_updated": "2026-04-18T08:54:33.954Z"
 }
