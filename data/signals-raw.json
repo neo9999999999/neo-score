@@ -10659,6 +10659,46 @@
    "tp2_date": null,
    "sl_date": null,
    "result": "TO"
+  },
+  {
+   "code": "115530",
+   "name": "씨엔플러스",
+   "market": "KOSDAQ",
+   "date": "20260406",
+   "open": 341,
+   "high": 432,
+   "low": 339,
+   "close": 404,
+   "prev_close": 333,
+   "change_pct": 21.32,
+   "volume": 25724889,
+   "amount": 10309380382,
+   "peak_pct": 2.23,
+   "trough_pct": -14.85,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260407",
+   "result": "SL"
+  },
+  {
+   "code": "113810",
+   "name": "디젠스",
+   "market": "KOSDAQ",
+   "date": "20260227",
+   "open": 744,
+   "high": 950,
+   "low": 720,
+   "close": 839,
+   "prev_close": 743,
+   "change_pct": 12.92,
+   "volume": 16891746,
+   "amount": 15001141508,
+   "peak_pct": 25.98,
+   "trough_pct": -16.57,
+   "tp1_date": "20260303",
+   "tp2_date": null,
+   "sl_date": "20260304",
+   "result": "TP1"
   }
  ],
  "chunks": [
@@ -10967,7 +11007,16 @@
    "to": "20261231",
    "ts": "2026-04-18T08:15:15.689Z",
    "new_signals": 6
+  },
+  {
+   "year": "2026",
+   "start": 2655,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T08:16:46.649Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T08:15:15.689Z"
+ "last_updated": "2026-04-18T08:16:46.649Z"
 }
