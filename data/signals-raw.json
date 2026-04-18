@@ -35499,6 +35499,66 @@
    "tp2_date": null,
    "sl_date": "20240408",
    "result": "SL"
+  },
+  {
+   "code": "145210",
+   "name": "다이나믹디자인",
+   "market": "KOSPI",
+   "date": "20241007",
+   "open": 2900,
+   "high": 3710,
+   "low": 2900,
+   "close": 3710,
+   "prev_close": 2855,
+   "change_pct": 29.95,
+   "volume": 4002171,
+   "amount": 14301991630,
+   "peak_pct": 1.35,
+   "trough_pct": -34.23,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20241008",
+   "result": "SL"
+  },
+  {
+   "code": "009415",
+   "name": "태영건설우",
+   "market": "KOSPI",
+   "date": "20240105",
+   "open": 7600,
+   "high": 8220,
+   "low": 6990,
+   "close": 6990,
+   "prev_close": 6330,
+   "change_pct": 10.43,
+   "volume": 2507753,
+   "amount": 18970020420,
+   "peak_pct": 13.02,
+   "trough_pct": -55.65,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20240108",
+   "result": "SL"
+  },
+  {
+   "code": "009415",
+   "name": "태영건설우",
+   "market": "KOSPI",
+   "date": "20240131",
+   "open": 6450,
+   "high": 7830,
+   "low": 6040,
+   "close": 7000,
+   "prev_close": 6030,
+   "change_pct": 16.09,
+   "volume": 3870716,
+   "amount": 27780294100,
+   "peak_pct": 0,
+   "trough_pct": -45.64,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20240201",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -36077,7 +36137,16 @@
    "to": "20241231",
    "ts": "2026-04-18T10:17:25.681Z",
    "new_signals": 13
+  },
+  {
+   "year": "2024",
+   "start": 1005,
+   "size": 15,
+   "from": "20240101",
+   "to": "20241231",
+   "ts": "2026-04-18T10:18:27.244Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T10:17:25.681Z"
+ "last_updated": "2026-04-18T10:18:27.244Z"
 }
