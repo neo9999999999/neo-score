@@ -31859,6 +31859,46 @@
    "tp2_date": null,
    "sl_date": "20260206",
    "result": "SL"
+  },
+  {
+   "code": "101400",
+   "name": "엔시트론",
+   "market": "KOSDAQ",
+   "date": "20260122",
+   "open": 524,
+   "high": 570,
+   "low": 503,
+   "close": 570,
+   "prev_close": 439,
+   "change_pct": 29.84,
+   "volume": 20516272,
+   "amount": 11332844738,
+   "peak_pct": 22.46,
+   "trough_pct": -27.89,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260123",
+   "result": "SL"
+  },
+  {
+   "code": "101400",
+   "name": "엔시트론",
+   "market": "KOSDAQ",
+   "date": "20260127",
+   "open": 426,
+   "high": 553,
+   "low": 423,
+   "close": 549,
+   "prev_close": 426,
+   "change_pct": 28.87,
+   "volume": 31601582,
+   "amount": 16167927167,
+   "peak_pct": 19.31,
+   "trough_pct": -25.14,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260128",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -32698,7 +32738,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:49:45.837Z",
    "new_signals": 4
+  },
+  {
+   "year": "2026",
+   "start": 2625,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:50:22.077Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T15:49:45.837Z"
+ "last_updated": "2026-04-18T15:50:22.077Z"
 }
