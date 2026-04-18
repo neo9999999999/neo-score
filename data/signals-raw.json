@@ -33139,6 +33139,26 @@
    "tp2_date": null,
    "sl_date": "20251117",
    "result": "SL"
+  },
+  {
+   "code": "101390",
+   "name": "아이엠",
+   "market": "KOSDAQ",
+   "date": "20250320",
+   "open": 1750,
+   "high": 2150,
+   "low": 1551,
+   "close": 1864,
+   "prev_close": 1690,
+   "change_pct": 10.3,
+   "volume": 10022139,
+   "amount": 18815657745,
+   "peak_pct": 0,
+   "trough_pct": -79.99,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20250321",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -33654,7 +33674,16 @@
    "to": "20251231",
    "ts": "2026-04-18T10:11:23.074Z",
    "new_signals": 5
+  },
+  {
+   "year": "2025",
+   "start": 2805,
+   "size": 15,
+   "from": "20250101",
+   "to": "20251231",
+   "ts": "2026-04-18T10:12:21.556Z",
+   "new_signals": 1
   }
  ],
- "last_updated": "2026-04-18T10:11:23.074Z"
+ "last_updated": "2026-04-18T10:12:21.556Z"
 }
