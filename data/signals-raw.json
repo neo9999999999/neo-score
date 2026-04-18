@@ -26999,6 +26999,46 @@
    "tp2_date": null,
    "sl_date": "20250114",
    "result": "SL"
+  },
+  {
+   "code": "009415",
+   "name": "태영건설우",
+   "market": "KOSPI",
+   "date": "20251219",
+   "open": 18900,
+   "high": 18900,
+   "low": 15120,
+   "close": 18900,
+   "prev_close": 14540,
+   "change_pct": 29.99,
+   "volume": 1327046,
+   "amount": 23426007720,
+   "peak_pct": 0,
+   "trough_pct": -49.74,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20251223",
+   "result": "SL"
+  },
+  {
+   "code": "009415",
+   "name": "태영건설우",
+   "market": "KOSPI",
+   "date": "20251230",
+   "open": 12840,
+   "high": 15410,
+   "low": 12840,
+   "close": 13500,
+   "prev_close": 11860,
+   "change_pct": 13.83,
+   "volume": 834756,
+   "amount": 12084435560,
+   "peak_pct": 0,
+   "trough_pct": 0,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TO"
   }
  ],
  "chunks": [
@@ -27748,7 +27788,16 @@
    "to": "20251231",
    "ts": "2026-04-18T08:58:04.019Z",
    "new_signals": 1
+  },
+  {
+   "year": "2025",
+   "start": 1005,
+   "size": 15,
+   "from": "20250101",
+   "to": "20251231",
+   "ts": "2026-04-18T08:58:57.213Z",
+   "new_signals": 2
   }
  ],
- "last_updated": "2026-04-18T08:58:04.019Z"
+ "last_updated": "2026-04-18T08:58:57.213Z"
 }
