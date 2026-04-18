@@ -11119,6 +11119,66 @@
    "tp2_date": null,
    "sl_date": null,
    "result": "TP1"
+  },
+  {
+   "code": "313760",
+   "name": "캐리",
+   "market": "KOSDAQ",
+   "date": "20260108",
+   "open": 1399,
+   "high": 1820,
+   "low": 1399,
+   "close": 1698,
+   "prev_close": 1400,
+   "change_pct": 21.29,
+   "volume": 6568824,
+   "amount": 10932036484,
+   "peak_pct": 23.38,
+   "trough_pct": -23.32,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260113",
+   "result": "SL"
+  },
+  {
+   "code": "052770",
+   "name": "아이톡시",
+   "market": "KOSDAQ",
+   "date": "20260113",
+   "open": 1730,
+   "high": 1809,
+   "low": 1551,
+   "close": 1809,
+   "prev_close": 1392,
+   "change_pct": 29.96,
+   "volume": 6432546,
+   "amount": 11328491772,
+   "peak_pct": 11.94,
+   "trough_pct": -61.47,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260114",
+   "result": "SL"
+  },
+  {
+   "code": "052770",
+   "name": "아이톡시",
+   "market": "KOSDAQ",
+   "date": "20260129",
+   "open": 1045,
+   "high": 1259,
+   "low": 974,
+   "close": 1100,
+   "prev_close": 969,
+   "change_pct": 13.52,
+   "volume": 9111962,
+   "amount": 11054541274,
+   "peak_pct": 4.27,
+   "trough_pct": -61.73,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260130",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -11526,7 +11586,16 @@
    "to": "20261231",
    "ts": "2026-04-18T08:23:25.598Z",
    "new_signals": 0
+  },
+  {
+   "year": "2026",
+   "start": 2820,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T08:23:45.177Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T08:23:25.598Z"
+ "last_updated": "2026-04-18T08:23:45.177Z"
 }
