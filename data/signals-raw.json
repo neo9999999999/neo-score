@@ -30619,6 +30619,66 @@
    "tp2_date": null,
    "sl_date": "20260205",
    "result": "SL"
+  },
+  {
+   "code": "075130",
+   "name": "플랜티넷",
+   "market": "KOSDAQ",
+   "date": "20260416",
+   "open": 2560,
+   "high": 2890,
+   "low": 2475,
+   "close": 2750,
+   "prev_close": 2460,
+   "change_pct": 11.79,
+   "volume": 3965559,
+   "amount": 10681700594,
+   "peak_pct": 0,
+   "trough_pct": -9.82,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": null,
+   "result": "TO"
+  },
+  {
+   "code": "239340",
+   "name": "이스트에이드",
+   "market": "KOSDAQ",
+   "date": "20260116",
+   "open": 1788,
+   "high": 2180,
+   "low": 1769,
+   "close": 2180,
+   "prev_close": 1680,
+   "change_pct": 29.76,
+   "volume": 5621231,
+   "amount": 11996496348,
+   "peak_pct": 11.47,
+   "trough_pct": -31.61,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260120",
+   "result": "SL"
+  },
+  {
+   "code": "148780",
+   "name": "비큐AI",
+   "market": "KOSDAQ",
+   "date": "20260127",
+   "open": 1514,
+   "high": 1900,
+   "low": 1490,
+   "close": 1667,
+   "prev_close": 1513,
+   "change_pct": 10.18,
+   "volume": 8502205,
+   "amount": 14827775648,
+   "peak_pct": 7.98,
+   "trough_pct": -20.22,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260206",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -31359,7 +31419,16 @@
    "to": "20261231",
    "ts": "2026-04-18T15:43:26.850Z",
    "new_signals": 2
+  },
+  {
+   "year": "2026",
+   "start": 2460,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T15:44:02.236Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T15:43:26.850Z"
+ "last_updated": "2026-04-18T15:44:02.236Z"
 }
