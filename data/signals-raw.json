@@ -35179,6 +35179,26 @@
    "tp2_date": null,
    "sl_date": "20260331",
    "result": "TP1"
+  },
+  {
+   "code": "012170",
+   "name": "아센디오",
+   "market": "KOSPI",
+   "date": "20260116",
+   "open": 2310,
+   "high": 2350,
+   "low": 1922,
+   "close": 2350,
+   "prev_close": 1811,
+   "change_pct": 29.76,
+   "volume": 6106156,
+   "amount": 13729161552,
+   "peak_pct": 6.38,
+   "trough_pct": -31.83,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260119",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -35955,7 +35975,16 @@
    "to": "20261231",
    "ts": "2026-04-18T14:44:01.186Z",
    "new_signals": 3
+  },
+  {
+   "year": "2026",
+   "start": 915,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T14:44:35.926Z",
+   "new_signals": 1
   }
  ],
- "last_updated": "2026-04-18T14:44:01.186Z"
+ "last_updated": "2026-04-18T14:44:35.926Z"
 }
