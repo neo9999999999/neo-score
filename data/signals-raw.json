@@ -10759,6 +10759,66 @@
    "tp2_date": null,
    "sl_date": "20260123",
    "result": "SL"
+  },
+  {
+   "code": "389680",
+   "name": "유디엠텍",
+   "market": "KOSDAQ",
+   "date": "20260128",
+   "open": 874,
+   "high": 1074,
+   "low": 873,
+   "close": 971,
+   "prev_close": 849,
+   "change_pct": 14.37,
+   "volume": 36718511,
+   "amount": 36397902207,
+   "peak_pct": 81.98,
+   "trough_pct": -30.48,
+   "tp1_date": "20260204",
+   "tp2_date": null,
+   "sl_date": "20260129",
+   "result": "SL"
+  },
+  {
+   "code": "389680",
+   "name": "유디엠텍",
+   "market": "KOSDAQ",
+   "date": "20260203",
+   "open": 850,
+   "high": 1079,
+   "low": 770,
+   "close": 1079,
+   "prev_close": 830,
+   "change_pct": 30,
+   "volume": 22459175,
+   "amount": 22519397164,
+   "peak_pct": 63.76,
+   "trough_pct": -48.19,
+   "tp1_date": "20260204",
+   "tp2_date": null,
+   "sl_date": "20260212",
+   "result": "TP1"
+  },
+  {
+   "code": "900100",
+   "name": "애머릿지",
+   "market": "KOSDAQ",
+   "date": "20260414",
+   "open": 632,
+   "high": 712,
+   "low": 601,
+   "close": 608,
+   "prev_close": 548,
+   "change_pct": 10.95,
+   "volume": 22232244,
+   "amount": 14858427443,
+   "peak_pct": 0,
+   "trough_pct": -32.57,
+   "tp1_date": null,
+   "tp2_date": null,
+   "sl_date": "20260415",
+   "result": "SL"
   }
  ],
  "chunks": [
@@ -11085,7 +11145,16 @@
    "to": "20261231",
    "ts": "2026-04-18T08:17:25.590Z",
    "new_signals": 3
+  },
+  {
+   "year": "2026",
+   "start": 2685,
+   "size": 15,
+   "from": "20260101",
+   "to": "20261231",
+   "ts": "2026-04-18T08:18:10.045Z",
+   "new_signals": 3
   }
  ],
- "last_updated": "2026-04-18T08:17:25.590Z"
+ "last_updated": "2026-04-18T08:18:10.045Z"
 }
