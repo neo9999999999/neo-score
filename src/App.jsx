@@ -37,8 +37,9 @@ const TRACK_API="https://sector-api-pink.vercel.app/api/track";
 const PRICE_API="https://sector-api-pink.vercel.app/api/daily-price";
 const SYS_PROMPT=`당신은 종가돌파매매 전문 AI 분석가입니다. 차트 이미지를 분석하여 NEO-SCORE 등급을 판정합니다.\n\n## 분석 항목 (14점 스케일)\n가점: 기관+외인동시(+3) · 외인만(+2) · 윗꼬리0.5%이하(+2)/2%이하(+1) · 거래대금200억이하(+2)/500억이하(+1) · 등락률25%+(+2)/20%+(+1) · 코스닥(+1) · 사상최고가(+1) · 소폭돌파0-3%(+2) · 매물대돌파(+1)\n감점: 윗꼬리7%+(-1) · 1500억+(-1) · ETF(-3) · 초강력돌파15%+(-1)\n\n## 등급\nS(9+): TP15/50 SL13 풀사이즈 | A(7-8): TP15/50 SL13 기본 | B(5-6): TP12/50 SL13 소량 | X(4이하): 매수금지\n\n## 응답 형식 (반드시 JSON)\n{"name":"종목명","grade":"S/A/B/X","score":점수,"change":등락률,"upperWick":윗꼬리,"amount":거래대금억,"investor":"기관+외인/외인/기관","breakType":"ATH/52W/120D","ema50":"상승/하락","tp1":15,"tp2":50,"sl":13,"summary":"[S/A/B/X등급] 이 종목이 좋은/위험한 핵심이유 + 구체적 근거 2-3줄. 9점+(S)=강력한패턴+엔트리조건충족+구체적이유, 7-8점(A)=신뢰도높음+미충족조건명시, 5-6점(B)=기본요건만충족+부정적요소명시, 4점이하(X)=패턴미충족+구체적부족사유","details":[{"item":"항목명","point":점수,"reason":"이유"}]}`;
 
-function SignalDB(){const [tab,setTab]=useState("S");const [cTP,setCTP]=useState(NS);const [srt,setSrt]=useState({c:"d",d:"desc"});const [open,setOpen]=useState(null);const [pg,setPg]=useState(0);const[invAmt,setInvAmt]=useState(()=>{try{return JSON.parse(localStorage.getItem("invAmt_v1")||"")||{S:1000000,A:500000,B:300000,same:500000,useSame:false,strict:false,minTA:{S:5000,A:0,B:1200}}}catch(e){return{S:1000000,A:500000,B:300000,same:500000,useSame:false,strict:false,minTA:{S:5000,A:0,B:1200}}}});const[strictMode,setStrictMode]=useState(()=>{try{return localStorage.getItem("strictMode_v1")==="1"}catch(e){return false}});
-useEffect(()=>{try{localStorage.setItem("strictMode_v1",strictMode?"1":"0")}catch(e){}},[strictMode]);const PP=30;const D_live=useMemo(()=>(strictMode?D.filter(strictPass):D).map(rr=>{const cp=cTP[rr.g];if(!cp||!rr.ohlc||!rr.ohlc.length)return rr;const sim=simReal(rr.ohlc,cp.tp1,cp.tp2,cp.sl,cp.fsl||0);return{g:rr[7]||"B",ta:rr[4],...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d||rr.tp1d,tp2d:sim.tp2d||rr.tp2d,sld:sim.sld||rr.sld,bed:sim.bed,exd:sim.exd||rr.exd,tp1dy:sim.tp1dy,tp2dy:sim.tp2dy,sldy:sim.sldy,bedy:sim.bedy,exdy:sim.exdy};}),[cTP,strictMode]);const st=useMemo(()=>{const r={};["S","A","B"].forEach(g=>{const d=D_live.filter(x=>x.g===g),w=d.filter(x=>x.t>0),sl=d.filter(x=>x.r==="SL"),bo=d.filter(x=>x.r==="BOTH"),tp1=d.filter(x=>{const rr=x.r;return rr==="TP1"||rr==="BOTH";}),to=d.filter(x=>x.r==="TO");const avg=d.length?(d.reduce((s,x)=>s+x.t,0)/d.length):0;const nw=d.map(x=>x);const nwCum=Math.round(nw.reduce((s,x)=>s+x.t,0));const nwWin=nw.filter(x=>x.t>0).length;r[g]={n:d.length,avg:avg.toFixed(2),wr:d.length?Math.round(w.length/d.length*100):0,cum:Math.round(d.reduce((s,x)=>s+x.t,0)),tp1c:tp1.length,tp1r:d.length?Math.round(tp1.length/d.length*100):0,boc:bo.length,bor:d.length?Math.round(bo.length/d.length*100):0,slc:sl.length,slr:d.length?Math.round(sl.length/d.length*100):0,toc:to.length,tor:d.length?Math.round(to.length/d.length*100):0,nwCum,nwWr:d.length?Math.round(nwWin/d.length*100):0}});return r},[cTP]);const fl=useMemo(()=>{let d=D_live.filter(r=>r.g===tab);return[...d].sort((a,b)=>{const av=a[srt.c],bv=b[srt.c];if(typeof av==="number")return (invAmt.strict?(srt.d==="asc"?av-bv:bv-av).filter(r=>{const m=(invAmt.minTA||{})[r.g]||0;if(!m)return true;const mm=(r.ta||"").match(/(\d+)억/);return(mm?+mm[1]:0)>=m;}):(srt.d==="asc"?av-bv:bv-av));return srt.d==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av))})},[tab,srt,invAmt]);const portfolio=useMemo(()=>{
+function SignalDB(){const [tab,setTab]=useState("S");const [cTP,setCTP]=useState(NS);const [srt,setSrt]=useState({c:"d",d:"desc"});const [open,setOpen]=useState(null);const [pg,setPg]=useState(0);const[invAmt,setInvAmt]=useState(()=>{try{return JSON.parse(localStorage.getItem("invAmt_v1")||"")||{S:1000000,A:500000,B:300000,same:500000,useSame:false}}catch(e){return{S:1000000,A:500000,B:300000,same:500000,useSame:false}}});const[strictMode,setStrictMode]=useState(()=>{try{return localStorage.getItem("strictMode_v1")==="1"}catch(e){return false}});
+useEffect(()=>{const h=(e)=>{if((e.ctrlKey||e.metaKey)&&(e.key==="k"||e.key==="K")){e.preventDefault();setStrictMode(v=>!v);}};window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);},[]);
+useEffect(()=>{try{localStorage.setItem("strictMode_v1",strictMode?"1":"0")}catch(e){}},[strictMode]);const PP=30;const D_live=useMemo(()=>(strictMode?D.filter(strictPass):D).map(rr=>{const cp=cTP[rr.g];if(!cp||!rr.ohlc||!rr.ohlc.length)return rr;const sim=simReal(rr.ohlc,cp.tp1,cp.tp2,cp.sl,cp.fsl||0);return{g:(strictMode?(function(){var g=rr[7];var ta=(function(s){if(!s)return 0;var m=s.match(/(\d+)억/);return m?+m[1]:0;})(rr[4]);var a=(function(s){if(!s||!/억/.test(s))return null;var r={외:0,기:0,개:0};s.split("/").forEach(function(p){var m=p.match(/^(외|기|개)([+-]?\d+)억$/);if(m)r[m[1]]=+m[2];});return r;})(rr[5]);if(g==="S")return ta>=5000?"S":"X";if(g==="A")return ta>=2500?"A":"X";if(g==="B"){var ok=!a||(a.외+a.기<=20&&a.개>=-20);return(ta>=2500&&ok)?"B":"X";}return g||"B";})():(rr[7]||"B")),ta:rr[4],...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d||rr.tp1d,tp2d:sim.tp2d||rr.tp2d,sld:sim.sld||rr.sld,bed:sim.bed,exd:sim.exd||rr.exd,tp1dy:sim.tp1dy,tp2dy:sim.tp2dy,sldy:sim.sldy,bedy:sim.bedy,exdy:sim.exdy};}),[cTP,strictMode]);const st=useMemo(()=>{const r={};["S","A","B"].forEach(g=>{const d=D_live.filter(x=>x.g===g),w=d.filter(x=>x.t>0),sl=d.filter(x=>x.r==="SL"),bo=d.filter(x=>x.r==="BOTH"),tp1=d.filter(x=>{const rr=x.r;return rr==="TP1"||rr==="BOTH";}),to=d.filter(x=>x.r==="TO");const avg=d.length?(d.reduce((s,x)=>s+x.t,0)/d.length):0;const nw=d.map(x=>x);const nwCum=Math.round(nw.reduce((s,x)=>s+x.t,0));const nwWin=nw.filter(x=>x.t>0).length;r[g]={n:d.length,avg:avg.toFixed(2),wr:d.length?Math.round(w.length/d.length*100):0,cum:Math.round(d.reduce((s,x)=>s+x.t,0)),tp1c:tp1.length,tp1r:d.length?Math.round(tp1.length/d.length*100):0,boc:bo.length,bor:d.length?Math.round(bo.length/d.length*100):0,slc:sl.length,slr:d.length?Math.round(sl.length/d.length*100):0,toc:to.length,tor:d.length?Math.round(to.length/d.length*100):0,nwCum,nwWr:d.length?Math.round(nwWin/d.length*100):0}});return r},[cTP]);const fl=useMemo(()=>{let d=D_live.filter(r=>r.g===tab);return[...d].sort((a,b)=>{const av=a[srt.c],bv=b[srt.c];if(typeof av==="number")return (srt.d==="asc"?av-bv:bv-av);return srt.d==="asc"?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av))})},[tab,srt,invAmt]);const portfolio=useMemo(()=>{
 const amt=invAmt.useSame?{S:invAmt.same,A:invAmt.same,B:invAmt.same}:{S:invAmt.S,A:invAmt.A,B:invAmt.B};
 const parseTA=s=>{if(!s)return 0;const m=s.match(/(\d+)억/);return m?+m[1]:0;};
 const byG={S:{n:0,pnl:0,win:0,amt:0},A:{n:0,pnl:0,win:0,amt:0},B:{n:0,pnl:0,win:0,amt:0}};
@@ -48,7 +49,7 @@ for(const r of D_live){
 const g=r.g||"B";
 if(!byG[g])continue;
 if(g==="X")continue;
-if(invAmt.strict){const t=parseTA(r.ta);const m=(invAmt.minTA||{})[g]||0;if(t<m){filtered++;continue;}}
+
 const tPct=r.t||0;
 const gAmt=amt[g]||0;
 const gain=Math.round(gAmt*tPct/100);
@@ -66,28 +67,9 @@ return{byG,total,resStats,filtered};
 <input type="checkbox" checked={invAmt.useSame} onChange={e=>setInvAmt({...invAmt,useSame:e.target.checked})}/>
 모든 종목 동일 금액
 </label>
-<button onClick={()=>setStrictMode(!strictMode)} style={{padding:"4px 10px",fontSize:10,fontWeight:700,border:"1px solid "+(strictMode?"#dc2626":"#444"),background:strictMode?"#dc2626":"transparent",color:strictMode?"#fff":"#888",borderRadius:4,cursor:"pointer",marginRight:8}}>{strictMode?"🎯 타이트 ON":"⚪ 타이트 OFF"}</button><div style={{display:"flex",gap:10,fontSize:10,marginLeft:"auto",flexWrap:"wrap"}}><span style={{color:"#dc2626",fontWeight:700}}>🎯 익절 {portfolio.resStats.tp}건</span><span style={{color:"#2563eb",fontWeight:700}}>🛑 손절 {portfolio.resStats.sl}건</span><span style={{color:"#888"}}>⏱ 기간만료 {portfolio.resStats.to}건</span><span style={{color:"#666"}}>전체 {portfolio.total.n}건</span></div>
-<div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,padding:"6px 10px",background:invAmt.strict?"#2a1a1a":"#0a0e18",border:"1px solid "+(invAmt.strict?"#dc2626":"#2a3040"),borderRadius:6,flexWrap:"wrap"}}>
-<label style={{display:"flex",alignItems:"center",gap:4,fontSize:11,fontWeight:700,color:invAmt.strict?"#dc2626":"#aaa",cursor:"pointer"}}>
-<input type="checkbox" checked={invAmt.strict} onChange={e=>setInvAmt({...invAmt,strict:e.target.checked})}/>
-🔥 승률 최적화 (거래대금 필터)
-</label>
-{invAmt.strict&&<span style={{fontSize:10,color:"#888"}}>제외 {portfolio.filtered}건</span>}
-</div>
-{invAmt.strict&&(
-<div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:10,padding:10,background:"#0a0e18",borderRadius:6,border:"1px dashed #2a3040"}}>
-{["S","A","B"].map(gk=>(
-<div key={gk}>
-<div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-<span style={{fontSize:10,fontWeight:700,color:gk==="S"?"#4CAF82":gk==="A"?"#F5A623":"#5B8DEF"}}>{gk}급 최소 거래대금</span>
-<span style={{fontSize:10,color:"#ccc",fontWeight:700}}>{((invAmt.minTA||{})[gk]||0).toLocaleString()}억</span>
-</div>
-<input type="range" min="0" max="10000" step="100" value={(invAmt.minTA||{})[gk]||0} onChange={e=>setInvAmt({...invAmt,minTA:{...(invAmt.minTA||{}),[gk]:+e.target.value}})} style={{width:"100%",accentColor:gk==="S"?"#4CAF82":gk==="A"?"#F5A623":"#5B8DEF"}}/>
-<div style={{fontSize:9,color:"#666",marginTop:2}}>추천: {gk==="S"?"5000억":gk==="A"?"0 (비활성)":"1200억"}</div>
-</div>
-))}
-</div>
-)}
+<button onClick={()=>setStrictMode(!strictMode)} style={{padding:"4px 10px",fontSize:10,fontWeight:700,border:"1px solid "+(strictMode?"#dc2626":"#444"),background:strictMode?"#dc2626":"transparent",color:strictMode?"#fff":"#888",borderRadius:4,cursor:"pointer",marginRight:8}}>{strictMode?"🎯 타이트 ON (Ctrl+K)":"⚪ 타이트 OFF"}</button><div style={{display:"flex",gap:10,fontSize:10,marginLeft:"auto",flexWrap:"wrap"}}><span style={{color:"#dc2626",fontWeight:700}}>🎯 익절 {portfolio.resStats.tp}건</span><span style={{color:"#2563eb",fontWeight:700}}>🛑 손절 {portfolio.resStats.sl}건</span><span style={{color:"#888"}}>⏱ 기간만료 {portfolio.resStats.to}건</span><span style={{color:"#666"}}>전체 {portfolio.total.n}건</span></div>
+
+
 </div>
 {invAmt.useSame?(
 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
