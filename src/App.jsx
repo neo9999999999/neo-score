@@ -7,7 +7,20 @@ const NS={S:{tp1:10,tp2:50,sl:3,fsl:0},A:{tp1:10,tp2:30,sl:10,fsl:10},B:{tp1:10,
 
 function PF(s){if(!s)return[];return s.split(";").map(p=>{const[d,v]=p.split(":");const[o,h,l,c]=v.split(",").map(parseFloat);return{d,o,h,l,c};});}
 
-function simReal(fut,tp1,tp2,sl,fsl){if(!fut||!fut.length)return{t:0,r:"X",tp1d:"",tp2d:"",sld:"",bed:"",exd:"",tp1dy:0,tp2dy:0,sldy:0,bedy:0,exdy:0};let tp1Hit=-1,tp2Hit=-1,slHit=-1,fslHit=-1;for(let j=0;j<fut.length;j++){const fr=fut[j];if(tp1Hit<0&&fr.h>=tp1)tp1Hit=j;if(tp2Hit<0&&fr.h>=tp2)tp2Hit=j;if(slHit<0&&fr.c<=-sl)slHit=j;if(fsl&&fslHit<0&&fr.l<=-fsl)fslHit=j;}const last=fut[fut.length-1];const expPct=last?last.c:0;let res,tt,exIdx,beIdx=-1;const fslFirst=fslHit>=0&&(tp1Hit<0||fslHit<tp1Hit)&&(slHit<0||fslHit<=slHit);const slFirst=slHit>=0&&(tp1Hit<0||slHit<tp1Hit);if(fslFirst){res="FSL";tt=-fsl;exIdx=fslHit;}else if(slFirst){res="SL";tt=fut[slHit].c;exIdx=slHit;}else if(tp1Hit>=0){const h1=0.5*tp1;if(tp2Hit>=0){tt=h1+0.5*tp2;res="BOTH";exIdx=tp2Hit;}else{let beIdx2=-1,fslAfter=-1;for(let k=tp1Hit+1;k<fut.length;k++){if(fsl&&fslAfter<0&&fut[k].l<=-fsl){fslAfter=k;break;}if(fut[k].l<=0){beIdx2=k;break;}}if(fslAfter>=0){tt=h1+0.5*(-fsl);res="TP1_FSL";exIdx=fslAfter;}else if(beIdx2>=0){tt=h1;res="TP1_BE";exIdx=beIdx2;beIdx=beIdx2;}else{tt=h1+0.5*expPct;res="TP1";exIdx=fut.length-1;}}}else{res="TO";tt=expPct;exIdx=fut.length-1;}const fd=(i)=>i>=0&&fut[i]?("20"+fut[i].d.slice(2,4)+"-"+fut[i].d.slice(4,6)+"-"+fut[i].d.slice(6,8)).slice(2):"";return{t:Math.round(tt*100)/100,r:res,tp1d:fd(tp1Hit),tp2d:fd(tp2Hit),sld:fd(slHit),bed:fd(beIdx),exd:fd(exIdx),tp1dy:tp1Hit>=0?tp1Hit+1:0,tp2dy:tp2Hit>=0?tp2Hit+1:0,sldy:slHit>=0?slHit+1:0,bedy:beIdx>=0?beIdx+1:0,exdy:exIdx>=0?exIdx+1:0};}
+function parseAmount(inv){if(!inv||!/억/.test(inv))return null;const p=inv.split("/"),r={외:0,기:0,개:0};for(const x of p){const m=x.match(/^(외|기|개)([+-]?\d+)억$/);if(m)r[m[1]]=+m[2];}return r;}
+function isSupplyX(inv){const a=parseAmount(inv);if(!a)return false;return(a.외+a.기)>=50||a.개<=-50;}
+function simReal(fut,tp1,tp2,sl,fsl,grade){if(!fut||!fut.length)return{t:0,r:"X",tp1d:"",tp2d:"",sld:"",bed:"",exd:"",tp1dy:0,tp2dy:0,sldy:0,bedy:0,exdy:0};
+const g=grade||"B",trailPct={S:15,A:12,B:10}[g]||10;
+let peak=0,tp1Hit=false,tp1Idx=-1,exIdx=-1,exR="";
+for(let i=0;i<fut.length;i++){const b=fut[i],h=+b.h||0,c=+b.c||0;peak=Math.max(peak,h);
+if(c<=-sl){exIdx=i;exR="SL";break;}
+if(h>=tp2){exIdx=i;exR="TP2";break;}
+if(!tp1Hit&&h>=tp1){tp1Hit=true;tp1Idx=i;}
+if(tp1Hit){const stopPct=Math.max(peak-trailPct,2);if(c<=stopPct){exIdx=i;exR="TRAIL";break;}}}
+if(exIdx<0){exIdx=fut.length-1;exR="TO";}
+const ex=fut[exIdx];
+return{t:+ex.c,r:exR,tp1d:tp1Idx>=0?fut[tp1Idx].d:"",tp2d:exR==="TP2"?ex.d:"",sld:exR==="SL"?ex.d:"",bed:"",exd:ex.d,tp1dy:tp1Idx+1,tp2dy:exR==="TP2"?exIdx+1:0,sldy:exR==="SL"?exIdx+1:0,bedy:0,exdy:exIdx+1};
+}
 function SD(r,cTP){const cp=(cTP&&cTP[r.g])||{tp1:r.tp1,tp2:r.tp2,sl:r.sl,fsl:0};const res=r.r;if(res==="BOTH")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 TP2 +"+cp.tp2+"% @ "+(r.tp2d||r.exd)+" ("+(r.tp2dy||r.exdy)+"일) → 50% 익절";if(res==="TP1")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 기간만료 @ "+r.exd+" ("+r.exdy+"일) 종가에서 나머지 50% 매도";if(res==="TP1_BE")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 본절(0%) @ "+r.bed+" ("+r.bedy+"일) → 나머지 50% 본절 매도";if(res==="TP1_FSL")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 장중 강제 손절 @ -"+cp.fsl+"% ("+r.exdy+"일) → 나머지 50% 매도";if(res==="TP1_SL")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 SL 손절 @ "+r.sld+" ("+r.sldy+"일) → 50% 손절";if(res==="SL")return"종가 SL 전량 손절 @ "+r.sld+" ("+r.sldy+"일), 종가 "+r.t+"%";if(res==="FSL")return"장중 강제 SL 전량 손절 @ -"+cp.fsl+"% ("+r.exdy+"일), 즉시 매도";if(res==="TO")return"기간만료 전량 매도 @ "+r.exd+" ("+r.exdy+"일), 종가 "+(r.t>0?"+":"")+r.t+"%";return"-";}
 
 
