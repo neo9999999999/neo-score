@@ -8,7 +8,7 @@ const NS={S:{tp1:10,tp2:50,sl:3,fsl:0},A:{tp1:10,tp2:30,sl:10,fsl:10},B:{tp1:10,
 function PF(s){if(!s)return[];return s.split(";").map(p=>{const[d,v]=p.split(":");const[o,h,l,c]=v.split(",").map(parseFloat);return{d,o,h,l,c};});}
 
 function parseAmount(inv){if(!inv||!/억/.test(inv))return null;const p=inv.split("/"),r={외:0,기:0,개:0};for(const x of p){const m=x.match(/^(외|기|개)([+-]?\d+)억$/);if(m)r[m[1]]=+m[2];}return r;}
-function isSupplyX(inv){const a=parseAmount(inv);if(!a)return false;return(a.외+a.기)>=50||a.개<=-50;}
+function isSupplyX(inv){const a=parseAmount(inv);if(!a)return false;return(a.외+a.기)<=0;}
 function simReal(fut,tp1,tp2,sl,fsl,grade){if(!fut||!fut.length)return{t:0,r:"X",tp1d:"",tp2d:"",sld:"",bed:"",exd:"",tp1dy:0,tp2dy:0,sldy:0,bedy:0,exdy:0};
 const g=grade||"B",trailPct={S:15,A:12,B:10}[g]||10;
 let peak=0,tp1Hit=false,tp1Idx=-1,exIdx=-1,exR="";
