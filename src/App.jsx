@@ -19,7 +19,7 @@ for(let i=0;i<fut.length;i++){const b=fut[i],h=+b.h||0,c=+b.c||0;peak=Math.max(p
 if(c<=-sl){exIdx=i;exR="SL";break;}
 if(h>=tp2){exIdx=i;exR="TP2";break;}
 if(!tp1Hit&&h>=tp1){tp1Hit=true;tp1Idx=i;}
-if(tp1Hit){const stopPct=Math.max(peak-trailPct,2);if(c<=stopPct){exIdx=i;exR="TRAIL";break;}}}
+if(tp1Hit&&tp1Idx<i){const stopPct=Math.max(peak-trailPct,2);if(c<=stopPct){exIdx=i;exR="TRAIL";break;}}}
 if(exIdx<0){exIdx=fut.length-1;exR="TO";}
 const ex=fut[exIdx];
 return{t:Math.min(+ex.c,tp2),r:exR,tp1d:tp1Idx>=0?fut[tp1Idx].d:"",tp2d:exR==="TP2"?ex.d:"",sld:exR==="SL"?ex.d:"",bed:"",exd:ex.d,tp1dy:tp1Idx+1,tp2dy:exR==="TP2"?exIdx+1:0,sldy:exR==="SL"?exIdx+1:0,bedy:0,exdy:exIdx+1};
@@ -28,7 +28,7 @@ function SD(r,cTP){const cp=(cTP&&cTP[r.g])||{tp1:r.tp1,tp2:r.tp2,sl:r.sl,fsl:0}
 
 
 const RC=r=>r==="BOTH"?"#dc2626":r==="TP1"?"#2563eb":r==="TP1_SL"?"#d97706":r==="SL"?"#dc2626":"#64748b";
-const RL=r=>r==="BOTH"?"TP2":r==="TP1"?"TP1":r==="TP1_SL"?"TP1→SL":r==="SL"?"SL":"기간만료";
+const RL=r=>r==="BOTH"?"TP2":r==="TP1"?"TP1":r==="TP1_SL"?"TP1→SL":r==="SL"?"SL":r==="TRAIL"?"TRAIL":"기간만료";
 const BL=b=>b==="ATH"?"사상최고":b==="52W"?"52주":b==="120D"?"120일":"비신고";
 const BC=b=>b==="ATH"?"#dc2626":b==="52W"?"#2563eb":b==="120D"?"#d97706":"#94a3b8";
 const API_URL="https://sector-api-pink.vercel.app/api/screening";
