@@ -24,13 +24,13 @@ if(!tp1Hit&&h>=tp1){tp1Hit=true;tp1Idx=i;}
 if(tp1Hit&&tp1Idx+1<i){const stopPct=Math.max(peak-trailPct,2);if(c<=stopPct){exIdx=i;exR="TRAIL";break;}}}
 if(exIdx<0){exIdx=fut.length-1;exR="TO";}
 const ex=fut[exIdx];
-return{t:exR==="FSL"?-fsl:Math.min(+ex.c,tp2),r:exR,tp1d:tp1Idx>=0?fut[tp1Idx].d:"",tp2d:exR==="TP2"?ex.d:"",sld:(exR==="SL"||exR==="FSL")?ex.d:"",bed:"",exd:ex.d,tp1dy:tp1Idx+1,tp2dy:exR==="TP2"?exIdx+1:0,sldy:exR==="SL"?exIdx+1:0,bedy:0,exdy:exIdx+1};
+return{t:exR==="FSL"?-fsl:exR==="TP2"?tp2:Math.min(+ex.c,tp2),r:exR,tp1d:tp1Idx>=0?fut[tp1Idx].d:"",tp2d:exR==="TP2"?ex.d:"",sld:(exR==="SL"||exR==="FSL")?ex.d:"",bed:"",exd:ex.d,tp1dy:tp1Idx+1,tp2dy:exR==="TP2"?exIdx+1:0,sldy:exR==="SL"?exIdx+1:0,bedy:0,exdy:exIdx+1};
 }
 function SD(r,cTP){const cp=(cTP&&cTP[r.g])||{tp1:r.tp1,tp2:r.tp2,sl:r.sl,fsl:0};const res=r.r;if(res==="BOTH")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 TP2 +"+cp.tp2+"% @ "+(r.tp2d||r.exd)+" ("+(r.tp2dy||r.exdy)+"일) → 50% 익절";if(res==="TP1")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 기간만료 @ "+r.exd+" ("+r.exdy+"일) 종가에서 나머지 50% 매도";if(res==="TP1_BE")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 본절(0%) @ "+r.bed+" ("+r.bedy+"일) → 나머지 50% 본절 매도";if(res==="TP1_FSL")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 장중 강제 손절 @ -"+cp.fsl+"% ("+r.exdy+"일) → 나머지 50% 매도";if(res==="TP1_SL")return"1차 TP1 +"+cp.tp1+"% @ "+r.tp1d+" ("+r.tp1dy+"일) → 50% 익절 · 2차 SL 손절 @ "+r.sld+" ("+r.sldy+"일) → 50% 손절";if(res==="SL")return"종가 SL 전량 손절 @ "+r.sld+" ("+r.sldy+"일), 종가 "+r.t+"%";if(res==="FSL")return"장중 강제 SL 전량 손절 @ -"+cp.fsl+"% ("+r.exdy+"일), 즉시 매도";if(res==="TO")return"기간만료 전량 매도 @ "+r.exd+" ("+r.exdy+"일), 종가 "+(r.t>0?"+":"")+r.t+"%";return"-";}
 
 
 const RC=r=>r==="BOTH"?"#dc2626":r==="TP1"?"#2563eb":r==="TP1_SL"?"#d97706":r==="SL"?"#dc2626":"#64748b";
-const RL=r=>r==="BOTH"?"TP2":r==="TP1"?"TP1":r==="TP1_SL"?"TP1→SL":r==="SL"?"SL":r==="FSL"?"강제SL":r==="TRAIL"?"TRAIL":"기간만료";
+const RL=r=>r==="BOTH"?"TP2":r==="TP1"?"TP1":r==="TP1_SL"?"TP1→SL":r==="SL"?"SL":r==="TP2"?"TP2":r==="FSL"?"강제SL":r==="TRAIL"?"TRAIL":"기간만료";
 const BL=b=>b==="ATH"?"사상최고":b==="52W"?"52주":b==="120D"?"120일":"비신고";
 const BC=b=>b==="ATH"?"#dc2626":b==="52W"?"#2563eb":b==="120D"?"#d97706":"#94a3b8";
 const API_URL="https://sector-api-pink.vercel.app/api/screening";
