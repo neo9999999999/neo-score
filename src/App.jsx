@@ -11,7 +11,7 @@ function parseAmount(inv){if(!inv||!/억/.test(inv))return null;const p=inv.spli
 function isSupplyX(inv){const a=parseAmount(inv);if(!a)return false;return(a.외+a.기)<=0;}
 function parseAmt2(s){if(!s)return 0;const m=s.match(/(\d+(?:\.\d+)?)억/);return m?+m[1]:0;}
 function parseSup2(inv){if(!inv||!/억/.test(inv))return null;const p=inv.split("/"),r={외:0,기:0,개:0};for(const x of p){const m=x.match(/^(외|기|개)([+-]?\d+)억$/);if(m)r[m[1]]=+m[2];}return r;}
-function strictPass(rr,mode){if(mode==="full")return true;const g=rr.g,a=parseAmt2(rr.mc),s=parseSup2(rr.iv);if(mode==="middle"){if(g==="S")return a>=2000;if(g==="A")return a>=1000;if(g==="B")return a>=1500;return true;}if(g==="S")return a>=5000;if(g==="A")return a>=2500;if(g==="B")return a>=2500&&(!s||(s.외+s.기<=20&&s.개>=-20));return true;}
+function strictPass(rr,mode){const g=rr.g,a=parseAmt2(rr.mc);if(g==="S"||g==="A")return a>=2500;if(g==="B")return mode==="tight"?a>=2500:a>=1500;return true;}
 function simReal(fut,tp1,tp2,sl,fsl,grade){if(!fut||!fut.length)return{t:0,r:"X",tp1d:"",tp2d:"",sld:"",bed:"",exd:"",tp1dy:0,tp2dy:0,sldy:0,bedy:0,exdy:0};
 const g=grade||"B",trailPct={S:15,A:12,B:10}[g]||10;
 let peak=0,tp1Hit=false,tp1Idx=-1,exIdx=-1,exR="";
