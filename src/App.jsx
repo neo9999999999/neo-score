@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
-import {R as R_26} from "./data.js";
+import {R_26} from "./data.js";
 import {R_2025} from "./data_2025.js";
 import {R_2024} from "./data_2024.js";
 import {R_2023} from "./data_2023.js";
