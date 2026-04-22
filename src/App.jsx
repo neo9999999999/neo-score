@@ -6,7 +6,7 @@ import {R_2023} from "./data_2023.js";
 import {R_2022} from "./data_2022.js";
 import {R_2021} from "./data_2021.js";
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
-const D=R.map(r=>({n:r[0],d:"20"+r[1],m:r[2],ch:r[3],mc:r[4],iv:r[5],sc:r[6],g:(()=>{const s=r[4]||"";const m=s.match(/(\d+(?:\.\d+)?)/);const n=m?+m[1]:0;const a=s.includes("兆")||s.includes("조")?n*10000:n;return a>=2500?"S":a>=1000?"A":"B"})(),bd:r[8],wk:r[9],am:r[10],pk:r[11],dd:r[12],tp1:r[13],tp2:r[14],sl:r[15],h1:r[16],h2:r[17],t:r[18],r:r[19],hd1:r[20],hd2:r[21],etf:r[22],gp:r[23],bt:r[24],bs:r[25],vc:r[26],ema:r[27],tp1d:r[28]||"",sld:r[29]||"",tp2d:r[30]||"",exd:r[31]||"",tp1dy:r[32]||0,sldy:r[33]||0,exdy:r[34]||0,bed:r[35]||"",bedy:r[36]||0,tp12dy:r[37]||0,ohlc:PF(r[38]||"")}));
+const D=R.map(r=>({n:r[0],d:"20"+r[1],m:r[2],ch:r[3],mc:r[4],iv:r[5],sc:r[6],g:(()=>{const s=r[4]||"";const m=s.match(/(\d+(?:\.\d+)?)/);const n=m?+m[1]:0;const a=s.includes("兆")||s.includes("조")?n*10000:n;return a>=2500?"S":a>=500?"A":a>=50?"B":"X"})(),bd:r[8],wk:r[9],am:r[10],pk:r[11],dd:r[12],tp1:r[13],tp2:r[14],sl:r[15],h1:r[16],h2:r[17],t:r[18],r:r[19],hd1:r[20],hd2:r[21],etf:r[22],gp:r[23],bt:r[24],bs:r[25],vc:r[26],ema:r[27],tp1d:r[28]||"",sld:r[29]||"",tp2d:r[30]||"",exd:r[31]||"",tp1dy:r[32]||0,sldy:r[33]||0,exdy:r[34]||0,bed:r[35]||"",bedy:r[36]||0,tp12dy:r[37]||0,ohlc:PF(r[38]||"")}));
 const XN=1061;
 const GI={S:{c:"#dc2626",bg:"#fef2f2",bd:"#fca5a5"},A:{c:"#2563eb",bg:"#eff6ff",bd:"#93c5fd"},B:{c:"#d97706",bg:"#fffbeb",bd:"#fcd34d"},X:{c:"#94a3b8",bg:"#f1f5f9",bd:"#cbd5e1"}};
 const NS={S:{tp1:20,tp2:50,sl:5,fsl:0},A:{tp1:20,tp2:40,sl:7,fsl:10},B:{tp1:20,tp2:50,sl:10,fsl:15}};function simNew(pk,dd,g,t1,t2,sl,res,origT){const ns=NS[g];const s=(t1>0)?{tp1:t1,tp2:t2,sl:sl}:ns;if(!s)return{t:0,r:"X"};const isDef=ns&&s.tp1===ns.tp1&&s.tp2===ns.tp2&&s.sl===ns.sl;if(isDef&&res&&origT!=null)return{t:origT,r:res};const a=Math.abs(dd);const hitSL=a>=s.sl;const hitTP1=pk>=s.tp1;const hitTP2=pk>=s.tp2;if(res==="SL"&&hitSL)return{t:Math.round(-s.sl*1.04*10)/10,r:"SL"};if(res==="TO"&&!hitSL&&!hitTP1)return{t:0,r:"TO"};if(hitSL&&hitTP1){if(res==="SL"||res==="TP1_SL")return{t:Math.round(-s.sl*1.04*10)/10,r:"SL"};if(hitTP2)return{t:Math.round((s.tp1*0.5+s.tp2*0.5)*10)/10,r:"BOTH"};return{t:Math.round((s.tp1*0.5)*10)/10,r:"TP1"};}if(hitSL)return{t:Math.round(-s.sl*1.04*10)/10,r:"SL"};if(hitTP2)return{t:Math.round((s.tp1*0.5+s.tp2*0.5)*10)/10,r:"BOTH"};if(hitTP1)return{t:Math.round((s.tp1*0.5)*10)/10,r:"TP1"};return{t:0,r:"TO"};}
@@ -17,7 +17,7 @@ function parseAmount(inv){if(!inv||!/억/.test(inv))return null;const p=inv.spli
 function isSupplyX(inv){const a=parseAmount(inv);if(!a)return false;return(a.외+a.기)<=0;}
 function parseAmt2(s){if(!s)return 0;const m=s.match(/(\d+(?:\.\d+)?)억/);return m?+m[1]:0;}
 function parseSup2(inv){if(!inv||!/억/.test(inv))return null;const p=inv.split("/"),r={외:0,기:0,개:0};for(const x of p){const m=x.match(/^(외|기|개)([+-]?\d+)억$/);if(m)r[m[1]]=+m[2];}return r;}
-function strictPass(rr,mode){const g=rr.g;if(mode==="tight")return g==="S";if(mode==="middle")return g==="S"||g==="A";return true;}
+function strictPass(rr,mode){const g=rr.g;if(g==="X")return false;if(mode==="tight")return g==="S";if(mode==="middle")return g==="S"||g==="A";return true;}
 function simReal(fut,tp1,tp2,sl,fsl,grade){if(!fut||!fut.length)return{t:0,r:"X",tp1d:"",tp2d:"",sld:"",bed:"",exd:"",tp1dy:0,tp2dy:0,sldy:0,bedy:0,exdy:0};
 fut=fut.slice(0,10);
 const g=grade||"B",trailPct={S:15,A:12,B:10}[g]||10;
