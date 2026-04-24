@@ -148,7 +148,7 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:920,width:"100%"}}>
-          {[{id:"today",label:"오늘",icon:"🔥"},{id:"db",label:"시그널DB",icon:"📊"},{id:"ai",label:"AI분석",icon:"🤖"},{id:"track",label:"추적",icon:"📡"},{id:"verify",label:"검증",icon:"🔍"},{id:"history",label:"히스토리",icon:"📋",badge:history.length}].map(t=>(
+          {[{id:"today",label:"오늘",icon:"🔥"},{id:"db",label:"시그널DB",icon:"📊"},{id:"ai",label:"AI분석",icon:"🤖"},{id:"history",label:"히스토리",icon:"📋",badge:history.length}].map(t=>(
             <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:1,padding:"8px 0 6px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:1,position:"relative"}}>
               <span style={{fontSize:18}}>{t.icon}</span>
               <span style={{fontSize:10,fontWeight:page===t.id?700:500,color:page===t.id?"#1e293b":"#94a3b8"}}>{t.label}</span>
