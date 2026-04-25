@@ -573,39 +573,54 @@ export function calcChimchakhaeScore(s) {
   // ── 수급 엔진 (20점 만점)
   // 동반매수 (10점): 외+기 동시=10 / 외만=7 / 기만=5
   if (s.investor === "기+외" || s.investor === "외+기") supply += 10;
-  else if (s.investor === "외인") supply += 7;
-  else if (s.investor === "기관") supply += 5;
-  // 거래대금 (10점): 1000억↑=10 / 500억↑=6 / 300억↑=3
+  else if (s.investor === "외인" || s.investor === "외만") supply += 7;
+  else if (s.investor === "기관" || s.investor === "기만") supply += 5;
+  else if (s.investor === "둘다-") supply += 0;
+  // 거래대금 (10점): 부드러운 계단 (3000억 만점, 100억 최저)
   const amt = s.amount || 0;
-  if (amt >= 1000) supply += 10;
+  if (amt >= 3000) supply += 10;
+  else if (amt >= 1500) supply += 9;
+  else if (amt >= 1000) supply += 8;
+  else if (amt >= 700) supply += 7;
   else if (amt >= 500) supply += 6;
-  else if (amt >= 300) supply += 3;
-  else if (amt >= 100) supply += 1;
+  else if (amt >= 300) supply += 4;
+  else if (amt >= 200) supply += 3;
+  else if (amt >= 100) supply += 2;
+  else if (amt >= 50) supply += 1;
 
-  // ── 시황·섹터 엔진 (5점 만점) - KIS 응답에 섹터 없으면 거래대금 기반 시황 강도
-  if (amt >= 1500) market += 5;
-  else if (amt >= 800) market += 4;
+  // ── 시황·섹터 엔진 (5점 만점) - 거래대금 기반 시황 강도 (세분화)
+  if (amt >= 3000) market += 5;
+  else if (amt >= 1500) market += 4;
+  else if (amt >= 800) market += 3;
   else if (amt >= 400) market += 2;
+  else if (amt >= 200) market += 1;
 
   // ── 차트 엔진 (10점 만점)
-  // 등락률 (5점): 침착해는 너무 큰 등락은 감점, 10~20% 가장 좋음
+  // 등락률 (5점): 침착해 골든존 13~17%, 너무 강한 등락 감점
   const ch = s.change || 0;
-  if (ch >= 10 && ch <= 20) chart += 5;
-  else if (ch >= 8 && ch < 10) chart += 4;
-  else if (ch > 20 && ch <= 25) chart += 3;
-  else if (ch > 25) chart += 1;
-  // 윗꼬리 (5점): 작을수록 좋음
+  if (ch >= 13 && ch <= 17) chart += 5;        // 골든존
+  else if (ch >= 11 && ch < 13) chart += 4;    // 적정
+  else if (ch > 17 && ch <= 20) chart += 4;    // 약간 강함
+  else if (ch >= 9 && ch < 11) chart += 3;     // 약함
+  else if (ch > 20 && ch <= 25) chart += 2;    // 과열
+  else if (ch >= 7 && ch < 9) chart += 1;      // 부족
+  else if (ch > 25) chart += 0;                // 너무 강함 (꺾일 위험)
+  // 윗꼬리 (5점): 부드러운 계단, 큰 윗꼬리는 감점 강화
   const wick = s.wick != null ? s.wick : 99;
   if (wick <= 0.5) chart += 5;
-  else if (wick <= 2) chart += 3;
-  else if (wick <= 4) chart += 2;
+  else if (wick <= 1.5) chart += 4;
+  else if (wick <= 3) chart += 3;
+  else if (wick <= 5) chart += 2;
   else if (wick <= 7) chart += 1;
-  else chart -= 2;
+  else if (wick <= 10) chart -= 1;
+  else chart -= 3;
 
-  // ── 재료 엔진 (5점 만점) - KIS 데이터로 재료 모름. 시총 작을수록 부각 가능성↑
-  // 코스닥 우위 + 거래대금 변동 큰 종목 가산 (간이)
-  if (s.market === "코스닥") material += 3;
+  // ── 재료 엔진 (5점 만점) - 코스닥 + 거래대금 변동 + 강한 등락 (소형주 부각)
+  if (s.market === "코스닥" || s.market === "KO" || s.market === "KQ") material += 3;
   if (amt >= 500) material += 2;
+  else if (amt >= 200) material += 1;
+  // 강한 등락은 재료 강도 신호 (수급보다 가벼운 가산)
+  if (ch >= 20) material = Math.min(5, material + 1);
 
   // 합계 (40점 만점) → 100점 환산
   const totalRaw = supply + market + chart + material;
@@ -792,100 +807,194 @@ export function ChimchakhaeDB(props) {
   const D = props.records || [];
   const [tab, setTab] = React.useState("S+");
   const [pg, setPg] = React.useState(0);
-  const [yearFilter, setYearFilter] = React.useState("all");
-  const [supplyFilter, setSupplyFilter] = React.useState("all");
-  const [fromD, setFromD] = React.useState("");
-  const [toD, setToD] = React.useState("");
-  const [sortBy, setSortBy] = React.useState({ c: "d", d: "desc" });
+  const PP = 20;
   const [selected, setSelected] = React.useState(null);
-  const PP = 30;
+  const [query, setQuery] = React.useState("");
+  const [mkt, setMkt] = React.useState("ALL");
+  const [iv, setIv] = React.useState("ALL");
 
   // 모든 레코드에 침착해 점수 매핑
   const enriched = React.useMemo(function () {
+    // 거래대금 문자열 파싱 ("59272억" → 59272, "1.2兆" → 12000)
+    function parseAmt(mc) {
+      if (!mc || typeof mc !== "string") return 0;
+      const m = mc.match(/(\d+(?:\.\d+)?)/);
+      if (!m) return 0;
+      const n = +m[1];
+      return mc.indexOf("兆") >= 0 || mc.indexOf("조") >= 0 ? n * 10000 : n;
+    }
     return D.map(function (r) {
-      const fakeSignal = { change: r.ch, amount: r.am || 0, investor: r.iv, market: r.m, wick: r.wk || 0 };
+      // r 형태: {n, d, ch, m, mc, iv, sc, g, ...}
+      // KIS 시그널 형태로 변환해서 calc
+      const fakeSignal = {
+        change: r.ch,
+        amount: parseAmt(r.mc),
+        investor: r.iv,
+        market: r.m,
+        wick: r.wk || 0,
+      };
       const cc = calcChimchakhaeScore(fakeSignal);
       return Object.assign({}, r, { ccScore: cc.score, ccGrade: cc.grade, ccWeight: cc.weight, ccBreakdown: cc.breakdown, ccNote: cc.note });
     });
   }, [D]);
 
-  // 필터링
-  const filtered = React.useMemo(function () {
-    let _r = enriched.filter(function (r) {
-      if (r.ccGrade !== tab) return false;
-      if (yearFilter !== "all" && r.d && r.d.slice(0, 4) !== yearFilter) return false;
-      if (fromD && r.d && r.d < fromD) return false;
-      if (toD && r.d && r.d > toD) return false;
-      if (supplyFilter !== "all") {
-        if (supplyFilter === "gi_oe" && r.iv !== "기+외") return false;
-        if (supplyFilter === "oe" && r.iv !== "외만") return false;
-        if (supplyFilter === "gi" && r.iv !== "기만") return false;
-        if (supplyFilter === "dual_minus" && r.iv !== "둘다-") return false;
-      }
-      return true;
-    });
-    _r.sort(function (a, b) {
-      const av = a[sortBy.c], bv = b[sortBy.c];
-      if (typeof av === "number" && typeof bv === "number") return sortBy.d === "asc" ? av - bv : bv - av;
-      return sortBy.d === "asc" ? String(av || "").localeCompare(String(bv || "")) : String(bv || "").localeCompare(String(av || ""));
-    });
-    return _r;
-  }, [enriched, tab, yearFilter, fromD, toD, supplyFilter, sortBy]);
+  // 검색·시장·수급 필터 (등급 탭 적용 전)
+  const q = query.trim();
+  const preFiltered = enriched.filter(function (r) {
+    if (q && r.n.indexOf(q) === -1) return false;
+    if (mkt !== "ALL" && r.m !== mkt) return false;
+    if (iv !== "ALL" && r.iv !== iv) return false;
+    return true;
+  });
 
+  const filtered = preFiltered.filter(function (r) { return r.ccGrade === tab; });
   const mx = Math.max(0, Math.ceil(filtered.length / PP) - 1);
   const pd = filtered.slice(pg * PP, (pg + 1) * PP);
 
-  // 통계 (r.t 기반)
-  const stats = React.useMemo(function () {
-    if (filtered.length === 0) return null;
-    const cum = filtered.reduce(function (s, x) { return s + (x.t || 0); }, 0);
-    const wins = filtered.filter(function (x) { return (x.t || 0) > 0; }).length;
-    const sl = filtered.filter(function (x) { return x.r === "SL"; }).length;
-    const tp1 = filtered.filter(function (x) { return x.r === "TP1" || x.r === "BOTH"; }).length;
-    return {
-      n: filtered.length,
-      cum: Math.round(cum),
-      avg: (cum / filtered.length).toFixed(2),
-      wr: Math.round(wins / filtered.length * 100),
-      tp1: tp1, tp1r: Math.round(tp1 / filtered.length * 100),
-      sl: sl, slr: Math.round(sl / filtered.length * 100),
-    };
-  }, [filtered]);
-
+  // 등급별 카운트 (필터 적용 후)
   const counts = {};
   ["S+", "S", "A+", "A", "B+", "B", "C"].forEach(function (g) { counts[g] = 0; });
-  enriched.forEach(function (r) { if (counts[r.ccGrade] != null) counts[r.ccGrade]++; });
+  preFiltered.forEach(function (r) { if (counts[r.ccGrade] != null) counts[r.ccGrade]++; });
 
-  const toggleSort = function (c) {
-    setSortBy(function (prev) {
-      if (prev.c === c) return { c: c, d: prev.d === "asc" ? "desc" : "asc" };
-      return { c: c, d: "desc" };
-    });
-  };
-
-  const years = React.useMemo(function () {
-    const ys = new Set();
-    D.forEach(function (r) { if (r.d) ys.add(r.d.slice(0, 4)); });
-    return Array.from(ys).sort().reverse();
-  }, [D]);
+  // 페이지 리셋 (필터 변경 시)
+  React.useEffect(function () { setPg(0); }, [query, mkt, iv, tab]);
 
   return (
     <div>
       <div style={{ fontSize: 13, color: "#64748b", marginBottom: 10 }}>
-        총 <strong style={{ color: "#1e293b" }}>{enriched.length}건</strong> · 침착해 환산 등급별 분류
+        총 <strong style={{ color: "#1e293b" }}>{enriched.length}건</strong> · 필터: <strong style={{ color: "#1e293b" }}>{preFiltered.length}건</strong>
       </div>
 
-      <div style={{ fontSize: 10, color: "#92400e", padding: "6px 10px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 6, marginBottom: 12, lineHeight: 1.4 }}>
-        ℹ️ 수익률(r.t)은 시그널DB의 NEO-SCORE 기존 시뮬레이션 결과 그대로 사용. 침착해 등급별 cTP 사용자 설정 시뮬레이션은 다음 단계에서 추가 예정.
+      <div style={{ fontSize: 10, color: "#94a3b8", padding: "6px 10px", background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 6, marginBottom: 12, lineHeight: 1.4 }}>
+        ℹ️ 과거 시그널 DB에 침착해 100점 룰 적용. 차트/매물대/재료 분석은 별도 차트 업로드 필요.
       </div>
+
+      {/* 검색바 */}
+      <div style={{ position: "relative", marginBottom: 8 }}>
+        <input
+          type="text"
+          value={query}
+          onChange={function (e) { setQuery(e.target.value); }}
+          placeholder="🔍 종목명 검색..."
+          style={{ width: "100%", padding: "9px 30px 9px 12px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13, background: "#fff", outline: "none", boxSizing: "border-box" }}
+        />
+        {query && (
+          <button onClick={function () { setQuery(""); }} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 11, color: "#64748b" }}>✕</button>
+        )}
+      </div>
+
+      {/* 시장 토글 */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+        {[
+          { k: "ALL", label: "전체 시장" },
+          { k: "KS", label: "코스피" },
+          { k: "KO", label: "코스닥" },
+        ].map(function (m) {
+          const active = mkt === m.k;
+          return (
+            <button key={m.k} onClick={function () { setMkt(m.k); }} style={{ flex: 1, padding: "6px 4px", borderRadius: 7, border: "1px solid " + (active ? "#1e293b" : "#e2e8f0"), background: active ? "#1e293b" : "#fff", color: active ? "#fff" : "#64748b", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{m.label}</button>
+          );
+        })}
+      </div>
+
+      {/* 수급 토글 */}
+      <div style={{ display: "flex", gap: 4, marginBottom: 12, flexWrap: "wrap" }}>
+        {[
+          { k: "ALL", label: "전체 수급" },
+          { k: "기+외", label: "기+외" },
+          { k: "외만", label: "외인만" },
+          { k: "기만", label: "기관만" },
+          { k: "둘다-", label: "둘다-" },
+        ].map(function (x) {
+          const active = iv === x.k;
+          const col = x.k === "기+외" ? "#7c3aed" : x.k === "외만" ? "#2563eb" : x.k === "기만" ? "#dc2626" : x.k === "둘다-" ? "#94a3b8" : "#1e293b";
+          return (
+            <button key={x.k} onClick={function () { setIv(x.k); }} style={{ flex: "1 1 80px", padding: "6px 4px", borderRadius: 7, border: "1px solid " + (active ? col : "#e2e8f0"), background: active ? col : "#fff", color: active ? "#fff" : "#64748b", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{x.label}</button>
+          );
+        })}
+      </div>
+
+      {/* 통계 카드 (필터 적용된 preFiltered 기준) */}
+      {(function () {
+        let resolved = 0, totalProfit = 0, wins = 0;
+        const resultCount = { TP1: 0, TP1_BE: 0, BOTH: 0, SL: 0, TO: 0 };
+        preFiltered.forEach(function (r) {
+          if (r.r && resultCount[r.r] != null) resultCount[r.r]++;
+          if (typeof r.t === "number" && r.r && r.r !== "TO") {
+            resolved++;
+            totalProfit += r.t;
+            if (r.t > 0) wins++;
+          }
+        });
+        const avg = resolved > 0 ? (totalProfit / resolved).toFixed(1) : "—";
+        const winRate = resolved > 0 ? Math.round((wins / resolved) * 100) : 0;
+        const avgCol = resolved > 0 ? (totalProfit >= 0 ? "#dc2626" : "#2563eb") : "#94a3b8";
+        return (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginBottom: 12 }}>
+            <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 9, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 2 }}>평균손익</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: avgCol }}>{avg !== "—" ? (totalProfit >= 0 ? "+" : "") + avg + "%" : "—"}</div>
+            </div>
+            <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 9, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 2 }}>승률</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: winRate >= 50 ? "#dc2626" : "#64748b" }}>{resolved > 0 ? winRate + "%" : "—"}</div>
+            </div>
+            <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 9, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 2 }}>익절</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: "#dc2626" }}>{resultCount.TP1 + resultCount.TP1_BE + resultCount.BOTH}건</div>
+            </div>
+            <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 9, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, marginBottom: 2 }}>손절</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: "#2563eb" }}>{resultCount.SL}건</div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* 결과 분포 가로 막대 */}
+      {(function () {
+        const dist = { TP1: 0, TP1_BE: 0, BOTH: 0, SL: 0, TO: 0 };
+        let total = 0;
+        preFiltered.forEach(function (r) { if (r.r && dist[r.r] != null) { dist[r.r]++; total++; } });
+        if (total === 0) return null;
+        const segs = [
+          { k: "BOTH", label: "BOTH", col: "#dc2626", count: dist.BOTH },
+          { k: "TP1", label: "TP1", col: "#ef4444", count: dist.TP1 },
+          { k: "TP1_BE", label: "TP1_BE", col: "#f59e0b", count: dist.TP1_BE },
+          { k: "TO", label: "TO", col: "#94a3b8", count: dist.TO },
+          { k: "SL", label: "SL", col: "#3b82f6", count: dist.SL },
+        ];
+        return (
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ display: "flex", height: 14, borderRadius: 7, overflow: "hidden", border: "1px solid #e2e8f0" }}>
+              {segs.map(function (s) {
+                const w = (s.count / total) * 100;
+                if (w === 0) return null;
+                return <div key={s.k} title={s.label + " " + s.count + "건"} style={{ width: w + "%", background: s.col }} />;
+              })}
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4, fontSize: 9, color: "#94a3b8", flexWrap: "wrap", gap: 4 }}>
+              {segs.map(function (s) {
+                if (s.count === 0) return null;
+                return (
+                  <span key={s.k} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: 2, background: s.col, display: "inline-block" }} />
+                    {s.label} {s.count}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* 등급 탭 */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(60px, 1fr))", gap: 4, marginBottom: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(60px, 1fr))", gap: 4, marginBottom: 14 }}>
         {["S+", "S", "A+", "A", "B+", "B", "C"].map(function (g) {
           const col = chimchakhaeGradeColor(g);
           const active = tab === g;
           return (
-            <button key={g} onClick={function () { setTab(g); setPg(0); }} style={{ padding: "8px 4px", borderRadius: 8, border: "1px solid " + (active ? col : "#e2e8f0"), background: active ? col : col + "0a", color: active ? "#fff" : col, fontSize: 11, fontWeight: 800, cursor: "pointer" }}>
+            <button key={g} onClick={function () { setTab(g); }} style={{ padding: "8px 4px", borderRadius: 8, border: "1px solid " + (active ? col : "#e2e8f0"), background: active ? col : col + "0a", color: active ? "#fff" : col, fontSize: 11, fontWeight: 800, cursor: "pointer" }}>
               <div style={{ fontSize: 16, fontWeight: 900, lineHeight: 1 }}>{g}</div>
               <div style={{ fontSize: 10, marginTop: 2, opacity: 0.85 }}>{counts[g]}건</div>
             </button>
@@ -893,91 +1002,25 @@ export function ChimchakhaeDB(props) {
         })}
       </div>
 
-      {/* 필터 */}
-      <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: 10, marginBottom: 12 }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <label style={{ fontSize: 11, color: "#475569", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-            연도
-            <select value={yearFilter} onChange={function (e) { setYearFilter(e.target.value); setPg(0); }} style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontFamily: "inherit" }}>
-              <option value="all">전체</option>
-              {years.map(function (y) { return <option key={y} value={y}>{y}</option>; })}
-            </select>
-          </label>
-          <label style={{ fontSize: 11, color: "#475569", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
-            수급
-            <select value={supplyFilter} onChange={function (e) { setSupplyFilter(e.target.value); setPg(0); }} style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontFamily: "inherit" }}>
-              <option value="all">전체</option>
-              <option value="gi_oe">기+외</option>
-              <option value="oe">외만</option>
-              <option value="gi">기만</option>
-              <option value="dual_minus">둘다-</option>
-            </select>
-          </label>
-          <label style={{ fontSize: 11, color: "#475569", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
-            기간
-            <input type="date" value={fromD} onChange={function (e) { setFromD(e.target.value); setPg(0); }} style={{ fontSize: 11, padding: "3px 6px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontFamily: "inherit" }} />
-            <span style={{ fontSize: 11, color: "#94a3b8" }}>~</span>
-            <input type="date" value={toD} onChange={function (e) { setToD(e.target.value); setPg(0); }} style={{ fontSize: 11, padding: "3px 6px", borderRadius: 6, border: "1px solid #cbd5e1", background: "#fff", fontFamily: "inherit" }} />
-          </label>
-          {(yearFilter !== "all" || supplyFilter !== "all" || fromD || toD) && (
-            <button onClick={function () { setYearFilter("all"); setSupplyFilter("all"); setFromD(""); setToD(""); setPg(0); }} style={{ fontSize: 10, padding: "4px 8px", background: "#e2e8f0", border: "none", borderRadius: 4, cursor: "pointer", color: "#475569", fontWeight: 700 }}>초기화</button>
-          )}
-        </div>
-      </div>
-
-      {/* 통계 박스 */}
-      {stats && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(85px, 1fr))", gap: 6, marginBottom: 12 }}>
-          {[
-            { label: "건수", val: stats.n, col: "#1e293b", bg: "#f8fafc", bd: "#e2e8f0" },
-            { label: "누적", val: (stats.cum > 0 ? "+" : "") + stats.cum + "%", col: stats.cum > 0 ? "#dc2626" : "#2563eb", bg: "#f8fafc", bd: "#e2e8f0" },
-            { label: "평균", val: (stats.avg > 0 ? "+" : "") + stats.avg + "%", col: stats.avg > 0 ? "#dc2626" : "#2563eb", bg: "#f8fafc", bd: "#e2e8f0" },
-            { label: "승률", val: stats.wr + "%", col: stats.wr >= 50 ? "#dc2626" : "#94a3b8", bg: "#f8fafc", bd: "#e2e8f0" },
-            { label: "TP도달", val: stats.tp1 + "건(" + stats.tp1r + "%)", col: "#15803d", bg: "#f0fdf4", bd: "#bbf7d0" },
-            { label: "SL손절", val: stats.sl + "건(" + stats.slr + "%)", col: "#991b1b", bg: "#fef2f2", bd: "#fca5a5" },
-          ].map(function (s, i) {
-            return (
-              <div key={i} style={{ textAlign: "center", padding: "8px 6px", borderRadius: 8, background: s.bg, border: "1px solid " + s.bd }}>
-                <div style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700 }}>{s.label}</div>
-                <div style={{ fontSize: 16, fontWeight: 900, color: s.col }}>{s.val}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 데이터 테이블 */}
+      {/* 데이터 리스트 */}
       {pd.length === 0 ? (
         <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>📭</div>
           <div style={{ fontSize: 14 }}>{tab} 등급 데이터 없음</div>
-          {(yearFilter !== "all" || supplyFilter !== "all" || fromD || toD) && <div style={{ fontSize: 11, marginTop: 4, color: "#94a3b8" }}>(필터 조건 변경 또는 초기화)</div>}
         </div>
       ) : (
         <div style={{ borderRadius: 10, border: "1px solid #e2e8f0", overflow: "hidden" }}>
           <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", minWidth: 720, borderCollapse: "collapse", fontSize: 12 }}>
+            <table style={{ width: "100%", minWidth: 600, borderCollapse: "collapse", fontSize: 12 }}>
               <thead>
                 <tr style={{ background: "#f8fafc" }}>
-                  {[
-                    { k: "d", l: "날짜" },
-                    { k: "n", l: "종목" },
-                    { k: "ch", l: "등락" },
-                    { k: "iv", l: "수급" },
-                    { k: "am", l: "거래대금" },
-                    { k: "mc", l: "시총" },
-                    { k: "wk", l: "윗꼬리" },
-                    { k: "ccScore", l: "침" },
-                    { k: "sc", l: "NEO" },
-                    { k: "t", l: "실현" },
-                    { k: "r", l: "결과" },
-                  ].map(function (h) {
-                    return (
-                      <th key={h.k} onClick={function () { toggleSort(h.k); }} style={{ padding: "8px 6px", textAlign: h.k === "n" ? "left" : "center", fontSize: 10, color: "#94a3b8", cursor: "pointer", userSelect: "none", borderBottom: "2px solid #e2e8f0", whiteSpace: "nowrap" }}>
-                        {h.l}{sortBy.c === h.k ? (sortBy.d === "asc" ? " ↑" : " ↓") : ""}
-                      </th>
-                    );
-                  })}
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>날짜</th>
+                  <th style={{ padding: "8px 6px", textAlign: "left", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>종목</th>
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>등락</th>
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>수급</th>
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>침</th>
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>NEO</th>
+                  <th style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8", borderBottom: "2px solid #e2e8f0" }}>실현</th>
                 </tr>
               </thead>
               <tbody>
@@ -989,9 +1032,6 @@ export function ChimchakhaeDB(props) {
                       <td style={{ padding: "8px 6px", fontWeight: 700, fontSize: 12, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.n}</td>
                       <td style={{ padding: "8px 6px", textAlign: "center", color: "#dc2626", fontWeight: 700, fontSize: 11 }}>+{r.ch}%</td>
                       <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, fontWeight: 600, color: r.iv === "기+외" ? "#7c3aed" : r.iv === "외인" ? "#2563eb" : "#94a3b8" }}>{r.iv}</td>
-                      <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#475569" }}>{r.am ? r.am + "억" : "-"}</td>
-                      <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#475569" }}>{r.mc || "-"}</td>
-                      <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#475569" }}>{r.wk != null ? r.wk + "%" : "-"}</td>
                       <td style={{ padding: "8px 6px", textAlign: "center" }}>
                         <span style={{ background: ccCol + "15", color: ccCol, padding: "2px 7px", borderRadius: 8, fontWeight: 800, fontSize: 11 }}>{r.ccScore}</span>
                       </td>
@@ -999,9 +1039,6 @@ export function ChimchakhaeDB(props) {
                         <span style={{ background: "#f1f5f9", color: "#64748b", padding: "2px 6px", borderRadius: 8, fontWeight: 700, fontSize: 10 }}>{r.sc}</span>
                       </td>
                       <td style={{ padding: "8px 6px", textAlign: "center", fontWeight: 800, fontSize: 12, color: r.t > 0 ? "#dc2626" : "#2563eb" }}>{r.t > 0 ? "+" : ""}{r.t}%</td>
-                      <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 9 }}>
-                        <span style={{ padding: "2px 5px", borderRadius: 4, fontWeight: 700, background: r.r === "BOTH" || r.r === "TP1" ? "#dcfce7" : r.r === "SL" ? "#fee2e2" : "#f1f5f9", color: r.r === "BOTH" || r.r === "TP1" ? "#15803d" : r.r === "SL" ? "#991b1b" : "#64748b" }}>{r.r === "BOTH" ? "TP2" : r.r}</span>
-                      </td>
                     </tr>
                   );
                 })}
@@ -1022,7 +1059,6 @@ export function ChimchakhaeDB(props) {
           </div>
         </div>
       )}
-
       {selected && <ChimchakhaeDetailModal item={selected} onClose={function () { setSelected(null); }} />}
     </div>
   );
@@ -1115,6 +1151,80 @@ export function ChimchakhaeDetailModal(props) {
               })}
             </div>
           </div>
+
+          {/* 신호 후 일봉 흐름 (DB 데이터에 ohlc 있을 때만) */}
+          {item.ohlc && Array.isArray(item.ohlc) && item.ohlc.length > 0 && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 6 }}>📈 신호 후 일봉 흐름 ({item.ohlc.length}일)</div>
+              {(function () {
+                const W = 360, H = 130, P = 24;
+                const closes = item.ohlc.map(function (d) { return d.c; });
+                const allVals = closes.slice();
+                if (item.tp1 != null) allVals.push(item.tp1);
+                if (item.sl != null) allVals.push(item.sl);
+                allVals.push(0);
+                let min = Math.min.apply(null, allVals);
+                let max = Math.max.apply(null, allVals);
+                const pad = (max - min) * 0.05 || 1;
+                min -= pad; max += pad;
+                const range = (max - min) || 1;
+                const xStep = item.ohlc.length > 1 ? (W - P * 2) / (item.ohlc.length - 1) : 0;
+                function yPos(v) { return P + (H - P * 2) * (1 - (v - min) / range); }
+                const linePts = item.ohlc.map(function (d, i) { return (P + i * xStep).toFixed(1) + "," + yPos(d.c).toFixed(1); }).join(" ");
+                const areaPts = "0," + yPos(0).toFixed(1) + " " + linePts + " " + (P + (item.ohlc.length - 1) * xStep).toFixed(1) + "," + yPos(0).toFixed(1);
+                const tp1Y = item.tp1 != null ? yPos(item.tp1) : null;
+                const slY = item.sl != null ? yPos(item.sl) : null;
+                const zeroY = yPos(0);
+                const lastClose = item.ohlc[item.ohlc.length - 1].c;
+                const lastY = yPos(lastClose);
+                const lastX = P + (item.ohlc.length - 1) * xStep;
+                return (
+                  <svg width="100%" viewBox={"0 0 " + W + " " + H} style={{ background: "#f8fafc", borderRadius: 8, display: "block" }}>
+                    <defs>
+                      <linearGradient id="ccArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#1e293b" stopOpacity="0.15" />
+                        <stop offset="100%" stopColor="#1e293b" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    {/* 0% 라인 */}
+                    <line x1={P} y1={zeroY} x2={W - P} y2={zeroY} stroke="#cbd5e1" strokeWidth="1" />
+                    <text x={P - 4} y={zeroY + 3} textAnchor="end" fontSize="9" fill="#94a3b8">0%</text>
+                    {/* TP1 라인 */}
+                    {tp1Y != null && (
+                      <g>
+                        <line x1={P} y1={tp1Y} x2={W - P} y2={tp1Y} stroke="#dc2626" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+                        <text x={P - 4} y={tp1Y + 3} textAnchor="end" fontSize="9" fill="#dc2626" fontWeight="700">+{item.tp1}</text>
+                      </g>
+                    )}
+                    {/* SL 라인 */}
+                    {slY != null && (
+                      <g>
+                        <line x1={P} y1={slY} x2={W - P} y2={slY} stroke="#2563eb" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
+                        <text x={P - 4} y={slY + 3} textAnchor="end" fontSize="9" fill="#2563eb" fontWeight="700">{item.sl}</text>
+                      </g>
+                    )}
+                    {/* 영역 + 종가 라인 */}
+                    <polygon points={areaPts} fill="url(#ccArea)" />
+                    <polyline points={linePts} fill="none" stroke="#1e293b" strokeWidth="1.5" />
+                    {/* 마지막 점 */}
+                    <circle cx={lastX} cy={lastY} r="3" fill={lastClose >= 0 ? "#dc2626" : "#2563eb"} />
+                    <text x={lastX - 5} y={lastY - 6} textAnchor="end" fontSize="10" fontWeight="800" fill={lastClose >= 0 ? "#dc2626" : "#2563eb"}>{(lastClose >= 0 ? "+" : "") + lastClose + "%"}</text>
+                  </svg>
+                );
+              })()}
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#94a3b8", marginTop: 4 }}>
+                <span>{item.ohlc[0].d}</span>
+                <span>{item.ohlc[item.ohlc.length - 1].d}</span>
+              </div>
+              {/* 결과 라벨 */}
+              {item.r && (
+                <div style={{ fontSize: 10, color: "#64748b", marginTop: 6, padding: "4px 8px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 6, display: "inline-block" }}>
+                  결과: <strong style={{ color: item.r === "BOTH" || item.r === "TP1" ? "#dc2626" : item.r === "SL" ? "#2563eb" : item.r === "TP1_BE" ? "#f59e0b" : "#64748b" }}>{item.r}</strong>
+                  {typeof item.t === "number" && <span> · 실현 <strong style={{ color: item.t >= 0 ? "#dc2626" : "#2563eb" }}>{(item.t >= 0 ? "+" : "") + item.t + "%"}</strong></span>}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* KIS raw 데이터 */}
           <div style={{ marginBottom: 14 }}>
