@@ -296,7 +296,131 @@ function AIAnalysis({onSave}){
   );
 }
 
-function History({items:h,onClear}){const gC=g=>GI[g]?.c||"#94a3b8";const [sel,setSel]=useState(null);if(h.length===0)return(<div style={{textAlign:"center",padding:"50px 20px",color:"#94a3b8"}}><div style={{fontSize:40,marginBottom:10}}>📋</div><div style={{fontSize:15,fontWeight:600}}>분석 히스토리가 없습니다</div><div style={{fontSize:13,marginTop:4}}>AI분석 탭에서 차트를 분석하면 여기에 쌓입니다</div></div>);return(<div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}><span style={{fontSize:13,color:"#64748b"}}>총 {h.length}건</span><button onClick={onClear} style={{padding:"5px 10px",borderRadius:6,border:"1px solid #fca5a5",background:"#fff",color:"#dc2626",fontSize:11,fontWeight:600,cursor:"pointer"}}>전체 삭제</button></div>{h.map((r,i)=>(<div key={i} onClick={()=>setSel(sel===i?null:i)} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:10,border:"1px solid #e2e8f0",marginBottom:6,background:"#fff"}}><div style={{width:40,height:40,borderRadius:10,background:gC(r.grade)+"12",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontSize:18,fontWeight:900,color:gC(r.grade)}}>{r.grade}</span></div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.name}</div><div style={{fontSize:11,color:"#94a3b8",marginTop:1}}>{r.date} · {r.score}점 · {r.breakType} · {r.investor}</div></div><div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>TP{r.tp1}/{r.tp2}</div><div style={{fontSize:11,color:"#dc2626"}}>SL{r.sl}%</div></div></div>))}{sel!==null&&h[sel]&&(<div style={{margin:"8px 0",padding:12,background:"#f0f9ff",borderRadius:10,border:"1px solid #93c5fd",fontSize:12}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontWeight:800,fontSize:15,color:"#1e40af"}}>{h[sel].grade} {h[sel].score}점</span><span onClick={()=>setSel(null)} style={{cursor:"pointer",color:"#94a3b8",fontSize:18}}>✕</span></div><div style={{color:"#334155",marginBottom:8,lineHeight:1.6,whiteSpace:"pre-wrap"}}>{h[sel].summary}</div>{h[sel].details?.map((dd,di)=>(<div key={di} style={{display:"flex",gap:8,padding:"5px 0",borderBottom:"1px solid #e2e8f0",alignItems:"center"}}><span style={{minWidth:90,color:"#475569",fontWeight:600}}>{dd.item}</span><span style={{minWidth:35,fontWeight:800,textAlign:"center",color:dd.point>0?"#dc2626":"#2563eb"}}>{dd.point>0?"+":""}{dd.point}</span><span style={{color:"#64748b",flex:1}}>{dd.reason}</span></div>))}</div>)}</div>);}
+function History({items:h, onClear}) {
+  const gC = g => GI[g] && GI[g].c || "#94a3b8";
+  const cgC = g => {
+    if (g === "S+") return "#dc2626";
+    if (g === "S") return "#ef4444";
+    if (g === "A+") return "#ea580c";
+    if (g === "A") return "#f59e0b";
+    if (g === "B+") return "#3b82f6";
+    if (g === "B") return "#94a3b8";
+    return "#64748b";
+  };
+  const [sel, setSel] = useState(null);
+  const [detailTab, setDetailTab] = useState("ai");
+
+  if (h.length === 0) return (
+    <div style={{textAlign:"center", padding:"50px 20px", color:"#94a3b8"}}>
+      <div style={{fontSize:40, marginBottom:10}}>📋</div>
+      <div style={{fontSize:15, fontWeight:600}}>분석 히스토리가 없습니다</div>
+      <div style={{fontSize:13, marginTop:4}}>AI분석 탭에서 차트를 분석하면 여기에 쌓입니다</div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10}}>
+        <span style={{fontSize:13, color:"#64748b"}}>총 {h.length}건</span>
+        <button onClick={onClear} style={{padding:"5px 10px", borderRadius:6, border:"1px solid #fca5a5", background:"#fff", color:"#dc2626", fontSize:11, fontWeight:600, cursor:"pointer"}}>전체 삭제</button>
+      </div>
+
+      {h.map((r, i) => {
+        const hasChim = r.chimchakhaeResult && r.chimchakhaeResult.grade;
+        return (
+          <div key={i} onClick={() => {setSel(i); setDetailTab(hasChim && !r.grade ? "chim" : "ai");}} style={{cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:"10px 14px", borderRadius:10, border:"1px solid #e2e8f0", marginBottom:6, background:"#fff"}}>
+            <div style={{width:40, height:40, borderRadius:10, background: gC(r.grade) + "12", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
+              <span style={{fontSize:18, fontWeight:900, color: gC(r.grade)}}>{r.grade}</span>
+            </div>
+            <div style={{flex:1, minWidth:0}}>
+              <div style={{fontWeight:700, fontSize:14, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.name || (r.chimchakhaeResult && r.chimchakhaeResult.stockName) || "-"}</div>
+              <div style={{fontSize:11, color:"#94a3b8", marginTop:1}}>{r.date} · {r.score}점 · {r.breakType || "-"} · {r.investor || "-"}</div>
+            </div>
+            <div style={{textAlign:"right", flexShrink:0, display:"flex", gap:4, flexDirection:"column", alignItems:"flex-end"}}>
+              {hasChim && (
+                <span style={{fontSize:10, padding:"2px 6px", borderRadius:4, background: cgC(r.chimchakhaeResult.grade) + "22", color: cgC(r.chimchakhaeResult.grade), fontWeight:800}}>
+                  침 {r.chimchakhaeResult.grade}
+                </span>
+              )}
+              <div style={{fontSize:11, color:"#dc2626", fontWeight:700}}>TP{r.tp1}/{r.tp2} · SL{r.sl}%</div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 상세 모달 */}
+      {sel !== null && h[sel] && (
+        <div onClick={() => setSel(null)} style={{position:"fixed", top:0, left:0, right:0, bottom:0, background:"rgba(0,0,0,0.6)", zIndex:1000, display:"flex", alignItems:"flex-start", justifyContent:"center", padding:"20px 12px", overflowY:"auto"}}>
+          <div onClick={e => e.stopPropagation()} style={{background:"#fff", borderRadius:14, maxWidth:900, width:"100%", padding:0, position:"relative", marginBottom:40}}>
+            <button onClick={() => setSel(null)} style={{position:"absolute", top:12, right:12, width:30, height:30, borderRadius:"50%", background:"#f1f5f9", border:"none", cursor:"pointer", fontSize:16, fontWeight:700, color:"#64748b", zIndex:2}}>✕</button>
+
+            {h[sel].chimchakhaeResult && h[sel].chimchakhaeResult.grade ? (
+              <div style={{display:"flex", borderBottom:"2px solid #e2e8f0", padding:"16px 16px 0"}}>
+                <button onClick={() => setDetailTab("ai")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="ai" ? "3px solid #1e293b" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="ai" ? 800 : 600, color: detailTab==="ai" ? "#1e293b" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
+                  🤖 AI분석 <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
+                </button>
+                <button onClick={() => setDetailTab("chim")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="chim" ? "3px solid #7c3aed" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="chim" ? 800 : 600, color: detailTab==="chim" ? "#7c3aed" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
+                  🎯 침착해 <span style={{fontSize:11, color: cgC(h[sel].chimchakhaeResult.grade), fontWeight:900, marginLeft:4}}>{h[sel].chimchakhaeResult.grade}</span>
+                </button>
+              </div>
+            ) : null}
+
+            <div style={{padding:"16px"}}>
+              {detailTab === "ai" && (
+                <div>
+                  <div style={{borderRadius:14, border:"2px solid " + gC(h[sel].grade), overflow:"hidden", marginBottom:14}}>
+                    <div style={{background: gC(h[sel].grade), padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8}}>
+                      <div style={{minWidth:0, flex:"1 1 auto"}}>
+                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>NEO-SCORE 14점 분석</div>
+                        <div style={{fontSize:18, fontWeight:900, color:"#fff"}}>{h[sel].name || "-"}</div>
+                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", marginTop:2}}>{h[sel].breakType} · {h[sel].investor} · {h[sel].ema50}</div>
+                        <div style={{fontSize:10, color:"rgba(255,255,255,0.7)", marginTop:3}}>{h[sel].date}</div>
+                      </div>
+                      <div style={{textAlign:"center", flexShrink:0}}>
+                        <div style={{fontSize:32, fontWeight:900, color:"#fff", lineHeight:1}}>{h[sel].grade}</div>
+                        <div style={{fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:3}}>{h[sel].score}점</div>
+                      </div>
+                    </div>
+                    <div style={{padding:"14px 18px", background:"#fff"}}>
+                      <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:10}}>
+                        {[{l:"TP1", v: h[sel].tp1+"%"}, {l:"TP2", v: h[sel].tp2+"%"}, {l:"SL", v: h[sel].sl+"%"}].map((x, idx) => (
+                          <div key={idx} style={{textAlign:"center", padding:8, background:"#f8fafc", borderRadius:8}}>
+                            <div style={{fontSize:10, color:"#94a3b8"}}>{x.l}</div>
+                            <div style={{fontSize:20, fontWeight:900, color:"#dc2626"}}>{x.v}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {h[sel].summary && (
+                        <div style={{fontSize:13, color:"#475569", lineHeight:1.6, marginBottom:10, padding:10, background:"#f8fafc", borderRadius:8}}>{h[sel].summary}</div>
+                      )}
+                      {h[sel].details && (
+                        <div style={{fontSize:12}}>
+                          {h[sel].details.map((d, idx) => (
+                            <div key={idx} style={{padding:"6px 0", borderBottom:"1px solid #f1f5f9"}}>
+                              <div style={{display:"flex", justifyContent:"space-between", marginBottom: d.reason ? 3 : 0}}>
+                                <span style={{color:"#475569", fontWeight:600}}>{d.item}</span>
+                                <span style={{fontWeight:700, color: d.point !== 0 ? "#dc2626" : "#94a3b8"}}>{d.point > 0 ? "+" : ""}{d.point}</span>
+                              </div>
+                              {d.reason && <div style={{color:"#94a3b8", fontSize:11, lineHeight:1.4}}>{d.reason}</div>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {detailTab === "chim" && h[sel].chimchakhaeResult && (
+                <ChimchakhaeResultCard result={h[sel].chimchakhaeResult} stockName={h[sel].name} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function TrackTab({todaySignals}){const [data,setData]=useState(null);const [loading,setLoading]=useState(false);const [saving,setSaving]=useState(false);const [checking,setChecking]=useState(false);const [msg,setMsg]=useState(null);const load=async()=>{setLoading(true);try{const r=await fetch(TRACK_API);const j=await r.json();setData(j);}catch(e){setMsg({t:"e",v:e.message});}setLoading(false);};const saveToday=async()=>{if(!todaySignals||!todaySignals.length)return setMsg({t:"w",v:"오늘 탭에서 스크리닝 먼저 실행"});setSaving(true);try{const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(todaySignals.filter(s=>s.grade!=="X").map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:s.grade,supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});const j=await r.json();setMsg({t:j.added>0?"ok":"w",v:j.github_ok?("✅ "+j.added+"건 저장 (총 "+j.total+"건)"):("⚠️ GITHUB_TOKEN 미설정")});await load();}catch(e){setMsg({t:"e",v:e.message});}setSaving(false);};const checkOutcomes=async()=>{setChecking(true);try{const r=await fetch(TRACK_API+"?check=1&limit=15");const j=await r.json();setData(j);setMsg({t:"ok",v:j.updated+"건 결과 업데이트"});}catch(e){setMsg({t:"e",v:e.message});}setChecking(false);};useEffect(()=>{load();},[]);const RC2=r=>r==="BOTH"?"#dc2626":r==="TP1"?"#2563eb":r&&r.includes("SL")?"#dc2626":r==="OPEN"?"#d97706":"#94a3b8";const gC=g=>GI[g]?.c||"#94a3b8";const mc={ok:"#f0fdf4",w:"#fffbeb",e:"#fef2f2"};const tc={ok:"#dc2626",w:"#d97706",e:"#dc2626"};const bc={ok:"#fee2e2",w:"#fcd34d",e:"#fca5a5"};return(<div><div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}><button onClick={saveToday} disabled={saving} style={{padding:"8px 16px",borderRadius:9,border:"none",background:saving?"#e2e8f0":"#1e293b",color:saving?"#94a3b8":"#fff",fontSize:13,fontWeight:700,cursor:saving?"default":"pointer"}}>{saving?"저장 중...":"📌 오늘 신호 저장"}</button><button onClick={checkOutcomes} disabled={checking} style={{padding:"8px 16px",borderRadius:9,border:"1px solid #e2e8f0",background:"#fff",fontSize:13,fontWeight:700,cursor:checking?"default":"pointer",color:checking?"#94a3b8":"#1e293b"}}>{checking?"체크 중...":"🔄 결과 체크 (KIS)"}</button><button onClick={load} style={{padding:"8px 14px",borderRadius:9,border:"1px solid #e2e8f0",background:"#fff",fontSize:13,cursor:"pointer"}}>새로고침</button></div>{msg&&<div style={{padding:"9px 14px",borderRadius:8,marginBottom:12,background:mc[msg.t],color:tc[msg.t],border:"1px solid "+bc[msg.t],fontSize:13}}>{msg.v}</div>}{loading&&<div style={{textAlign:"center",padding:40,color:"#94a3b8"}}>로딩 중...</div>}{data&&!loading&&(<><div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>{[{l:"전체 신호",v:data.stats.total+"건",c:"#1e293b"},{l:"미결",v:data.stats.open+"건",c:"#d97706"},{l:"승률("+data.stats.resolved+"건)",v:data.stats.win_rate+"%",c:"#dc2626"},{l:"평균수익",v:(data.stats.avg_profit>=0?"+":"")+data.stats.avg_profit+"%",c:data.stats.avg_profit>=0?"#dc2626":"#2563eb"}].map((x,i)=>(<div key={i} style={{textAlign:"center",padding:"10px 6px",borderRadius:10,background:"#f8fafc",border:"1px solid #e2e8f0"}}><div style={{fontSize:10,color:"#94a3b8",marginBottom:3}}>{x.l}</div><div style={{fontSize:20,fontWeight:900,color:x.c}}>{x.v}</div></div>))}</div>{!data.signals.length&&(<div style={{textAlign:"center",padding:40,color:"#94a3b8"}}><div style={{fontSize:32,marginBottom:8}}>📭</div><div style={{fontSize:15,fontWeight:600}}>저장된 신호 없음</div><div style={{fontSize:13,marginTop:4}}>오늘 탭 → 신호저장 버튼 클릭</div>{!data.github_ok&&<div style={{marginTop:10,padding:"8px 14px",borderRadius:8,background:"#fffbeb",color:"#d97706",fontSize:12,border:"1px solid #fcd34d"}}>⚠️ Vercel 환경변수 GITHUB_TOKEN 추가 필요</div>}</div>)}{data.signals.map((s,i)=>{const oc=s.outcome;const rc=oc?RC2(oc.result):"#94a3b8";const pc=oc?(oc.profit>=0?"#dc2626":"#2563eb"):"#d97706";return(<div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"11px 14px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:6,background:"#fff"}}><div style={{width:38,height:38,borderRadius:9,background:gC(s.grade)+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:16,fontWeight:900,color:gC(s.grade)}}>{s.grade}</span></div><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontWeight:700,fontSize:14}}>{s.name}</span><span style={{fontSize:11,color:"#dc2626",fontWeight:700}}>+{s.rate}%</span><span style={{fontSize:10,color:"#94a3b8"}}>{s.signal_date}</span></div><div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>{s.score}점 · {s.supply} · {s.market}{oc&&oc.max_gain!==undefined?" · 최대↑+"+oc.max_gain+"% 최대↓"+oc.max_drop+"%":""}</div></div><div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:14,fontWeight:900,color:pc}}>{oc?(oc.profit>=0?"+":"")+oc.profit+"%":"—"}</div><div style={{padding:"1px 6px",borderRadius:5,background:rc+"15",color:rc,fontSize:11,fontWeight:700,marginTop:2}}>{oc?oc.result:"미결"}</div></div></div>);})}</>)}</div>);}
 
