@@ -296,7 +296,7 @@ function AIAnalysis({onSave}){
   );
 }
 
-function History({items:h, onClear}) {
+function History({items:h, onClear, onDelete}) {
   const gC = g => GI[g] && GI[g].c || "#94a3b8";
   const cgC = g => {
     if (g === "S+") return "#dc2626";
@@ -344,6 +344,7 @@ function History({items:h, onClear}) {
               )}
               <div style={{fontSize:11, color:"#dc2626", fontWeight:700}}>TP{r.tp1}/{r.tp2} · SL{r.sl}%</div>
             </div>
+            <button onClick={(e) => {e.stopPropagation(); if(window.confirm("이 항목을 삭제할까요?")) onDelete(i);}} style={{flexShrink:0, width:30, height:30, borderRadius:"50%", border:"1px solid #fca5a5", background:"#fff", color:"#dc2626", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", padding:0}} title="삭제">🗑</button>
           </div>
         );
       })}
@@ -433,6 +434,7 @@ export default function App(){
   useEffect(()=>{fetch(HIST_URL).then(r=>r.json()).then(d=>{if(!d||!Array.isArray(d.history))return;window.__historySha=d.sha;if(d.history.length===0){try{const local=JSON.parse(localStorage.getItem("neo_history")||"[]");if(local.length>0){fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:local})}).then(r=>r.json()).then(d2=>{if(d2&&d2.sha)window.__historySha=d2.sha}).catch(()=>{});return;}}catch(_){}}setHistory(d.history);try{localStorage.setItem("neo_history",JSON.stringify(d.history))}catch(_){}}).catch(()=>{})},[]);
   const saveHistory=useCallback((entry)=>{setHistory(prev=>{const next=[entry,...prev];localStorage.setItem("neo_history",JSON.stringify(next));fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:next,sha:window.__historySha})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{});return next});setPage("history")},[]);
   const clearHistory=useCallback(()=>{setHistory([]);localStorage.removeItem("neo_history");fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:[]})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{})},[]);
+  const deleteHistoryItem=useCallback((idx)=>{setHistory(prev=>{const next=prev.filter((_,i)=>i!==idx);localStorage.setItem("neo_history",JSON.stringify(next));fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:next,sha:window.__historySha})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{});return next})},[]);
   return(
     <div style={{background:"#fff",minHeight:"100vh",fontFamily:"-apple-system,'Pretendard',sans-serif",color:"#1e293b",fontSize:15,paddingBottom:68}}>
       <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
@@ -441,7 +443,7 @@ export default function App(){
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals}/>}
         {page==="db"&&<SignalDB/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
-        {page==="history"&&<History items={history} onClear={clearHistory}/>}
+        {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="chimchakhae"&&<ChimchakhaeAI/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}
