@@ -4,6 +4,213 @@
     "grade": "A",
     "score": 8,
     "change": 19.71,
+    "upperWick": 0.35,
+    "amount": 387,
+    "investor": "외인+기관",
+    "breakType": "ATH",
+    "ema50": "상승",
+    "tp1": 15,
+    "tp2": 50,
+    "sl": 13,
+    "summary": "[A등급] 사상최고가 돌파와 19.71% 강력한 상승세로 종가돌파매매 패턴을 완벽 충족. 외인+599,816주, 기관+135,676주 동시 순매수로 기관투자자들의 강력한 매집 확인. 윗꼬리 0.35%로 매우 낮고 거래대금 387억원으로 적정 수준이나, 코스닥이 아닌 코스피 종목으로 코스닥 가점 없음",
+    "details": [
+      {
+        "item": "기관+외인동시",
+        "point": 3,
+        "reason": "외인 +599,816주, 기관 +135,676주 동시 순매수"
+      },
+      {
+        "item": "윗꼬리0.5%이하",
+        "point": 2,
+        "reason": "윗꼬리 0.35%로 매우 낮음"
+      },
+      {
+        "item": "거래대금200억이하",
+        "point": 0,
+        "reason": "387억원으로 200억 초과"
+      },
+      {
+        "item": "등락률20%이상",
+        "point": 1,
+        "reason": "19.71%로 20% 미만"
+      },
+      {
+        "item": "코스닥",
+        "point": 0,
+        "reason": "코스��� 종목"
+      },
+      {
+        "item": "사상최고가",
+        "point": 1,
+        "reason": "연중최고 115,800원 돌파"
+      },
+      {
+        "item": "소폭돌파",
+        "point": 1,
+        "reason": "19.71%로 적정 돌파 폭"
+      }
+    ],
+    "date": "2026-04-25",
+    "images": 6,
+    "chimchakhaeResult": {
+      "stockName": "HD현대마린엔진",
+      "stockCode": "071970",
+      "imagesAnalyzed": [
+        {
+          "type": "일봉차트",
+          "summary": "115,400원, +19.71% 급등, 장기 저점 돌파 후 강한 상승세"
+        },
+        {
+          "type": "수급현황",
+          "summary": "외국인 대량 매도(-701,593), 기관 순매수(+599,816), 개인 순매수(+135,676)"
+        },
+        {
+          "type": "실시간수급",
+          "summary": "장 후반 외국인 강한 매도세, 기관 매수 지속"
+        },
+        {
+          "type": "기본정보",
+          "summary": "PER 23.71, PBR 12.65, 외국인보유율 19.75%"
+        },
+        {
+          "type": "재무분석",
+          "summary": "안정성 지표 양호, 성장성 개선 중"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "115,400",
+        "changeRate": "+19.71%",
+        "tradingValue": "확인불가",
+        "foreignLate": "-701,593",
+        "instLate": "+599,816",
+        "progLate": "+135,676",
+        "threeDaysSupply": "혼조",
+        "sector": "조선",
+        "sectorRank": "확인불가",
+        "chartPattern": "장기저점돌파",
+        "breakoutType": "중장기매물대돌파",
+        "maArrangement": "정배열전환",
+        "volumeSurge": "급증",
+        "closeType": "상한가급등",
+        "material": "해운/조선업황호전",
+        "materialType": "정책/업황"
+      },
+      "engines": {
+        "supply": {
+          "score": 15,
+          "max": 35,
+          "breakdown": {
+            "lateHours": 0,
+            "consistency": 5,
+            "volume": 10
+          },
+          "reasoning": "장 후반 외국인 대량 매도로 동반매수 없음. 기관은 지속 매수하나 외국인 매도 압박 존재. 수급 일관성은 혼조 상태"
+        },
+        "market": {
+          "score": 18,
+          "max": 25,
+          "breakdown": {
+            "lead": 7,
+            "duration": 7,
+            "strength": 4
+          },
+          "reasoning": "조선업 정책 지원과 수주 호조로 섹터 상승. 중장기 업황 개선 기대감 있으나 섹터 순위 확인 불가"
+        },
+        "chart": {
+          "score": 23,
+          "max": 25,
+          "breakdown": {
+            "breakout": 10,
+            "ma": 5,
+            "volume": 5,
+            "close": 3
+          },
+          "reasoning": "68,200원 장기 저점에서 강력한 반등. 19.71% 급등으로 중장기 매물대 돌파. 거래량 급증하며 정배열 전환 중. 다만 고가권 진입으로 캔들 평가는 보통"
+        },
+        "material": {
+          "score": 13,
+          "max": 15,
+          "breakdown": {
+            "type": 9,
+            "nextDay": 4
+          },
+          "reasoning": "조선업 호황 및 정책 지원 재료는 중장기 지속성 있음. 다만 급등 후 익일 모멘텀은 외국인 매도 우려로 제한적"
+        }
+      },
+      "supplyZone": {
+        "level": "long",
+        "levelLabel": "장기 매물대",
+        "period": "2025년 하반기~2026년 상반기",
+        "thickness": "heavy",
+        "thicknessLabel": "96,000~100,000원대 두꺼운 매물대 형성",
+        "status": "돌파",
+        "breakoutQuality": "강력한 돌파봉",
+        "detail": "68,200원 장기 저점에서 반등하여 96,000-100,000원 구간의 두꺼운 매물대를 19.71% 급등으로 돌파했습니다. 이는 약 6개월간 형성된 중요한 저항선을 뚫은 것으로 의미가 큽니다. 115,400원까지 상승하며 매물대를 완전히 상회했고, 거래량도 급증하며 돌파의 신뢰도가 높습니다."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "차트에서 RSI 지표 확인 불가"
+        },
+        "stochastic": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "스토캐스틱 지표 확인 불가"
+        },
+        "bollinger": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "볼린저밴드 확인 불가"
+        },
+        "ichimoku": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "일목균형표 ��인 불가"
+        },
+        "envelope": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "엔벨로프 확인 불가"
+        },
+        "overallTone": "neutral",
+        "summary": "보조지표들이 차트에서 확인되지 않아 기술적 판단에 제약이 있습니다."
+      },
+      "totalScore": 69,
+      "grade": "A",
+      "verdict": "조건부 매수",
+      "recommendedWeight": 12,
+      "nextDayRiseProbability": 65,
+      "confidenceScore": 78,
+      "keyReasons": [
+        "장기 저점 68,200원에서 강력한 반등",
+        "중장기 매물대 96,000-100,000원 구간 완전 돌파",
+        "19.71% 급등으로 정배열 전환 중",
+        "조선업 호황 및 정책 지원 재료",
+        "기관 지속적 순매수 진행"
+      ],
+      "risks": [
+        "외국인 대량 매도(-70만주) 압박 지속",
+        "급등 후 고가권 진입으로 단기 조정 가능성"
+      ],
+      "strategy": {
+        "entry": "115,000-117,000원 구간 분할 매수",
+        "exit": "125,000원 1차, 135,000원 2차 목표",
+        "stopLoss": "108,000원 매물대 하단 이탈 시",
+        "hold": "중장기 조선업 호황 지속 시 보유",
+        "entryPrice": 116000,
+        "tp1Price": 125000,
+        "tp2Price": 135000,
+        "slPrice": 108000
+      },
+      "chimchakhaeAnalysis": "HD현대마린엔진은 장기 침체 구간에서 벗어나며 의미 있는 돌파를 보여주고 있습니다. 68,200원 저점 대비 69% 상승하며 중요한 매물대를 뚫었고, 조선업 호황이라는 펀더멘털도 뒷받침하고 있어 긍정적입니다. 다만 급등 후 외국인 대량 매도가 우려스럽고, 기관 매수가 이를 상쇄하고 있지만 단기적으론 조정 압력이 존재합니다. 현재 고가권에서 매수하기보단 소폭 조정 시 분할 진입하는 것이 안전하며, 중장기 관점에서 조선업 사이클 상승기에 맞춰 보유 전략을 권합니다. 108,000원 매물대 하단 이탈 시엔 과감한 손절이 필요합니다."
+    }
+  },
+  {
+    "name": "HD현대마린엔진",
+    "grade": "A",
+    "score": 8,
+    "change": 19.71,
     "upperWick": "약 1%",
     "amount": 387,
     "investor": "외인+기관",
