@@ -7,8 +7,7 @@ import {R_2024} from "./data_2024.js";
 import {R_2023} from "./data_2023.js";
 import {R_2022} from "./data_2022.js";
 import {R_2021} from "./data_2021.js";
-import ChimchakhaeAI from "./ChimchakhaeAI.jsx";
-import { analyzeChimchakhae, ChimchakhaeResultCard } from "./ChimchakhaeHelpers.jsx";
+import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, ChimchakhaeDB } from "./ChimchakhaeHelpers.jsx";
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
 const D=R.map(r=>({n:r[0],d:"20"+r[1],m:r[2],ch:r[3],mc:r[4],iv:r[5],sc:r[6],g:(()=>{const s=r[4]||"";const m=s.match(/(\d+(?:\.\d+)?)/);const n=m?+m[1]:0;const a=s.includes("兆")||s.includes("조")?n*10000:n;return a>=2500?"S":a>=500?"A":a>=50?"B":"X"})(),bd:r[8],wk:r[9],am:r[10],pk:r[11],dd:r[12],tp1:r[13],tp2:r[14],sl:r[15],h1:r[16],h2:r[17],t:r[18],r:r[19],hd1:r[20],hd2:r[21],etf:r[22],gp:r[23],h60:r[24],h120:r[25],vc:r[26],ema:r[27],tp1d:r[28]||"",sld:r[29]||"",tp2d:r[30]||"",exd:r[31]||"",tp1dy:r[32]||0,sldy:r[33]||0,exdy:r[34]||0,bed:r[35]||"",bedy:r[36]||0,tp12dy:r[37]||0,ohlc:PF(r[38]||"")}));
 const XN=1061;
@@ -442,15 +441,16 @@ export default function App(){
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0}}>NEO-SCORE</h1><p style={{fontSize:12,color:"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals}/>}
         {page==="db"&&<SignalDB/>}
+        {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
+        {page==="ccdb"&&<ChimchakhaeDB records={D}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
-        {page==="chimchakhae"&&<ChimchakhaeAI/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:920,width:"100%"}}>
-          {[{id:"today",label:"오늘",icon:"🔥"},{id:"db",label:"시그널DB",icon:"📊"},{id:"ai",label:"AI분석",icon:"🤖"},{id:"history",label:"히스토리",icon:"📋",badge:history.length},{id:"chimchakhae",label:"침착해",icon:"🎯"}].map(t=>(
+          {[{id:"today",label:"오늘",icon:"🔥"},{id:"db",label:"시그널DB",icon:"📊"},{id:"cctoday",label:"침오늘",icon:"🎯"},{id:"ccdb",label:"침DB",icon:"💎"},{id:"ai",label:"AI분석",icon:"🤖"},{id:"history",label:"히스토리",icon:"📋",badge:history.length}].map(t=>(
             <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:1,padding:"8px 0 6px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:1,position:"relative"}}>
               <span style={{fontSize:18}}>{t.icon}</span>
               <span style={{fontSize:10,fontWeight:page===t.id?700:500,color:page===t.id?"#1e293b":"#94a3b8"}}>{t.label}</span>
