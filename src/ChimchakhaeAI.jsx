@@ -887,7 +887,7 @@ export default function ChimchakhaeAI() {
   };
 
   const S = {
-    root: { minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", padding: "24px 20px" },
+    root: { minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif", padding: "16px 12px" },
     maxWidth: { maxWidth: "1180px", margin: "0 auto" },
     header: { display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "24px", paddingBottom: "20px", borderBottom: "1px solid " + C.border },
     titleBox: { display: "flex", alignItems: "center", gap: "12px" },
@@ -901,7 +901,7 @@ export default function ChimchakhaeAI() {
     imageItem: { position: "relative", borderRadius: "8px", overflow: "hidden", border: "1px solid " + C.border, aspectRatio: "16/10", background: C.card },
     removeBtn: { position: "absolute", top: "6px", right: "6px", width: "24px", height: "24px", borderRadius: "50%", background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", cursor: "pointer", fontSize: "14px", fontWeight: 700 },
     imageName: { position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 8px", background: "rgba(0,0,0,0.7)", fontSize: "10px", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-    inputRow: { display: "grid", gridTemplateColumns: "1fr 2fr", gap: "12px", marginBottom: "16px" },
+    inputRow: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "10px", marginBottom: "16px" },
     input: { background: C.card, border: "1px solid " + C.border, borderRadius: "10px", padding: "12px 14px", color: C.text, fontSize: "14px", outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
     btnPrimary: { background: "linear-gradient(135deg, #ff4757 0%, #a855f7 100%)", color: "#fff", border: "none", borderRadius: "12px", padding: "16px 24px", fontSize: "15px", fontWeight: 800, cursor: "pointer", width: "100%", fontFamily: "inherit", letterSpacing: "0.3px" },
     btnPrimaryDisabled: { opacity: 0.5, cursor: "not-allowed" },
@@ -910,14 +910,14 @@ export default function ChimchakhaeAI() {
     analyzingBox: { background: C.card, border: "1px solid " + C.border, borderRadius: "14px", padding: "40px 20px", textAlign: "center" },
     loader: { width: "48px", height: "48px", border: "3px solid " + C.border, borderTopColor: C.blue, borderRadius: "50%", margin: "0 auto 16px", animation: "spin 0.8s linear infinite" },
     heroCard: { background: "linear-gradient(135deg, #12161f 0%, #1a1f2b 100%)", border: "1px solid " + C.borderLight, borderRadius: "16px", padding: "28px", marginBottom: "16px" },
-    heroGrid: { display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "24px", alignItems: "center" },
+    heroGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px", alignItems: "center" },
     metricLabel: { fontSize: "11px", color: C.textDim, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", marginBottom: "8px" },
     bigNum: { fontSize: "64px", fontWeight: 900, lineHeight: 1, letterSpacing: "-2px", fontFamily: "'JetBrains Mono', 'IBM Plex Mono', monospace" },
     bigNumMed: { fontSize: "40px", fontWeight: 900, lineHeight: 1, letterSpacing: "-1px", fontFamily: "'JetBrains Mono', monospace" },
     gradeBadge: { display: "inline-block", padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 800, marginTop: "12px" },
     section: { background: C.card, border: "1px solid " + C.border, borderRadius: "14px", padding: "22px", marginBottom: "16px" },
     sectionTitle: { fontSize: "14px", fontWeight: 800, marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px", letterSpacing: "-0.2px" },
-    enginesGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" },
+    enginesGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "10px" },
     engineCard: { background: C.cardRaised, border: "1px solid " + C.border, borderRadius: "10px", padding: "16px" },
     engineHead: { display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" },
     engineName: { fontSize: "12px", color: C.textDim, fontWeight: 700 },
@@ -940,7 +940,7 @@ export default function ChimchakhaeAI() {
     imageSummary: { padding: "10px 14px", background: C.cardRaised, borderRadius: "8px", marginBottom: "6px", fontSize: "12px", display: "flex", gap: "10px", alignItems: "center" },
     imageTag: { fontSize: "10px", padding: "2px 8px", background: C.blueSoft, color: C.blue, borderRadius: "4px", fontWeight: 700, flexShrink: 0 },
     supplyZoneCard: { background: C.cardRaised, border: "1px solid " + C.border, borderRadius: "10px", padding: "18px" },
-    supplyZoneGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "14px" },
+    supplyZoneGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "8px", marginBottom: "14px" },
     supplyZoneStatCell: { padding: "12px", background: C.bg, borderRadius: "8px", textAlign: "center" },
     indicatorGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px", marginBottom: "14px" },
     indicatorCard: { padding: "14px", borderRadius: "10px", border: "1px solid " + C.border },
@@ -1075,7 +1075,7 @@ export default function ChimchakhaeAI() {
         <div style={S.section}>
           <div style={S.sectionTitle}>🔬 4엔진 종합 분석</div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "20px", alignItems: "center", marginBottom: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", alignItems: "center", marginBottom: "20px" }}>
             <div style={{ background: C.cardRaised, borderRadius: "12px", padding: "16px", border: "1px solid " + C.border }}>
               <RadarChart engines={res.engines} color={gradeColor(res.grade)} />
             </div>
@@ -1405,7 +1405,7 @@ export default function ChimchakhaeAI() {
                 <span>📊 등급표 + 내 실전 통계</span>
                 <span style={{ fontSize: "10px", color: C.textMuted, fontWeight: 500 }}>거래완료 기록 자동 산출</span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "5px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: "6px" }}>
                 {[
                   { g: "S+", range: "90+", weight: "25-30%", color: "#ff1744" },
                   { g: "S", range: "80-89", weight: "20-25%", color: "#ff4757" },
@@ -1568,7 +1568,7 @@ export default function ChimchakhaeAI() {
               <div>
                 <div style={S.section}>
                   <div style={S.sectionTitle}>📊 복기 통계</div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "12px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "10px" }}>
                     {(function () {
                       const wins = records.filter(function (r) { return r.actualResult === "win"; }).length;
                       const losses = records.filter(function (r) { return r.actualResult === "loss"; }).length;
@@ -1657,7 +1657,7 @@ export default function ChimchakhaeAI() {
             <div style={Object.assign({}, S.section, { border: "1px solid " + C.purple, background: C.purpleSoft })}>
               <div style={S.sectionTitle}>💼 매매 & 복기 기록</div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: "10px", marginBottom: "14px" }}>
                 <div>
                   <div style={{ fontSize: "11px", color: C.textDim, fontWeight: 700, marginBottom: "4px" }}>매수가 (원)</div>
                   <div style={{ display: "flex", gap: "4px" }}>
@@ -1770,7 +1770,7 @@ export default function ChimchakhaeAI() {
                       </div>
                     )}
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "8px", marginBottom: "12px" }}>
                       {detailRecord.reviewReport.whatWorked && (
                         <div style={{ padding: "12px", background: C.greenSoft, borderRadius: "8px", borderLeft: "3px solid " + C.green }}>
                           <div style={{ fontSize: "11px", fontWeight: 700, color: C.green, marginBottom: "6px" }}>✅ 맞은 판단</div>

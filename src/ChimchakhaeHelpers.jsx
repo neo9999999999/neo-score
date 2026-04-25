@@ -155,7 +155,7 @@ function RadarChart(props) {
     { x: cx - R - 14, y: cy + 4, anchor: "end" },
   ];
   return (
-    <svg viewBox="0 0 280 280" style={{ width: "100%", maxWidth: "280px", height: "auto", display: "block", margin: "0 auto" }}>
+    <svg viewBox="0 0 280 280" style={{ width: "100%", maxWidth: "260px", height: "auto", display: "block", margin: "0 auto" }}>
       <polygon points={gridStr(1.0)} fill="none" stroke="#cbd5e1" strokeWidth="1" />
       <polygon points={gridStr(0.75)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
       <polygon points={gridStr(0.5)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
@@ -208,7 +208,7 @@ export function ChimchakhaeResultCard(props) {
       {/* 본문 */}
       <div style={{ padding: "16px" }}>
         {/* 비중 / 상승확률 / 신뢰도 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(95px,1fr))", gap: 6, marginBottom: 14 }}>
           <div style={{ textAlign: "center", padding: 10, background: "#f8fafc", borderRadius: 8 }}>
             <div style={{ fontSize: 10, color: "#64748b", fontWeight: 700 }}>추천비중</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: res.recommendedWeight >= 15 ? color : "#94a3b8" }}>{res.recommendedWeight}<span style={{ fontSize: 14 }}>%</span></div>
@@ -235,7 +235,7 @@ export function ChimchakhaeResultCard(props) {
         {strat.entryPrice && (
           <div style={{ background: "#fef3c7", border: "1px solid #fbbf24", borderRadius: 10, padding: 12, marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 800, color: "#92400e", marginBottom: 8 }}>💰 가격 액션 플랜</div>
-            <div style={{ display: "grid", gridTemplateColumns: strat.tp2Price ? "repeat(4,1fr)" : "repeat(3,1fr)", gap: 6 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(80px,1fr))", gap: 6 }}>
               <div style={{ textAlign: "center", padding: 8, background: "#fff", borderRadius: 6 }}>
                 <div style={{ fontSize: 9, color: "#64748b", fontWeight: 700 }}>진입</div>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#1e293b", fontFamily: "'JetBrains Mono', monospace" }}>{fmtPrice(strat.entryPrice)}</div>
