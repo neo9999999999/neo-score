@@ -663,6 +663,7 @@ export function ChimchakhaeToday(props) {
   const [loading, setLoading] = React.useState(true);
   const [err, setErr] = React.useState(null);
   const [sortBy, setSortBy] = React.useState("score");
+  const [selected, setSelected] = React.useState(null);
 
   const load = React.useCallback(async function () {
     setLoading(true); setErr(null);
@@ -681,7 +682,7 @@ export function ChimchakhaeToday(props) {
       // 침착해 점수 매핑
       const enriched = uniq.map(function (s) {
         const cc = calcChimchakhaeScore(s);
-        return Object.assign({}, s, { ccScore: cc.score, ccGrade: cc.grade, ccWeight: cc.weight, ccBreakdown: cc.breakdown });
+        return Object.assign({}, s, { ccScore: cc.score, ccGrade: cc.grade, ccWeight: cc.weight, ccBreakdown: cc.breakdown, ccNote: cc.note });
       });
       setData({ date: j.date, time: j.time, signals: enriched });
     } catch (e) { setErr(e.message); }
@@ -760,7 +761,7 @@ export function ChimchakhaeToday(props) {
       ) : sorted.map(function (s, i) {
         const col = chimchakhaeGradeColor(s.ccGrade);
         return (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 12, border: "1px solid #e2e8f0", marginBottom: 6, background: "#fff" }}>
+          <div key={i} onClick={function () { setSelected(s); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 12, border: "1px solid #e2e8f0", marginBottom: 6, background: "#fff", cursor: "pointer", transition: "border-color 0.15s" }}>
             <div style={{ width: 46, height: 46, borderRadius: 10, background: col + "15", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, flexDirection: "column" }}>
               <span style={{ fontSize: 14, fontWeight: 900, color: col, lineHeight: 1 }}>{s.ccGrade}</span>
               <span style={{ fontSize: 9, color: col, fontWeight: 700, marginTop: 2 }}>{s.ccScore}</span>
@@ -779,6 +780,7 @@ export function ChimchakhaeToday(props) {
           </div>
         );
       })}
+      {selected && <ChimchakhaeDetailModal item={selected} onClose={function () { setSelected(null); }} />}
     </div>
   );
 }
@@ -791,6 +793,7 @@ export function ChimchakhaeDB(props) {
   const [tab, setTab] = React.useState("S+");
   const [pg, setPg] = React.useState(0);
   const PP = 20;
+  const [selected, setSelected] = React.useState(null);
 
   // 모든 레코드에 침착해 점수 매핑
   const enriched = React.useMemo(function () {
@@ -805,7 +808,7 @@ export function ChimchakhaeDB(props) {
         wick: r.wk || 0,
       };
       const cc = calcChimchakhaeScore(fakeSignal);
-      return Object.assign({}, r, { ccScore: cc.score, ccGrade: cc.grade, ccWeight: cc.weight });
+      return Object.assign({}, r, { ccScore: cc.score, ccGrade: cc.grade, ccWeight: cc.weight, ccBreakdown: cc.breakdown, ccNote: cc.note });
     });
   }, [D]);
 
@@ -867,7 +870,7 @@ export function ChimchakhaeDB(props) {
                 {pd.map(function (r, i) {
                   const ccCol = chimchakhaeGradeColor(r.ccGrade);
                   return (
-                    <tr key={i} style={{ borderBottom: "1px solid #f1f5f9", background: "#fff" }}>
+                    <tr key={i} onClick={function () { setSelected(r); }} style={{ borderBottom: "1px solid #f1f5f9", background: "#fff", cursor: "pointer" }} onMouseEnter={function (e) { e.currentTarget.style.background = "#f8fafc"; }} onMouseLeave={function (e) { e.currentTarget.style.background = "#fff"; }}>
                       <td style={{ padding: "8px 6px", textAlign: "center", fontSize: 10, color: "#94a3b8" }}>{r.d ? r.d.slice(2) : "-"}</td>
                       <td style={{ padding: "8px 6px", fontWeight: 700, fontSize: 12, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.n}</td>
                       <td style={{ padding: "8px 6px", textAlign: "center", color: "#dc2626", fontWeight: 700, fontSize: 11 }}>+{r.ch}%</td>
@@ -899,6 +902,130 @@ export function ChimchakhaeDB(props) {
           </div>
         </div>
       )}
+      {selected && <ChimchakhaeDetailModal item={selected} onClose={function () { setSelected(null); }} />}
     </div>
   );
 }
+
+// ============================================================
+// 침착해 종목 상세 모달 (오늘/DB 공용)
+// ============================================================
+export function ChimchakhaeDetailModal(props) {
+  const item = props.item;
+  const onClose = props.onClose;
+  if (!item) return null;
+  const col = chimchakhaeGradeColor(item.ccGrade);
+  const bd = item.ccBreakdown || {};
+
+  // 종목명 (today: name / db: n)
+  const stockName = item.name || item.n || "-";
+  const change = item.change != null ? item.change : item.ch;
+  const market = item.market || item.m || "-";
+  const investor = item.investor || item.iv || "-";
+  const amount = item.amount != null ? item.amount : item.am;
+  const wick = item.wick != null ? item.wick : item.wk;
+  const code = item.code || "";
+
+  // 4엔진 항목
+  const engines = [
+    { label: "수급", color: "#dc2626", data: bd.supply, sub: "동반매수+거래대금" },
+    { label: "시황", color: "#3b82f6", data: bd.market, sub: "거래대금 강도" },
+    { label: "차트", color: "#22c55e", data: bd.chart, sub: "등락률+윗꼬리" },
+    { label: "재료", color: "#f59e0b", data: bd.material, sub: "코스닥+거래대금" },
+  ];
+
+  return (
+    <div onClick={onClose} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.6)", zIndex: 1000, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "20px 12px", overflowY: "auto" }}>
+      <div onClick={function (e) { e.stopPropagation(); }} style={{ background: "#fff", borderRadius: 14, maxWidth: 720, width: "100%", padding: 0, position: "relative", marginBottom: 40 }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 30, height: 30, borderRadius: "50%", background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 16, fontWeight: 700, color: "#64748b", zIndex: 2 }}>✕</button>
+
+        {/* 헤더 */}
+        <div style={{ background: col, padding: "16px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8, borderRadius: "14px 14px 0 0" }}>
+          <div style={{ minWidth: 0, flex: "1 1 auto" }}>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", fontWeight: 700 }}>침착해 환산 분석</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: "#fff", marginTop: 2 }}>{stockName}{code ? <span style={{ fontSize: 12, fontWeight: 600, marginLeft: 6, opacity: 0.85 }}>{code}</span> : null}</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>{market} · {investor} · 거래대금 {amount}억{wick != null ? " · 윗꼬리 " + wick + "%" : ""}</div>
+          </div>
+          <div style={{ textAlign: "center", flexShrink: 0 }}>
+            <div style={{ fontSize: 32, fontWeight: 900, color: "#fff", lineHeight: 1 }}>{item.ccGrade}</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 3 }}>{item.ccScore}/100</div>
+          </div>
+        </div>
+
+        {/* 본문 */}
+        <div style={{ padding: "16px" }}>
+          {/* 추천비중 + 등락 */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px,1fr))", gap: 6, marginBottom: 14 }}>
+            <div style={{ textAlign: "center", padding: 10, background: "#f8fafc", borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: "#64748b", fontWeight: 700 }}>추천비중</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: item.ccWeight >= 15 ? col : "#94a3b8" }}>{item.ccWeight}<span style={{ fontSize: 14 }}>%</span></div>
+            </div>
+            <div style={{ textAlign: "center", padding: 10, background: "#f8fafc", borderRadius: 8 }}>
+              <div style={{ fontSize: 10, color: "#64748b", fontWeight: 700 }}>등락률</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: "#dc2626" }}>+{change}<span style={{ fontSize: 14 }}>%</span></div>
+            </div>
+            {item.t != null && (
+              <div style={{ textAlign: "center", padding: 10, background: "#f8fafc", borderRadius: 8 }}>
+                <div style={{ fontSize: 10, color: "#64748b", fontWeight: 700 }}>실현손익</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: item.t > 0 ? "#dc2626" : "#2563eb" }}>{item.t > 0 ? "+" : ""}{item.t}<span style={{ fontSize: 14 }}>%</span></div>
+              </div>
+            )}
+          </div>
+
+          {/* 4엔진 breakdown */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 6 }}>🎯 4엔진 환산 점수</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(135px,1fr))", gap: 6 }}>
+              {engines.map(function (e) {
+                if (!e.data) return null;
+                const pct = e.data.max > 0 ? (e.data.score / e.data.max) * 100 : 0;
+                return (
+                  <div key={e.label} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, color: "#64748b", fontWeight: 700 }}>{e.label}</span>
+                      <span><span style={{ fontSize: 16, fontWeight: 900, color: e.color, fontFamily: "'JetBrains Mono', monospace" }}>{e.data.score}</span><span style={{ fontSize: 10, color: "#94a3b8" }}>/{e.data.max}</span></span>
+                    </div>
+                    <div style={{ height: 4, background: "#e2e8f0", borderRadius: 2, marginBottom: 4, overflow: "hidden" }}>
+                      <div style={{ width: pct + "%", height: "100%", background: e.color }} />
+                    </div>
+                    <div style={{ fontSize: 9, color: "#94a3b8" }}>{e.sub}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* KIS raw 데이터 */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 6 }}>📋 KIS 데이터</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px,1fr))", gap: 0, border: "1px solid #e2e8f0", borderRadius: 8, overflow: "hidden" }}>
+              {[
+                ["등락률", change != null ? "+" + change + "%" : "-"],
+                ["거래대금", amount != null ? amount + "억" : "-"],
+                ["수급", investor],
+                ["시장", market],
+                ["윗꼬리", wick != null ? wick + "%" : "-"],
+                item.mc ? ["시총", item.mc] : null,
+                item.sc != null ? ["NEO 점수", item.sc] : null,
+                item.d ? ["날짜", item.d] : null,
+              ].filter(Boolean).map(function (kv, i) {
+                return (
+                  <div key={i} style={{ padding: "8px 10px", borderBottom: "1px solid #f1f5f9", borderRight: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", gap: 6, fontSize: 11 }}>
+                    <span style={{ color: "#94a3b8" }}>{kv[0]}</span>
+                    <span style={{ color: "#1e293b", fontWeight: 700 }}>{kv[1]}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 안내 */}
+          <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 8, padding: 10, fontSize: 11, color: "#92400e", lineHeight: 1.5 }}>
+            <strong>ℹ️ 간이 환산 점수입니다.</strong> 매물대 돌파, 정배열, 종가 캔들, 재료 타입은 KIS API 데이터로 판단 불가합니다. 정확한 침착해 분석은 차트 이미지 업로드 → 🤖 AI분석 탭을 이용하세요.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
