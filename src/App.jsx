@@ -342,8 +342,16 @@ function AIAnalysis({onSave}){
   };
 
   const save = () => {
-    if (!aiResult) return;
-    onSave({...aiResult, date: new Date().toISOString().slice(0,10), images: imgs.length, chimchakhaeResult: chimResult, judojuResult: jdResult});
+    // AI/침착해/주도주 중 하나라도 결과 있으면 저장 가능
+    if (!aiResult && !chimResult && !jdResult) return;
+    // aiResult가 없으면 base에 침착해 또는 주도주에서 종목명/날짜 가져옴
+    const baseAi = aiResult || {
+      stockName: (stockNameRef.current && stockNameRef.current.value) || (chimResult && chimResult.stockName) || (jdResult && jdResult.stockName) || "",
+      stockCode: (chimResult && chimResult.stockCode) || (jdResult && jdResult.stockCode) || "",
+      name: (stockNameRef.current && stockNameRef.current.value) || (chimResult && chimResult.stockName) || (jdResult && jdResult.stockName) || "",
+      grade: null, score: null,
+    };
+    onSave({...baseAi, date: new Date().toISOString().slice(0,10), images: imgs.length, chimchakhaeResult: chimResult, judojuResult: jdResult});
     setAiResult(null); setChimResult(null); setJdResult(null); setImgs([]);
     if (stockNameRef.current) stockNameRef.current.value = "";
   };
@@ -498,19 +506,25 @@ function History({items:h, onClear, onDelete}) {
 
       {h.map((r, i) => {
         const hasChim = r.chimchakhaeResult && r.chimchakhaeResult.grade;
+        const hasJd = r.judojuResult && r.judojuResult.grade;
         return (
-          <div key={i} onClick={() => {setSel(i); setDetailTab(hasChim && !r.grade ? "chim" : "ai");}} style={{cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:"10px 14px", borderRadius:10, border:"1px solid #e2e8f0", marginBottom:6, background:"#fff"}}>
+          <div key={i} onClick={() => {setSel(i); setDetailTab(r.grade ? "ai" : (hasChim ? "chim" : (hasJd ? "jd" : "ai")));}} style={{cursor:"pointer", display:"flex", alignItems:"center", gap:10, padding:"10px 14px", borderRadius:10, border:"1px solid #e2e8f0", marginBottom:6, background:"#fff"}}>
             <div style={{width:40, height:40, borderRadius:10, background: gC(r.grade) + "12", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
               <span style={{fontSize:18, fontWeight:900, color: gC(r.grade)}}>{r.grade}</span>
             </div>
             <div style={{flex:1, minWidth:0}}>
-              <div style={{fontWeight:700, fontSize:14, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.name || (r.chimchakhaeResult && r.chimchakhaeResult.stockName) || "-"}</div>
+              <div style={{fontWeight:700, fontSize:14, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.name || (r.chimchakhaeResult && r.chimchakhaeResult.stockName) || (r.judojuResult && r.judojuResult.stockName) || "-"}</div>
               <div style={{fontSize:11, color:"#94a3b8", marginTop:1}}>{r.date} · {r.score}점 · {r.breakType || "-"} · {r.investor || "-"}</div>
             </div>
             <div style={{textAlign:"right", flexShrink:0, display:"flex", gap:4, flexDirection:"column", alignItems:"flex-end"}}>
               {hasChim && (
                 <span style={{fontSize:10, padding:"2px 6px", borderRadius:4, background: cgC(r.chimchakhaeResult.grade) + "22", color: cgC(r.chimchakhaeResult.grade), fontWeight:800}}>
                   침 {r.chimchakhaeResult.grade}
+                </span>
+              )}
+              {hasJd && (
+                <span style={{fontSize:10, padding:"2px 6px", borderRadius:4, background: "#ca8a0422", color: "#ca8a04", fontWeight:800}}>
+                  주 {r.judojuResult.grade}
                 </span>
               )}
               <div style={{fontSize:11, color:"#dc2626", fontWeight:700}}>TP{r.tp1}/{r.tp2} · SL{r.sl}%</div>
@@ -526,14 +540,23 @@ function History({items:h, onClear, onDelete}) {
           <div onClick={e => e.stopPropagation()} style={{background:"#fff", borderRadius:14, maxWidth:900, width:"100%", padding:0, position:"relative", marginBottom:40}}>
             <button onClick={() => setSel(null)} style={{position:"absolute", top:12, right:12, width:30, height:30, borderRadius:"50%", background:"#f1f5f9", border:"none", cursor:"pointer", fontSize:16, fontWeight:700, color:"#64748b", zIndex:2}}>✕</button>
 
-            {h[sel].chimchakhaeResult && h[sel].chimchakhaeResult.grade ? (
+            {(h[sel].chimchakhaeResult && h[sel].chimchakhaeResult.grade) || (h[sel].judojuResult && h[sel].judojuResult.grade) ? (
               <div style={{display:"flex", borderBottom:"2px solid #e2e8f0", padding:"16px 16px 0"}}>
-                <button onClick={() => setDetailTab("ai")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="ai" ? "3px solid #1e293b" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="ai" ? 800 : 600, color: detailTab==="ai" ? "#1e293b" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
-                  🤖 AI분석 <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
-                </button>
-                <button onClick={() => setDetailTab("chim")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="chim" ? "3px solid #7c3aed" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="chim" ? 800 : 600, color: detailTab==="chim" ? "#7c3aed" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
-                  🎯 침착해 <span style={{fontSize:11, color: cgC(h[sel].chimchakhaeResult.grade), fontWeight:900, marginLeft:4}}>{h[sel].chimchakhaeResult.grade}</span>
-                </button>
+                {h[sel].grade && (
+                  <button onClick={() => setDetailTab("ai")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="ai" ? "3px solid #1e293b" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="ai" ? 800 : 600, color: detailTab==="ai" ? "#1e293b" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
+                    🤖 AI <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
+                  </button>
+                )}
+                {h[sel].chimchakhaeResult && h[sel].chimchakhaeResult.grade && (
+                  <button onClick={() => setDetailTab("chim")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="chim" ? "3px solid #7c3aed" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="chim" ? 800 : 600, color: detailTab==="chim" ? "#7c3aed" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
+                    🎯 침착해 <span style={{fontSize:11, color: cgC(h[sel].chimchakhaeResult.grade), fontWeight:900, marginLeft:4}}>{h[sel].chimchakhaeResult.grade}</span>
+                  </button>
+                )}
+                {h[sel].judojuResult && h[sel].judojuResult.grade && (
+                  <button onClick={() => setDetailTab("jd")} style={{flex:1, padding:"10px", border:"none", background:"transparent", borderBottom: detailTab==="jd" ? "3px solid #ca8a04" : "3px solid transparent", marginBottom:"-2px", fontSize:13, fontWeight: detailTab==="jd" ? 800 : 600, color: detailTab==="jd" ? "#ca8a04" : "#94a3b8", cursor:"pointer", fontFamily:"inherit"}}>
+                    📈 주도주 <span style={{fontSize:11, color: "#ca8a04", fontWeight:900, marginLeft:4}}>{h[sel].judojuResult.grade}</span>
+                  </button>
+                )}
               </div>
             ) : null}
 
@@ -585,6 +608,10 @@ function History({items:h, onClear, onDelete}) {
 
               {detailTab === "chim" && h[sel].chimchakhaeResult && (
                 <ChimchakhaeResultCard result={h[sel].chimchakhaeResult} stockName={h[sel].name} />
+              )}
+
+              {detailTab === "jd" && h[sel].judojuResult && (
+                <JudojuResultCard result={h[sel].judojuResult} stockName={h[sel].name} />
               )}
             </div>
           </div>
