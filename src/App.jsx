@@ -390,7 +390,7 @@ function AIAnalysis({onSave}){
       const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:2000, system:SYS_PROMPT, messages:[{role:"user", content}]})
+        body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:8000, system:SYS_PROMPT, messages:[{role:"user", content}]})
       });
       if (!resp.ok) throw new Error("AI분석 API " + resp.status);
       const data = await resp.json();
