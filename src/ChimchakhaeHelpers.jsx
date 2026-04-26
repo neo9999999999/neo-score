@@ -128,7 +128,7 @@ export async function analyzeChimchakhae(images, stockName) {
 // ============================================================
 // 결과 표시 헬퍼
 // ============================================================
-function gradeColor(grade) {
+export function gradeColor(grade) {
   if (grade === "S+") return "#dc2626";
   if (grade === "S") return "#ef4444";
   if (grade === "A+") return "#ea580c";
@@ -138,28 +138,28 @@ function gradeColor(grade) {
   return "#64748b";
 }
 
-function statusColor(status) {
+export function statusColor(status) {
   if (status === "positive") return "#22c55e";
   if (status === "negative") return "#dc2626";
   if (status === "unknown") return "#94a3b8";
   return "#f59e0b"; // neutral
 }
 
-function statusLabel(status) {
+export function statusLabel(status) {
   if (status === "positive") return "긍정";
   if (status === "negative") return "부정";
   if (status === "unknown") return "미판독";
   return "중립";
 }
 
-function fmtPrice(n) {
+export function fmtPrice(n) {
   if (n == null || isNaN(n)) return "-";
   if (n >= 1) return Math.round(n).toLocaleString();
   return n.toFixed(2);
 }
 
 // 4엔진 레이더 차트 SVG
-function RadarChart(props) {
+export function RadarChart(props) {
   const engines = props.engines;
   const color = props.color || "#a855f7";
   if (!engines || !engines.supply) return null;
@@ -223,7 +223,7 @@ function RadarChart(props) {
 }
 
 // 추출된 데이터 라벨 매핑
-const EXTRACTED_LABELS = {
+export const EXTRACTED_LABELS = {
   currentPrice: "현재가",
   changeRate: "등락률",
   tradingValue: "거래대금",
