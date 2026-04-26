@@ -1,5 +1,225 @@
 [
   {
+    "name": "LB세미콘",
+    "grade": "A",
+    "score": 7,
+    "change": 20.44,
+    "upperWick": "약 3%",
+    "amount": 51,
+    "investor": "외인",
+    "breakType": "52W",
+    "ema50": "상승",
+    "tp1": 15,
+    "tp2": 50,
+    "sl": 13,
+    "summary": "[A등급] 반도체 테마주로 20.44% 강력한 상승과 외국인 순매수(760억)가 핵심 매력이다. 52주 신고가 갱신과 비메모리 반도체 DDI&광반도체 사업 영위로 테마 부합성이 높고, 거래대금도 51억으로 적정 수준을 유지했다. 다만 윗꼬리가 약 3% 발생하여 단기 저항이 예상되고, 기관 매도(-95억) 부담이 있어 A등급으로 평가한다.",
+    "details": [
+      {
+        "item": "외국인매수",
+        "point": 2,
+        "reason": "외국인 760억 순매수로 강력한 해외 관심"
+      },
+      {
+        "item": "등락률",
+        "point": 2,
+        "reason": "20.44% 상승으로 강력한 모멘텀 확보"
+      },
+      {
+        "item": "거래대금",
+        "point": 2,
+        "reason": "51억으로 적정 수준, 과열 부담 낮음"
+      },
+      {
+        "item": "코스닥",
+        "point": 1,
+        "reason": "코스닥 상장으로 변동성 기대"
+      },
+      {
+        "item": "52주신고가",
+        "point": 1,
+        "reason": "52주 최고가 6,220원 근접하여 신고가 기대"
+      },
+      {
+        "item": "테마부합",
+        "point": 1,
+        "reason": "비메모리 반도체 DDI&광반도체로 반도체 테마 부합"
+      },
+      {
+        "item": "윗꼬리",
+        "point": -1,
+        "reason": "약 3% 윗꼬리로 단기 저항 우려"
+      },
+      {
+        "item": "기관매도",
+        "point": -1,
+        "reason": "기관 95억 순매도로 국내 기관 부담 존재"
+      }
+    ],
+    "date": "2026-04-26",
+    "images": 15,
+    "chimchakhaeResult": {
+      "stockName": "LB세미콘",
+      "stockCode": "061970",
+      "imagesAnalyzed": [
+        {
+          "type": "종목정보",
+          "summary": "현재가 6,070원, +20.44% 상승"
+        },
+        {
+          "type": "일봉차트",
+          "summary": "최근 급등, 매물대 돌파 양상"
+        },
+        {
+          "type": "수급현황",
+          "summary": "외국인 누적 순매수, 당일 동시 순매수"
+        },
+        {
+          "type": "거래원분석",
+          "summary": "개인 대량 순매도, 외국인/기관 순매수"
+        },
+        {
+          "type": "호가창",
+          "summary": "매도 호가 두터움, 거래량 급증"
+        },
+        {
+          "type": "테마정보",
+          "summary": "비메모리 반도체 섹터, +20.15%"
+        },
+        {
+          "type": "재무정보",
+          "summary": "반도체 후공정 전문업체"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "6,070원",
+        "changeRate": "+20.44%",
+        "tradingValue": "5,388억원",
+        "foreignLate": "+760,770주",
+        "instLate": "+760,770주",
+        "progLate": "+109,483주",
+        "threeDaysSupply": "외국인/기관 지속 순매수",
+        "sector": "비메모리 반도체",
+        "sectorRank": "1위(+20.15%)",
+        "chartPattern": "매물대 돌파 후 급등",
+        "breakoutType": "장기 매물대 돌파",
+        "maArrangement": "정배열 전환 중",
+        "volumeSurge": "급증(거래대금 5,388억)",
+        "closeType": "상한가 근접 강세 마감",
+        "material": "DDI&광반도체 법인 분할, 테스트사업 영위",
+        "materialType": "사업구조 개편"
+      },
+      "engines": {
+        "supply": {
+          "score": 28,
+          "max": 35,
+          "breakdown": {
+            "lateHours": 12,
+            "consistency": 10,
+            "volume": 6
+          },
+          "reasoning": "장 후반 외국인+기관 동시 순매수 확인되나 개인 대량 매도 압박. 3일간 외국인 누적 순매수 일관성. 거래대금 5,388억으로 대형"
+        },
+        "market": {
+          "score": 24,
+          "max": 25,
+          "breakdown": {
+            "lead": 10,
+            "duration": 9,
+            "strength": 5
+          },
+          "reasoning": "비메모리 반도체 섹터 1위, DDI/광반도체 정책 테마로 지속성 높음. 섹터 내 선도주 지위 확고"
+        },
+        "chart": {
+          "score": 21,
+          "max": 25,
+          "breakdown": {
+            "breakout": 9,
+            "ma": 4,
+            "volume": 5,
+            "close": 3
+          },
+          "reasoning": "3,725원~6,220원 장기 매물대 완전 돌파. 정배열 전환 진행 중. 거래량 급증하며 상승 마감하나 고가권 진입"
+        },
+        "material": {
+          "score": 12,
+          "max": 15,
+          "breakdown": {
+            "type": 7,
+            "nextDay": 5
+          },
+          "reasoning": "DDI&광반도체 분할 관련 사업구조 개편 재료. 테마성은 있으나 실적 개선까지는 시간 필요"
+        }
+      },
+      "supplyZone": {
+        "level": "long",
+        "levelLabel": "장기 매물대",
+        "period": "약 6개월간 형성",
+        "thickness": "heavy",
+        "thicknessLabel": "3,725~6,220원 구간 두터운 매물대",
+        "status": "돌파",
+        "breakoutQuality": "거래량 급증하며 강력한 돌파",
+        "detail": "차트상 3,725원에서 6,220원까지 형성된 장기 박스권을 오늘 완전 돌파했습니다. 약 6개월간 형성된 두터운 매물대였으나 비메모리 반도체 테마와 함께 대량 거래량으로 돌파에 성공했습니다. 돌파 후 즉시 20% 급등하여 돌파의 유효성을 확인했습니다."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "차트에서 RSI 수치 확인 어려움"
+        },
+        "stochastic": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "스토캐스틱 지표 미표시"
+        },
+        "bollinger": {
+          "status": "positive",
+          "value": "상단 밴드 근접",
+          "comment": "급등으로 볼린저 밴드 상단 돌파 상태"
+        },
+        "ichimoku": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "일목균형표 미표시"
+        },
+        "envelope": {
+          "status": "positive",
+          "value": "상단 이탈",
+          "comment": "이동평균 채널 상단 크게 이탈"
+        },
+        "overallTone": "positive",
+        "summary": "확인 가능한 지표들은 모두 급등에 따른 강세 신호를 보이고 있습니다. 다만 과열 구간 진입으로 단기 조정 가능성도 내포하고 있습니다."
+      },
+      "totalScore": 85,
+      "grade": "S",
+      "verdict": "진입 강력추천",
+      "recommendedWeight": 23,
+      "nextDayRiseProbability": 75,
+      "confidenceScore": 82,
+      "keyReasons": [
+        "장기 매물대 완전 돌파 확인",
+        "비메모리 반도체 섹터 1위 선도주",
+        "외국인/기관 동시 순매수 지속",
+        "DDI/광반도체 정책 테마 부각",
+        "거래대금 5,388억 대량 유입"
+      ],
+      "risks": [
+        "개인 대량 매도 압박 지속",
+        "단기 과열로 조정 압력 존재"
+      ],
+      "strategy": {
+        "entry": "종가 또는 익일 시초가 부근",
+        "exit": "1차 6,500원, 2차 7,200원",
+        "stopLoss": "5,800원 하회시",
+        "hold": "단기 스윙, 2-3일",
+        "entryPrice": 6070,
+        "tp1Price": 6550,
+        "tp2Price": 7280,
+        "slPrice": 5800
+      },
+      "chimchakhaeAnalysis": "LB���미콘은 오늘 장기 매물대를 완전 돌파하며 종가베팅의 모든 조건을 충족했습니다. 비메모리 반도체 섹터의 선도주로서 DDI&광반도체 분할 재료와 함께 외국인/기관의 지속적인 매수세가 뒷받침되고 있습니다. 6개월간 형성된 3,725~6,220원 박스권을 거래대금 5,388억과 함께 돌파한 것은 매우 강력한 신호입니다. 다만 하루 20% 급등으로 단기 과열 상태이고 개인 투자자들의 대량 매도가 지속되고 있어 익일 시초가나 소폭 조정 후 진입하는 것이 안전할 것으로 판단됩니다. 정책 테마의 지속성과 섹터 선도주 지위를 고려할 때 단기적으로 7,000원대 진입은 충분히 가능해 보입니다."
+    }
+  },
+  {
     "name": "세미파이브",
     "grade": "A",
     "score": 8,
