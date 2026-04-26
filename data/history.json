@@ -1,6 +1,376 @@
 [
   {
     "name": "SFA반도체",
+    "grade": "X",
+    "score": 3,
+    "change": 22.18,
+    "upperWick": "매우큼",
+    "amount": 470,
+    "investor": "외국인",
+    "breakType": "none",
+    "ema50": "상승",
+    "tp1": 15,
+    "tp2": 50,
+    "sl": 13,
+    "summary": "[X등급] 이미 큰 상승 후 고가권에서 윗꼬리가 매우 긴 패턴으로 급락 위험이 높음. 52주 최고가 10,150원 대비 현재가 9,640원으로 고점 대비 5% 하락한 상태에서 추가 상승보다는 조정 가능성이 높고, ETF가 아니지만 470억의 대거래량과 22%의 강한 상승률이 단기 과열 신호를 보임",
+    "details": [
+      {
+        "item": "등락률",
+        "point": 1,
+        "reason": "22.18% 상승으로 20% 이상 강한 상승"
+      },
+      {
+        "item": "윗꼬리",
+        "point": -1,
+        "reason": "일봉 차트상 매우 긴 윗꼬리로 매도압력 존재"
+      },
+      {
+        "item": "거래대금",
+        "point": 0,
+        "reason": "470억으로 200-500억 구간에 해당"
+      },
+      {
+        "item": "투자주체",
+        "point": 2,
+        "reason": "외국인 순매수 5,381백만원으로 양호"
+      },
+      {
+        "item": "돌파패턴",
+        "point": 0,
+        "reason": "52주 최고가 이후 하락으로 명확한 돌파 없음"
+      },
+      {
+        "item": "고가권위험",
+        "point": -1,
+        "reason": "이미 고점 형성 후 조정 구간 진입"
+      },
+      {
+        "item": "과열신호",
+        "point": 2,
+        "reason": "반도체 테마 전반적 강세 동조"
+      }
+    ],
+    "date": "2026-04-26",
+    "images": 8,
+    "chimchakhaeResult": {
+      "stockName": "SFA반도체",
+      "stockCode": "036540",
+      "imagesAnalyzed": [
+        {
+          "type": "분봉차트",
+          "summary": "장중 22.18% 급등, 9,640원 마감"
+        },
+        {
+          "type": "일봉차트",
+          "summary": "장기 상승세 중 돌파형 양봉"
+        },
+        {
+          "type": "수급현황",
+          "summary": "외국인 기관 개인 동반매수"
+        },
+        {
+          "type": "거래원분석",
+          "summary": "기관 대량순매수 지속"
+        },
+        {
+          "type": "섹터현황",
+          "summary": "반도체 후공정 테마 강세"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "9640",
+        "changeRate": "+22.18%",
+        "tradingValue": "470억",
+        "foreignLate": "순매수",
+        "instLate": "순매수",
+        "progLate": "순매수",
+        "threeDaysSupply": "외기개 3일연속 순매수",
+        "sector": "반도체장비",
+        "sectorRank": "1위급",
+        "chartPattern": "장기박스권 상단돌파",
+        "breakoutType": "장기매물대 돌파",
+        "maArrangement": "완전정배열",
+        "volumeSurge": "전일대비 700%↑",
+        "closeType": "돌파형 장대양봉",
+        "material": "반도체 후공정 테마",
+        "materialType": "정책테마"
+      },
+      "engines": {
+        "supply": {
+          "score": 30,
+          "max": 35,
+          "breakdown": {
+            "lateHours": 12,
+            "consistency": 10,
+            "volume": 8
+          },
+          "reasoning": "장후반 외국인+기관+개인 3주체 동반매수로 12점, 3일연속 순매수로 일관성 10점, 거래대금 470억으로 8점"
+        },
+        "market": {
+          "score": 22,
+          "max": 25,
+          "breakdown": {
+            "lead": 10,
+            "duration": 8,
+            "strength": 4
+          },
+          "reasoning": "반도체 후공정 섹터 1위급으로 10점, 정책테마로 지속성 8점, 섹터 내 상대강도 4점"
+        },
+        "chart": {
+          "score": 23,
+          "max": 25,
+          "breakdown": {
+            "breakout": 10,
+            "ma": 5,
+            "volume": 5,
+            "close": 3
+          },
+          "reasoning": "장기매물대 완전돌파로 10점, 완전정배열 5점, 거래량 급증 5점, 고가권 마감으로 3점"
+        },
+        "material": {
+          "score": 12,
+          "max": 15,
+          "breakdown": {
+            "type": 8,
+            "nextDay": 4
+          },
+          "reasoning": "반도체 정책테마로 8점, 익일 모멘텀 지속 가능성 4점"
+        }
+      },
+      "supplyZone": {
+        "level": "long",
+        "levelLabel": "장기 매물대",
+        "period": "약 3개월간",
+        "thickness": "heavy",
+        "thicknessLabel": "9000~9600 구간 두터운 매물대",
+        "status": "돌파",
+        "breakoutQuality": "대량거래 동반 완전돌파",
+        "detail": "3개월간 형성된 9000~9600원 장기 박스권을 22% 급등으로 완전 돌파했습니다. 거래량이 평소의 7배로 급증하며 매물 소화력이 충분함을 보여줍니다. 돌파 당일 고가 마감으로 매물대 재진입 가능성이 낮습니다."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "positive",
+          "value": "80 근처",
+          "comment": "과열구간이나 강세 지속"
+        },
+        "stochastic": {
+          "status": "positive",
+          "value": "%K 90 이상",
+          "comment": "고점권 강세 신호"
+        },
+        "bollinger": {
+          "status": "positive",
+          "value": "상단밴드 돌파",
+          "comment": "강한 상승 모멘텀"
+        },
+        "ichimoku": {
+          "status": "positive",
+          "value": "구름 위",
+          "comment": "상승세 확인"
+        },
+        "envelope": {
+          "status": "positive",
+          "value": "상단 채널 돌파",
+          "comment": "추가 상승 여력"
+        },
+        "overallTone": "positive",
+        "summary": "모든 보조지표가 강한 상승 신호를 보이고 있으며, 단기 과열 우려는 있으나 모멘텀이 강력합니다."
+      },
+      "totalScore": 87,
+      "grade": "S",
+      "verdict": "진입 강력추천",
+      "recommendedWeight": 23,
+      "nextDayRiseProbability": 78,
+      "confidenceScore": 88,
+      "keyReasons": [
+        "장기 매물대 대량거래량 동반 완전돌파",
+        "외국인+기관+개인 3주체 동반매수",
+        "반도체 후공정 정책테마 선도주",
+        "3일 연속 일관된 순매수 흐름",
+        "완전정배열과 돌파형 장대양봉"
+      ],
+      "risks": [
+        "22% 급등 후 단기 조정 가능성",
+        "고가권에서 차익실현 물량 출현"
+      ],
+      "strategy": {
+        "entry": "다음날 시초가 부근 진입",
+        "exit": "1차 10400원, 2차 11500원",
+        "stopLoss": "9200원 매물대 하단",
+        "hold": "2-3일 단기",
+        "entryPrice": 9700,
+        "tp1Price": 10400,
+        "tp2Price": 11500,
+        "slPrice": 9200
+      },
+      "chimchakhaeAnalysis": "SFA반도체는 반도체 후공정 테마의 핵심 수혜주로 장기간 형성된 매물대를 완전히 돌파했습니다. 22% 급등에도 불구하고 3주체 동반매수와 대량거래량이 뒷받침되어 상승 모멘텀이 확실합니다. 다만 단기 급등 후이므로 고점 진입 리스크는 존재하지만, 정책테마의 지속성과 기술적 돌파가 명확해 추가 상승 여력이 충분합니다. 침착하게 시초가 부근에서 진입하여 단기 스윙으로 접근하는 ��이 적절합니다."
+    },
+    "judojuResult": {
+      "stockName": "SFA반도체",
+      "stockCode": "036540",
+      "imagesAnalyzed": [
+        {
+          "type": "분봉차트",
+          "summary": "22.18% 급등 후 9,640원 종가 마감"
+        },
+        {
+          "type": "시세정보",
+          "summary": "거래대금 470억, 상한가 10,250원 근접"
+        },
+        {
+          "type": "투자자별매매",
+          "summary": "외국인 407억 순매수, 기관 53억 순매수"
+        },
+        {
+          "type": "일봉차트",
+          "summary": "장기 상승추세 지속, 이평선 정배열"
+        },
+        {
+          "type": "재무정보",
+          "summary": "반도체 후공정 테마 1등주"
+        },
+        {
+          "type": "수급정보",
+          "summary": "외국인 연속 대량매수"
+        },
+        {
+          "type": "테마현황",
+          "summary": "반도체 후공정 테마 선두"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "9,640",
+        "changeRate": "+22.18%",
+        "tradingValue": "470억",
+        "foreignLate": "+407억",
+        "instLate": "+53억",
+        "progLate": "확인불가",
+        "threeDaysSupply": "연속매수",
+        "sector": "반도체 후공정",
+        "sectorRank": "1위",
+        "chartPattern": "장기상승추세",
+        "breakoutType": "상단돌파",
+        "maArrangement": "정배열",
+        "volumeSurge": "거래량급증",
+        "closeType": "상단마감",
+        "material": "반도체 후공정",
+        "materialType": "업종테마"
+      },
+      "engines": {
+        "rs": {
+          "score": 27,
+          "max": 30,
+          "breakdown": {
+            "amountRank": 12,
+            "changeRank": 15
+          },
+          "reasoning": "거래대금 470억으로 시장 상위권, 등락률 22.18%로 시장 최상위급"
+        },
+        "leader": {
+          "score": 23,
+          "max": 25,
+          "breakdown": {
+            "market": 10,
+            "amount": 13
+          },
+          "reasoning": "코스닥 시장 + 거래대금 470억으로 3000억+ 수준"
+        },
+        "momentum": {
+          "score": 24,
+          "max": 25,
+          "breakdown": {
+            "changeStrength": 14,
+            "closeStrength": 10
+          },
+          "reasoning": "등락률 22.18% 매우 강력, 9,640원 종가로 상단 완벽 마감"
+        },
+        "supply": {
+          "score": 20,
+          "max": 20,
+          "breakdown": {
+            "investor": 12,
+            "weight": 8
+          },
+          "reasoning": "외국인+기관 동반 대량매수, 거래대금 470억 가중점수 만점"
+        }
+      },
+      "supplyZone": {
+        "level": "mid",
+        "levelLabel": "중기 매물대",
+        "period": "3-4개월",
+        "thickness": "medium",
+        "thicknessLabel": "중간",
+        "status": "돌파",
+        "breakoutQuality": "우수",
+        "detail": "8,000-8,500원 중기 매물대를 강력한 거래량과 함께 돌파. 외국인 407억 대량매수가 매물대 소거에 결정적 역할. 상한가 10,250원까지 여력 충분. 돌파 후 재테스트 없이 바로 상승 지속하는 패턴으로 매물대 돌파의 완성도가 높음."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "positive",
+          "value": "75+",
+          "comment": "과열권 진입하나 추세 강도 반영"
+        },
+        "stochastic": {
+          "status": "positive",
+          "value": "90+",
+          "comment": "매우 강한 모멘텀 지속"
+        },
+        "bollinger": {
+          "status": "positive",
+          "value": "상단밴드 돌파",
+          "comment": "강한 추세 진행 중"
+        },
+        "ichimoku": {
+          "status": "positive",
+          "value": "구름 위",
+          "comment": "모든 지표 상승 배열"
+        },
+        "envelope": {
+          "status": "positive",
+          "value": "상단 이탈",
+          "comment": "강한 상승추세 확인"
+        },
+        "overallTone": "positive",
+        "summary": "모든 보조지표가 강한 상승추세를 뒷받침하며, 과열 신호보다는 추세 강도를 보여주고 있음"
+      },
+      "totalScore": 94,
+      "grade": "S+",
+      "verdict": "시장 대장주",
+      "recommendedWeight": 28,
+      "nextDayRiseProbability": 85,
+      "confidenceScore": 92,
+      "leaderStatus": {
+        "isLeader": true,
+        "rank": "1등",
+        "themeRank": "1위",
+        "comment": "반도체 후공정 테마의 절대 대장주. 거래대금 470억으로 테마 내 압도적 1위이며, 외국인 407억 순매수로 자금 집중도 최고 수준."
+      },
+      "keyReasons": [
+        "반도체 후공정 테마 대장주로 시장 자금 집중",
+        "외국인 407억 + 기관 53억 동반 대량매수",
+        "거래대금 470억으로 시장 최상위권 유동성",
+        "22.18% 급등 후 9,640원 상단 완벽 마감",
+        "장기 상승추세 지속 중 중요 매물대 돌파"
+      ],
+      "risks": [
+        "22% 급등 후 단기 과열 조정 가능성",
+        "상한가 근접으로 매물 출회 위험"
+      ],
+      "strategy": {
+        "entry": "당일 종가 또는 익일 시초가 진입",
+        "exit": "1차 목표 11,000원, 2차 목표 12,500원",
+        "stopLoss": "8,800원 지지선 이탈시",
+        "hold": "외국인 매수세 지속시 중기 보유",
+        "entryPrice": 9640,
+        "tp1Price": 11000,
+        "tp2Price": 12500,
+        "slPrice": 8800
+      },
+      "judojuAnalysis": "SFA반도체는 현재 반도체 후공정 테마의 절대 대장주로 시장을 주도하고 있다. 거래대금 470억과 외국인 407억 순매수는 이 종목에 대한 자금의 압도적 집중을 보여준다. 22.18% 급등에도 9,640원으로 상단 완벽 마감한 것은 추가 상승 여력을 시사한다. 장기 상승추세 지속 중 중요 매물대를 완전 돌파하여 기술적으로도 매우 강력한 모습이다. 상한가 10,250원까지의 여력과 테마 내 독보적 지위를 고려할 때, 주도주 매매 관점에서 최우선 매매 대상이다. 단기 과열 리스크는 있으나, 대장주의 힘은 조정에서도 상대적으로 강하게 버틸 것으로 예상된다."
+    }
+  },
+  {
+    "name": "SFA반도체",
     "grade": "A",
     "score": 8,
     "change": 22.18,
