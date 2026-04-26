@@ -213,6 +213,71 @@ export function judojuGradeColor(grade) {
   return "#6b7280";
 }
 
+// 주도주 전용 레이더 차트 (4엔진: rs/leader/momentum/supply)
+// 침착해 RadarChart와 분리 — 키와 라벨이 다르기 때문
+export function JudojuRadarChart(props) {
+  const engines = props.engines;
+  const color = props.color || "#7c3aed";
+  if (!engines || !engines.rs || !engines.leader || !engines.momentum || !engines.supply) return null;
+  const points = [
+    { label: "RS", value: engines.rs.score / engines.rs.max, score: engines.rs.score, max: engines.rs.max },
+    { label: "대장주", value: engines.leader.score / engines.leader.max, score: engines.leader.score, max: engines.leader.max },
+    { label: "모멘텀", value: engines.momentum.score / engines.momentum.max, score: engines.momentum.score, max: engines.momentum.max },
+    { label: "수급", value: engines.supply.score / engines.supply.max, score: engines.supply.score, max: engines.supply.max },
+  ];
+  const cx = 140, cy = 140, R = 90;
+  const angles = [-Math.PI / 2, 0, Math.PI / 2, Math.PI];
+  function gridStr(scale) {
+    const pts = [];
+    for (let i = 0; i < 4; i++) {
+      const x = cx + Math.cos(angles[i]) * R * scale;
+      const y = cy + Math.sin(angles[i]) * R * scale;
+      pts.push(x.toFixed(1) + "," + y.toFixed(1));
+    }
+    return pts.join(" ");
+  }
+  const dataPts = [];
+  for (let i = 0; i < 4; i++) {
+    const v = Math.max(points[i].value, 0.02);
+    const x = cx + Math.cos(angles[i]) * R * v;
+    const y = cy + Math.sin(angles[i]) * R * v;
+    dataPts.push(x.toFixed(1) + "," + y.toFixed(1));
+  }
+  const labels = [
+    { x: cx, y: cy - R - 14, anchor: "middle" },
+    { x: cx + R + 14, y: cy + 4, anchor: "start" },
+    { x: cx, y: cy + R + 22, anchor: "middle" },
+    { x: cx - R - 14, y: cy + 4, anchor: "end" },
+  ];
+  return (
+    <svg viewBox="0 0 280 280" style={{ width: "100%", maxWidth: "260px", height: "auto", display: "block", margin: "0 auto" }}>
+      <polygon points={gridStr(1.0)} fill="none" stroke="#cbd5e1" strokeWidth="1" />
+      <polygon points={gridStr(0.75)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
+      <polygon points={gridStr(0.5)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
+      <polygon points={gridStr(0.25)} fill="none" stroke="#e2e8f0" strokeWidth="1" />
+      <line x1={cx} y1={cy} x2={cx} y2={cy - R} stroke="#e2e8f0" strokeWidth="1" />
+      <line x1={cx} y1={cy} x2={cx + R} y2={cy} stroke="#e2e8f0" strokeWidth="1" />
+      <line x1={cx} y1={cy} x2={cx} y2={cy + R} stroke="#e2e8f0" strokeWidth="1" />
+      <line x1={cx} y1={cy} x2={cx - R} y2={cy} stroke="#e2e8f0" strokeWidth="1" />
+      <polygon points={dataPts.join(" ")} fill={color + "33"} stroke={color} strokeWidth="2" strokeLinejoin="round" />
+      {points.map(function (p, i) {
+        const v = Math.max(p.value, 0.02);
+        const x = cx + Math.cos(angles[i]) * R * v;
+        const y = cy + Math.sin(angles[i]) * R * v;
+        return <circle key={i} cx={x} cy={y} r="3" fill={color} />;
+      })}
+      {points.map(function (p, i) {
+        return (
+          <g key={i}>
+            <text x={labels[i].x} y={labels[i].y} textAnchor={labels[i].anchor} fontSize="11" fontWeight="700" fill="#475569">{p.label}</text>
+            <text x={labels[i].x} y={labels[i].y + 12} textAnchor={labels[i].anchor} fontSize="10" fontWeight="800" fill={color}>{p.score}/{p.max}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 // ============================================================
 // 주도주 오늘 탭 (KIS API 스캔 결과)
 // ChimchakhaeToday 구조 그대로 + 주도주 등급 체계
@@ -650,11 +715,11 @@ export function JudojuResultCard(props) {
           </div>
         </div>
 
-        {/* 4엔진 레이더 */}
-        {res.engines && eng.supply && (
+        {/* 4엔진 레이더 (주도주 고유) */}
+        {res.engines && eng.rs && eng.leader && eng.momentum && eng.supply && (
           <div style={{ background: "#f8fafc", padding: 14, borderRadius: 10, marginBottom: 14 }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: "#475569", marginBottom: 8, textAlign: "center" }}>🎯 4엔진 분석</div>
-            <RadarChart engines={res.engines} color={color} />
+            <div style={{ fontSize: 12, fontWeight: 800, color: "#475569", marginBottom: 8, textAlign: "center" }}>🎯 주도주 4엔진 분석</div>
+            <JudojuRadarChart engines={res.engines} color={color} />
           </div>
         )}
 
@@ -678,7 +743,7 @@ export function JudojuResultCard(props) {
         )}
 
         {/* 4엔진 상세 */}
-        {res.engines && eng.supply && (
+        {res.engines && (eng.rs || eng.leader || eng.momentum || eng.supply) && (
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 6 }}>🔬 4엔진 상세 분석</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", gap: 8 }}>

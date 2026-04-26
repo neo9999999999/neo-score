@@ -366,7 +366,7 @@ function AIAnalysis({onSave}){
             <div style={{fontSize:36, marginBottom:6}}>📊</div>
             <div style={{fontSize:15, fontWeight:700}}>차트 이미지 업로드</div>
             <div style={{fontSize:12, color:"#94a3b8", marginTop:2}}>클릭 또는 드래그앤드롭 · 다중 가능</div>
-            <div style={{fontSize:11, color:"#64748b", marginTop:6, fontWeight:600}}>AI분석(NEO-SCORE) + 침착해 v4 동시 실행</div>
+            <div style={{fontSize:11, color:"#64748b", marginTop:6, fontWeight:600}}>AI분석 + 침착해 + 주도주 3중 동시 실행</div>
           </div>
         ) : (
           <div style={{display:"flex", gap:6, flexWrap:"wrap", justifyContent:"center"}}>
@@ -382,7 +382,7 @@ function AIAnalysis({onSave}){
       </div>
 
       <button onClick={analyze} disabled={imgs.length === 0 || loading} style={{width:"100%", padding:"14px", borderRadius:10, border:"none", background: imgs.length===0 ? "#e2e8f0" : "linear-gradient(135deg, #1e293b 0%, #7c3aed 100%)", color: imgs.length===0 ? "#94a3b8" : "#fff", fontSize:15, fontWeight:800, cursor: imgs.length===0 ? "default" : "pointer", marginBottom:14, letterSpacing:"0.3px"}}>
-        {loading ? "⚙️ 분석 중..." : "🔍 NEO-SCORE + 침착해 분석 시작"}
+        {loading ? "⚙️ 분석 중..." : "🔍 NEO-SCORE + 침착해 + 주도주 분석 시작"}
       </button>
 
       {progress && <div style={{padding:10, borderRadius:8, background:"#eff6ff", border:"1px solid #bfdbfe", color:"#1e40af", fontSize:12, marginBottom:12, textAlign:"center"}}>{progress}</div>}
