@@ -594,7 +594,7 @@ export async function analyzeJudoju(images, stockName) {
     const img = images[i];
     content.push({ type: "image", source: { type: "base64", media_type: img.type || "image/png", data: img.data } });
   }
-  const userText = "위 차트/수급/재료 이미지들을 종합 분석해서 주도주 매매 판단을 JSON으로만 응답하세요." + (stockName ? " 종목명: " + stockName : "");
+  const userText = "위 차트/수급/재료 이미지들을 종합 분석해서 주도주 매매 판단을 JSON으로만 응답하세요. 마크다운 코드블록 없이 { 로 시작해서 } 로 끝나는 JSON만." + (stockName ? " 종목명: " + stockName : "");
   content.push({ type: "text", text: userText });
 
   const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
@@ -602,31 +602,65 @@ export async function analyzeJudoju(images, stockName) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 8000,
+      max_tokens: 12000,
       system: JUDOJU_PROMPT,
       messages: [{ role: "user", content: content }],
     }),
   });
 
-  if (!resp.ok) throw new Error("주도주 분석 API " + resp.status);
-  const data = await resp.json();
-  const text = (data.content || []).map(function (c) { return c.text || ""; }).join("");
-
-  // JSON 파싱 (5단계 폴백)
-  let parsed = null;
-  const cleaned = text.replace(/```json|```/g, "").trim();
-  try { parsed = JSON.parse(cleaned); } catch (e1) {
-    const m = cleaned.match(/\{[\s\S]*\}/);
-    if (m) {
-      try { parsed = JSON.parse(m[0]); } catch (e2) {
-        const fixed = m[0].replace(/,\s*([}\]])/g, "$1").replace(/'\s*:/g, '":').replace(/:\s*'/g, ': "').replace(/'\s*([,}])/g, '"$1');
-        try { parsed = JSON.parse(fixed); } catch (e3) {
-          throw new Error("JSON 파싱 실패: " + e3.message);
-        }
-      }
-    } else throw new Error("JSON 형식 응답 없음");
+  if (!resp.ok) {
+    const errText = await resp.text().catch(function(){return "";});
+    throw new Error("주도주 분석 API " + resp.status + ": " + errText.slice(0, 200));
   }
-  return parsed;
+  const data = await resp.json();
+
+  // 응답 구조 진단 — content 배열에 text 블록이 있어야 함
+  if (!data || !data.content || !Array.isArray(data.content)) {
+    throw new Error("응답 형식 이상: " + JSON.stringify(data).slice(0, 200));
+  }
+
+  const text = data.content.map(function (c) { return c && c.text || ""; }).join("");
+  if (!text || text.trim().length < 10) {
+    throw new Error("응답 비어있음 (stop_reason: " + (data.stop_reason || "?") + ")");
+  }
+
+  // JSON 파싱 (강화된 5단계 폴백)
+  let parsed = null;
+  let cleaned = text.replace(/```json|```/g, "").trim();
+  // 한국어 prefix 제거 (예: "다음은 분석 결과입니다:\n{...}")
+  const firstBrace = cleaned.indexOf("{");
+  if (firstBrace > 0) cleaned = cleaned.slice(firstBrace);
+
+  // 1단계: 그대로 파싱
+  try { parsed = JSON.parse(cleaned); return parsed; } catch (_) {}
+
+  // 2단계: 첫 { ~ 마지막 } 추출
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (lastBrace > 0) {
+    const sliced = cleaned.slice(0, lastBrace + 1);
+    try { parsed = JSON.parse(sliced); return parsed; } catch (_) {}
+
+    // 3단계: trailing comma + quote 보정
+    const fixed1 = sliced.replace(/,\s*([}\]])/g, "$1").replace(/'\s*:/g, '":').replace(/:\s*'/g, ': "').replace(/'\s*([,}])/g, '"$1');
+    try { parsed = JSON.parse(fixed1); return parsed; } catch (_) {}
+
+    // 4단계: 잘린 문자열 끝 보정 (응답이 max_tokens로 잘렸을 때 — 마지막 불완전 키 잘라내기)
+    const lastComplete = sliced.lastIndexOf(',"');
+    if (lastComplete > 0) {
+      const truncated = sliced.slice(0, lastComplete) + "}";
+      try { parsed = JSON.parse(truncated); return parsed; } catch (_) {}
+    }
+  }
+
+  // 5단계: regex로 부분 객체 추출
+  const m = cleaned.match(/\{[\s\S]*\}/);
+  if (m) {
+    const fixed2 = m[0].replace(/,\s*([}\]])/g, "$1");
+    try { parsed = JSON.parse(fixed2); return parsed; } catch (_) {}
+  }
+
+  // 진단용 메시지
+  throw new Error("JSON 파싱 실패 (응답 " + text.length + "자, 시작: " + text.slice(0, 50) + ")");
 }
 
 // ============================================================
@@ -634,7 +668,15 @@ export async function analyzeJudoju(images, stockName) {
 // ============================================================
 export function JudojuResultCard(props) {
   const res = props.result;
-  if (!res) return null;
+  if (!res || typeof res !== "object") return null;
+  if (!res.grade) {
+    return (
+      <div style={{ borderRadius: 14, border: "2px solid #cbd5e1", padding: "16px", marginBottom: 14, background: "#fff" }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#475569" }}>주도주 분석 데이터 부족</div>
+        <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>{res.haseunghoonAnalysis || res.judojuAnalysis || "분석 결과를 불러올 수 없습니다."}</div>
+      </div>
+    );
+  }
   const color = gradeColor(res.grade);
   const strat = res.strategy || {};
   const eng = res.engines || {};
