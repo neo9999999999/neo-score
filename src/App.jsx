@@ -400,15 +400,15 @@ function AIAnalysis({onSave}){
     })();
 
     // 침착해 v4 분석
-    const chimPromise = analyzeChimchakhae(imgs, stockName);
+    const chimFn = () => analyzeChimchakhae(imgs, stockName);
 
     // 주도주 분석
-    const jdPromise = analyzeJudoju(imgs, stockName);
+    const jdFn = () => analyzeJudoju(imgs, stockName);
 
     // 하승훈 돌파매매 분석
-    const hsPromise = analyzeHaseunghoon(imgs, stockName);
+    const hsFn = () => analyzeHaseunghoon(imgs, stockName);
 
-    const [aiRes, chimRes, jdRes, hsRes] = await Promise.allSettled([aiPromise, chimPromise, jdPromise, hsPromise]);
+    const [aiRes, chimRes, jdRes, hsRes] = await (async () => { const sleep = (ms) => new Promise(r => setTimeout(r, ms)); const a = await Promise.allSettled([aiPromise]); await sleep(15000); const c = await Promise.allSettled([chimFn()]); await sleep(15000); const j = await Promise.allSettled([jdFn()]); await sleep(15000); const h = await Promise.allSettled([hsFn()]); return [a[0], c[0], j[0], h[0]]; })();
 
     if (aiRes.status === "fulfilled") setAiResult(aiRes.value);
     else setAiError(aiRes.reason.message || "AI분석 실패");
