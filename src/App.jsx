@@ -764,7 +764,7 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"today",label:"네오오늘",icon:"🔥"},{id:"db",label:"최종가이드",icon:"🎯"},{id:"ccdb",label:"침DB",icon:"💎"},{id:"jddb",label:"주도주DB",icon:"🚀"},{id:"hsdb",label:"하승훈DB",icon:"🏆"}].map(t=>(
+          {[{id:"today",label:"네오오늘",icon:"🔥"},{id:"db",label:"최종가이드",icon:"🎯"},{id:"ccdb",label:"│침DB",icon:"💎"},{id:"jddb",label:"주도주DB",icon:"🚀"},{id:"hsdb",label:"하승훈DB",icon:"🏆"}].map(t=>(
             <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"8px 0 6px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:1,position:"relative"}}>
               <span style={{fontSize:18}}>{t.icon}</span>
               <span style={{fontSize:10,fontWeight:page===t.id?700:500,color:page===t.id?"#1e293b":"#94a3b8"}}>{t.label}</span>
