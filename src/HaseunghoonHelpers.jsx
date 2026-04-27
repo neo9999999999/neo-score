@@ -157,11 +157,11 @@ export function calcHaseunghoonScoreContext(s, signalsContext) {
   let vetoReasons = [];
 
   // V1: 치명적 윗꼬리 (35%+) — 세력 이탈
-  if (wick >= 35) { vetoed = true; vetoReasons.push("윗꼬리 35%+"); }
+  if (wick >= 50) { vetoed = true; vetoReasons.push("윗꼬리 35%+"); }
   // V2: 거래대금 큰데 종가 약함 (5%+ 윗꼬리 + 큰 거래대금)
-  if (amt >= 1000 && wick >= 5) { vetoed = true; vetoReasons.push("대량거래 + 윗꼬리 과다"); }
+  if (amt >= 2000 && wick >= 10) { vetoed = true; vetoReasons.push("대량거래 + 윗꼬리 과다"); }
   // V3: 등락률 미달 (3% 미만은 돌파 부적격)
-  if (ch < 3) { vetoed = true; vetoReasons.push("돌파폭 부족"); }
+  if (ch < 2) { vetoed = true; vetoReasons.push("돌파폭 부족"); }
   // V4: 둘다- (음수 수급)
   if (s.investor === "둘다-") { vetoed = true; vetoReasons.push("외+기 동반 매도"); }
 
@@ -174,11 +174,11 @@ export function calcHaseunghoonScoreContext(s, signalsContext) {
     weight = 0;
     note = "🚫 VETO: " + vetoReasons.join(", ");
   } else {
-    if (total >= 95) { grade = "S+"; weight = 25; note = "💎 최상급 진성 돌파"; }
-    else if (total >= 90) { grade = "S"; weight = 20; note = "🔥 매우 우수한 돌파"; }
-    else if (total >= 85) { grade = "A+"; weight = 15; note = "✅ 분할 접근 가능"; }
-    else if (total >= 75) { grade = "A"; weight = 10; note = "👀 재테스트 확인"; }
-    else if (total >= 60) { grade = "B"; weight = 3; note = "⚠️ 관찰 위주"; }
+    if (total >= 88) { grade = "S+"; weight = 25; note = "💎 최상급 진성 돌파"; }
+    else if (total >= 80) { grade = "S"; weight = 20; note = "🔥 매우 우수한 돌파"; }
+    else if (total >= 70) { grade = "A+"; weight = 15; note = "✅ 분할 접근 가능"; }
+    else if (total >= 60) { grade = "A"; weight = 10; note = "👀 재테스트 확인"; }
+    else if (total >= 50) { grade = "B"; weight = 3; note = "⚠️ 관찰 위주"; }
     else { grade = "C"; weight = 0; note = "❌ 매매 제외"; }
   }
 
