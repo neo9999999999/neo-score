@@ -174,10 +174,10 @@ export function calcHaseunghoonScoreContext(s, signalsContext) {
     weight = 0;
     note = "🚫 VETO: " + vetoReasons.join(", ");
   } else {
-    if (total >= 88) { grade = "S+"; weight = 25; note = "💎 최상급 진성 돌파"; }
-    else if (total >= 80) { grade = "S"; weight = 20; note = "🔥 매우 우수한 돌파"; }
-    else if (total >= 70) { grade = "A+"; weight = 15; note = "✅ 분할 접근 가능"; }
-    else if (total >= 60) { grade = "A"; weight = 10; note = "👀 재테스트 확인"; }
+    if (total >= 78) { grade = "S+"; weight = 25; note = "💎 최상급 진성 돌파"; }
+    else if (total >= 68) { grade = "S"; weight = 20; note = "🔥 매우 우수한 돌파"; }
+    else if (total >= 58) { grade = "A+"; weight = 15; note = "✅ 분할 접근 가능"; }
+    else if (total >= 48) { grade = "A"; weight = 10; note = "👀 재테스트 확인"; }
     else if (total >= 50) { grade = "B"; weight = 3; note = "⚠️ 관찰 위주"; }
     else { grade = "C"; weight = 0; note = "❌ 매매 제외"; }
   }
