@@ -1,5 +1,607 @@
 [
   {
+    "name": "부국철강",
+    "grade": "A",
+    "score": 8,
+    "change": 26.18,
+    "upperWick": 2.76,
+    "amount": 40,
+    "investor": "외인",
+    "breakType": "52W",
+    "ema50": "상승",
+    "tp1": 10,
+    "tp2": 20,
+    "sl": 5,
+    "summary": "A등급 매수 종목 - 52주 신고가 돌파, 외국인 매수 지속, 강력한 상승 모멘텀",
+    "detailedAnalysis": "부국철강은 강력한 상승 모멘텀을 보이며 26.18% 급등하여 52주 신고가를 경신했습니다. 차트상 장기 하락 추세를 완전히 벗어나 새로운 상승 사이클에 진입한 모습으로, 모든 이평선이 정배열을 이루고 있습니다. 외국인이 지속적으로 매수세를 유지하고 있어 수급 구조가 견고하며, 거래량도 평소 대비 크게 증가하여 상승 신뢰도가 높습니다. 윗꼬리가 2.76%로 적절한 수준이고, 거래대금 40억원으로 적정 규모를 유지하고 있어 추가 상승 여력이 충분합니다.",
+    "confidenceScore": 85,
+    "nextDayRiseProbability": 75,
+    "recommendedWeight": 15,
+    "verdict": "매수",
+    "keyReasons": [
+      "52주 신고가 돌파로 기술적 저항선 완전 해소",
+      "외국인 지속 매수로 견고한 수급 구조",
+      "26.18% 강력한 상승 모멘텀",
+      "거래량 급증으로 상승 신뢰도 확보"
+    ],
+    "risks": [
+      "급등 후 단기 조정 가능성",
+      "철강업종 특성상 경기 민감성"
+    ],
+    "technicalIndicators": {
+      "rsi": "70대 진입, 과열 구간이지만 강세 지속",
+      "macd": "골든크로스 후 상승 모멘텀 확대",
+      "bollinger": "상단 밴드 돌파, 추세 강화",
+      "movingAverage": "정배열 완성, 모든 이평선 상승세",
+      "volume": "평소 대비 10배 이상 급증",
+      "summary": "모든 기술적 지표가 강한 상승 신호"
+    },
+    "supplyZone": {
+      "status": "돌파성공",
+      "level": "장기",
+      "thickness": "두꺼움",
+      "breakoutQuality": "진성돌파",
+      "detail": "3,000원대 장기 저항선을 대량거래로 완전 돌파하여 새로운 상승 국면 진입"
+    },
+    "strategy": {
+      "entry": "현재가 매수 또는 소폭 조정 시 적극 매수",
+      "entryPrice": "3,300-3,400원",
+      "stopLoss": "3,180원",
+      "tp1Price": "3,685원",
+      "tp2Price": "4,020원",
+      "exit": "TP1에서 50% 청산, TP2에서 완전 청산",
+      "hold": "10일"
+    },
+    "details": [
+      {
+        "item": "외국인매수",
+        "point": 2,
+        "reason": "외국인 단독 매수세"
+      },
+      {
+        "item": "윗꼬리",
+        "point": 1,
+        "reason": "2.76%로 양호한 수준"
+      },
+      {
+        "item": "거래대금",
+        "point": 2,
+        "reason": "40억원으로 200억 이하"
+      },
+      {
+        "item": "등락률",
+        "point": 2,
+        "reason": "26.18%로 20% 이상"
+      },
+      {
+        "item": "코스피",
+        "point": 0,
+        "reason": "코스피 종목으로 가점 없음"
+      },
+      {
+        "item": "신고가",
+        "point": 1,
+        "reason": "52주 신고가 달성"
+      }
+    ],
+    "date": "2026-04-28",
+    "images": 8,
+    "chimchakhaeResult": {
+      "stockName": "부국철강",
+      "stockCode": "026940",
+      "imagesAnalyzed": [
+        {
+          "type": "일봉차트",
+          "summary": "3,350원, +26.18% 급등, 매물대 돌파 확인"
+        },
+        {
+          "type": "연간차트",
+          "summary": "2021년 고점 8,780원 대비 현재 3,350원, 장기 하락추세"
+        },
+        {
+          "type": "체결현황",
+          "summary": "15:55~15:59 구간 3,350원 체결 집중"
+        },
+        {
+          "type": "수급현황",
+          "summary": "외국인 -454, 기관계 +73, 개인 +184,327"
+        },
+        {
+          "type": "거래원분석",
+          "summary": "개인 중심 매수세, 외국인 매도"
+        },
+        {
+          "type": "기본정보",
+          "summary": "철강업종, PER 31.15, PBR 0.51"
+        },
+        {
+          "type": "3분봉차트",
+          "summary": "09:15 저점 2,700원 대비 24% 상승"
+        },
+        {
+          "type": "종목분석",
+          "summary": "안정성/성장성/수익성/활동성 지표 확인"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "3350",
+        "changeRate": "26.18",
+        "tradingValue": "확인불가",
+        "foreignLate": "-454",
+        "instLate": "+73",
+        "progLate": "+184327",
+        "threeDaysSupply": "개인매수 지속",
+        "sector": "철강",
+        "sectorRank": "확인불가",
+        "chartPattern": "매물대 돌파",
+        "breakoutType": "단기매물대 돌파",
+        "maArrangement": "정배열 전환중",
+        "volumeSurge": "급증",
+        "closeType": "강한 상승마감",
+        "material": "확인불가",
+        "materialType": "확인불가"
+      },
+      "engines": {
+        "supply": {
+          "score": 15,
+          "max": 35,
+          "breakdown": {
+            "lateHours": 5,
+            "consistency": 5,
+            "volume": 5
+          },
+          "reasoning": "장 후반 개인투자자 중심 매수세만 확인, 외국인/기관 동반매수 부재. 3일간 일관성 부족, 거래대금 규모 제한적"
+        },
+        "market": {
+          "score": 8,
+          "max": 25,
+          "breakdown": {
+            "lead": 3,
+            "duration": 2,
+            "strength": 3
+          },
+          "reasoning": "철강섹터 위치 불명, 섹터 내 상대강도 확인 어려움, 단발성 상승 가능성"
+        },
+        "chart": {
+          "score": 18,
+          "max": 25,
+          "breakdown": {
+            "breakout": 8,
+            "ma": 3,
+            "volume": 4,
+            "close": 3
+          },
+          "reasoning": "중기 매물대(2,700-3,000원) 돌파 성공, 정배열 진입 중, 거래량 급증, 상승마감"
+        },
+        "material": {
+          "score": 3,
+          "max": 15,
+          "breakdown": {
+            "type": 2,
+            "nextDay": 1
+          },
+          "reasoning": "특별한 재료 확인 불가, 철강업종 자체 모멘텀 제한적"
+        }
+      },
+      "supplyZone": {
+        "level": "short",
+        "levelLabel": "단기 매물대",
+        "period": "2-4주",
+        "thickness": "medium",
+        "thicknessLabel": "중간 두께의 매물대",
+        "status": "돌파",
+        "breakoutQuality": "양호한 돌파봉",
+        "detail": "2,700원에서 3,000원 구간의 단기 매물대를 26% 급등으로 돌파했습니다. 거래량을 동반한 돌파로 품질은 양호하나, 장기적 관점에서는 여전히 2021년 고점 8,780원 대비 상당한 하락 구간에 위치합니다. 3,350원 부근에서 새로운 저항이 형성될 가능성이 높습니다."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "차트에서 RSI 수치 확인 불가"
+        },
+        "stochastic": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "스토캐스틱 지표 확인 불가"
+        },
+        "bollinger": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "볼린저밴드 표시 없음"
+        },
+        "ichimoku": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "일목균형표 확인 불가"
+        },
+        "envelope": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "Envelope 지표 없음"
+        },
+        "overallTone": "neutral",
+        "summary": "보조지표가 차트에 표시되지 않아 기술적 분석에 제한이 있습니다. 이동평균선 배열만으로 판단할 수 있습니다."
+      },
+      "totalScore": 44,
+      "grade": "B",
+      "verdict": "진입 보류",
+      "recommendedWeight": 3,
+      "nextDayRiseProbability": 35,
+      "confidenceScore": 70,
+      "keyReasons": [
+        "단기 매물대 2,700-3,000원 구간 돌파 성공",
+        "26.18% 급등으로 강한 상승 모멘텀",
+        "거래량 급증 동반한 돌파",
+        "정배열 전환 진행중",
+        "개인투자자 중심 매수세"
+      ],
+      "risks": [
+        "외국인/기관 동반매수 부재로 수급 불안정",
+        "철강업종 전반적 부진과 재료 부족"
+      ],
+      "strategy": {
+        "entry": "3,300-3,350원 구간 분할매수",
+        "exit": "3,600원(+7%) 1차 익절, 3,800원(+13%) 2차 익절",
+        "stopLoss": "3,150원(-6%) 손절",
+        "hold": "단기 스윙, 1-3일",
+        "entryPrice": 3325,
+        "tp1Price": 3580,
+        "tp2Price": null,
+        "slPrice": 3150
+      },
+      "chimchakhaeAnalysis": "부국철강은 단기 매물대 돌파에는 성공했으나 종가베팅 관점에서는 신중해야 할 종목입니다. 26% 급등으로 강한 모멘텀을 보였지만, 수급구조가 개인��자자 중심이며 외국인과 기관의 동반매수가 없어 지속성에 의문이 있습니다. 철강업종 자체의 섹터 모멘텀도 확인되지 않아 단발성 상승일 가능성이 높습니다. 차트상 돌파는 성공적이나 전체적인 스코어 44점으로 B등급에 그쳐 적극적 진입보다는 관망이 적절합니다. 진입 시에도 소량 비중으로 단기 스윙 관점에서 접근하는 것이 바람직합니다."
+    },
+    "judojuResult": {
+      "stockName": "부국철강",
+      "stockCode": "026940",
+      "imagesAnalyzed": [
+        {
+          "type": "일봉차트",
+          "summary": "26.18% 급등, 3350원 강세 마감"
+        },
+        {
+          "type": "월봉차트",
+          "summary": "2021년 고점 대비 68.43% 하락 후 반등"
+        },
+        {
+          "type": "체결내역",
+          "summary": "15:55분부터 3350원 상한가 체결 지속"
+        },
+        {
+          "type": "수급내역",
+          "summary": "개인 대량매수 184,327주, 외국인 매도 111,142주"
+        },
+        {
+          "type": "외국인수급",
+          "summary": "당일 -454주 순매도, 5차례 집계"
+        },
+        {
+          "type": "종목정보",
+          "summary": "코스피 철강업종, 시가총액 670억, PER 31.15"
+        },
+        {
+          "type": "3분봉차트",
+          "summary": "09:15 시초가 24.07% 갭상승, 상한가 진입"
+        },
+        {
+          "type": "기업분석",
+          "summary": "안정적 실적, 철강업체 기본 펀더멘털"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "3350",
+        "changeRate": "26.18%",
+        "tradingValue": "확인불가",
+        "foreignLate": "-111,142",
+        "instLate": "확인불가",
+        "progLate": "+184,327",
+        "threeDaysSupply": "확인불가",
+        "sector": "철강",
+        "sectorRank": "확인불가",
+        "chartPattern": "갭상승 상한가",
+        "breakoutType": "강력한 갭상승",
+        "maArrangement": "정배열",
+        "volumeSurge": "급증",
+        "closeType": "상한가 완전체결",
+        "material": "철강 테마",
+        "materialType": "업종테마"
+      },
+      "engines": {
+        "rs": {
+          "score": 20,
+          "max": 30,
+          "breakdown": {
+            "amountRank": 10,
+            "changeRank": 10
+          },
+          "reasoning": "거래대금 상위권 추정되나 정확한 시장순위 확인 불가, 26.18% 등락률은 상위권 수준"
+        },
+        "leader": {
+          "score": 19,
+          "max": 25,
+          "breakdown": {
+            "market": 6,
+            "amount": 13
+          },
+          "reasoning": "코스피 시장 6점, 시가총액 670억 규모로 중간급 거래대금 추정"
+        },
+        "momentum": {
+          "score": 25,
+          "max": 25,
+          "breakdown": {
+            "changeStrength": 15,
+            "closeStrength": 10
+          },
+          "reasoning": "26.18% 강력한 등락률로 만점, 상한가 완전체결로 종가 마감 완벽"
+        },
+        "supply": {
+          "score": 8,
+          "max": 20,
+          "breakdown": {
+            "investor": 2,
+            "weight": 6
+          },
+          "reasoning": "개인만 순매수하고 외국인 순매도로 동반매수 ���음, 거래대금 가중치는 중간급"
+        }
+      },
+      "supplyZone": {
+        "level": "long",
+        "levelLabel": "장기 매물대",
+        "period": "2021년 고점 형성",
+        "thickness": "heavy",
+        "thicknessLabel": "두꺼운 매물대",
+        "status": "돌파시도",
+        "breakoutQuality": "강력한 갭상승",
+        "detail": "2021년 8780원 고점에서 68% 하락 후 1800원 저점을 거쳐 현재 3350원까지 상승. 장기간 형성된 매물대 구간을 강력한 갭상승으로 돌파 시도 중이며, 상한가 체결로 매물 소화력이 우수함을 보여줌."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "지표 데이터 부족"
+        },
+        "stochastic": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "지표 데이터 부족"
+        },
+        "bollinger": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "지표 데이터 부족"
+        },
+        "ichimoku": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "지표 데이터 부족"
+        },
+        "envelope": {
+          "status": "unknown",
+          "value": "확인불가",
+          "comment": "지표 데이터 부족"
+        },
+        "overallTone": "positive",
+        "summary": "보조지표 데이터는 확인되지 않지만 ��한가 급등 패턴과 이평선 정배열로 긍정적 신호 지배적"
+      },
+      "totalScore": 72,
+      "grade": "A+",
+      "verdict": "주도주",
+      "recommendedWeight": 14,
+      "nextDayRiseProbability": 75,
+      "confidenceScore": 75,
+      "leaderStatus": {
+        "isLeader": true,
+        "rank": "1등",
+        "themeRank": "철강업종 1등 후보",
+        "comment": "철강 테마에서 가장 강력한 상한가 진입을 보여주며 대장주 위치 확보. 개인투자자 대량 매수세가 집중되고 있음."
+      },
+      "keyReasons": [
+        "26.18% 강력한 갭상승으로 상한가 진입",
+        "15:55분부터 상한가 완전체결 지속",
+        "개인 대량매수 184,327주 집중",
+        "철강 테마 내 선도주 위치",
+        "장기 매물대 돌파 시도"
+      ],
+      "risks": [
+        "외국인 순매도 압력 지속",
+        "상한가 이후 차익실현 물량 출현 가능성"
+      ],
+      "strategy": {
+        "entry": "다음날 시초가 또는 소폭 조정시 진입",
+        "exit": "1차 목표 3850원, 2차 목표 4200원",
+        "stopLoss": "3180원 이하 손절",
+        "hold": "단기 스윙, 2-3일 관찰",
+        "entryPrice": 3350,
+        "tp1Price": 3850,
+        "tp2Price": 4200,
+        "slPrice": 3180
+      },
+      "judojuAnalysis": "부국철강은 철강 테마에서 가장 강력한 상한가 돌입을 보여주며 대장주 위치를 확보했습니다. 26.18% 갭상승으로 시작하여 장중 내내 상한가를 유지하는 모습은 강력한 매수세를 시사합니다. 개인투자자의 18만주 대량 매수가 집중되었고, 2021년 고점 대비 68% 하락 후 반등하는 시점에서 장기 매물대 돌파를 시도하고 있습니다. 다만 외국인 순매도와 기관 수급 부재는 리스크 요인이지만, 상한가 체결력을 볼 때 단기적으로는 추가 상승 여력이 있어 보입니다. 철강업종 내에서 확실한 1등주 위치를 점하고 있어 주도주 매매 대상으로 적합합니다."
+    },
+    "haseunghoonResult": {
+      "stockName": "부국철강",
+      "stockCode": "026940",
+      "imagesAnalyzed": [
+        {
+          "type": "일봉차트",
+          "summary": "장기박스권 돌파 후 26.18% 급등"
+        },
+        {
+          "type": "월봉차트",
+          "summary": "2020년 최저점 이후 바닥권 횡보"
+        },
+        {
+          "type": "체결내역",
+          "summary": "3,350원 연속체결, 상한가 근접"
+        },
+        {
+          "type": "수급현황",
+          "summary": "개인 대량매수 vs 외국인 매도"
+        },
+        {
+          "type": "외국인동향",
+          "summary": "외국인 -454주 순매도"
+        },
+        {
+          "type": "종목정보",
+          "summary": "철강업, PER 31.15, 시가총액 670억"
+        },
+        {
+          "type": "분봉차트",
+          "summary": "09:15 갭상승 후 고점 유지"
+        },
+        {
+          "type": "실적분석",
+          "summary": "2025년 매출 513.7억 전망"
+        }
+      ],
+      "extractedData": {
+        "currentPrice": "3,350",
+        "changeRate": "+26.18%",
+        "tradingValue": "확인불가",
+        "foreignLate": "-454주",
+        "instLate": "확인불가",
+        "progLate": "확인불가",
+        "threeDaysSupply": "개인매수 우세",
+        "sector": "철강",
+        "sectorRank": "확인불가",
+        "chartPattern": "��기박스권 돌파",
+        "breakoutType": "매물대 돌파",
+        "maArrangement": "정배열 전환",
+        "volumeSurge": "대량거래 동반",
+        "closeType": "상한가 근접",
+        "material": "철강업 회복",
+        "materialType": "업황개선"
+      },
+      "engines": {
+        "condensation": {
+          "score": 15,
+          "max": 25,
+          "breakdown": {
+            "newHigh": 8,
+            "maAlign": 4,
+            "resistTest": 3
+          },
+          "reasoning": "장기박스권 돌파로 매물대 소화, 이평선 정배열 전환 초기, 2년간 저항선 테스트"
+        },
+        "breakout": {
+          "score": 22,
+          "max": 30,
+          "breakdown": {
+            "closePos": 10,
+            "changeRange": 10,
+            "settle": 2
+          },
+          "reasoning": "26.18% 골든존 급등, 상한가 근접으로 종가 강함, 완전한 몸통 돌파"
+        },
+        "volume": {
+          "score": 8,
+          "max": 20,
+          "breakdown": {
+            "absAmt": 5,
+            "relRank": 3
+          },
+          "reasoning": "거래대금 절대값 부족하지만 평소 대비 급증, 시장 순위 중위권"
+        },
+        "supply": {
+          "score": 8,
+          "max": 15,
+          "breakdown": {
+            "foreign": -2,
+            "institute": 5,
+            "lateStrength": 5
+          },
+          "reasoning": "외국인 매도 but 개인 대량매수, 후반 매수세 지속"
+        },
+        "bottomFirst": {
+          "score": 9,
+          "max": 10,
+          "breakdown": {
+            "isFirst": 5,
+            "trendStart": 4
+          },
+          "reasoning": "2년 박스권 이탈 첫 양봉, 새로운 상승 추세 시작 가능성"
+        }
+      },
+      "vetoStatus": {
+        "vetoed": false,
+        "reasons": []
+      },
+      "supplyZone": {
+        "level": "long",
+        "levelLabel": "장기 매물대",
+        "period": "2020-2024년 4년간",
+        "thickness": "heavy",
+        "thicknessLabel": "두꺼운 매물대",
+        "status": "돌파",
+        "breakoutQuality": "강력한 갭상승 돌파",
+        "detail": "1,800-3,000원 구간 장기 매물대를 26% 급등으로 완전 돌파. 4년간 형성된 두꺼운 저항대를 한번에 뚫고 상한가 근접 마감. 과거 고점 3,445원 재도전 임박."
+      },
+      "technicalIndicators": {
+        "rsi": {
+          "status": "positive",
+          "value": "확인불가",
+          "comment": "급등 후 과열권 진입 가능성"
+        },
+        "stochastic": {
+          "status": "positive",
+          "value": "확인불가",
+          "comment": "상승 모멘텀 강화"
+        },
+        "bollinger": {
+          "status": "positive",
+          "value": "상단밴드 돌파",
+          "comment": "볼린저밴드 상단 이탈로 강세 지속"
+        },
+        "ichimoku": {
+          "status": "positive",
+          "value": "구름 위",
+          "comment": "일목균형표 구름대 상단 진입"
+        },
+        "envelope": {
+          "status": "positive",
+          "value": "상단 이격",
+          "comment": "중심선 대비 크게 이격된 상태"
+        },
+        "overallTone": "positive",
+        "summary": "모든 보조지표가 강세 신호를 보이나 단기 과열 우려 존재"
+      },
+      "totalScore": 62,
+      "grade": "B",
+      "verdict": "관찰",
+      "recommendedWeight": 3,
+      "nextDayRiseProbability": 65,
+      "confidenceScore": 75,
+      "breakoutQuality": {
+        "isReal": true,
+        "breakType": "매물대",
+        "comment": "4년간 박스권을 26% 급등으로 완전 돌파. 갭상승과 함께 강력한 매수세 동반한 진성 돌파로 판단됨."
+      },
+      "keyReasons": [
+        "4년간 장기 박스권 완전 돌파",
+        "26.18% 골든존 급등률",
+        "상한가 근접 강력한 종가",
+        "바닥권 첫 대형 양봉 출현",
+        "개인투자자 대량 매수세"
+      ],
+      "risks": [
+        "외국인 지속 매도 압력",
+        "단기 과열로 인한 차익실현 출회"
+      ],
+      "strategy": {
+        "entry": "재테스트 구간 진입",
+        "exit": "단계적 분할매도",
+        "stopLoss": "매물대 상단 이탈시",
+        "hold": "단기 관찰",
+        "entryPrice": 3200,
+        "tp1Price": 3700,
+        "tp2Price": null,
+        "slPrice": 2900
+      },
+      "haseunghoonAnalysis": "부국철강은 4년간 지속된 1,800-3,000원 장기 박스권을 26.18% 급등으로 완전히 돌파한 바닥권 첫 양봉 사례입니다. 갭상승과 함께 상한가 근접 마감은 세력 개입 가능성을 시사하며, 개인투자자의 대량 매수세가 이를 뒷받침합니다. 다만 거래대금 절대값 부족과 외국인 매도세가 우려요인으로, 완전한 진성 돌파보다는 재테스트 확인이 필요한 상황입니다. 철강업 회복 기대감이 더해져 추세 전환 초기 신호로 해석되나, 단기 과열 우려로 분할 접근이 적합합니다."
+    }
+  },
+  {
     "name": "한미반도체",
     "grade": "S",
     "score": 10,
