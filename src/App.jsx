@@ -65,7 +65,7 @@ const API_URL="https://sector-api-pink.vercel.app/api/screening";
 const HIST_URL="https://sector-api-pink.vercel.app/api/history";
 const TRACK_API="https://sector-api-pink.vercel.app/api/track";
 const PRICE_API="https://sector-api-pink.vercel.app/api/daily-price";
-const SYS_PROMPT=`당신은 종가돌파매매 전문 AI 분석가입니다. 차트 이미지를 분석하여 NEO-SCORE 등급을 판정합니다.\n\n## 검증된 매매 룰 (6년 백테스트 · 평균 +1.85%/건 · 6년 모두 양수)\n매수 조건: NEO 4점 이상 (B/A/S 등급) AND 침착해/주도주/하승훈 중 2개 이상이 SSA+ 등급(S+/S/A+)\nTP1=10%, TP2=20%, SL=-5%, 보유 10일\n\n## 분석 항목 (14점 스케일)\n가점: 기관+외인동시(+3) · 외인만(+2) · 윗꼬리0.5%이하(+2)/2%이하(+1) · 거래대금200억이하(+2)/500억이하(+1) · 등락률25%+(+2)/20%+(+1) · 코스닥(+1) · 사상최고가(+1) · 소폭돌파0-3%(+2) · 매물대돌파(+1)\n감점: 윗꼬리7%+(-1) · 1500억+(-1) · ETF(-3) · 초강력돌파15%+(-1)\n\n## 등급\nS(9+): TP10/20 SL5 풀사이즈 | A(7-8): TP10/20 SL5 기본 | B(5-6): TP10/20 SL5 소량 | X(4이하): 매수금지\n\n## 응답 형식 (반드시 JSON)\n{"name":"종목명","grade":"S/A/B/X","score":점수,"change":등락률,"upperWick":윗꼬리,"amount":거래대금억,"investor":"기관+외인/외인/기관","breakType":"ATH/52W/120D","ema50":"상승/하락","tp1":10,"tp2":20,"sl":5,"summary":"[S/A/B/X등급] 핵심이유+근거 2-3줄. 매수권장은 NEO 4+ AND 침/주/하 SSA+ 2개이상일때만. 9점+(S)=강력패턴+엔트리충족, 7-8점(A)=신뢰도높음, 5-6점(B)=기본요건충족, 4이하(X)=매수금지","details":[{"item":"항목명","point":점수,"reason":"이유"}]}`;
+const SYS_PROMPT=`당신은 종가돌파매매 전문 AI 분석가입니다. 차트 이미지를 분석하여 NEO-SCORE 등급 + 상세 섹션별 분석을 제공합니다.\n\n## 검증된 매매 룰 (6년 백테스트 · 평균 +1.85%/건 · 6년 모두 양수)\n매수 조건: NEO 4점 이상 (B/A/S 등급) AND 침착해/주도주/하승훈 중 2개 이상이 SSA+ 등급(S+/S/A+)\nTP1=10%, TP2=20%, SL=-5%, 보유 10일\n\n## 분석 항목 (14점 스케일)\n가점: 기관+외인동시(+3) · 외인만(+2) · 윗꼬리0.5%이하(+2)/2%이하(+1) · 거래대금200억이하(+2)/500억이하(+1) · 등락률25%+(+2)/20%+(+1) · 코스닥(+1) · 사상최고가(+1) · 소폭돌파0-3%(+2) · 매물대돌파(+1)\n감점: 윗꼬리7%+(-1) · 1500억+(-1) · ETF(-3) · 초강력돌파15%+(-1)\n\n## 등급\nS(9+): 풀사이즈 | A(7-8): 기본 | B(5-6): 소량 | X(4이하): 매수금지\n\n## 응답 형식 (반드시 단일 JSON, 모든 필드 채우기)\n{"name":"종목명","grade":"S/A/B/X","score":점수,"change":등락률,"upperWick":윗꼬리,"amount":거래대금억,"investor":"기관+외인/외인/기관/없음","breakType":"ATH/52W/120D","ema50":"상승/하락/혼조","tp1":10,"tp2":20,"sl":5,"summary":"한 줄 요약 (S/A/B/X등급 명시 + 핵심이유)","detailedAnalysis":"3-5문장의 종합 상세 분석. 차트 패턴, 거래량, 수급, 추세, 모멘텀, 진입 타이밍 등을 자세히 서술","confidenceScore":0~100,"nextDayRiseProbability":0~100,"recommendedWeight":0~30,"verdict":"강력매수/매수/조건부매수/관망/매수금지","keyReasons":["핵심 이유 1","핵심 이유 2","핵심 이유 3","핵심 이유 4"],"risks":["리스크 1","리스크 2"],"technicalIndicators":{"rsi":"RSI 수치+해석","macd":"MACD 상태+신호","bollinger":"볼린저밴드 위치","movingAverage":"이평선 배열 (정배열/역배열)","volume":"거래량 패턴","summary":"기술적 지표 종합 한 줄"},"supplyZone":{"status":"돌파성공/돌파시도/매물대내/매물대하단","level":"단기/중기/장기","thickness":"얇음/보통/두꺼움","breakoutQuality":"진성돌파/약한돌파/실패","detail":"매물대 분석 1-2문장"},"strategy":{"entry":"진입 시점 설명","entryPrice":"진입가 또는 범위","stopLoss":"손절가","tp1Price":"TP1 가격","tp2Price":"TP2 가격","exit":"청산 전략","hold":"보유 기간 (예: 10일)"},"details":[{"item":"항목명","point":점수,"reason":"이유"}]}`;
 
 function SignalDB(){const [tab,setTab]=useState("S");const [cTP,setCTP]=useState(NS);const [srt,setSrt]=useState({c:"d",d:"desc"});const [open,setOpen]=useState(null);const [pg,setPg]=useState(0);const[invAmt,setInvAmt]=useState(()=>{try{return JSON.parse(localStorage.getItem("invAmt_v1")||"")||{S:1000000,A:500000,B:300000,same:500000,useSame:false}}catch(e){return{S:1000000,A:500000,B:300000,same:500000,useSame:false}}});const[mode,setMode]=useState(()=>{try{const v=localStorage.getItem("mode_v1");return v==="full"||v==="middle"||v==="tight"?v:"tight"}catch(e){return "tight"}});const[yearFilter,setYearFilter]=useState("all");const[fromD,setFromD]=useState("");const[toD,setToD]=useState("");const[supplyFilter,setSupplyFilter]=useState("all");const[highFilter,setHighFilter]=useState("all");const[holdFilter,setHoldFilter]=useState("all");
 useEffect(()=>{const h=(e)=>{if((e.ctrlKey||e.metaKey)&&(e.key==="k"||e.key==="K")){e.preventDefault();setMode(v=>v==="tight"?"full":v==="full"?"middle":"tight");}};window.addEventListener("keydown",h);return()=>window.removeEventListener("keydown",h);},[]);
@@ -536,6 +536,109 @@ function AIAnalysis({onSave}){
                       </div>
                     )}
                     <button onClick={save} style={{width:"100%", padding:10, borderRadius:8, border:"none", background:"#dc2626", color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", marginTop:10}}>✅ 히스토리에 저장</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AI 상세 분석 (NEW v2) */}
+          {aiResult && (aiResult.detailedAnalysis || aiResult.keyReasons || aiResult.technicalIndicators) && (
+            <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
+              <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 AI 상세 분석</div>
+
+              {aiResult.detailedAnalysis && (
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#64748b", marginBottom:4}}>📋 종합 분석</div>
+                  <div style={{fontSize:13, color:"#334155", lineHeight:1.7, padding:10, background:"#f8fafc", borderRadius:6}}>{aiResult.detailedAnalysis}</div>
+                </div>
+              )}
+
+              {(aiResult.confidenceScore != null || aiResult.nextDayRiseProbability != null || aiResult.recommendedWeight != null || aiResult.verdict) && (
+                <div style={{display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:8, marginBottom:12}}>
+                  {aiResult.confidenceScore != null && (
+                    <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                      <div style={{fontSize:10, color:"#64748b"}}>신뢰도</div>
+                      <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{aiResult.confidenceScore}</div>
+                    </div>
+                  )}
+                  {aiResult.nextDayRiseProbability != null && (
+                    <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                      <div style={{fontSize:10, color:"#64748b"}}>익일상승확률</div>
+                      <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{aiResult.nextDayRiseProbability}%</div>
+                    </div>
+                  )}
+                  {aiResult.recommendedWeight != null && (
+                    <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                      <div style={{fontSize:10, color:"#64748b"}}>추천비중</div>
+                      <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{aiResult.recommendedWeight}%</div>
+                    </div>
+                  )}
+                  {aiResult.verdict && (
+                    <div style={{padding:8, background:"#fef3c7", borderRadius:6, textAlign:"center"}}>
+                      <div style={{fontSize:10, color:"#92400e"}}>판정</div>
+                      <div style={{fontSize:13, fontWeight:700, color:"#78350f"}}>{aiResult.verdict}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {Array.isArray(aiResult.keyReasons) && aiResult.keyReasons.length > 0 && (
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#059669", marginBottom:4}}>✅ 핵심 이유</div>
+                  <ul style={{margin:0, paddingLeft:18, fontSize:12, color:"#334155", lineHeight:1.7}}>
+                    {aiResult.keyReasons.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {Array.isArray(aiResult.risks) && aiResult.risks.length > 0 && (
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#dc2626", marginBottom:4}}>⚠️ 리스크</div>
+                  <ul style={{margin:0, paddingLeft:18, fontSize:12, color:"#334155", lineHeight:1.7}}>
+                    {aiResult.risks.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {aiResult.technicalIndicators && typeof aiResult.technicalIndicators === "object" && (
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#0284c7", marginBottom:4}}>📊 기술적 지표</div>
+                  <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#f0f9ff", borderRadius:6}}>
+                    {aiResult.technicalIndicators.rsi && <div><b>RSI:</b> {aiResult.technicalIndicators.rsi}</div>}
+                    {aiResult.technicalIndicators.macd && <div><b>MACD:</b> {aiResult.technicalIndicators.macd}</div>}
+                    {aiResult.technicalIndicators.bollinger && <div><b>볼린저:</b> {aiResult.technicalIndicators.bollinger}</div>}
+                    {aiResult.technicalIndicators.movingAverage && <div><b>이평선:</b> {aiResult.technicalIndicators.movingAverage}</div>}
+                    {aiResult.technicalIndicators.volume && <div><b>거래량:</b> {aiResult.technicalIndicators.volume}</div>}
+                    {aiResult.technicalIndicators.summary && <div style={{marginTop:4, fontStyle:"italic"}}>{aiResult.technicalIndicators.summary}</div>}
+                  </div>
+                </div>
+              )}
+
+              {aiResult.supplyZone && typeof aiResult.supplyZone === "object" && (
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#9333ea", marginBottom:4}}>🧱 매물대 분석</div>
+                  <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#faf5ff", borderRadius:6}}>
+                    {aiResult.supplyZone.status && <div><b>상태:</b> {aiResult.supplyZone.status}</div>}
+                    {aiResult.supplyZone.level && <div><b>레벨:</b> {aiResult.supplyZone.level}</div>}
+                    {aiResult.supplyZone.thickness && <div><b>두께:</b> {aiResult.supplyZone.thickness}</div>}
+                    {aiResult.supplyZone.breakoutQuality && <div><b>돌파품질:</b> {aiResult.supplyZone.breakoutQuality}</div>}
+                    {aiResult.supplyZone.detail && <div style={{marginTop:4, fontStyle:"italic"}}>{aiResult.supplyZone.detail}</div>}
+                  </div>
+                </div>
+              )}
+
+              {aiResult.strategy && typeof aiResult.strategy === "object" && (
+                <div style={{marginBottom:6}}>
+                  <div style={{fontSize:11, fontWeight:600, color:"#ea580c", marginBottom:4}}>🎯 매매 전략</div>
+                  <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#fff7ed", borderRadius:6}}>
+                    {aiResult.strategy.entry && <div><b>진입:</b> {aiResult.strategy.entry}</div>}
+                    {aiResult.strategy.entryPrice && <div><b>진입가:</b> {aiResult.strategy.entryPrice}</div>}
+                    {aiResult.strategy.stopLoss && <div><b>손절:</b> {aiResult.strategy.stopLoss}</div>}
+                    {aiResult.strategy.tp1Price && <div><b>TP1:</b> {aiResult.strategy.tp1Price}</div>}
+                    {aiResult.strategy.tp2Price && <div><b>TP2:</b> {aiResult.strategy.tp2Price}</div>}
+                    {aiResult.strategy.exit && <div><b>청산:</b> {aiResult.strategy.exit}</div>}
+                    {aiResult.strategy.hold && <div><b>보유:</b> {aiResult.strategy.hold}</div>}
                   </div>
                 </div>
               )}
