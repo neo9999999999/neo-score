@@ -436,7 +436,7 @@ function AIAnalysis({onSave}){
       name: (stockNameRef.current && stockNameRef.current.value) || (chimResult && chimResult.stockName) || (jdResult && jdResult.stockName) || (hsResult && hsResult.stockName) || "",
       grade: null, score: null,
     };
-    onSave({...baseAi, date: new Date().toISOString().slice(0,10), images: imgs.length, chimchakhaeResult: chimResult, judojuResult: jdResult, haseunghoonResult: hsResult});
+    onSave({...baseAi, date: new Date().toISOString().slice(0,10), images: imgs.length, detailedAnalysis: aiResult && aiResult.detailedAnalysis, keyReasons: aiResult && aiResult.keyReasons, risks: aiResult && aiResult.risks, technicalIndicators: aiResult && aiResult.technicalIndicators, supplyZone: aiResult && aiResult.supplyZone, strategy: aiResult && aiResult.strategy, confidenceScore: aiResult && aiResult.confidenceScore, nextDayRiseProbability: aiResult && aiResult.nextDayRiseProbability, recommendedWeight: aiResult && aiResult.recommendedWeight, verdict: aiResult && aiResult.verdict, chimchakhaeResult: chimResult, judojuResult: jdResult, haseunghoonResult: hsResult});
     setAiResult(null); setChimResult(null); setJdResult(null); setHsResult(null); setImgs([]);
     if (stockNameRef.current) stockNameRef.current.value = "";
   };
