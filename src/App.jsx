@@ -752,6 +752,109 @@ function History({items:h, onClear, onDelete}) {
                     🤖 AI <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
                   </button>
                 )}
+                {/* AI 상세 분석 in 히스토리 모달 */}
+                {(h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
+                  <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
+                    <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 AI 상세 분석</div>
+
+                    {h[sel].detailedAnalysis && (
+                      <div style={{marginBottom:12}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#64748b", marginBottom:4}}>📋 종합 분석</div>
+                        <div style={{fontSize:13, color:"#334155", lineHeight:1.7, padding:10, background:"#f8fafc", borderRadius:6}}>{h[sel].detailedAnalysis}</div>
+                      </div>
+                    )}
+
+                    {(h[sel].confidenceScore != null || h[sel].nextDayRiseProbability != null || h[sel].recommendedWeight != null || h[sel].verdict) && (
+                      <div style={{display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:8, marginBottom:12}}>
+                        {h[sel].confidenceScore != null && (
+                          <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                            <div style={{fontSize:10, color:"#64748b"}}>신뢰도</div>
+                            <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{h[sel].confidenceScore}</div>
+                          </div>
+                        )}
+                        {h[sel].nextDayRiseProbability != null && (
+                          <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                            <div style={{fontSize:10, color:"#64748b"}}>익일상승확률</div>
+                            <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{h[sel].nextDayRiseProbability}%</div>
+                          </div>
+                        )}
+                        {h[sel].recommendedWeight != null && (
+                          <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
+                            <div style={{fontSize:10, color:"#64748b"}}>추천비중</div>
+                            <div style={{fontSize:16, fontWeight:700, color:"#0f172a"}}>{h[sel].recommendedWeight}%</div>
+                          </div>
+                        )}
+                        {h[sel].verdict && (
+                          <div style={{padding:8, background:"#fef3c7", borderRadius:6, textAlign:"center"}}>
+                            <div style={{fontSize:10, color:"#92400e"}}>판정</div>
+                            <div style={{fontSize:13, fontWeight:700, color:"#78350f"}}>{h[sel].verdict}</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {Array.isArray(h[sel].keyReasons) && h[sel].keyReasons.length > 0 && (
+                      <div style={{marginBottom:12}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#059669", marginBottom:4}}>✅ 핵심 이유</div>
+                        <ul style={{margin:0, paddingLeft:18, fontSize:12, color:"#334155", lineHeight:1.7}}>
+                          {h[sel].keyReasons.map((r, i) => <li key={i}>{r}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {Array.isArray(h[sel].risks) && h[sel].risks.length > 0 && (
+                      <div style={{marginBottom:12}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#dc2626", marginBottom:4}}>⚠️ 리스크</div>
+                        <ul style={{margin:0, paddingLeft:18, fontSize:12, color:"#334155", lineHeight:1.7}}>
+                          {h[sel].risks.map((r, i) => <li key={i}>{r}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {h[sel].technicalIndicators && typeof h[sel].technicalIndicators === "object" && (
+                      <div style={{marginBottom:12}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#0284c7", marginBottom:4}}>📊 기술적 지표</div>
+                        <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#f0f9ff", borderRadius:6}}>
+                          {h[sel].technicalIndicators.rsi && <div><b>RSI:</b> {h[sel].technicalIndicators.rsi}</div>}
+                          {h[sel].technicalIndicators.macd && <div><b>MACD:</b> {h[sel].technicalIndicators.macd}</div>}
+                          {h[sel].technicalIndicators.bollinger && <div><b>볼린저:</b> {h[sel].technicalIndicators.bollinger}</div>}
+                          {h[sel].technicalIndicators.movingAverage && <div><b>이평선:</b> {h[sel].technicalIndicators.movingAverage}</div>}
+                          {h[sel].technicalIndicators.volume && <div><b>거래량:</b> {h[sel].technicalIndicators.volume}</div>}
+                          {h[sel].technicalIndicators.summary && <div style={{marginTop:4, fontStyle:"italic"}}>{h[sel].technicalIndicators.summary}</div>}
+                        </div>
+                      </div>
+                    )}
+
+                    {h[sel].supplyZone && typeof h[sel].supplyZone === "object" && (
+                      <div style={{marginBottom:12}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#9333ea", marginBottom:4}}>🧱 매물대 분석</div>
+                        <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#faf5ff", borderRadius:6}}>
+                          {h[sel].supplyZone.status && <div><b>상태:</b> {h[sel].supplyZone.status}</div>}
+                          {h[sel].supplyZone.level && <div><b>레벨:</b> {h[sel].supplyZone.level}</div>}
+                          {h[sel].supplyZone.thickness && <div><b>두께:</b> {h[sel].supplyZone.thickness}</div>}
+                          {h[sel].supplyZone.breakoutQuality && <div><b>돌파품질:</b> {h[sel].supplyZone.breakoutQuality}</div>}
+                          {h[sel].supplyZone.detail && <div style={{marginTop:4, fontStyle:"italic"}}>{h[sel].supplyZone.detail}</div>}
+                        </div>
+                      </div>
+                    )}
+
+                    {h[sel].strategy && typeof h[sel].strategy === "object" && (
+                      <div style={{marginBottom:6}}>
+                        <div style={{fontSize:11, fontWeight:600, color:"#ea580c", marginBottom:4}}>🎯 매매 전략</div>
+                        <div style={{fontSize:12, color:"#334155", lineHeight:1.7, padding:10, background:"#fff7ed", borderRadius:6}}>
+                          {h[sel].strategy.entry && <div><b>진입:</b> {h[sel].strategy.entry}</div>}
+                          {h[sel].strategy.entryPrice && <div><b>진입가:</b> {h[sel].strategy.entryPrice}</div>}
+                          {h[sel].strategy.stopLoss && <div><b>손절:</b> {h[sel].strategy.stopLoss}</div>}
+                          {h[sel].strategy.tp1Price && <div><b>TP1:</b> {h[sel].strategy.tp1Price}</div>}
+                          {h[sel].strategy.tp2Price && <div><b>TP2:</b> {h[sel].strategy.tp2Price}</div>}
+                          {h[sel].strategy.exit && <div><b>청산:</b> {h[sel].strategy.exit}</div>}
+                          {h[sel].strategy.hold && <div><b>보유:</b> {h[sel].strategy.hold}</div>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {h[sel].chimchakhaeResult && h[sel].chimchakhaeResult.grade && (
                   <button onClick={() => setDetailTab("chim")} style={{flex:"1 0 auto", minWidth:80, padding:"10px 8px", border:"none", background:"transparent", borderBottom: detailTab==="chim" ? "3px solid #7c3aed" : "3px solid transparent", marginBottom:"-2px", fontSize:12, fontWeight: detailTab==="chim" ? 800 : 600, color: detailTab==="chim" ? "#7c3aed" : "#94a3b8", cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap"}}>
                     🎯 침착해 <span style={{fontSize:11, color: cgC(h[sel].chimchakhaeResult.grade), fontWeight:900, marginLeft:4}}>{h[sel].chimchakhaeResult.grade}</span>
