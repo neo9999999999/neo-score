@@ -555,7 +555,7 @@ function AIAnalysis({onSave}){
               )}
 
               {(aiResult.confidenceScore != null || aiResult.nextDayRiseProbability != null || aiResult.recommendedWeight != null || aiResult.verdict) && (
-                <div style={{display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:8, marginBottom:12}}>
+                <div style={{display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:8, marginBottom:12}}>
                   {aiResult.confidenceScore != null && (
                     <div style={{padding:8, background:"#f1f5f9", borderRadius:6, textAlign:"center"}}>
                       <div style={{fontSize:10, color:"#64748b"}}>신뢰도</div>
