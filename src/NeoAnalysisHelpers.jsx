@@ -213,3 +213,149 @@ export function NeoAnalysisResultCard(props) {
     )
   );
 }
+
+// data.js raw row → 5섹션 점수 + 등급 (자동 룰 매핑)
+// row 컬럼: 0=name, 1=date, 2=market, 3=change%, 4=mc_str, 5=investor, 6=NEO, 7=grade,
+//          11=peak%, 12=trough%, 18=pnl%, 19=result, 21=breakType
+export function calcNeoAnalysisFromRaw(row) {
+  if (!row || !Array.isArray(row)) return null;
+  const change = +row[3] || 0;
+  const mc_str = row[4] || "";
+  const investor = row[5] || "";
+  const neoScore = +row[6] || 0;
+  const peak = +row[11] || 0;
+  const breakType = row[21] || "";
+
+  // 거래대금 (한글 → 숫자, 단위: 억)
+  let mcVal = 0;
+  const mcMatch = mc_str.match(/([\d,]+)/);
+  if (mcMatch) mcVal = parseInt(mcMatch[1].replace(/,/g, "")) || 0;
+
+  // ① 수급 (25점) — investor 기반
+  let supply = 8;
+  const inv = investor;
+  if (/(기|기관).*(외|외인).*(프|프로)/.test(inv) || /(외|외인).*(기|기관).*(프|프로)/.test(inv) || /(프|프로).*(기|기관).*(외|외인)/.test(inv)) supply = 25;
+  else if (/(기|기관).*(외|외인)|(외|외인).*(기|기관)/.test(inv)) supply = 22;
+  else if (/외만|기만/.test(inv)) supply = 18;
+  else if (/외|기/.test(inv)) supply = 15;
+  if (mcVal >= 1000) supply = Math.min(25, supply + 2);
+
+  // ② 돌파 품질 (25점) — change + breakType + peak
+  let breakout = 5;
+  if (change >= 15) breakout = 18;
+  else if (change >= 10) breakout = 15;
+  else if (change >= 5) breakout = 10;
+  if (breakType === "ATH") breakout = Math.min(25, breakout + 5);
+  if (peak >= change * 1.2 && change > 0) breakout = Math.min(25, breakout + 2);
+
+  // ③ 모멘텀 + 시장위치 (20점) — change + 거래대금
+  let momentum = 5;
+  if (change >= 15 && mcVal >= 500) momentum = 18;
+  else if (change >= 10 && mcVal >= 300) momentum = 14;
+  else if (change >= 5) momentum = 10;
+  if (mcVal >= 1000) momentum = Math.min(20, momentum + 2);
+
+  // ④ 시황·재료 (15점) — 데이터 없음, 거래대금으로 추정
+  let sectorMaterial = 10;
+  if (mcVal >= 1500) sectorMaterial = 13;
+  else if (mcVal >= 800) sectorMaterial = 11;
+
+  // ⑤ 사전응축 + 이평 (15점) — breakType + neoScore
+  let accumulation = 8;
+  if (breakType === "ATH") accumulation = 13;
+  if (neoScore >= 5) accumulation = Math.min(15, accumulation + 2);
+  else if (neoScore >= 3) accumulation = Math.min(15, accumulation + 1);
+
+  const total = Math.round(supply + breakout + momentum + sectorMaterial + accumulation);
+  let grade;
+  if (total >= 85) grade = "S+";
+  else if (total >= 75) grade = "S";
+  else if (total >= 70) grade = "A+";
+  else if (total >= 60) grade = "A";
+  else if (total >= 50) grade = "B";
+  else grade = "X";
+
+  return {
+    name: row[0],
+    date: row[1],
+    market: row[2],
+    total,
+    grade,
+    sections: {
+      supply: { score: supply, max: 25 },
+      breakout: { score: breakout, max: 25 },
+      momentum: { score: momentum, max: 20 },
+      sectorMaterial: { score: sectorMaterial, max: 15 },
+      accumulation: { score: accumulation, max: 15 }
+    },
+    raw: { change, investor, mcVal, neoScore, breakType, peak, originalGrade: row[7] }
+  };
+}
+
+// 자동 룰 등급 + 색상
+export function NeoAnalysisAutoBadge(props) {
+  const result = props.result;
+  if (!result) return null;
+  const c = neoAnalysisGradeColor(result.grade);
+  return React.createElement("span",
+    { style: { display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", background: c.bg, color: c.fg, border: "1px solid " + c.border, borderRadius: 4, fontSize: 11, fontWeight: 600, cursor: props.onClick ? "pointer" : "default" }, onClick: props.onClick },
+    result.grade, " ", React.createElement("span", { style: { opacity: 0.7, fontSize: 10 } }, result.total)
+  );
+}
+
+// 5섹션 점수 모달 (등급 클릭 시 상세)
+export function NeoAnalysisDetailModal(props) {
+  const result = props.result;
+  if (!result) return null;
+  const sec = result.sections;
+  const c = neoAnalysisGradeColor(result.grade);
+  const items = [
+    ["① 수급", sec.supply.score, sec.supply.max, "투자자 합의 + 거래대금"],
+    ["② 돌파품질", sec.breakout.score, sec.breakout.max, "등락률 + 신고가 + 강도"],
+    ["③ 모멘텀·시장", sec.momentum.score, sec.momentum.max, "등락률 + 거래대금 절대값"],
+    ["④ 시황·재료", sec.sectorMaterial.score, sec.sectorMaterial.max, "거래대금 (재료 없음)"],
+    ["⑤ 사전응축·이평", sec.accumulation.score, sec.accumulation.max, "신고가 + NEO score"]
+  ];
+  return React.createElement("div",
+    { onClick: props.onClose, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 } },
+    React.createElement("div",
+      { onClick: function(e) { e.stopPropagation(); }, style: { background: "#fff", borderRadius: 12, padding: 16, maxWidth: 480, width: "100%", maxHeight: "80vh", overflow: "auto" } },
+      React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } },
+        React.createElement("div", null,
+          React.createElement("div", { style: { fontSize: 16, fontWeight: 700 } }, result.name || "종목"),
+          React.createElement("div", { style: { fontSize: 11, color: "#666" } }, result.date + " · " + (result.market || ""))
+        ),
+        React.createElement("button", { onClick: props.onClose, style: { padding: "4px 10px", background: "transparent", border: "1px solid #ccc", borderRadius: 4, cursor: "pointer" } }, "닫기")
+      ),
+      React.createElement("div", { style: { padding: 12, background: c.bg, border: "1px solid " + c.border, borderRadius: 8, marginBottom: 12, textAlign: "center" } },
+        React.createElement("div", { style: { fontSize: 12, color: c.fg, opacity: 0.85 } }, "🧠 네오분석 v1 (자동 룰)"),
+        React.createElement("div", { style: { fontSize: 32, fontWeight: 700, color: c.fg, lineHeight: 1, marginTop: 4 } }, result.grade),
+        React.createElement("div", { style: { fontSize: 14, fontWeight: 600, color: c.fg, marginTop: 4 } }, result.total + " / 100")
+      ),
+      React.createElement("div", { style: { marginBottom: 12 } },
+        items.map(function(it) {
+          const label = it[0], score = it[1], max = it[2], desc = it[3];
+          const pct = score / max;
+          return React.createElement("div",
+            { key: label, style: { padding: 8, background: "#f8fafc", borderRadius: 6, marginBottom: 6 } },
+            React.createElement("div", { style: { display: "flex", justifyContent: "space-between" } },
+              React.createElement("div", { style: { fontSize: 12, fontWeight: 600 } }, label),
+              React.createElement("div", { style: { fontSize: 12, fontWeight: 700, color: c.fg } }, score + "/" + max)
+            ),
+            React.createElement("div", { style: { height: 4, background: "#e2e8f0", borderRadius: 2, marginTop: 4, overflow: "hidden" } },
+              React.createElement("div", { style: { height: "100%", width: (pct * 100) + "%", background: c.border } })
+            ),
+            React.createElement("div", { style: { fontSize: 10, color: "#666", marginTop: 4 } }, desc)
+          );
+        })
+      ),
+      React.createElement("div", { style: { padding: 10, background: "#fef3c7", borderRadius: 6, fontSize: 11, color: "#78350f", lineHeight: 1.6 } },
+        "⚠️ 자동 룰 매핑 결과 (정확도 ~70%). raw 데이터의 등락률/거래대금/투자자/신고가/NEO 점수만 사용. 차트 패턴(윗꼬리/매물대) 미반영. 정확한 등급은 차트 분석 필요."
+      ),
+      React.createElement("div", { style: { padding: 8, background: "#f1f5f9", borderRadius: 4, fontSize: 11, color: "#475569", marginTop: 8 } },
+        React.createElement("b", null, "raw 데이터: "),
+        "등락 ", result.raw.change, "% · 거래대금 ", result.raw.mcVal, "억 · ", result.raw.investor || "-", " · NEO ", result.raw.neoScore, "점 · ", result.raw.breakType || "-"
+      )
+    )
+  );
+}
