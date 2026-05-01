@@ -204,12 +204,12 @@ export function calcJudojuScores(signals) {
 }
 
 export function judojuGradeColor(grade) {
-  if (grade === "S+") return "#7c3aed";
-  if (grade === "S") return "#dc2626";
-  if (grade === "A+") return "#0284c7";
-  if (grade === "A") return "#2563eb";
-  if (grade === "B+") return "#ca8a04";
-  if (grade === "B") return "#d97706";
+  if (grade === "S+") return "#713f12";
+  if (grade === "S") return "#854d0e";
+  if (grade === "A+") return "#a16207";
+  if (grade === "A") return "#ca8a04";
+  if (grade === "B+") return "#eab308";
+  if (grade === "B") return "#facc15";
   return "#6b7280";
 }
 
