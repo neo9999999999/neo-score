@@ -401,7 +401,7 @@ function AIAnalysis({onSave}){
     try {
       const today = new Date().toLocaleDateString("ko-KR");
       const sysPrompt = "당신은 한국 주식 종가돌파매매 전문가입니다. 4개의 분석 결과를 종합해 최종 매매 결론을 내립니다.\n\n오늘: " + today + "\n\n## 검증된 룰\n- 매수 조건: NEO 4점+ AND 침/주/하 중 2개 이상 SSA+\n- TP1=10%, TP2=20%, SL=-5%, 보유 10일\n- 매수 타이밍: 14:50~15:20 (장 마감 직전)\n\n## 응답 형식 (반드시 단일 JSON, 모든 필드 채우기)\n{\"finalGrade\":\"S/A/B/X\",\"verdict\":\"강력진입/진입/조건부진입/관망/금지\",\"confidence\":0~100,\"summary\":\"한 줄 종합 결론\",\"consensus\":\"4개 분석 일치/불일치 + 종합 의견 3-4문장\",\"marketContext\":\"오늘 미국선물/마켓흐름/주요뉴스 가정 반영 1-2문장\",\"buyTiming\":\"14:50~15:20 분할매수 등 구체 진입 타이밍\",\"buyStrategy\":\"진입가 범위 + 1차/2차 매수 사이즈\",\"exitPlan\":{\"tp1\":\"TP1 가격대 + 50% 익절\",\"tp2\":\"TP2 가격대 + 잔여 청산\",\"sl\":\"SL 가격대 + 전량 손절\",\"timeStop\":\"10일 만기 청산 가이드\"},\"scenarios\":{\"bullish\":\"익일 갭상승 시나리오 + 대응\",\"neutral\":\"보합 시나리오 + 대응\",\"bearish\":\"하락 시나리오 + 대응 (추가매수 vs 손절)\"},\"addBuy\":\"추가매수 트리거 조건 (예: 진입가 -3% 도달 시 등)\",\"riskFactors\":[\"주요 리스크 1\",\"리스크 2\",\"리스크 3\"],\"watchPoints\":[\"매매 진행 중 모니터링 포인트 1\",\"포인트 2\"]}";
-      const userPrompt = "4개 분석 결과 (JSON):\n\n[네오분석 v1] " + JSON.stringify(aiResult).slice(0, 1500) +
+      const userPrompt = "4개 분석 결과 (JSON):\n\n[NeoAi] " + JSON.stringify(aiResult).slice(0, 1500) +
         "\n\n[침착해] " + JSON.stringify(chimResult).slice(0, 1500) +
         "\n\n[주도주] " + JSON.stringify(jdResult).slice(0, 1500) +
         "\n\n[하승훈] " + JSON.stringify(hsResult).slice(0, 1500) +
@@ -872,13 +872,13 @@ function History({items:h, onClear, onDelete}) {
               <div style={{display:"flex", borderBottom:"2px solid #e2e8f0", padding:"16px 16px 0", overflowX:"auto"}}>
                 {h[sel].grade && (
                   <button onClick={() => setDetailTab("ai")} style={{flex:"1 0 auto", minWidth:80, padding:"10px 8px", border:"none", background:"transparent", borderBottom: detailTab==="ai" ? "3px solid #1e293b" : "3px solid transparent", marginBottom:"-2px", fontSize:12, fontWeight: detailTab==="ai" ? 800 : 600, color: detailTab==="ai" ? "#1e293b" : "#94a3b8", cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap"}}>
-                    🤖 AI <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
+                    🧠 네오분석 <span style={{fontSize:11, color: gC(h[sel].grade), fontWeight:900, marginLeft:4}}>{h[sel].grade}</span>
                   </button>
                 )}
                 {/* AI 상세 분석 in 히스토리 모달 */}
                 {(h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
                   <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
-                    <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 AI 상세 분석</div>
+                    <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
                     {h[sel].detailedAnalysis && (
                       <div style={{marginBottom:12}}>
