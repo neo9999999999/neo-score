@@ -600,7 +600,7 @@ function AIAnalysis({onSave}){
 
           {/* AI 상세 분석 (NEW v2) */}
           {activeTab === "ai" && aiResult && (aiResult.detailedAnalysis || aiResult.keyReasons || aiResult.technicalIndicators) && (
-            <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
+            <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10, width:"100%", flexBasis:"100%", boxSizing:"border-box"}}>
               <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
               {aiResult.detailedAnalysis && (
@@ -877,7 +877,7 @@ function History({items:h, onClear, onDelete}) {
                 )}
                 {/* AI 상세 분석 in 히스토리 모달 */}
                 {detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
-                  <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
+                  <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10, width:"100%", flexBasis:"100%", boxSizing:"border-box"}}>
                     <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
                     {h[sel].detailedAnalysis && (
