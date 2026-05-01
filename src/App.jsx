@@ -851,7 +851,7 @@ function History({items:h, onClear, onDelete}) {
             <button onClick={() => setSel(null)} style={{position:"absolute", top:12, right:12, width:30, height:30, borderRadius:"50%", background:"#f1f5f9", border:"none", cursor:"pointer", fontSize:16, fontWeight:700, color:"#64748b", zIndex:2}}>✕</button>
 
               {/* 최종결론 (히스토리) */}
-              {h[sel].finalResult && typeof h[sel].finalResult === "object" && (
+              {detailTab === "ai" && h[sel].finalResult && typeof h[sel].finalResult === "object" && (
                 <div style={{marginTop:14, padding:14, background:"linear-gradient(135deg,#fef3c7,#fde68a)", border:"2px solid #f59e0b", borderRadius:10}}>
                   <div style={{fontSize:14, fontWeight:700, color:"#78350f", marginBottom:10}}>⭐ 4중 분석 종합 최종결론</div>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,marginBottom:10}}>
@@ -876,7 +876,7 @@ function History({items:h, onClear, onDelete}) {
                   </button>
                 )}
                 {/* AI 상세 분석 in 히스토리 모달 */}
-                {(h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
+                {detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
                   <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
                     <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
