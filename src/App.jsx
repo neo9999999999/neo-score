@@ -599,7 +599,7 @@ function AIAnalysis({onSave}){
           )}
 
           {/* AI 상세 분석 (NEW v2) */}
-          {aiResult && (aiResult.detailedAnalysis || aiResult.keyReasons || aiResult.technicalIndicators) && (
+          {activeTab === "ai" && aiResult && (aiResult.detailedAnalysis || aiResult.keyReasons || aiResult.technicalIndicators) && (
             <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10}}>
               <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
@@ -702,7 +702,7 @@ function AIAnalysis({onSave}){
           )}
 
           {/* 최종결론 (NEW) */}
-          {(aiResult || chimResult || jdResult || hsResult) && (
+          {activeTab === "ai" && (aiResult || chimResult || jdResult || hsResult) && (
             <div style={{marginTop:14, padding:16, background:"linear-gradient(135deg,#fef3c7 0%,#fde68a 100%)", border:"2px solid #f59e0b", borderRadius:12}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                 <div style={{fontSize:15, fontWeight:700, color:"#78350f"}}>⭐ 4중 분석 종합 최종결론</div>
