@@ -453,25 +453,7 @@ function AIAnalysis({onSave}){
     const stockName = stockNameRef.current ? stockNameRef.current.value : "";
 
     // AI 분석 (NEO-SCORE 14점)
-    const aiPromise = (async () => {
-      const content = [];
-      imgs.forEach(img => {
-        content.push({type:"image", source:{type:"base64", media_type:img.type||"image/png", data:img.data}});
-      });
-      content.push({type:"text", text:"위 차트 이미지를 분석해주세요. 반드시 JSON으로만 응답하세요."});
-      const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-haiku-4-5-20251001", max_tokens:8000, system:SYS_PROMPT, messages:[{role:"user", content}]})
-      });
-      if (!resp.ok) throw new Error("AI분석 API " + resp.status);
-      const data = await resp.json();
-      const text = (data.content || []).map(c => c.text || "").join("");
-      let clean = text.replace(/```json|```/g, "").trim();
-      const m = clean.match(/\{[\s\S]*\}/);
-      if (m) clean = m[0];
-      return JSON.parse(clean);
-    })();
+    const aiPromise = analyzeNeoAnalysis(imgs, stockName).then(r => Object.assign(r, { score: r.total, detailedAnalysis: r.summary || "", technicalIndicators: r.technicalIndicators || {}, supplyZone: r.supplyZone || {}, strategy: r.strategy || (r.exitPlan ? { entry: r.buyTiming || "", entryPrice: r.buyStrategy || "", stopLoss: r.exitPlan.sl || "", tp1Price: r.exitPlan.tp1 || "", tp2Price: r.exitPlan.tp2 || "", exit: "TP/SL 도달 시", hold: "10일" } : {}), confidenceScore: r.confidence || 0, nextDayRiseProbability: r.confidence || 0, recommendedWeight: r.recommendedWeight || 10, verdict: r.verdict || "" }));
 
     // 침착해 v4 분석
     const chimFn = () => analyzeChimchakhae(imgs, stockName);
