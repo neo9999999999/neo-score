@@ -10,6 +10,7 @@ import {R_2021} from "./data_2021.js";
 import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, ChimchakhaeDetailModal, calcChimchakhaeScore, chimchakhaeGradeColor } from "./ChimchakhaeHelpers.jsx";
 import { calcJudojuScore, judojuGradeColor, JudojuToday, JudojuDetailModal, analyzeJudoju, JudojuResultCard } from "./JudojuHelpers.jsx";
 import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, HaseunghoonDetailModal, analyzeHaseunghoon, HaseunghoonResultCard } from "./HaseunghoonHelpers.jsx";
+import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor } from "./NeoAnalysisHelpers.jsx";
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
 const D=R.map(r=>{
   const _mc=r[4]||"";
