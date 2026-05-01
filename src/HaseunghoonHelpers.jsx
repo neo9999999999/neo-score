@@ -220,10 +220,10 @@ export function calcHaseunghoonScores(signals) {
 }
 
 export function haseunghoonGradeColor(grade) {
-  if (grade === "S+") return "#0d9488"; // 진한 청록
-  if (grade === "S") return "#0891b2";  // 시안
-  if (grade === "A+") return "#0284c7"; // 하늘
-  if (grade === "A") return "#2563eb";  // 파랑
+  if (grade === "S+") return "#4c1d95"; // 진한 청록
+  if (grade === "S") return "#5b21b6";  // 시안
+  if (grade === "A+") return "#6d28d9"; // 하늘
+  if (grade === "A") return "#7c3aed";  // 파랑
   if (grade === "B") return "#ca8a04";  // 황색
   return "#dc2626";                      // C는 빨강 (위험)
 }
@@ -232,7 +232,7 @@ export function haseunghoonGradeColor(grade) {
 // 5각형 (사전응축/돌파품질/거래진정성/수급지속성/바닥첫양봉)
 export function HaseunghoonRadarChart(props) {
   const engines = props.engines;
-  const color = props.color || "#0d9488";
+  const color = props.color || "#4c1d95";
   if (!engines || !engines.condensation || !engines.breakout || !engines.volume || !engines.supply || !engines.bottomFirst) return null;
   const points = [
     { label: "사전응축", value: engines.condensation.score / engines.condensation.max, score: engines.condensation.score, max: engines.condensation.max },
@@ -424,7 +424,7 @@ export function HaseunghoonToday(props) {
                 </div>
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 4, fontSize: 10, color: "#64748b", flexWrap: "wrap" }}>
-                <span style={{ color: (s.change || 0) >= 0 ? "#dc2626" : "#2563eb", fontWeight: 700 }}>{(s.change || 0) >= 0 ? "+" : ""}{s.change}%</span>
+                <span style={{ color: (s.change || 0) >= 0 ? "#dc2626" : "#7c3aed", fontWeight: 700 }}>{(s.change || 0) >= 0 ? "+" : ""}{s.change}%</span>
                 <span>거래대금 {(s.amount || 0).toLocaleString()}억</span>
                 <span>{s.investor || "수급-"}</span>
                 <span style={{ color: "#94a3b8" }}>{s.hsNote}</span>
@@ -479,9 +479,9 @@ export function HaseunghoonDetailModal(props) {
         <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 8 }}>📊 하승훈 5엔진 분해</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, marginBottom: 14 }}>
           {[
-            { k: "condensation", label: "사전 응축 에너지", max: 25, val: br.condensation || 0, col: "#0d9488", desc: "신고가 + 박스권 응축" },
+            { k: "condensation", label: "사전 응축 에너지", max: 25, val: br.condensation || 0, col: "#4c1d95", desc: "신고가 + 박스권 응축" },
             { k: "breakout", label: "돌파 품질 (몸통)", max: 30, val: br.breakout || 0, col: "#dc2626", desc: "종가위치 + 등락폭 + 마감" },
-            { k: "volume", label: "거래 진정성", max: 20, val: br.volume || 0, col: "#0284c7", desc: "거래대금 + 시장 순위" },
+            { k: "volume", label: "거래 진정성", max: 20, val: br.volume || 0, col: "#6d28d9", desc: "거래대금 + 시장 순위" },
             { k: "supply", label: "수급 지속성", max: 15, val: br.supply || 0, col: "#7c3aed", desc: "외+기 동반 + 후반 강화" },
             { k: "bottomFirst", label: "🏆 바닥권 첫 양봉", max: 10, val: br.bottomFirst || 0, col: "#ea580c", desc: "추세 시작 신호 (가산점)" },
           ].map(function (e) {
@@ -525,7 +525,7 @@ export function HaseunghoonDetailModal(props) {
                 <span style={{ fontSize: 11, color: c.ok ? "#1e293b" : "#94a3b8" }}>
                   {c.ok ? "✓" : "✗"} {c.label}
                 </span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: c.ok ? "#0d9488" : "#94a3b8" }}>{c.val}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: c.ok ? "#4c1d95" : "#94a3b8" }}>{c.val}</span>
               </div>
             );
           })}
@@ -534,7 +534,7 @@ export function HaseunghoonDetailModal(props) {
         {/* KIS raw 데이터 */}
         <div style={{ fontSize: 11, fontWeight: 800, color: "#475569", marginBottom: 8 }}>📡 KIS 데이터</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11 }}>
-          <div style={{ padding: "6px 8px", background: "#f8fafc", borderRadius: 5 }}>등락률 <strong style={{ color: (item.change || 0) >= 0 ? "#dc2626" : "#2563eb" }}>{(item.change || 0) >= 0 ? "+" : ""}{item.change}%</strong></div>
+          <div style={{ padding: "6px 8px", background: "#f8fafc", borderRadius: 5 }}>등락률 <strong style={{ color: (item.change || 0) >= 0 ? "#dc2626" : "#7c3aed" }}>{(item.change || 0) >= 0 ? "+" : ""}{item.change}%</strong></div>
           <div style={{ padding: "6px 8px", background: "#f8fafc", borderRadius: 5 }}>거래대금 <strong>{(item.amount || 0).toLocaleString()}억</strong></div>
           <div style={{ padding: "6px 8px", background: "#f8fafc", borderRadius: 5 }}>수급 <strong>{item.investor || "-"}</strong></div>
           <div style={{ padding: "6px 8px", background: "#f8fafc", borderRadius: 5 }}>윗꼬리 <strong>{item.wick || 0}%</strong></div>
@@ -728,7 +728,7 @@ export function HaseunghoonResultCard(props) {
   const vs = res.vetoStatus;
 
   const engineItems = [
-    { key: "condensation", label: "사전 응축 에너지", color: "#0d9488", data: eng.condensation, items: eng.condensation ? [
+    { key: "condensation", label: "사전 응축 에너지", color: "#4c1d95", data: eng.condensation, items: eng.condensation ? [
       ["신고가 단계", eng.condensation.breakdown && eng.condensation.breakdown.newHigh, 12],
       ["이평 정렬", eng.condensation.breakdown && eng.condensation.breakdown.maAlign, 7],
       ["저항 테스트", eng.condensation.breakdown && eng.condensation.breakdown.resistTest, 6],
@@ -738,7 +738,7 @@ export function HaseunghoonResultCard(props) {
       ["등락폭(돌파폭)", eng.breakout.breakdown && eng.breakout.breakdown.changeRange, 10],
       ["종가 안착", eng.breakout.breakdown && eng.breakout.breakdown.settle, 8],
     ] : [] },
-    { key: "volume", label: "거래 진정성", color: "#0284c7", data: eng.volume, items: eng.volume ? [
+    { key: "volume", label: "거래 진정성", color: "#6d28d9", data: eng.volume, items: eng.volume ? [
       ["거래대금 절대값", eng.volume.breakdown && eng.volume.breakdown.absAmt, 12],
       ["시장 내 순위", eng.volume.breakdown && eng.volume.breakdown.relRank, 8],
     ] : [] },
@@ -794,10 +794,10 @@ export function HaseunghoonResultCard(props) {
         {bq && (
           <div style={{ background: bq.isReal ? "#f0fdfa" : "#fef2f2", border: "1px solid " + (bq.isReal ? "#5eead4" : "#fca5a5"), borderRadius: 10, padding: 12, marginBottom: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: bq.isReal ? "#0d9488" : "#dc2626" }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: bq.isReal ? "#4c1d95" : "#dc2626" }}>
                 {bq.isReal ? "✅ 진성 돌파 판정" : "⚠️ 가짜 돌파 의심"}
               </span>
-              <span style={{ fontSize: 12, fontWeight: 900, color: bq.isReal ? "#0d9488" : "#dc2626" }}>{bq.breakType || "-"}</span>
+              <span style={{ fontSize: 12, fontWeight: 900, color: bq.isReal ? "#4c1d95" : "#dc2626" }}>{bq.breakType || "-"}</span>
             </div>
             {bq.comment && <div style={{ fontSize: 11, color: "#1e293b", lineHeight: 1.5 }}>{bq.comment}</div>}
           </div>
