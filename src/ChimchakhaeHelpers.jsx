@@ -129,12 +129,12 @@ export async function analyzeChimchakhae(images, stockName) {
 // 결과 표시 헬퍼
 // ============================================================
 export function gradeColor(grade) {
-  if (grade === "S+") return "#dc2626";
-  if (grade === "S") return "#ef4444";
-  if (grade === "A+") return "#ea580c";
-  if (grade === "A") return "#f59e0b";
-  if (grade === "B+") return "#3b82f6";
-  if (grade === "B") return "#94a3b8";
+  if (grade === "S+") return "#5b21b6";
+  if (grade === "S") return "#6d28d9";
+  if (grade === "A+") return "#7c3aed";
+  if (grade === "A") return "#8b5cf6";
+  if (grade === "B+") return "#a78bfa";
+  if (grade === "B") return "#c4b5fd";
   return "#64748b";
 }
 
