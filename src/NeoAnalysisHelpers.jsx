@@ -360,18 +360,17 @@ export function NeoAnalysisDetailModal(props) {
   );
 }
 
-// signal 객체 (s.code/name/investor/amount/change/score/grade/wick/market/breakType/breakout/condensation/maPos)
+// signal 객체 (s.code/name/investor/amount/change/score/grade/wick/market/breakType)
 // → 5섹션 점수 + 등급
 export function calcNeoAnalysisFromSignal(s) {
   if (!s) return null;
   const change = +s.change || +s.rate || 0;
   const investor = s.investor || s.supply || "";
-  const mcVal = +s.amount || +s.vol || 0;  // 거래대금 (억)
+  const mcVal = +s.amount || +s.vol || 0;
   const wick = +s.wick || 0;
   const neoScore = +s.score || 0;
   const breakType = s.breakType || "";
 
-  // ① 수급 (25점) — investor
   let supply = 8;
   if (/(기|기관).*(외|외인).*(프|프로)/.test(investor) || /(외|외인).*(기|기관).*(프|프로)/.test(investor) || /(프|프로).*(기|기관).*(외|외인)/.test(investor)) supply = 25;
   else if (/(기|기관).*(외|외인)|(외|외인).*(기|기관)/.test(investor)) supply = 22;
@@ -379,27 +378,23 @@ export function calcNeoAnalysisFromSignal(s) {
   else if (/외|기/.test(investor)) supply = 15;
   if (mcVal >= 1000) supply = Math.min(25, supply + 2);
 
-  // ② 돌파 품질 (25점) — change + wick + breakType
   let breakout = 5;
   if (change >= 15) breakout = 18;
   else if (change >= 10) breakout = 15;
   else if (change >= 5) breakout = 10;
   if (breakType === "ATH" || /ATH|신고가/.test(breakType)) breakout = Math.min(25, breakout + 5);
-  if (wick > 0 && wick <= 1) breakout = Math.min(25, breakout + 2);  // 윗꼬리 1% 이내 = 강한 안착
+  if (wick > 0 && wick <= 1) breakout = Math.min(25, breakout + 2);
 
-  // ③ 모멘텀·시장 (20점) — change + 거래대금
   let momentum = 5;
   if (change >= 15 && mcVal >= 500) momentum = 18;
   else if (change >= 10 && mcVal >= 300) momentum = 14;
   else if (change >= 5) momentum = 10;
   if (mcVal >= 1000) momentum = Math.min(20, momentum + 2);
 
-  // ④ 시황·재료 (15점)
   let sectorMaterial = 10;
   if (mcVal >= 1500) sectorMaterial = 13;
   else if (mcVal >= 800) sectorMaterial = 11;
 
-  // ⑤ 사전응축·이평 (15점) — breakType + neoScore
   let accumulation = 8;
   if (breakType === "ATH" || /ATH|신고가/.test(breakType)) accumulation = 13;
   if (neoScore >= 5) accumulation = Math.min(15, accumulation + 2);
@@ -414,19 +409,17 @@ export function calcNeoAnalysisFromSignal(s) {
   else if (total >= 50) grade = "B";
   else grade = "X";
 
-  // 핵심 이유
   const keyReasons = [];
   if (change >= 10) keyReasons.push("등락률 +" + change + "% 강한 상승");
   if (/외|기/.test(investor)) keyReasons.push("수급 신호: " + investor);
   if (mcVal >= 500) keyReasons.push("거래대금 " + mcVal + "억 양호");
   if (breakType === "ATH" || /ATH/.test(breakType)) keyReasons.push("52주 신고가 돌파");
-  if (wick > 0 && wick <= 1) keyReasons.push("종가 윗꼬리 " + wick + "% — 강한 안착");
+  if (wick > 0 && wick <= 1) keyReasons.push("종가 윗꼬리 " + wick + "% 강한 안착");
 
-  // 리스크
   const risks = [];
-  if (mcVal < 500) risks.push("거래대금 " + mcVal + "억 — 유동성 제한");
-  if (wick > 3) risks.push("윗꼬리 " + wick + "% — 매도 압박");
-  if (change < 5) risks.push("등락률 +" + change + "% — 돌파 강도 약함");
+  if (mcVal < 500) risks.push("거래대금 " + mcVal + "억 유동성 제한");
+  if (wick > 3) risks.push("윗꼬리 " + wick + "% 매도 압박");
+  if (change < 5) risks.push("등락률 +" + change + "% 돌파 강도 약함");
   if (!investor || investor === "없음" || investor === "혼다-") risks.push("주도 수급 부재");
 
   return {
