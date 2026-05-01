@@ -438,7 +438,9 @@ function AIAnalysis({onSave}){
       if (!resp.ok) throw new Error("AI분석 API " + resp.status);
       const data = await resp.json();
       const text = (data.content || []).map(c => c.text || "").join("");
-      const clean = text.replace(/```json|```/g, "").trim();
+      let clean = text.replace(/```json|```/g, "").trim();
+      const m = clean.match(/\{[\s\S]*\}/);
+      if (m) clean = m[0];
       return JSON.parse(clean);
     })();
 
