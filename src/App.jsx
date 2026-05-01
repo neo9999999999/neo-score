@@ -1,3 +1,5 @@
+
+// rebuild trigger 1777655538786
 // vercel rebuild trigger 1777038639400
 // rebuild 1777034990679
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
@@ -894,7 +896,7 @@ function History({items:h, onClear, onDelete}) {
                     </div>
                   </div>
                 </div>
-              )}{detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
+              )}.scenarios && (<div style={{marginBottom:8}}{detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
                   <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10, width:"100%", flexBasis:"100%", boxSizing:"border-box"}}>
                     <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
@@ -1016,7 +1018,7 @@ function History({items:h, onClear, onDelete}) {
                   {h[sel].finalResult.marketContext && <div style={{marginBottom:8}}><div style={{fontSize:11,fontWeight:600,color:"#78350f",marginBottom:3}}>🌐 시장 컨텍스트</div><div style={{padding:8,background:"#fff",borderRadius:6,fontSize:11,fontStyle:"italic"}}>{h[sel].finalResult.marketContext}</div></div>}
                   {(h[sel].finalResult.buyTiming || h[sel].finalResult.buyStrategy) && (<div style={{marginBottom:8,padding:8,background:"#dcfce7",borderRadius:6}}><div style={{fontSize:11,fontWeight:600,color:"#15803d",marginBottom:4}}>🟢 매수 전략</div>{h[sel].finalResult.buyTiming && <div style={{fontSize:11,color:"#14532d"}}><b>타이밍:</b> {h[sel].finalResult.buyTiming}</div>}{h[sel].finalResult.buyStrategy && <div style={{fontSize:11,color:"#14532d"}}><b>전략:</b> {h[sel].finalResult.buyStrategy}</div>}{h[sel].finalResult.addBuy && <div style={{fontSize:11,color:"#14532d"}}><b>추가매수:</b> {h[sel].finalResult.addBuy}</div>}</div>)}
                   {h[sel].finalResult.exitPlan && (<div style={{marginBottom:8,padding:8,background:"#fef2f2",borderRadius:6}}><div style={{fontSize:11,fontWeight:600,color:"#991b1b",marginBottom:4}}>🔴 청산 계획</div>{h[sel].finalResult.exitPlan.tp1 && <div style={{fontSize:11,color:"#7f1d1d"}}><b>TP1:</b> {h[sel].finalResult.exitPlan.tp1}</div>}{h[sel].finalResult.exitPlan.tp2 && <div style={{fontSize:11,color:"#7f1d1d"}}><b>TP2:</b> {h[sel].finalResult.exitPlan.tp2}</div>}{h[sel].finalResult.exitPlan.sl && <div style={{fontSize:11,color:"#7f1d1d"}}><b>SL:</b> {h[sel].finalResult.exitPlan.sl}</div>}{h[sel].finalResult.exitPlan.timeStop && <div style={{fontSize:11,color:"#7f1d1d"}}><b>시간:</b> {h[sel].finalResult.exitPlan.timeStop}</div>}</div>)}
-                  {h[sel].finalResult.scenarios && (<div style={{marginBottom:8}}><div style={{fontSize:11,fontWeight:600,color:"#78350f",marginBottom:4}}>📊 시나리오별 대응</div>{h[sel].finalResult.scenarios.bullish && <div style={{padding:6,background:"#dcfce7",borderRadius:4,fontSize:11,marginBottom:3}}><b>📈 강세:</b> {h[sel].finalResult.scenarios.bullish}</div>}{h[sel].finalResult.scenarios.neutral && <div style={{padding:6,background:"#f3f4f6",borderRadius:4,fontSize:11,marginBottom:3}}><b>➡️ 보합:</b> {h[sel].finalResult.scenarios.neutral}</div>}{h[sel].finalResult.scenarios.bearish && <div style={{padding:6,background:"#fee2e2",borderRadius:4,fontSize:11}}><b>📉 약세:</b> {h[sel].finalResult.scenarios.bearish}</div>}</div>)}
+                  {h[sel].finalResult><div style={{fontSize:11,fontWeight:600,color:"#78350f",marginBottom:4}}>📊 시나리오별 대응</div>{h[sel].finalResult.scenarios.bullish && <div style={{padding:6,background:"#dcfce7",borderRadius:4,fontSize:11,marginBottom:3}}><b>📈 강세:</b> {h[sel].finalResult.scenarios.bullish}</div>}{h[sel].finalResult.scenarios.neutral && <div style={{padding:6,background:"#f3f4f6",borderRadius:4,fontSize:11,marginBottom:3}}><b>➡️ 보합:</b> {h[sel].finalResult.scenarios.neutral}</div>}{h[sel].finalResult.scenarios.bearish && <div style={{padding:6,background:"#fee2e2",borderRadius:4,fontSize:11}}><b>📉 약세:</b> {h[sel].finalResult.scenarios.bearish}</div>}</div>)}
                   {Array.isArray(h[sel].finalResult.riskFactors) && (<div style={{marginBottom:6}}><div style={{fontSize:11,fontWeight:600,color:"#dc2626",marginBottom:3}}>⚠️ 리스크</div><ul style={{margin:0,paddingLeft:18,fontSize:11,lineHeight:1.5}}>{h[sel].finalResult.riskFactors.map((r,i)=><li key={i}>{r}</li>)}</ul></div>)}
                 </div>
               )}
