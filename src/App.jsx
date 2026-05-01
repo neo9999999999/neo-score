@@ -453,7 +453,7 @@ function AIAnalysis({onSave}){
     const stockName = stockNameRef.current ? stockNameRef.current.value : "";
 
     // AI 분석 (NEO-SCORE 14점)
-    const aiPromise = analyzeNeoAnalysis(imgs, stockName).then(r => Object.assign(r, { score: r.total, detailedAnalysis: r.summary || "", technicalIndicators: r.technicalIndicators || {}, supplyZone: r.supplyZone || {}, strategy: r.strategy || (r.exitPlan ? { entry: r.buyTiming || "", entryPrice: r.buyStrategy || "", stopLoss: r.exitPlan.sl || "", tp1Price: r.exitPlan.tp1 || "", tp2Price: r.exitPlan.tp2 || "", exit: "TP/SL 도달 시", hold: "10일" } : {}), confidenceScore: r.confidence || 0, nextDayRiseProbability: r.confidence || 0, recommendedWeight: r.recommendedWeight || 10, verdict: r.verdict || "" }));
+    const aiPromise = analyzeNeoAnalysis(imgs, stockName).then(r => Object.assign(r, { score: r.total, tp1: 10, tp2: 20, sl: -5, breakType: r.breakType || "네오분석 v1", investor: r.investor || "AI 채점", ema50: r.ema50 || "5섹션", details: r.details || (r.sections ? [{item:"① 수급", point:(r.sections.supply&&r.sections.supply.score)||0},{item:"② 돌파품질", point:(r.sections.breakout&&r.sections.breakout.score)||0},{item:"③ 모멘텀·시장", point:(r.sections.momentum&&r.sections.momentum.score)||0},{item:"④ 시황·재료", point:(r.sections.sectorMaterial&&r.sections.sectorMaterial.score)||0},{item:"⑤ 사전응축·이평", point:(r.sections.accumulation&&r.sections.accumulation.score)||0}] : []), detailedAnalysis: r.summary || "", technicalIndicators: r.technicalIndicators || {}, supplyZone: r.supplyZone || {}, strategy: r.strategy || (r.exitPlan ? { entry: r.buyTiming || "", entryPrice: r.buyStrategy || "", stopLoss: r.exitPlan.sl || "", tp1Price: r.exitPlan.tp1 || "", tp2Price: r.exitPlan.tp2 || "", exit: "TP/SL 도달 시", hold: "10일" } : {}), confidenceScore: r.confidence || 0, nextDayRiseProbability: r.confidence || 0, recommendedWeight: r.recommendedWeight || 10, verdict: r.verdict || "" }));
 
     // 침착해 v4 분석
     const chimFn = () => analyzeChimchakhae(imgs, stockName);
@@ -562,7 +562,7 @@ function AIAnalysis({onSave}){
                 <div style={{borderRadius:14, border:"2px solid " + gC(aiResult.grade), overflow:"hidden", marginBottom:14}}>
                   <div style={{background: gC(aiResult.grade), padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center"}}>
                     <div>
-                      <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>NEO-SCORE 14점 분석</div>
+                      <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>🧠 네오분석 v1</div>
                       <div style={{fontSize:18, fontWeight:900, color:"#fff"}}>{aiResult.name || "분석 결과"}</div>
                       <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", marginTop:2}}>{aiResult.breakType} · {aiResult.investor} · {aiResult.ema50}</div>
                     </div>
@@ -1002,7 +1002,7 @@ function History({items:h, onClear, onDelete}) {
                   <div style={{borderRadius:14, border:"2px solid " + gC(h[sel].grade), overflow:"hidden", marginBottom:14}}>
                     <div style={{background: gC(h[sel].grade), padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8}}>
                       <div style={{minWidth:0, flex:"1 1 auto"}}>
-                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>NEO-SCORE 14점 분석</div>
+                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>🧠 네오분석 v1</div>
                         <div style={{fontSize:18, fontWeight:900, color:"#fff"}}>{h[sel].name || "-"}</div>
                         <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", marginTop:2}}>{h[sel].breakType} · {h[sel].investor} · {h[sel].ema50}</div>
                         <div style={{fontSize:10, color:"rgba(255,255,255,0.7)", marginTop:3}}>{h[sel].date}</div>
