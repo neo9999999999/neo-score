@@ -851,7 +851,50 @@ function History({items:h, onClear, onDelete}) {
             <button onClick={() => setSel(null)} style={{position:"absolute", top:12, right:12, width:30, height:30, borderRadius:"50%", background:"#f1f5f9", border:"none", cursor:"pointer", fontSize:16, fontWeight:700, color:"#64748b", zIndex:2}}>✕</button>
 
               {/* 최종결론 (히스토리) */}
-              {detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
+              {detailTab === "ai" && (
+                <div>
+                  <div style={{borderRadius:14, border:"2px solid " + gC(h[sel].grade), overflow:"hidden", marginBottom:14}}>
+                    <div style={{background: gC(h[sel].grade), padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8}}>
+                      <div style={{minWidth:0, flex:"1 1 auto"}}>
+                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>🧠 네오분석 v1</div>
+                        <div style={{fontSize:18, fontWeight:900, color:"#fff"}}>{h[sel].name || "-"}</div>
+                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", marginTop:2}}>{h[sel].breakType} · {h[sel].investor} · {h[sel].ema50}</div>
+                        <div style={{fontSize:10, color:"rgba(255,255,255,0.7)", marginTop:3}}>{h[sel].date}</div>
+                      </div>
+                      <div style={{textAlign:"center", flexShrink:0}}>
+                        <div style={{fontSize:32, fontWeight:900, color:"#fff", lineHeight:1}}>{h[sel].grade}</div>
+                        <div style={{fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:3}}>{h[sel].score}점</div>
+                      </div>
+                    </div>
+                    <div style={{padding:"14px 18px", background:"#fff"}}>
+                      <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:10}}>
+                        {[{l:"TP1", v: h[sel].tp1+"%"}, {l:"TP2", v: h[sel].tp2+"%"}, {l:"SL", v: h[sel].sl+"%"}].map((x, idx) => (
+                          <div key={idx} style={{textAlign:"center", padding:8, background:"#f8fafc", borderRadius:8}}>
+                            <div style={{fontSize:10, color:"#94a3b8"}}>{x.l}</div>
+                            <div style={{fontSize:20, fontWeight:900, color:"#dc2626"}}>{x.v}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {h[sel].summary && (
+                        <div style={{fontSize:13, color:"#475569", lineHeight:1.6, marginBottom:10, padding:10, background:"#f8fafc", borderRadius:8}}>{h[sel].summary}</div>
+                      )}
+                      {h[sel].details && (
+                        <div style={{fontSize:12}}>
+                          {h[sel].details.map((d, idx) => (
+                            <div key={idx} style={{padding:"6px 0", borderBottom:"1px solid #f1f5f9"}}>
+                              <div style={{display:"flex", justifyContent:"space-between", marginBottom: d.reason ? 3 : 0}}>
+                                <span style={{color:"#475569", fontWeight:600}}>{d.item}</span>
+                                <span style={{fontWeight:700, color: d.point !== 0 ? "#dc2626" : "#94a3b8"}}>{d.point > 0 ? "+" : ""}{d.point}</span>
+                              </div>
+                              {d.reason && <div style={{color:"#94a3b8", fontSize:11, lineHeight:1.4}}>{d.reason}</div>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}{detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
                   <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10, width:"100%", flexBasis:"100%", boxSizing:"border-box"}}>
                     <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
@@ -997,50 +1040,7 @@ function History({items:h, onClear, onDelete}) {
             ) : null}
 
             <div style={{padding:"16px"}}>
-              {detailTab === "ai" && (
-                <div>
-                  <div style={{borderRadius:14, border:"2px solid " + gC(h[sel].grade), overflow:"hidden", marginBottom:14}}>
-                    <div style={{background: gC(h[sel].grade), padding:"14px 18px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8}}>
-                      <div style={{minWidth:0, flex:"1 1 auto"}}>
-                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", fontWeight:700, marginBottom:2}}>🧠 네오분석 v1</div>
-                        <div style={{fontSize:18, fontWeight:900, color:"#fff"}}>{h[sel].name || "-"}</div>
-                        <div style={{fontSize:11, color:"rgba(255,255,255,0.85)", marginTop:2}}>{h[sel].breakType} · {h[sel].investor} · {h[sel].ema50}</div>
-                        <div style={{fontSize:10, color:"rgba(255,255,255,0.7)", marginTop:3}}>{h[sel].date}</div>
-                      </div>
-                      <div style={{textAlign:"center", flexShrink:0}}>
-                        <div style={{fontSize:32, fontWeight:900, color:"#fff", lineHeight:1}}>{h[sel].grade}</div>
-                        <div style={{fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:3}}>{h[sel].score}점</div>
-                      </div>
-                    </div>
-                    <div style={{padding:"14px 18px", background:"#fff"}}>
-                      <div style={{display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6, marginBottom:10}}>
-                        {[{l:"TP1", v: h[sel].tp1+"%"}, {l:"TP2", v: h[sel].tp2+"%"}, {l:"SL", v: h[sel].sl+"%"}].map((x, idx) => (
-                          <div key={idx} style={{textAlign:"center", padding:8, background:"#f8fafc", borderRadius:8}}>
-                            <div style={{fontSize:10, color:"#94a3b8"}}>{x.l}</div>
-                            <div style={{fontSize:20, fontWeight:900, color:"#dc2626"}}>{x.v}</div>
-                          </div>
-                        ))}
-                      </div>
-                      {h[sel].summary && (
-                        <div style={{fontSize:13, color:"#475569", lineHeight:1.6, marginBottom:10, padding:10, background:"#f8fafc", borderRadius:8}}>{h[sel].summary}</div>
-                      )}
-                      {h[sel].details && (
-                        <div style={{fontSize:12}}>
-                          {h[sel].details.map((d, idx) => (
-                            <div key={idx} style={{padding:"6px 0", borderBottom:"1px solid #f1f5f9"}}>
-                              <div style={{display:"flex", justifyContent:"space-between", marginBottom: d.reason ? 3 : 0}}>
-                                <span style={{color:"#475569", fontWeight:600}}>{d.item}</span>
-                                <span style={{fontWeight:700, color: d.point !== 0 ? "#dc2626" : "#94a3b8"}}>{d.point > 0 ? "+" : ""}{d.point}</span>
-                              </div>
-                              {d.reason && <div style={{color:"#94a3b8", fontSize:11, lineHeight:1.4}}>{d.reason}</div>}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+              
 
               {detailTab === "chim" && h[sel].chimchakhaeResult && (
                 <ChimchakhaeResultCard result={h[sel].chimchakhaeResult} stockName={h[sel].name} />
