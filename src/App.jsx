@@ -1,3 +1,4 @@
+// rebuild 1777657618923
 
 // rebuild trigger 1777655538786
 // vercel rebuild trigger 1777038639400
@@ -1083,6 +1084,16 @@ export default function App(){
       setDetailModal(result);
     }catch(e){console.error("[handleShowDetail]",e);}
   },[]);
+  const [detailModal,setDetailModal]=useState(null);
+  const handleShowDetail=useCallback((s)=>{
+    if(!s)return;
+    const rawRow=[s.name,s.signal_date,s.market,+s.rate||0,(s.amount||s.vol||0)+"억",s.supply||s.investor||"",+s.score||0,s.grade];
+    try{
+      const result=calcNeoAnalysisFromRaw(rawRow);
+      if(result){result.name=s.name;result.market=s.market;result.date=s.signal_date;}
+      setDetailModal(result);
+    }catch(e){console.error("[handleShowDetail]",e);}
+  },[]);
   const saveAutoRule=useCallback((s)=>{
     let chimRes=null,judoRes=null,hsRes=null,neoRes=null;
     try{chimRes=calcChimchakhaeScore(s);}catch(e){}
@@ -1125,7 +1136,7 @@ export default function App(){
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals} onSave={saveAutoRule} onShowDetail={handleShowDetail}/>}
-        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
+        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
