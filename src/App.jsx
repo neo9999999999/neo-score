@@ -1,3 +1,4 @@
+// rebuild 1777678029504
 // rebuild 1777657618923
 
 // rebuild trigger 1777655538786
@@ -1136,7 +1137,7 @@ export default function App(){
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals} onSave={saveAutoRule} onShowDetail={handleShowDetail}/>}
-        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
+        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e2e8f0",display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
