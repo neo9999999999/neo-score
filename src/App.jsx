@@ -898,7 +898,7 @@ function History({items:h, onClear, onDelete}) {
                     </div>
                   </div>
                 </div>
-              )}.scenarios && (<div style={{marginBottom:8}}{detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
+              )}.scenarios && (<div style={{marginBottom:8}}>{detailTab === "ai" && (h[sel].detailedAnalysis || h[sel].keyReasons || h[sel].technicalIndicators || h[sel].supplyZone || h[sel].strategy) && (
                   <div style={{marginTop:12, padding:14, background:"#fefefe", border:"2px solid #c4b5fd", borderRadius:10, width:"100%", flexBasis:"100%", boxSizing:"border-box"}}>
                     <div style={{fontSize:14, fontWeight:700, color:"#7c3aed", marginBottom:10}}>🧠 네오분석 v1 상세</div>
 
