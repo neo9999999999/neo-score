@@ -5,7 +5,7 @@ import React from "react";
 // 5번째 탭 ChimchakhaeAI.jsx와 동일한 전체 프롬프트 사용
 // ============================================================
 
-const CHIMCHAKHAE_PROMPT = "당신은 침착해 종가베팅 기법의 최고 전문가입니다. 업로드된 이미지들(일봉차트, 분봉차트, 수급현황, 거래원, 공시, 뉴스, 섹터순위 등)을 모두 종합 분석해서 종가베팅 진입 여부를 판단하세요.\n\n" +
+const CHIMCHAKHAE_PROMPT = "⚠️ 입력 데이터가 일부 누락되어도 가진 정보만으로 최대한 점수를 매겨주세요. 주가·거래량·수급 텍스트 데이터가 있으면 그것만으로도 수급(××), 돌파 품질(××), 절대값(××) 평가가 가능합니다. 차트 이미지 부재를 이유로 0점/확인불가 처리하지 마세요. \n당신은 침착해 종가베팅 기법의 최고 전문가입니다. 업로드된 이미지들(일봉차트, 분봉차트, 수급현황, 거래원, 공시, 뉴스, 섹터순위 등)을 모두 종합 분석해서 종가베팅 진입 여부를 판단하세요.\n\n" +
   "━━━━ 스코어링 규칙 (100점 만점) ━━━━\n\n" +
   "【1. 수급 엔진 (35점) - 최우선】\n" +
   "- 장 후반(14:00~) 동반매수 (15점): 외+기+프 3주체=15 / 2주체=10 / 1주체=5 / 마감직전 급감 시 -7\n" +
@@ -99,7 +99,7 @@ export async function analyzeChimchakhae(stockData, stockName) {
   if (isImage) {
     for (let i = 0; i < stockData.length; i++) content.push({ type: "image", source: { type: "base64", media_type: stockData[i].type || "image/jpeg", data: stockData[i].data } });
     const userInfo = stockName ? "종목명: " + stockName + "\n" : "";
-    content.push({ type: "text", text: CHIMCHAKHAE_PROMPT + "\n\n" + (userInfo || "종목 정보 없음. 이미지에서 추출.") });
+    content.push({ type: "text", text: CHIMCHAKHAE_PROMPT + "\n\n" + (userInfo || "종목 정보 없음. 입력 데이터(이미지 또는 텍스트)에서 추출.") });
   } else {
     content.push({ type: "text", text: CHIMCHAKHAE_PROMPT + dataText });
   }
