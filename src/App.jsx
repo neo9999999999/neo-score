@@ -497,10 +497,11 @@ function AIAnalysis({onSave}){
         const fromYmd = past.getFullYear() + String(past.getMonth()+1).padStart(2,"0") + String(past.getDate()).padStart(2,"0");
         const ohlcResp = await fetch(API_URL + "/api/daily-price?code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
         const ohlcData = await ohlcResp.json();
-        const invResp = await fetch(API_URL + "/api/daily-price?kind=inv2&code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
+        const invResp = await fetch(API_URL + "/api/daily-price?kind=inv&code=" + codeStr);
         const invData = await invResp.json();
-        const days = (ohlcData.all_rows || []).slice(0, 60).map(r => ({ date: r.date, close: +r.close||0, open: +r.open||0, high: +r.high||0, low: +r.low||0, vol: +r.vol||0, rate: +r.rate||0 }));
-        const invDays = (invData.output || []).slice(0, 30).map(r => ({ date: r.stck_bsop_date || "", foreign: Math.round((+r.frgn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000), org: Math.round((+r.orgn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000), indiv: Math.round((+r.prsn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000) }));
+        const rawRows = (ohlcData.all_rows || []).slice(0, 60);
+        const days = rawRows.map((rr, ii) => { let rate = +rr.rate || 0; if (!rate && ii + 1 < rawRows.length) { const pc = +rawRows[ii+1].close || 0; if (pc > 0) rate = Math.round(((+rr.close - pc) / pc) * 10000) / 100; } return { date: rr.date, close: +rr.close||0, open: +rr.open||0, high: +rr.high||0, low: +rr.low||0, vol: +rr.vol||0, rate: rate }; });
+        const invDays = (invData.output || []).slice(0, 30).map(r => ({ date: r.stck_bsop_date || "", foreign: Math.round((+r.frgn_ntby_tr_pbmn||0) / 100 * 10) / 10, org: Math.round((+r.orgn_ntby_tr_pbmn||0) / 100 * 10) / 10, indiv: Math.round((+r.prsn_ntby_tr_pbmn||0) / 100 * 10) / 10 }));
         const today_d = days[0] || {};
         stockData = { code: codeStr, name: ohlcData.name || "", market: ohlcData.market || "", todayPrice: today_d.close, todayChange: today_d.rate, todayAmt: Math.round((today_d.close * today_d.vol) / 100000000), days: days, invDays: invDays };
       } catch(e) { console.error("[stockData fetch]", e); }
