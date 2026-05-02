@@ -477,25 +477,45 @@ function AIAnalysis({onSave}){
   };
 
   const analyze = async () => {
-    if (imgs.length === 0) return;
+    if (imgs.length === 0 && !(stockNameRef.current && /^[0-9]{6}$/.test(stockNameRef.current.value.trim()))) return;
     setLoading(true);
     setAiError(null); setChimError(null); setJdError(null); setHsError(null);
     setAiResult(null); setChimResult(null); setJdResult(null); setHsResult(null); setFinalResult(null); setFinalError("");
     setProgress("AI분석 + 침착해 + 주도주 + 하승훈 4중 분석 동시 실행 중...");
 
     const stockName = stockNameRef.current ? stockNameRef.current.value : "";
+    let stockData = null;
+    const codeMatch = stockName && stockName.trim().match(/^[0-9]{6}$/);
+    if (codeMatch) {
+      try {
+        setProgress("ㆍ목코드 감지 — 데이터 fetch 중...");
+        const codeStr = codeMatch[0];
+        const today = new Date();
+        const toYmd = today.getFullYear() + String(today.getMonth()+1).padStart(2,"0") + String(today.getDate()).padStart(2,"0");
+        const past = new Date(today.getTime() - 90*86400000);
+        const fromYmd = past.getFullYear() + String(past.getMonth()+1).padStart(2,"0") + String(past.getDate()).padStart(2,"0");
+        const ohlcResp = await fetch(API_URL + "/api/daily-price?code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
+        const ohlcData = await ohlcResp.json();
+        const invResp = await fetch(API_URL + "/api/daily-price?kind=inv2&code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
+        const invData = await invResp.json();
+        const days = (ohlcData.all_rows || []).slice(0, 60).map(r => ({ date: r.date, close: +r.close||0, open: +r.open||0, high: +r.high||0, low: +r.low||0, vol: +r.vol||0, rate: +r.rate||0 }));
+        const invDays = (invData.output || []).slice(0, 30).map(r => ({ date: r.stck_bsop_date || "", foreign: Math.round((+r.frgn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000), org: Math.round((+r.orgn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000), indiv: Math.round((+r.prsn_ntby_qty||0) * (+r.stck_clpr||0) / 100000000) }));
+        const today_d = days[0] || {};
+        stockData = { code: codeStr, name: ohlcData.name || "", market: ohlcData.market || "", todayPrice: today_d.close, todayChange: today_d.rate, todayAmt: Math.round((today_d.close * today_d.vol) / 100000000), days: days, invDays: invDays };
+      } catch(e) { console.error("[stockData fetch]", e); }
+    }
 
     // AI 분석 (NEO-SCORE 14점)
-    const aiPromise = analyzeNeoAnalysis(imgs, stockName).then(r => Object.assign(r, { score: r.total, tp1: 10, tp2: 20, sl: -5, breakType: r.breakType || "네오분석 v1", investor: r.investor || "AI 채점", ema50: r.ema50 || "5섹션", details: r.details || (r.sections ? [{item:"① 수급", point:(r.sections.supply&&r.sections.supply.score)||0},{item:"② 돌파품질", point:(r.sections.breakout&&r.sections.breakout.score)||0},{item:"③ 모멘텀·시장", point:(r.sections.momentum&&r.sections.momentum.score)||0},{item:"④ 시황·재료", point:(r.sections.sectorMaterial&&r.sections.sectorMaterial.score)||0},{item:"⑤ 사전응축·이평", point:(r.sections.accumulation&&r.sections.accumulation.score)||0}] : []), detailedAnalysis: r.summary || "", technicalIndicators: r.technicalIndicators || {}, supplyZone: r.supplyZone || {}, strategy: r.strategy || (r.exitPlan ? { entry: r.buyTiming || "", entryPrice: r.buyStrategy || "", stopLoss: r.exitPlan.sl || "", tp1Price: r.exitPlan.tp1 || "", tp2Price: r.exitPlan.tp2 || "", exit: "TP/SL 도달 시", hold: "10일" } : {}), confidenceScore: r.confidence || 0, nextDayRiseProbability: r.confidence || 0, recommendedWeight: r.recommendedWeight || 10, verdict: r.verdict || "" }));
+    const aiPromise = analyzeNeoAnalysis(stockData || imgs, stockName).then(r => Object.assign(r, { score: r.total, tp1: 10, tp2: 20, sl: -5, breakType: r.breakType || "네오분석 v1", investor: r.investor || "AI 채점", ema50: r.ema50 || "5섹션", details: r.details || (r.sections ? [{item:"① 수급", point:(r.sections.supply&&r.sections.supply.score)||0},{item:"② 돌파품질", point:(r.sections.breakout&&r.sections.breakout.score)||0},{item:"③ 모멘텀·시장", point:(r.sections.momentum&&r.sections.momentum.score)||0},{item:"④ 시황·재료", point:(r.sections.sectorMaterial&&r.sections.sectorMaterial.score)||0},{item:"⑤ 사전응축·이평", point:(r.sections.accumulation&&r.sections.accumulation.score)||0}] : []), detailedAnalysis: r.summary || "", technicalIndicators: r.technicalIndicators || {}, supplyZone: r.supplyZone || {}, strategy: r.strategy || (r.exitPlan ? { entry: r.buyTiming || "", entryPrice: r.buyStrategy || "", stopLoss: r.exitPlan.sl || "", tp1Price: r.exitPlan.tp1 || "", tp2Price: r.exitPlan.tp2 || "", exit: "TP/SL 도달 시", hold: "10일" } : {}), confidenceScore: r.confidence || 0, nextDayRiseProbability: r.confidence || 0, recommendedWeight: r.recommendedWeight || 10, verdict: r.verdict || "" }));
 
     // 침착해 v4 분석
-    const chimFn = () => analyzeChimchakhae(imgs, stockName);
+    const chimFn = () => analyzeChimchakhae(stockData || imgs, stockName);
 
     // 주도주 분석
-    const jdFn = () => analyzeJudoju(imgs, stockName);
+    const jdFn = () => analyzeJudoju(stockData || imgs, stockName);
 
     // 하승훈 돌파매매 분석
-    const hsFn = () => analyzeHaseunghoon(imgs, stockName);
+    const hsFn = () => analyzeHaseunghoon(stockData || imgs, stockName);
 
     const [aiRes, chimRes, jdRes, hsRes] = await (async () => { const sleep = (ms) => new Promise(r => setTimeout(r, ms)); const a = await Promise.allSettled([aiPromise]); await sleep(15000); const c = await Promise.allSettled([chimFn()]); await sleep(15000); const j = await Promise.allSettled([jdFn()]); await sleep(15000); const h = await Promise.allSettled([hsFn()]); return [a[0], c[0], j[0], h[0]]; })();
 
