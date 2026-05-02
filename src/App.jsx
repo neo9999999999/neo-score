@@ -584,7 +584,7 @@ function AIAnalysis({onSave}){
         )}
       </div>
 
-      <button onClick={analyze} disabled={imgs.length === 0 || loading} style={{width:"100%", padding:"14px", borderRadius:10, border:"none", background: imgs.length===0 ? "#e2e8f0" : "linear-gradient(135deg, #1e293b 0%, #0d9488 100%)", color: imgs.length===0 ? "#94a3b8" : "#fff", fontSize:15, fontWeight:800, cursor: imgs.length===0 ? "default" : "pointer", marginBottom:14, letterSpacing:"0.3px"}}>
+      <button onClick={analyze} disabled={(imgs.length === 0 && !(stockNameRef.current && /^[0-9]{6}$/.test((stockNameRef.current.value||"").trim()))) || loading} style={{width:"100%", padding:"14px", borderRadius:10, border:"none", background: (imgs.length===0 && !(stockNameRef.current && /^[0-9]{6}$/.test((stockNameRef.current.value||"").trim()))) ? "#e2e8f0" : "linear-gradient(135deg, #1e293b 0%, #0d9488 100%)", color: (imgs.length===0 && !(stockNameRef.current && /^[0-9]{6}$/.test((stockNameRef.current.value||"").trim()))) ? "#94a3b8" : "#fff", fontSize:15, fontWeight:800, cursor: (imgs.length===0 && !(stockNameRef.current && /^[0-9]{6}$/.test((stockNameRef.current.value||"").trim()))) ? "default" : "pointer", marginBottom:14, letterSpacing:"0.3px"}}>
         {loading ? "⚙️ 분석 중..." : "🔍 AI + 침착해 + 주도주 + 하승훈 4중 분석"}
       </button>
 
