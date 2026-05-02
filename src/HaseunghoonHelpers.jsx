@@ -636,76 +636,54 @@ const HASEUNGHOON_PROMPT = "당신은 한국 주식 돌파매매(하승훈/Toptr
   "}\n\n" +
   "판독 불가 항목은 '확인불가'로. 가격 식별 불가시 null. JSON 외 텍스트 절대 금지.";
 
-export async function analyzeHaseunghoon(images, stockName) {
-  const content = [];
-  for (let i = 0; i < images.length; i++) {
-    const img = images[i];
-    content.push({ type: "image", source: { type: "base64", media_type: img.type || "image/png", data: img.data } });
-  }
-  const userText = "위 차트/수급/재료 이미지들을 종합 분석해서 하승훈 돌파매매 판단을 JSON으로만 응답하세요. 마크다운 코드블록 없이 { 로 시작해서 } 로 끝나는 JSON만." + (stockName ? " 종목명: " + stockName : "");
-  content.push({ type: "text", text: userText });
-
-  const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 12000,
-      system: HASEUNGHOON_PROMPT,
-      messages: [{ role: "user", content: content }],
-    }),
-  });
-
-  if (!resp.ok) {
-    const errText = await resp.text().catch(function(){return "";});
-    throw new Error("하승훈 분석 API " + resp.status + ": " + errText.slice(0, 200));
-  }
-  const data = await resp.json();
-
-  if (!data || !data.content || !Array.isArray(data.content)) {
-    throw new Error("응답 형식 이상: " + JSON.stringify(data).slice(0, 200));
-  }
-
-  const text = data.content.map(function (c) { return c && c.text || ""; }).join("");
-  if (!text || text.trim().length < 10) {
-    throw new Error("응답 비어있음 (stop_reason: " + (data.stop_reason || "?") + ")");
-  }
-
-  // JSON 파싱 (강화된 5단계 폴백)
-  let parsed = null;
-  let cleaned = text.replace(/```json|```/g, "").trim();
-  const firstBrace = cleaned.indexOf("{");
-  if (firstBrace > 0) cleaned = cleaned.slice(firstBrace);
-
-  try { parsed = JSON.parse(cleaned); return parsed; } catch (_) {}
-
-  const lastBrace = cleaned.lastIndexOf("}");
-  if (lastBrace > 0) {
-    const sliced = cleaned.slice(0, lastBrace + 1);
-    try { parsed = JSON.parse(sliced); return parsed; } catch (_) {}
-
-    const fixed1 = sliced.replace(/,\s*([}\]])/g, "$1").replace(/'\s*:/g, '":').replace(/:\s*'/g, ': "').replace(/'\s*([,}])/g, '"$1');
-    try { parsed = JSON.parse(fixed1); return parsed; } catch (_) {}
-
-    const lastComplete = sliced.lastIndexOf(',"');
-    if (lastComplete > 0) {
-      const truncated = sliced.slice(0, lastComplete) + "}";
-      try { parsed = JSON.parse(truncated); return parsed; } catch (_) {}
+export async function analyzeHaseunghoon(stockData, stockName) {
+  let dataText = "";
+  if (stockData && typeof stockData === "object" && !Array.isArray(stockData)) {
+    const sd = stockData;
+    dataText = "\n=== 종목 정보 ===\n";
+    dataText += "종목명: " + (sd.name || stockName || "") + " (" + (sd.code || "") + ")\n";
+    if (sd.market) dataText += "시장: " + sd.market + "\n";
+    if (sd.mc) dataText += "시가총액: " + sd.mc + "억\n";
+    if (sd.todayPrice) dataText += "현재가: " + sd.todayPrice + "원\n";
+    if (sd.todayChange != null) dataText += "등락률: " + sd.todayChange + "%\n";
+    if (sd.todayAmt) dataText += "거래대금: " + sd.todayAmt + "억\n";
+    if (sd.days && sd.days.length) {
+      dataText += "\n=== 일별 주가 (최근 " + sd.days.length + "일) ===\n";
+      dataText += "날짜 | 종가 | 시가 | 고가 | 저가 | 거래량 | 등락\n";
+      sd.days.forEach(d => { dataText += d.date + " | " + d.close + " | " + d.open + " | " + d.high + " | " + d.low + " | " + d.vol + " | " + d.rate + "%\n"; });
     }
+    if (sd.invDays && sd.invDays.length) {
+      dataText += "\n=== 일별 수급 (단위: 억원) ===\n";
+      dataText += "날짜 | 외인 | 기관 | 개인\n";
+      sd.invDays.forEach(d => { dataText += d.date + " | " + (d.foreign || 0) + " | " + (d.org || 0) + " | " + (d.indiv || 0) + "\n"; });
+    }
+  } else if (Array.isArray(stockData)) {
+    const content = [];
+    for (let i = 0; i < stockData.length; i++) content.push({ type: "image", source: { type: "base64", media_type: stockData[i].type || "image/jpeg", data: stockData[i].data } });
+    content.push({ type: "text", text: "종목: " + (stockName || "미상") + "\n위 차트를 하승훈 돌파매매 룰로 채점하고 JSON만 출력." });
+    return await _callApi_analyzeHaseunghoon(content, HASEUNGHOON_PROMPT, 12000);
+  } else {
+    dataText = "종목: " + (stockName || "미상");
   }
-
-  const m = cleaned.match(/\{[\s\S]*\}/);
-  if (m) {
-    const fixed2 = m[0].replace(/,\s*([}\]])/g, "$1");
-    try { parsed = JSON.parse(fixed2); return parsed; } catch (_) {}
-  }
-
-  throw new Error("JSON 파싱 실패 (응답 " + text.length + "자, 시작: " + text.slice(0, 50) + ")");
+  const userPrompt = dataText + "\n\n위 데이터로 하승훈 돌파매매 룰로 채점하고 JSON만 출력.";
+  return await _callApi_analyzeHaseunghoon([{ type: "text", text: userPrompt }], HASEUNGHOON_PROMPT, 12000);
 }
 
-// ============================================================
-// 하승훈 분석 결과 카드 (ChimchakhaeResultCard와 동일 구조)
-// ============================================================
+async function _callApi_analyzeHaseunghoon(content, system, maxTokens) {
+  const r = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: maxTokens || 4500, system: system, messages: [{ role: "user", content: content }] })
+  });
+  const data = await r.json();
+  if (data.type === "error") throw new Error((data.error && data.error.message) || "API 에러");
+  const text = ((data.content && data.content[0] && data.content[0].text) || "").trim();
+  let clean = text.replace(/```json|```/g, "").trim();
+  const m = clean.match(/\{[\s\S]*\}/);
+  if (m) clean = m[0];
+  return JSON.parse(clean);
+}
+
 export function HaseunghoonResultCard(props) {
   const res = props.result;
   if (!res || typeof res !== "object") return null;
