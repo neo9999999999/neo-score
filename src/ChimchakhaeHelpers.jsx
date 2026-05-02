@@ -1260,3 +1260,25 @@ export function ChimchakhaeDetailModal(props) {
   );
 }
 
+
+
+// === 새 데이터 모드 ===
+export async function analyzeChimchakhaeData(stockData, stockName) {
+  const userText = CHIMCHAKHAE_PROMPT + (stockName ? "\n\n종목명: " + stockName : "") + "\n\n다음 KIS API 종목 데이터:\n" + JSON.stringify(stockData, null, 2);
+  const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 8000,
+      messages: [{ role: "user", content: [{ type: "text", text: userText }] }]
+    })
+  });
+  if (!resp.ok) { const t = await resp.text(); throw new Error("API " + resp.status + ": " + t.slice(0, 200)); }
+  const data = await resp.json();
+  if (data.type === "error") throw new Error((data.error && data.error.message) || "API 오류");
+  const text = (data.content && data.content[0] && data.content[0].text || "").trim();
+  const jm = text.match(/\{[\s\S]*\}/);
+  if (!jm) throw new Error("JSON 파싱 실패");
+  return JSON.parse(jm[0]);
+}

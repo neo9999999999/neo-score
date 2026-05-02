@@ -461,3 +461,26 @@ export function calcNeoAnalysisFromSignal(s) {
     raw: { change, investor, mcVal, neoScore, breakType, wick, originalGrade: s.grade }
   };
 }
+
+
+// === 새 데이터 모드 ===
+export async function analyzeNeoAnalysisData(stockData, stockName) {
+  const userText = (stockName ? "종목: " + stockName + "\n\n" : "") + "다음 KIS API 종목 데이터를 네오분석 v1 분석 후 JSON만 출력:\n\n" + JSON.stringify(stockData, null, 2);
+  const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 4500,
+      system: NEO_ANALYSIS_SYS_PROMPT,
+      messages: [{ role: "user", content: [{ type: "text", text: userText }] }]
+    })
+  });
+  if (!resp.ok) { const t = await resp.text(); throw new Error("API " + resp.status + ": " + t.slice(0, 200)); }
+  const data = await resp.json();
+  if (data.type === "error") throw new Error((data.error && data.error.message) || "API 오류");
+  const text = (data.content && data.content[0] && data.content[0].text || "").trim();
+  const jm = text.match(/\{[\s\S]*\}/);
+  if (!jm) throw new Error("JSON 파싱 실패");
+  return JSON.parse(jm[0]);
+}
