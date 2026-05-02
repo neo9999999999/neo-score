@@ -495,9 +495,9 @@ function AIAnalysis({onSave}){
         const toYmd = today.getFullYear() + String(today.getMonth()+1).padStart(2,"0") + String(today.getDate()).padStart(2,"0");
         const past = new Date(today.getTime() - 90*86400000);
         const fromYmd = past.getFullYear() + String(past.getMonth()+1).padStart(2,"0") + String(past.getDate()).padStart(2,"0");
-        const ohlcResp = await fetch(API_URL + "/api/daily-price?code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
+        const ohlcResp = await fetch(PRICE_API + "?code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd);
         const ohlcData = await ohlcResp.json();
-        const invResp = await fetch(API_URL + "/api/daily-price?kind=inv&code=" + codeStr);
+        const invResp = await fetch(PRICE_API + "?kind=inv&code=" + codeStr);
         const invData = await invResp.json();
         const rawRows = (ohlcData.all_rows || []).slice(0, 60);
         const days = rawRows.map((rr, ii) => { let rate = +rr.rate || 0; if (!rate && ii + 1 < rawRows.length) { const pc = +rawRows[ii+1].close || 0; if (pc > 0) rate = Math.round(((+rr.close - pc) / pc) * 10000) / 100; } return { date: rr.date, close: +rr.close||0, open: +rr.open||0, high: +rr.high||0, low: +rr.low||0, vol: +rr.vol||0, rate: rate }; });
