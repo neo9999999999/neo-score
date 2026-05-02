@@ -228,37 +228,55 @@ export function calcNeoAnalysisFromRaw(row) {
 
   // 거래대금 (한글 → 숫자, 단위: 억)
   let mcVal = 0;
-  const mcMatch = mc_str.match(/([\d,]+)/);
+  const mcMatch = String(mc_str).match(/([\d,]+)/);
   if (mcMatch) mcVal = parseInt(mcMatch[1].replace(/,/g, "")) || 0;
 
-  // ① 수급 (25점) — investor 기반
-  let supply = 8;
-  const inv = investor;
-  if (/(기|기관).*(외|외인).*(프|프로)/.test(inv) || /(외|외인).*(기|기관).*(프|프로)/.test(inv) || /(프|프로).*(기|기관).*(외|외인)/.test(inv)) supply = 25;
-  else if (/(기|기관).*(외|외인)|(외|외인).*(기|기관)/.test(inv)) supply = 22;
-  else if (/외만|기만/.test(inv)) supply = 18;
-  else if (/외|기/.test(inv)) supply = 15;
-  if (mcVal >= 1000) supply = Math.min(25, supply + 2);
+  // ① 수급 (25점) — v1 룰
+  let supply = 0;
+  const inv = String(investor);
+  const hasOe = /외|외인/.test(inv);
+  const hasGi = /기|기관/.test(inv);
+  const hasPro = /프|프로/.test(inv);
+  const isDul = /둘다/.test(inv);
+  if (hasOe && hasGi && hasPro) {
+    supply = 25;
+  } else if (hasOe && hasGi) {
+    const oeIdx = inv.search(/외|외인/);
+    const giIdx = inv.search(/기|기관/);
+    supply = (oeIdx < giIdx) ? 22 : 20;
+  } else if (isDul) {
+    supply = 20;
+  } else if (hasOe) {
+    supply = 18;
+  } else if (hasGi) {
+    supply = 13;
+  }
+  if (supply > 0 && mcVal >= 1000) supply = Math.min(25, supply + 2);
 
-  // ② 돌파 품질 (25점) — change + breakType + peak
-  let breakout = 5;
+  // ② 돌파 품질 (25점) — v1 룰
+  let breakout = 0;
   if (change >= 15) breakout = 18;
   else if (change >= 10) breakout = 15;
-  else if (change >= 5) breakout = 10;
+  else if (change >= 7) breakout = 10;
+  else if (change >= 5) breakout = 5;
   if (breakType === "ATH") breakout = Math.min(25, breakout + 5);
   if (peak >= change * 1.2 && change > 0) breakout = Math.min(25, breakout + 2);
 
-  // ③ 모멘텀 + 시장위치 (20점) — change + 거래대금
-  let momentum = 5;
+  // ③ 모멘텀 + 시장위치 (20점) — v1 룰
+  let momentum = 0;
   if (change >= 15 && mcVal >= 500) momentum = 18;
   else if (change >= 10 && mcVal >= 300) momentum = 14;
-  else if (change >= 5) momentum = 10;
+  else if (change >= 7) momentum = 10;
   if (mcVal >= 1000) momentum = Math.min(20, momentum + 2);
 
-  // ④ 시황·재료 (15점) — 데이터 없음, 거래대금으로 추정
-  let sectorMaterial = 10;
+  // ④ 시황·재료 (15점) — v1 룰 (거래대금 기반)
+  let sectorMaterial;
   if (mcVal >= 1500) sectorMaterial = 13;
   else if (mcVal >= 800) sectorMaterial = 11;
+  else if (mcVal >= 500) sectorMaterial = 10;
+  else if (mcVal >= 300) sectorMaterial = 8;
+  else if (mcVal >= 50) sectorMaterial = 5;
+  else sectorMaterial = 0;
 
   // ⑤ 사전응축 + 이평 (15점) — breakType + neoScore
   let accumulation = 8;
