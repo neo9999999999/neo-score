@@ -72,7 +72,7 @@ export async function analyzeNeoAnalysis(stockData, stockName) {
   if (stockData && typeof stockData === "object" && !stockData.length) {
     const sd = stockData;
     dataText = "\n=== 종목 정보 ===\n";
-    dataText += "종목명: " + (sd.name || stockName || "") + " (" + (sd.code || "") + ")\n";
+    dataText += "종목명: " + (sd.name || stockName || "") + " (" + (sd.code || "") + ")\n" + (sd.isBacktest ? "⚠️ 백테스트 모드 - 기준일: " + (sd.baseDate||"") + " (이 날짜까지의 데이터만으로 분석, 미래 데이터 모름)\n" : "");
     if (sd.market) dataText += "시장: " + sd.market + "\n";
     if (sd.mc) dataText += "시가총액: " + sd.mc + "억\n";
     if (sd.todayPrice) dataText += "현재가: " + sd.todayPrice + "원\n";
