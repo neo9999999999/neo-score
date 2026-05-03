@@ -415,6 +415,8 @@ async function fetchStockSnapshot(code){
 function AIAnalysis({onSave}){
   const [imgs, setImgs] = useState([]);
   const [codeInput, setCodeInput] = useState("");
+  const [backDate, setBackDate] = useState("");
+  const [verifyResult, setVerifyResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [aiResult, setAiResult] = useState(null);
@@ -559,6 +561,12 @@ function AIAnalysis({onSave}){
     <div>
       <div style={{padding:"10px 12px",background:"#eff6ff",border:"1px solid #93c5fd",borderRadius:8,fontSize:12,color:"#1d4ed8",marginBottom:10,lineHeight:1.5}}>💡 <b>6자리 종목코드</b>를 입력하면 자동으로 주가·수급 데이터를 조회해 분석합니다 (차트 이미지 불필요).<br/>종목명만 입력하면 기존처럼 차트 이미지를 업로드해서 분석합니다.</div>
         <input ref={stockNameRef} type="text" placeholder="종목코드 6자리 (예: 005930) 또는 종목명" onChange={(e)=>setCodeInput(e.target.value)} style={{width:"100%", padding:"10px 12px", border:"1px solid #cbd5e1", borderRadius:8, fontSize:13, marginBottom:10, fontFamily:"inherit", boxSizing:"border-box"}} />
+      <div style={{display:"flex", alignItems:"center", gap:8, marginBottom:10, padding:"8px 10px", background:"#fffbeb", border:"1px solid #fde68a", borderRadius:8, fontSize:12, flexWrap:"wrap"}}>
+        <span style={{fontWeight:600}}>📅 기준일자:</span>
+        <input type="date" value={backDate} onChange={(e)=>setBackDate(e.target.value)} style={{padding:"4px 8px", border:"1px solid #cbd5e1", borderRadius:6, fontSize:12, fontFamily:"inherit"}} />
+        <span style={{color:"#92400e", fontSize:11}}>{backDate ? "🔍 백테스트 모드 - 이 날짜 기준 분석 + 익일 검증" : "(비워두면 오늘 기준 분석)"}</span>
+        {backDate && <button onClick={()=>{setBackDate("");setVerifyResult(null);}} style={{padding:"3px 8px", background:"#fff", border:"1px solid #cbd5e1", borderRadius:6, fontSize:11, cursor:"pointer"}}>✖</button>}
+      </div>
 
       <div onClick={() => fileRef.current && fileRef.current.click()}
         onDragOver={e => {e.preventDefault(); e.stopPropagation(); e.currentTarget.style.borderColor="#3b82f6"; e.currentTarget.style.background="#eff6ff"}}
