@@ -557,6 +557,55 @@ function AIAnalysis({onSave}){
     if (hsRes.status === "fulfilled") setHsResult(hsRes.value);
     else setHsError(hsRes.reason.message || "하승훈 분석 실패");
 
+    // 익일 검증 (TP1/TP2/SL)
+    if (backDate && stockData && stockData.futureDays && stockData.futureDays.length && stockData.target_row) {
+      try {
+        const _entry = stockData.target_row.close;
+        const _tp1Px = +(_entry * 1.10).toFixed(2);
+        const _tp2Px = +(_entry * 1.20).toFixed(2);
+        const _slPx = +(_entry * 0.95).toFixed(2);
+        const _days = [...stockData.futureDays].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+        let _pos = 1.0;
+        let _realized = 0;
+        let _exitDay = null;
+        let _exitReason = null;
+        const _detail = [];
+        for (let i = 0; i < _days.length && _pos > 0; i++) {
+          const d = _days[i];
+          const log = { date: d.date, close: d.close, high: d.high, low: d.low, hits: [] };
+          if (d.low <= _slPx) {
+            _realized += _pos * -0.05;
+            log.hits.push('SL');
+            _exitDay = i + 1; _exitReason = 'SL'; _pos = 0;
+          } else if (d.high >= _tp2Px) {
+            _realized += _pos * 0.20;
+            log.hits.push('TP2');
+            _exitDay = i + 1; _exitReason = 'TP2'; _pos = 0;
+          } else if (d.high >= _tp1Px && _pos === 1.0) {
+            _realized += 0.5 * 0.10;
+            log.hits.push('TP1');
+            _pos = 0.5;
+          }
+          _detail.push(log);
+        }
+        if (_pos > 0 && _days.length > 0) {
+          const _lc = _days[_days.length - 1].close;
+          _realized += _pos * (_lc - _entry) / _entry;
+          _exitDay = _days.length;
+          _exitReason = _exitReason || 'CLOSE';
+        }
+        setVerifyResult({
+          entry: _entry,
+          tp1Price: _tp1Px,
+          tp2Price: _tp2Px,
+          slPrice: _slPx,
+          days: _detail,
+          finalPnl: +(_realized * 100).toFixed(2),
+          exitDay: _exitDay,
+          exitReason: _exitReason
+        });
+      } catch (e) { console.error('verify err:', e); }
+    }
     setLoading(false);
     setProgress("");
   };
