@@ -494,9 +494,12 @@ function AIAnalysis({onSave}){
         setProgress("ㆍ목코드 감지 — 데이터 fetch 중...");
         const codeStr = codeMatch[0];
         const today = new Date();
-        const toYmd = today.getFullYear() + String(today.getMonth()+1).padStart(2,"0") + String(today.getDate()).padStart(2,"0");
-        const past = new Date(today.getTime() - 90*86400000);
+        const baseDate = backDate ? new Date(backDate) : today;
+        const toYmd = baseDate.getFullYear() + String(baseDate.getMonth()+1).padStart(2,"0") + String(baseDate.getDate()).padStart(2,"0");
+        const past = new Date(baseDate.getTime() - 90*86400000);
         const fromYmd = past.getFullYear() + String(past.getMonth()+1).padStart(2,"0") + String(past.getDate()).padStart(2,"0");
+        const verifyEnd = new Date(baseDate.getTime() + 20*86400000);
+        const verifyEndYmd = verifyEnd.getFullYear() + String(verifyEnd.getMonth()+1).padStart(2,"0") + String(verifyEnd.getDate()).padStart(2,"0");
         const ohlcResp = await fetch(PRICE_API + "?code=" + codeStr + "&from=" + fromYmd + "&to=" + toYmd + "&_=" + Date.now(), { cache: "no-store" });
         const ohlcData = await ohlcResp.json();
         const invResp = await fetch(PRICE_API + "?kind=inv&code=" + codeStr + "&_=" + Date.now(), { cache: "no-store" });
@@ -505,7 +508,26 @@ function AIAnalysis({onSave}){
         const days = rawRows.map((rr, ii) => { let rate = +rr.rate || 0; if (!rate && ii + 1 < rawRows.length) { const pc = +rawRows[ii+1].close || 0; if (pc > 0) rate = Math.round(((+rr.close - pc) / pc) * 10000) / 100; } return { date: rr.date, close: +rr.close||0, open: +rr.open||0, high: +rr.high||0, low: +rr.low||0, vol: +rr.vol||0, amt: Math.round((+rr.amt||0)/100000000*10)/10, rate: rate }; });
         const invDays = (invData.output || []).slice(0, 30).map(r => ({ date: r.stck_bsop_date || "", foreign: Math.round((+r.frgn_ntby_tr_pbmn||0) / 100 * 10) / 10, org: Math.round((+r.orgn_ntby_tr_pbmn||0) / 100 * 10) / 10, indiv: Math.round((+r.prsn_ntby_tr_pbmn||0) / 100 * 10) / 10 }));
         const today_d = days[0] || {};
-        stockData = { code: codeStr, name: ohlcData.name || "", market: ohlcData.market || "", todayPrice: today_d.close, todayChange: today_d.rate, todayAmt: today_d.amt || Math.round((today_d.close * today_d.vol) / 100000000), days: days, invDays: invDays };
+        stockData = { code: codeStr, name: ohlcData.name || "", market: ohlcData.market || "", todayPrice: today_d.close, todayChange: today_d.rate, todayAmt: today_d.amt || Math.round((today_d.close * today_d.vol) / 100000000), days: days, invDays: invDays, baseDate: toYmd, isBacktest: !!backDate };
+        if (backDate) {
+          try {
+            const nextDay = new Date(baseDate.getTime() + 86400000);
+            const nextYmd = nextDay.getFullYear() + String(nextDay.getMonth()+1).padStart(2,"0") + String(nextDay.getDate()).padStart(2,"0");
+            const verifyResp = await fetch(PRICE_API + "?code=" + codeStr + "&from=" + nextYmd + "&to=" + verifyEndYmd + "&_=" + Date.now(), { cache: "no-store" });
+            const verifyData = await verifyResp.json();
+            const futureRows = (verifyData.all_rows || []).slice().reverse();
+            stockData.futureDays = futureRows.map((rr, ii) => {
+              let rate = +rr.rate || 0;
+              if (!rate && ii > 0) {
+                const pc = +futureRows[ii-1].close || 0;
+                if (pc > 0) rate = Math.round(((+rr.close - pc) / pc) * 10000) / 100;
+              } else if (!rate && ii === 0 && today_d.close) {
+                rate = Math.round(((+rr.close - today_d.close) / today_d.close) * 10000) / 100;
+              }
+              return { date: rr.date, close: +rr.close||0, open: +rr.open||0, high: +rr.high||0, low: +rr.low||0, vol: +rr.vol||0, amt: Math.round((+rr.amt||0)/100000000*10)/10, rate: rate };
+            });
+          } catch(e) { console.error("[verify fetch]", e); }
+        }
       } catch(e) { console.error("[stockData fetch]", e); }
     }
 
