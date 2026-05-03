@@ -606,6 +606,35 @@ function AIAnalysis({onSave}){
         });
       } catch (e) { console.error('verify err:', e); }
     }
+    // 백테스트 검증: futureDays가 있으면 TP1/TP2/SL 도달 확인
+    if (stockData && stockData.futureDays && stockData.futureDays.length > 0 && stockData.target_row) {
+      const entry = stockData.target_row.close;
+      const tp1Price = Math.round(entry * 1.10);
+      const tp2Price = Math.round(entry * 1.20);
+      const slPrice  = Math.round(entry * 0.95);
+      let tp1HitDay = null, tp2HitDay = null, slHitDay = null;
+      const dailyDetail = [];
+      stockData.futureDays.forEach((d, i) => {
+        const day = i + 1;
+        const tp1Hit = d.high >= tp1Price;
+        const tp2Hit = d.high >= tp2Price;
+        const slHit  = d.low  <= slPrice;
+        if (slHit  && !slHitDay)  slHitDay  = day;
+        if (tp1Hit && !tp1HitDay) tp1HitDay = day;
+        if (tp2Hit && !tp2HitDay) tp2HitDay = day;
+        dailyDetail.push({ day: day, date: d.date, open: d.open, high: d.high, low: d.low, close: d.close, tp1Hit: tp1Hit, tp2Hit: tp2Hit, slHit: slHit });
+      });
+      const last = stockData.futureDays[stockData.futureDays.length - 1];
+      let exitPrice = last.close;
+      let exitReason = '기간종료';
+      if (slHitDay && (!tp1HitDay || slHitDay < tp1HitDay)) { exitPrice = slPrice;  exitReason = 'SL(-5%) '   + slHitDay  + '일차'; }
+      else if (tp2HitDay) { exitPrice = tp2Price; exitReason = 'TP2(+20%) ' + tp2HitDay + '일차'; }
+      else if (tp1HitDay) { exitPrice = tp1Price; exitReason = 'TP1(+10%) ' + tp1HitDay + '일차 (50% 익절)'; }
+      const finalPnl = Math.round(((exitPrice - entry) / entry) * 10000) / 100;
+      setVerifyResult({ entry: entry, tp1Price: tp1Price, tp2Price: tp2Price, slPrice: slPrice, tp1HitDay: tp1HitDay, tp2HitDay: tp2HitDay, slHitDay: slHitDay, exitPrice: exitPrice, exitReason: exitReason, finalPnl: finalPnl, dailyDetail: dailyDetail });
+    } else {
+      setVerifyResult(null);
+    }
     setLoading(false);
     setProgress("");
   };
