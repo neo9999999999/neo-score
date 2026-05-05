@@ -106,7 +106,7 @@ export async function analyzeChimchakhae(stockData, stockName) {
   const resp = await fetch("https://sector-api-pink.vercel.app/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 8000, messages: [{ role: "user", content: content }] })
+    body: JSON.stringify({ model: "claude-haiku-4-5-20251001", max_tokens: 3000, messages: [{ role: "user", content: content }] })
   });
   if (!resp.ok) { const t = await resp.text(); throw new Error("침착해 API " + resp.status + ": " + t.substring(0, 200)); }
   const data = await resp.json();
@@ -1277,7 +1277,7 @@ export async function analyzeChimchakhaeData(stockData, stockName) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 8000,
+      max_tokens: 3000,
       messages: [{ role: "user", content: [{ type: "text", text: userText }] }]
     })
   });

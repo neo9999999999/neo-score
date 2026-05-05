@@ -955,7 +955,7 @@ export async function analyzeJudojuData(stockData, stockName) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 12000,
+      max_tokens: 3000,
       system: JUDOJU_PROMPT,
       messages: [{ role: "user", content: [{ type: "text", text: userText }] }]
     })

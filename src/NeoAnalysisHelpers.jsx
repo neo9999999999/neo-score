@@ -486,7 +486,7 @@ export async function analyzeNeoAnalysisData(stockData, stockName) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 4500,
+      max_tokens: 2500,
       system: NEO_ANALYSIS_SYS_PROMPT,
       messages: [{ role: "user", content: [{ type: "text", text: userText }] }]
     })
