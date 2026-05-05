@@ -414,7 +414,7 @@ async function fetchStockSnapshot(code){
 
 function AIAnalysis({onSave}){
   const [imgs, setImgs] = useState([]);
-  const [codeInput, setCodeInput] = useState("");useEffect(()=>{if(window.__pendingAiCode){const c=window.__pendingAiCode;window.__pendingAiCode=null;setCodeInput(c);setTimeout(()=>{const btn=Array.from(document.querySelectorAll("button")).find(b=>b.textContent.includes("4중 분석"));btn&&btn.click();},400);}},[]);
+  const [codeInput, setCodeInput] = useState("");useEffect(()=>{if(window.__pendingAiCode){const c=window.__pendingAiCode;window.__pendingAiCode=null;setCodeInput(c);}},[]);
   const [backDate, setBackDate] = useState("");
   const [verifyResult, setVerifyResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -425,7 +425,7 @@ function AIAnalysis({onSave}){
   const [hsResult, setHsResult] = useState(null);
   const [finalResult, setFinalResult] = useState(null);
   const [finalLoading, setFinalLoading] = useState(false);
-  const [finalError, setFinalError] = useState("");
+  const [finalError, setFinalError] = useState("");useEffect(()=>{if(aiResult&&chimResult&&jdResult&&hsResult){try{const _c=stockNameRef.current?stockNameRef.current.value.trim():"";if(_c){const _k="aianalyze_"+_c+"_"+new Date().toISOString().slice(0,10);localStorage.setItem(_k,JSON.stringify({ai:aiResult,chim:chimResult,jd:jdResult,hs:hsResult}));}}catch(e){}}},[aiResult,chimResult,jdResult,hsResult]);
 
   async function generateFinal() {
     if (!aiResult || !chimResult || !jdResult || !hsResult) {
@@ -479,7 +479,7 @@ function AIAnalysis({onSave}){
     Promise.all(files.map(f => compressImg(f, 1024))).then(results => setImgs(prev => [...prev, ...results]));
   };
 
-  const analyze = async () => {
+  const analyze = async () => {const _ck=(()=>{const c=stockNameRef.current?stockNameRef.current.value.trim():"";return c?"aianalyze_"+c+"_"+new Date().toISOString().slice(0,10):null;})();if(_ck){try{const _c=localStorage.getItem(_ck);if(_c){const _p=JSON.parse(_c);setAiResult(_p.ai);setChimResult(_p.chim);setJdResult(_p.jd);setHsResult(_p.hs);setProgress("✓ 캐시 사용 (오늘 동일 종목 - 비용 0원)");return;}}catch(e){}}
     if (imgs.length === 0 && !(stockNameRef.current && /^[0-9]{6}$/.test(stockNameRef.current.value.trim()))) return;
     setLoading(true);
     setAiError(null); setChimError(null); setJdError(null); setHsError(null);
