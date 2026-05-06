@@ -382,46 +382,65 @@ return(<div key={gk} style={{padding:"8px 10px",background:"#1a1a2e",borderRadiu
 function MultiFilterDB({onRowClick}={}){
 const _g7=['S+','S','A+','A','B+','B','C'];
 const _hsg=['A+','A','C'];
+const _ng=['S','A','B','X'];
+const _presets=[
+{label:'\ud83c\udfc6 \ucd5c\uac15',desc:'\uc8fcS+ \u00d7 \ud558A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+']},
+{label:'\ud83e\udd48 3\uc911 \uac15',desc:'\uce68/\uc8fc S+~S \u00d7 \ud558A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+']},
+{label:'\ud83e\udd49 \uce68+\uc8fc',desc:'\uce68S+ \u00d7 \uc8fcS+/S (37.5%)',n:[],c:['S+'],j:['S+','S'],h:[]},
+{label:'\ud83d\udc8e 4\uc911 \ucd5c\uc0c1',desc:'Neo S \u00d7 \ubaa8\ub450 \ucd5c\uc0c1\uc704',n:['S'],c:['S+'],j:['S+'],h:['A+']},
+{label:'\ud83c\udfaf \uc6b0\ub7c9 \uce68\ucc29',desc:'Neo S \u00d7 \uce68S+ (36.1%)',n:['S'],c:['S+'],j:[],h:[]},
+{label:'\ud83d\udd04 \ucd08\uae30\ud654',desc:'',n:[],c:[],j:[],h:[]}
+];
+const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
 const [yf,setYf]=useState('all');
 const [hideSL,setHideSL]=useState(false);
 const filtered=useMemo(()=>{
-  let arr=D.filter(r=>{
-    if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
-    if(selCC.length&&!selCC.includes(r.ccG))return false;
-    if(selJD.length&&!selJD.includes(r.jdG))return false;
-    if(selHS.length&&!selHS.includes(r.hsG))return false;
-    if(hideSL&&(r.r==='SL'||String(r.r||'').startsWith('SL')))return false;
-    return true;
-  });
-  return arr.sort((a,b)=>(b.t||0)-(a.t||0));
-},[selCC,selJD,selHS,yf,hideSL]);
+let arr=D.filter(r=>{
+if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
+if(selN.length&&!selN.includes(r.g))return false;
+if(selCC.length&&!selCC.includes(r.ccG))return false;
+if(selJD.length&&!selJD.includes(r.jdG))return false;
+if(selHS.length&&!selHS.includes(r.hsG))return false;
+if(hideSL&&(r.r==='SL'||String(r.r||'').startsWith('SL')))return false;
+return true;
+});
+return arr.sort((a,b)=>(b.t||0)-(a.t||0));
+},[selN,selCC,selJD,selHS,yf,hideSL]);
 const stats=useMemo(()=>{
-  if(!filtered.length)return null;
-  const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
-  const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
-  const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
-  return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
+if(!filtered.length)return null;
+const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
+const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
+const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
+return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
+const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);};
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
 return (<div style={{padding:'12px'}}>
-<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도</div>
-{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'전체':y+'년'}</button>))}
-<button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>손절 숨김</button>
+<div style={{marginBottom:12,padding:10,background:'#fef3c7',borderRadius:8,border:'1px solid #fbbf24'}}>
+<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>\u2b50 \ucd5c\uc801 \ud504\ub9ac\uc14b (\uac80\uc99d\ub41c \uac15\ub825 \ud328\ud134)</div>
+<div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+{_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:130,textAlign:'left'}}><span style={{fontWeight:700}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
+</div></div>
+<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>\ud83d\udcc5 \uc5f0\ub3c4</div>
+{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'\uc804\uccb4':y+'\ub144'}</button>))}
+<button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>\uc190\uc808 \uc228\uae40</button>
 </div>
-<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#0ea5e9'}}>🎯 침착해 (다중선택, 비우면 전체)</div>{_g7.map(g=>(<Tg key={g} arr={selCC} setArr={setSelCC} val={g} col="#0ea5e9"/>))}</div>
-<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#f59e0b'}}>🥇 주도주 (다중선택)</div>{_g7.map(g=>(<Tg key={g} arr={selJD} setArr={setSelJD} val={g} col="#f59e0b"/>))}</div>
-<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#ef4444'}}>🔥 하승훈 (다중선택)</div>{_hsg.map(g=>(<Tg key={g} arr={selHS} setArr={setSelHS} val={g} col="#ef4444"/>))}</div>
-{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:12,fontSize:12}}><strong>총 {stats.n}건</strong> · 5%+ 익절 {stats.p5}건 ({(stats.p5/stats.n*100).toFixed(1)}%) · 손절 {stats.sl}건 ({(stats.sl/stats.n*100).toFixed(1)}%) · 평균 수익 {stats.avg.toFixed(2)}%</div>)}
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#10b981'}}>\ud83d\udcb0 \ub124\uc624 (\uac70\ub798\ub300\uae08)</div>{_ng.map(g=>(<Tg key={g} arr={selN} setArr={setSelN} val={g} col="#10b981"/>))}</div>
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#0ea5e9'}}>\ud83c\udfaf \uce68\ucc29\ud574</div>{_g7.map(g=>(<Tg key={g} arr={selCC} setArr={setSelCC} val={g} col="#0ea5e9"/>))}</div>
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#f59e0b'}}>\ud83e\udd47 \uc8fc\ub3c4\uc8fc</div>{_g7.map(g=>(<Tg key={g} arr={selJD} setArr={setSelJD} val={g} col="#f59e0b"/>))}</div>
+<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#ef4444'}}>\ud83d\udd25 \ud558\uc2b9\ud6c8</div>{_hsg.map(g=>(<Tg key={g} arr={selHS} setArr={setSelHS} val={g} col="#ef4444"/>))}</div>
+{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:12,fontSize:12}}><strong>\ucd1d {stats.n}\uac74</strong> \u00b7 5%+ \uc775\uc808 {stats.p5}\uac74 ({(stats.p5/stats.n*100).toFixed(1)}%) \u00b7 \uc190\uc808 {stats.sl}\uac74 ({(stats.sl/stats.n*100).toFixed(1)}%) \u00b7 \ud3c9\uade0 \uc218\uc775 {stats.avg.toFixed(2)}%</div>)}
 <div style={{maxHeight:'60vh',overflowY:'auto',border:'1px solid #e2e8f0',borderRadius:8}}>
 <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
-<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>종목</th><th style={{padding:'8px 6px'}}>날짜</th><th style={{padding:'8px 6px'}}>등락</th><th style={{padding:'8px 6px'}}>침</th><th style={{padding:'8px 6px'}}>주</th><th style={{padding:'8px 6px'}}>하</th><th style={{padding:'8px 6px'}}>결과</th><th style={{padding:'8px 6px'}}>수익</th></tr></thead>
-<tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid #f1f5f9'}}><td style={{padding:'6px'}}>{r.n}</td><td style={{padding:'6px',textAlign:'center'}}>{r.d}</td><td style={{padding:'6px',textAlign:'right',color:(r.ch||0)>0?'#dc2626':'#059669'}}>{r.ch}%</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.ccG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.jdG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.hsG}</td><td style={{padding:'6px',textAlign:'center'}}>{r.r}</td><td style={{padding:'6px',textAlign:'right',color:(r.t||0)>=0?'#dc2626':'#059669',fontWeight:700}}>{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
-{filtered.length>300&&(<div style={{padding:8,textAlign:'center',color:'#94a3b8',fontSize:11}}>※ 상위 300건만 표시 (전체 {filtered.length}건)</div>)}
+<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>\uc885\ubaa9</th><th style={{padding:'8px 6px'}}>\ub0a0\uc9dc</th><th style={{padding:'8px 6px'}}>\ub4f1\ub77d</th><th style={{padding:'8px 6px'}}>\ub124</th><th style={{padding:'8px 6px'}}>\uce68</th><th style={{padding:'8px 6px'}}>\uc8fc</th><th style={{padding:'8px 6px'}}>\ud558</th><th style={{padding:'8px 6px'}}>\uacb0\uacfc</th><th style={{padding:'8px 6px'}}>\uc218\uc775</th></tr></thead>
+<tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid #f1f5f9'}}><td style={{padding:'6px'}}>{r.n}</td><td style={{padding:'6px',textAlign:'center'}}>{r.d}</td><td style={{padding:'6px',textAlign:'right',color:(r.ch||0)>0?'#dc2626':'#059669'}}>{r.ch}%</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.g}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.ccG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.jdG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.hsG}</td><td style={{padding:'6px',textAlign:'center'}}>{r.r}</td><td style={{padding:'6px',textAlign:'right',color:(r.t||0)>=0?'#dc2626':'#059669',fontWeight:700}}>{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
+{filtered.length>300&&(<div style={{padding:8,textAlign:'center',color:'#94a3b8',fontSize:11}}>\u203b \uc0c1\uc704 300\uac74\ub9cc \ud45c\uc2dc (\uc804\uccb4 {filtered.length}\uac74)</div>)}
 </div></div>);
 }
+
 
 function TodaySignals({onSignalsLoaded,onSignalClick}){const [data,setData]=useState(null);const [loading,setLoading]=useState(true);const [err,setErr]=useState(null);const [saving,setSaving]=useState(false);const [saveMsg,setSaveMsg]=useState(null);const load=useCallback(async()=>{setLoading(true);setErr(null);try{const r=await fetch(API_URL);const j=await r.json();if(j.ok){const _all=[...(j.signals?.S||[]),...(j.signals?.A||[]),...(j.signals?.B||[]),...(j.signals?.X||[])];const _seen=new Set();const _uniq=_all.filter(x=>{if(_seen.has(x.code))return false;_seen.add(x.code);return true});const _new={S:[],A:[],B:[],X:[]};for(const _x of _uniq){const _a=_x.amount||0,_c=_x.change||0;if(_a<100||_c<10||_c>29)continue;const _g=_a>=5000?'S':_a>=2500?'A':'B';_new[_g].push({..._x,grade:_g});}j.signals=_new;j.all=[..._new.S,..._new.A,..._new.B,..._new.X];j.summary={total:j.all.length,S:_new.S.length,A:_new.A.length,B:_new.B.length,X:_new.X.length};setData(j);(()=>{const _s=JSON.stringify({ts:Date.now(),data:j});try{localStorage.setItem("today_signals_cache",_s);}catch(e){const _td=_getCacheDateKey();Object.keys(localStorage).forEach(_k=>{if(_k.startsWith("aianalyze_")&&!_k.endsWith(_td))localStorage.removeItem(_k);});try{localStorage.setItem("today_signals_cache",_s);}catch(e2){}}})();if(onSignalsLoaded)onSignalsLoaded(j.all||[]);}else setErr(j.error||"API 오류")}catch(e){setErr(e.message)}setLoading(false)},[]);useEffect(()=>{try{const _c=localStorage.getItem("today_signals_cache");if(_c){const _p=JSON.parse(_c);if(_p&&_p.ts&&Date.now()-_p.ts<259200000&&_p.data){setData(_p.data);setLoading(false);if(onSignalsLoaded)onSignalsLoaded(_p.data.all||[]);return;}}}catch(e){}load();},[load]);const saveSignals=async()=>{if(!data||!data.all||!data.all.length)return;setSaving(true);setSaveMsg(null);try{const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data.all.filter(s=>s.grade!=="X").map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:s.grade,supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});const j=await r.json();setSaveMsg(j.github_ok?("✅ "+j.added+"건 저장"):("⚠️ GITHUB_TOKEN 미설정 — Vercel 환경변수 추가 필요"));}catch(e){setSaveMsg("오류: "+e.message);}setSaving(false);};const gC=g=>GI[g]?.c||"#94a3b8";if(loading)return(<div style={{textAlign:"center",padding:"60px 20px"}}><div style={{fontSize:36,marginBottom:12}}>⏳</div><div style={{fontSize:16,fontWeight:600,color:"#64748b"}}>KIS API 스크리닝 중...</div><div style={{fontSize:13,color:"#94a3b8",marginTop:4}}>거래대금·등락률 상위 종목 분석 중</div></div>);if(err)return(<div style={{textAlign:"center",padding:"40px 20px"}}><div style={{fontSize:36,marginBottom:12}}>⚠️</div><div style={{fontSize:15,color:"#dc2626",marginBottom:8}}>{err}</div><button onClick={load} style={{padding:"8px 20px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",fontSize:14,fontWeight:600,cursor:"pointer"}}>다시 시도</button></div>);if(!data)return null;return(<div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><div style={{fontSize:14,color:"#64748b"}}>{data.date} · {data.time} KST</div><div style={{display:"flex",gap:6}}><button onClick={saveSignals} disabled={saving} style={{padding:"5px 12px",borderRadius:8,border:"none",background:saving?"#e2e8f0":"#1e293b",color:saving?"#94a3b8":"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer"}}>📌 신호저장</button><button onClick={load} style={{padding:"5px 12px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",fontSize:12,fontWeight:600,cursor:"pointer"}}>🔄</button></div></div>{saveMsg&&<div style={{padding:"8px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",border:"1px solid "+(saveMsg.startsWith("✅")?"#fee2e2":"#fcd34d"),color:saveMsg.startsWith("✅")?"#dc2626":"#d97706",fontSize:12,marginBottom:10}}>{saveMsg}</div>}<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>{["S","A","B","X"].map(g=>(<div key={g} style={{textAlign:"center",padding:"10px 0",borderRadius:10,background:gC(g)+"10",border:"1px solid "+gC(g)+"30"}}><div style={{fontSize:22,fontWeight:900,color:gC(g)}}>{data.summary[g]}</div><div style={{fontSize:11,color:"#64748b"}}>{g}등급</div></div>))}</div>{data.all.filter(s=>s.grade!=="X").length===0?(<div style={{textAlign:"center",padding:"40px",color:"#94a3b8"}}><div style={{fontSize:36,marginBottom:8}}>📭</div><div style={{fontSize:15}}>오늘은 10%+ 돌파 시그널이 없습니다</div><div style={{fontSize:13,marginTop:4}}>장 마감 후(15:30~) 결과가 갱신됩니다</div></div>):data.all.filter(s=>s.grade!=="X").map((s,i)=>(<div key={i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:6,background:"#fff",cursor:onSignalClick?"pointer":"default"}}><div style={{width:42,height:42,borderRadius:10,background:gC(s.grade)+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:18,fontWeight:900,color:gC(s.grade)}}>{s.grade}</span></div><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontWeight:700,fontSize:15}}>{s.name}</span><span style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>+{s.change}%</span></div><div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>{s.score}점 · {s.investor} · {s.market} · {s.amount}억</div></div><div style={{textAlign:"right",flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}><div style={{fontSize:12,fontWeight:700,color:"#1e293b",fontFamily:"monospace"}}>{s.code}</div><button onClick={(e)=>{e.stopPropagation();navigator.clipboard.writeText(s.code).then(()=>{const b=e.currentTarget;const o=b.textContent;b.textContent="✓ 복사됨";b.style.background="#10b981";b.style.color="#fff";setTimeout(()=>{b.textContent=o;b.style.background="#f1f5f9";b.style.color="#475569";},1200);})}} style={{fontSize:10,fontWeight:600,padding:"3px 8px",borderRadius:6,border:"1px solid #cbd5e1",background:"#f1f5f9",color:"#475569",cursor:"pointer"}}>복사</button></div></div>))}</div>);}
 
