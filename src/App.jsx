@@ -15,7 +15,24 @@ import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAna
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
+const _mStats={};
+for(const _rr of R){
+  const _ym2=String(_rr[1]||"").slice(0,5);
+  if(!_ym2||_ym2.length<5)continue;
+  if(!_mStats[_ym2])_mStats[_ym2]={n:0,w:0,l:0,ret:0};
+  _mStats[_ym2].n++;
+  const _ret2=+_rr[18]||0;
+  const _isSL2=_rr[19]==="SL"||String(_rr[19]||"").startsWith("SL");
+  if(!_isSL2&&_ret2>=5)_mStats[_ym2].w++;
+  if(_isSL2)_mStats[_ym2].l++;
+  _mStats[_ym2].ret+=_ret2;
+}
 const D=R.map(r=>{
+  const _ym=String(r[1]||"").slice(0,5);
+  const _pym=(()=>{const[_yy,_mm]=_ym.split("-").map(Number);if(_mm===1)return String(_yy-1).padStart(2,"0")+"-12";return String(_yy).padStart(2,"0")+"-"+String(_mm-1).padStart(2,"0");})();
+  const _ms=_mStats&&_mStats[_pym];
+  const _prevAvgRet=(_ms&&_ms.n>=50)?_ms.ret/_ms.n:null;
+  const _prevWinRate=(_ms&&_ms.n>=50)?_ms.w/_ms.n:null;
   const _mc=r[4]||"";
   const _mcm=_mc.match(/(\d+(?:\.\d+)?)/);
   const _mcn=_mcm?+_mcm[1]:0;
@@ -24,7 +41,7 @@ const D=R.map(r=>{
   const _cc=calcChimchakhaeScore({change:r[3],amount:_amt,investor:r[5],market:r[2],wick:r[9]||0});
   const _jd=calcJudojuScore({change:r[3],amount:_amt,investor:r[5],market:r[2],wick:r[9]||0});
   const _hs=calcHaseunghoonScore({change:r[3],amount:_amt,investor:r[5],market:r[2],wick:r[9]||0,breakType:r[8]});
-  return {n:r[0],d:"20"+r[1],m:r[2],ch:r[3],mc:r[4],iv:r[5],sc:r[6],g:_g,ccG:_cc.grade,ccScore:_cc.score,ccBreakdown:_cc.breakdown,jdG:_jd.grade,jdScore:_jd.score,jdBreakdown:_jd.breakdown,hsG:_hs.grade,hsScore:_hs.score,hsBreakdown:_hs.breakdown,hsVetoed:_hs.vetoed,bd:r[8],wk:r[9],am:r[10],pk:r[11],dd:r[12],tp1:r[13],tp2:r[14],sl:r[15],h1:r[16],h2:r[17],t:r[18],r:r[19],hd1:r[20],hd2:r[21],etf:r[22],gp:r[23],h60:r[24],h120:r[25],vc:r[26],ema:r[27],tp1d:r[28]||"",sld:r[29]||"",tp2d:r[30]||"",exd:r[31]||"",tp1dy:r[32]||0,sldy:r[33]||0,exdy:r[34]||0,bed:r[35]||"",bedy:r[36]||0,tp12dy:r[37]||0,ohlc:PF(r[38]||""),v1Total:r[39]||0,v1Grade:r[40]||"X",v1Supply:r[41]||0,v1Breakout:r[42]||0,v1Momentum:r[43]||0,v1Sm:r[44]||0,v1Acc:r[45]||0};
+  return {n:r[0],d:"20"+r[1],m:r[2],ch:r[3],mc:r[4],iv:r[5],sc:r[6],g:_g,ccG:_cc.grade,ccScore:_cc.score,ccBreakdown:_cc.breakdown,jdG:_jd.grade,jdScore:_jd.score,jdBreakdown:_jd.breakdown,hsG:_hs.grade,hsScore:_hs.score,hsBreakdown:_hs.breakdown,hsVetoed:_hs.vetoed,bd:r[8],wk:r[9],am:r[10],pk:r[11],dd:r[12],tp1:r[13],tp2:r[14],sl:r[15],h1:r[16],h2:r[17],t:r[18],r:r[19],hd1:r[20],hd2:r[21],etf:r[22],gp:r[23],h60:r[24],h120:r[25],vc:r[26],ema:r[27],tp1d:r[28]||"",sld:r[29]||"",tp2d:r[30]||"",exd:r[31]||"",tp1dy:r[32]||0,sldy:r[33]||0,exdy:r[34]||0,bed:r[35]||"",bedy:r[36]||0,tp12dy:r[37]||0,ohlc:PF(r[38]||""),v1Total:r[39]||0,v1Grade:r[40]||"X",v1Supply:r[41]||0,v1Breakout:r[42]||0,v1Momentum:r[43]||0,v1Sm:r[44]||0,v1Acc:r[45]||0,prevAvgRet:_prevAvgRet,prevWinRate:_prevWinRate};
 });
 const XN=1061;
 const GI={S:{c:"#dc2626",bg:"#fef2f2",bd:"#fca5a5"},A:{c:"#2563eb",bg:"#eff6ff",bd:"#93c5fd"},B:{c:"#d97706",bg:"#fffbeb",bd:"#fcd34d"},X:{c:"#94a3b8",bg:"#f1f5f9",bd:"#cbd5e1"},"S+":{c:"#7c3aed",bg:"#faf5ff",bd:"#d8b4fe"},"A+":{c:"#0284c7",bg:"#f0f9ff",bd:"#7dd3fc"},"B+":{c:"#ca8a04",bg:"#fefce8",bd:"#fde68a"},C:{c:"#6b7280",bg:"#f9fafb",bd:"#d1d5db"}};
@@ -383,40 +400,40 @@ function MultiFilterDB({onRowClick}={}){
 const _g7=['S+','S','A+','A','B+','B','C'];
 const _hsg=['A+','A','C'];
 const _ng=['S','A','B','X'];
-const _years=['21','22','23','24','25','26'];
 const _presets=[
-{label:'🥇 승률 1위',desc:'Neo:S 침S+ 주A (45.7%/35건)',n:['S'],c:['S+'],j:['A'],h:[],y:[]},
-{label:'🏅 수익 1위',desc:'Neo:B 주A이상 (+5.63%/103건)',n:['B'],c:[],j:['S+','S','A+','A'],h:[],y:[]},
-{label:'🐻 베어 강자',desc:'22/24 침S+ 주S이상 (43.9%/+4.37%)',n:[],c:['S+'],j:['S+','S'],h:[],y:['22','24']},
-{label:'🏆 최강',desc:'주S+ × 하A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+'],y:[]},
-{label:'🥈 3중 강',desc:'침/주 S+~S × 하A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+'],y:[]},
-{label:'🥉 침+주',desc:'침S+ × 주S+/S (37.5%)',n:[],c:['S+'],j:['S+','S'],h:[],y:[]},
-{label:'💎 4중 최상',desc:'Neo S × 모두 최상위',n:['S'],c:['S+'],j:['S+'],h:['A+'],y:[]},
-{label:'🎯 우량 침착',desc:'Neo S × 침S+ (36.1%)',n:['S'],c:['S+'],j:[],h:[],y:[]},
-{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[],y:[]}
+{label:'🏆 최강',desc:'주S+ × 하A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+'],mc:'all'},
+{label:'🥈 3중 강',desc:'침/주 S+~S × 하A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+'],mc:'all'},
+{label:'🌊 약세후 강자',desc:'침S+ × 주S↑ + 시장약세 (54%)',n:[],c:['S+'],j:['S+','S'],h:[],mc:'bear'},
+{label:'🌞 강세장 식',desc:'시장강세 × 침S+ (60%)',n:[],c:['S+'],j:['S+','S'],h:[],mc:'bull'},
+{label:'💠 4중 최상',desc:'Neo S × 모두 최상위',n:['S'],c:['S+'],j:['S+'],h:['A+'],mc:'all'},
+{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[],mc:'all'}
 ];
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
-const [yf,setYf]=useState([]);
+const [yf,setYf]=useState('all');
 const [hideSL,setHideSL]=useState(false);
 const [sortMode,setSortMode]=useState('profit');
+const [mc,setMc]=useState('all');
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
-if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
+if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
 if(selN.length&&!selN.includes(r.g))return false;
 if(selCC.length&&!selCC.includes(r.ccG))return false;
 if(selJD.length&&!selJD.includes(r.jdG))return false;
 if(selHS.length&&!selHS.includes(r.hsG))return false;
 if(hideSL&&(r.r==='SL'||String(r.r||'').startsWith('SL')))return false;
+if(mc==='bear'&&(r.prevAvgRet==null||r.prevAvgRet>=-1))return false;
+if(mc==='bull'&&(r.prevAvgRet==null||r.prevAvgRet<1))return false;
+if(mc==='flat'&&(r.prevAvgRet==null||r.prevAvgRet<-1||r.prevAvgRet>=1))return false;
 return true;
 });
 if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[selN,selCC,selJD,selHS,yf,hideSL,sortMode]);
+},[selN,selCC,selJD,selHS,yf,hideSL,sortMode,mc]);
 const stats=useMemo(()=>{
 if(!filtered.length)return null;
 const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
@@ -424,18 +441,22 @@ const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
 const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
-const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);setYf(p.y||[]);};
+const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);setMc(p.mc||'all');};
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
 const _sorts=[{id:'profit',l:'💰 익절순'},{id:'newest',l:'🆕 최신순'},{id:'oldest',l:'📜 오래된순'}];
+const _mcs=[{id:'all',l:'전체'},{id:'bear',l:'약세 후'},{id:'flat',l:'훡보'},{id:'bull',l:'강세 후'}];
 return (<div style={{padding:'12px'}}>
 <div style={{marginBottom:12,padding:10,background:'#fef3c7',borderRadius:8,border:'1px solid #fbbf24'}}>
-<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 최적 프리셋 (연도 포함 자동 적용)</div>
+<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 최적 프리셋 (검증된 강력 패턴)</div>
 <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-{_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:150,textAlign:'left'}}><span style={{fontWeight:700}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
+{_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:130,textAlign:'left'}}><span style={{fontWeight:700}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
 </div></div>
-<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도 (다중선택, 비우면 전체)</div>
-<button onClick={()=>setYf([])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf.length===0?'#1e293b':'#cbd5e1'),background:yf.length===0?'#1e293b':'#fff',color:yf.length===0?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer',fontWeight:yf.length===0?700:500}}>전체</button>
-{_years.map(y=>(<button key={y} onClick={()=>setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf.includes(y)?'#1e293b':'#cbd5e1'),background:yf.includes(y)?'#1e293b':'#fff',color:yf.includes(y)?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer',fontWeight:yf.includes(y)?700:500}}>{y}년</button>))}
+<div style={{marginBottom:10,padding:8,background:'#eff6ff',borderRadius:6,border:'1px solid #93c5fd'}}>
+<div style={{fontSize:11,fontWeight:700,marginBottom:6,color:'#1e40af'}}>📉 시장 컨디션 (직전월 평균 수익)</div>
+{_mcs.map(m=>(<button key={m.id} onClick={()=>setMc(m.id)} style={{padding:'5px 10px',borderRadius:5,border:'1px solid '+(mc===m.id?'#1e40af':'#bfdbfe'),background:mc===m.id?'#1e40af':'#fff',color:mc===m.id?'#fff':'#1e40af',fontSize:11,marginRight:4,cursor:'pointer'}}>{m.l}</button>))}
+</div>
+<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도</div>
+{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'전체':y+'년'}</button>))}
 <button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>손절 숨김</button>
 </div>
 <div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#10b981'}}>💰 네오 (거래대금)</div>{_ng.map(g=>(<Tg key={g} arr={selN} setArr={setSelN} val={g} col="#10b981"/>))}</div>
@@ -449,8 +470,8 @@ return (<div style={{padding:'12px'}}>
 </div>
 <div style={{maxHeight:'60vh',overflowY:'auto',border:'1px solid #e2e8f0',borderRadius:8}}>
 <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
-<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>종목</th><th style={{padding:'8px 6px'}}>날짜</th><th style={{padding:'8px 6px'}}>등락</th><th style={{padding:'8px 6px'}}>네</th><th style={{padding:'8px 6px'}}>침</th><th style={{padding:'8px 6px'}}>주</th><th style={{padding:'8px 6px'}}>하</th><th style={{padding:'8px 6px'}}>결과</th><th style={{padding:'8px 6px'}}>수익</th></tr></thead>
-<tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid #f1f5f9'}}><td style={{padding:'6px'}}>{r.n}</td><td style={{padding:'6px',textAlign:'center'}}>{r.d}</td><td style={{padding:'6px',textAlign:'right',color:(r.ch||0)>0?'#dc2626':'#059669'}}>{r.ch}%</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.g}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.ccG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.jdG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.hsG}</td><td style={{padding:'6px',textAlign:'center'}}>{r.r}</td><td style={{padding:'6px',textAlign:'right',color:(r.t||0)>=0?'#dc2626':'#059669',fontWeight:700}}>{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
+<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>종목</th><th style={{padding:'8px 6px'}}>날짜</th><th style={{padding:'8px 6px'}}>등락</th><th style={{padding:'8px 6px'}}>직전월</th><th style={{padding:'8px 6px'}}>네</th><th style={{padding:'8px 6px'}}>침</th><th style={{padding:'8px 6px'}}>주</th><th style={{padding:'8px 6px'}}>하</th><th style={{padding:'8px 6px'}}>결과</th><th style={{padding:'8px 6px'}}>수익</th></tr></thead>
+<tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid #f1f5f9'}}><td style={{padding:'6px'}}>{r.n}</td><td style={{padding:'6px',textAlign:'center'}}>{r.d}</td><td style={{padding:'6px',textAlign:'right',color:(r.ch||0)>0?'#dc2626':'#059669'}}>{r.ch}%</td><td style={{padding:'6px',textAlign:'right',color:r.prevAvgRet==null?'#94a3b8':(r.prevAvgRet>=0?'#dc2626':'#059669'),fontSize:10}}>{r.prevAvgRet==null?'-':r.prevAvgRet.toFixed(1)+'%'}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.g}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.ccG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.jdG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.hsG}</td><td style={{padding:'6px',textAlign:'center'}}>{r.r}</td><td style={{padding:'6px',textAlign:'right',color:(r.t||0)>=0?'#dc2626':'#059669',fontWeight:700}}>{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
 {filtered.length>300&&(<div style={{padding:8,textAlign:'center',color:'#94a3b8',fontSize:11}}>※ 상위 300건만 표시 (전체 {filtered.length}건)</div>)}
 </div></div>);
 }
