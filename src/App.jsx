@@ -7,7 +7,7 @@ import {R_2024} from "./data_2024.js";
 import {R_2023} from "./data_2023.js";
 import {R_2022} from "./data_2022.js";
 import {R_2021} from "./data_2021.js";
-import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, ChimchakhaeDetailModal, calcChimchakhaeScore, chimchakhaeGradeColor } from "./ChimchakhaeHelpers.jsx";
+import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, ChimchakhaeDetailModal, calcChimchakhaeScore, chimchakhaeGradeColor, ChimchakhaeDB } from "./ChimchakhaeHelpers.jsx";
 import { calcJudojuScore, judojuGradeColor, JudojuToday, JudojuDetailModal, analyzeJudoju, JudojuResultCard } from "./JudojuHelpers.jsx";
 import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, HaseunghoonDetailModal, analyzeHaseunghoon, HaseunghoonResultCard } from "./HaseunghoonHelpers.jsx";
 import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor, NeoAnalysisDetailModal } from "./NeoAnalysisHelpers.jsx";
@@ -1307,13 +1307,13 @@ export default function App(){
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0}}>NEO-SCORE</h1><p style={{fontSize:12,color:"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
-        {page==="db"&&<SignalDB/>}
+        {(page==="db"||page==="ccdb"||page==="jddb"||page==="hsdb")&&<div style={{padding:"12px 12px 0",display:"flex",gap:6,flexWrap:"wrap"}}>{[{id:"db",l:"네오"},{id:"ccdb",l:"침착해"},{id:"jddb",l:"주도주"},{id:"hsdb",l:"하승훈"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 0 auto",padding:"8px 12px",borderRadius:8,border:"1px solid "+(page===o.id?"#1e293b":"#cbd5e1"),background:page===o.id?"#1e293b":"#fff",color:page===o.id?"#fff":"#475569",fontSize:12,fontWeight:page===o.id?700:500,cursor:"pointer"}}>{o.l}</button>))}</div>}{page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
         {page==="jdtoday"&&<JudojuToday apiUrl={API_URL}/>}
         {page==="hstoday"&&<HaseunghoonToday apiUrl={API_URL}/>}
-        {page==="ccdb"&&<ChimchakhaeDB onRowClick={showFromD}/>}
-        {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
-        {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
+        {page==="ccdb"&&<ChimchakhaeDB records={D} onRowClick={showFromD}/>}
+        {page==="jddb"&&<div style={{padding:"40px 20px",textAlign:"center",color:"#64748b"}}>주도주 분석 DB 준비중</div>}
+        {page==="hsdb"&&<div style={{padding:"40px 20px",textAlign:"center",color:"#64748b"}}>하승훈 분석 DB 준비중</div>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
