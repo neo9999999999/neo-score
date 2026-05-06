@@ -384,12 +384,12 @@ const _g7=['S+','S','A+','A','B+','B','C'];
 const _hsg=['A+','A','C'];
 const _ng=['S','A','B','X'];
 const _presets=[
-{label:'\ud83c\udfc6 \ucd5c\uac15',desc:'\uc8fcS+ \u00d7 \ud558A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+']},
-{label:'\ud83e\udd48 3\uc911 \uac15',desc:'\uce68/\uc8fc S+~S \u00d7 \ud558A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+']},
-{label:'\ud83e\udd49 \uce68+\uc8fc',desc:'\uce68S+ \u00d7 \uc8fcS+/S (37.5%)',n:[],c:['S+'],j:['S+','S'],h:[]},
-{label:'\ud83d\udc8e 4\uc911 \ucd5c\uc0c1',desc:'Neo S \u00d7 \ubaa8\ub450 \ucd5c\uc0c1\uc704',n:['S'],c:['S+'],j:['S+'],h:['A+']},
-{label:'\ud83c\udfaf \uc6b0\ub7c9 \uce68\ucc29',desc:'Neo S \u00d7 \uce68S+ (36.1%)',n:['S'],c:['S+'],j:[],h:[]},
-{label:'\ud83d\udd04 \ucd08\uae30\ud654',desc:'',n:[],c:[],j:[],h:[]}
+{label:'🏆 최강',desc:'주S+ × 하A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+']},
+{label:'🥈 3중 강',desc:'침/주 S+~S × 하A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+']},
+{label:'🥉 침+주',desc:'침S+ × 주S+/S (37.5%)',n:[],c:['S+'],j:['S+','S'],h:[]},
+{label:'💎 4중 최상',desc:'Neo S × 모두 최상위',n:['S'],c:['S+'],j:['S+'],h:['A+']},
+{label:'🎯 우량 침착',desc:'Neo S × 침S+ (36.1%)',n:['S'],c:['S+'],j:[],h:[]},
+{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[]}
 ];
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
@@ -420,24 +420,24 @@ const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);};
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
 return (<div style={{padding:'12px'}}>
 <div style={{marginBottom:12,padding:10,background:'#fef3c7',borderRadius:8,border:'1px solid #fbbf24'}}>
-<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>\u2b50 \ucd5c\uc801 \ud504\ub9ac\uc14b (\uac80\uc99d\ub41c \uac15\ub825 \ud328\ud134)</div>
+<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 최적 프리셋 (검증된 강력 패턴)</div>
 <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
 {_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:130,textAlign:'left'}}><span style={{fontWeight:700}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
 </div></div>
-<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>\ud83d\udcc5 \uc5f0\ub3c4</div>
-{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'\uc804\uccb4':y+'\ub144'}</button>))}
-<button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>\uc190\uc808 \uc228\uae40</button>
+<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도</div>
+{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'전체':y+'년'}</button>))}
+<button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>손절 숨김</button>
 </div>
-<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#10b981'}}>\ud83d\udcb0 \ub124\uc624 (\uac70\ub798\ub300\uae08)</div>{_ng.map(g=>(<Tg key={g} arr={selN} setArr={setSelN} val={g} col="#10b981"/>))}</div>
-<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#0ea5e9'}}>\ud83c\udfaf \uce68\ucc29\ud574</div>{_g7.map(g=>(<Tg key={g} arr={selCC} setArr={setSelCC} val={g} col="#0ea5e9"/>))}</div>
-<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#f59e0b'}}>\ud83e\udd47 \uc8fc\ub3c4\uc8fc</div>{_g7.map(g=>(<Tg key={g} arr={selJD} setArr={setSelJD} val={g} col="#f59e0b"/>))}</div>
-<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#ef4444'}}>\ud83d\udd25 \ud558\uc2b9\ud6c8</div>{_hsg.map(g=>(<Tg key={g} arr={selHS} setArr={setSelHS} val={g} col="#ef4444"/>))}</div>
-{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:12,fontSize:12}}><strong>\ucd1d {stats.n}\uac74</strong> \u00b7 5%+ \uc775\uc808 {stats.p5}\uac74 ({(stats.p5/stats.n*100).toFixed(1)}%) \u00b7 \uc190\uc808 {stats.sl}\uac74 ({(stats.sl/stats.n*100).toFixed(1)}%) \u00b7 \ud3c9\uade0 \uc218\uc775 {stats.avg.toFixed(2)}%</div>)}
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#10b981'}}>💰 네오 (거래대금)</div>{_ng.map(g=>(<Tg key={g} arr={selN} setArr={setSelN} val={g} col="#10b981"/>))}</div>
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#0ea5e9'}}>🎯 침착해</div>{_g7.map(g=>(<Tg key={g} arr={selCC} setArr={setSelCC} val={g} col="#0ea5e9"/>))}</div>
+<div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#f59e0b'}}>🥇 주도주</div>{_g7.map(g=>(<Tg key={g} arr={selJD} setArr={setSelJD} val={g} col="#f59e0b"/>))}</div>
+<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#ef4444'}}>🔥 하승훈</div>{_hsg.map(g=>(<Tg key={g} arr={selHS} setArr={setSelHS} val={g} col="#ef4444"/>))}</div>
+{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:12,fontSize:12}}><strong>총 {stats.n}건</strong> · 5%+ 익절 {stats.p5}건 ({(stats.p5/stats.n*100).toFixed(1)}%) · 손절 {stats.sl}건 ({(stats.sl/stats.n*100).toFixed(1)}%) · 평균 수익 {stats.avg.toFixed(2)}%</div>)}
 <div style={{maxHeight:'60vh',overflowY:'auto',border:'1px solid #e2e8f0',borderRadius:8}}>
 <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
-<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>\uc885\ubaa9</th><th style={{padding:'8px 6px'}}>\ub0a0\uc9dc</th><th style={{padding:'8px 6px'}}>\ub4f1\ub77d</th><th style={{padding:'8px 6px'}}>\ub124</th><th style={{padding:'8px 6px'}}>\uce68</th><th style={{padding:'8px 6px'}}>\uc8fc</th><th style={{padding:'8px 6px'}}>\ud558</th><th style={{padding:'8px 6px'}}>\uacb0\uacfc</th><th style={{padding:'8px 6px'}}>\uc218\uc775</th></tr></thead>
+<thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>종목</th><th style={{padding:'8px 6px'}}>날짜</th><th style={{padding:'8px 6px'}}>등락</th><th style={{padding:'8px 6px'}}>네</th><th style={{padding:'8px 6px'}}>침</th><th style={{padding:'8px 6px'}}>주</th><th style={{padding:'8px 6px'}}>하</th><th style={{padding:'8px 6px'}}>결과</th><th style={{padding:'8px 6px'}}>수익</th></tr></thead>
 <tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid #f1f5f9'}}><td style={{padding:'6px'}}>{r.n}</td><td style={{padding:'6px',textAlign:'center'}}>{r.d}</td><td style={{padding:'6px',textAlign:'right',color:(r.ch||0)>0?'#dc2626':'#059669'}}>{r.ch}%</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.g}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.ccG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.jdG}</td><td style={{padding:'6px',textAlign:'center',fontWeight:700}}>{r.hsG}</td><td style={{padding:'6px',textAlign:'center'}}>{r.r}</td><td style={{padding:'6px',textAlign:'right',color:(r.t||0)>=0?'#dc2626':'#059669',fontWeight:700}}>{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
-{filtered.length>300&&(<div style={{padding:8,textAlign:'center',color:'#94a3b8',fontSize:11}}>\u203b \uc0c1\uc704 300\uac74\ub9cc \ud45c\uc2dc (\uc804\uccb4 {filtered.length}\uac74)</div>)}
+{filtered.length>300&&(<div style={{padding:8,textAlign:'center',color:'#94a3b8',fontSize:11}}>※ 상위 300건만 표시 (전체 {filtered.length}건)</div>)}
 </div></div>);
 }
 
