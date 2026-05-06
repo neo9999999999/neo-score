@@ -383,24 +383,24 @@ function MultiFilterDB({onRowClick}={}){
 const _g7=['S+','S','A+','A','B+','B','C'];
 const _hsg=['A+','A','C'];
 const _ng=['S','A','B','X'];
+const _years=['21','22','23','24','25','26'];
 const _presets=[
-{label:'🏆 최강',desc:'주S+ × 하A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+']},
-{label:'🥈 3중 강',desc:'침/주 S+~S × 하A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+']},
-{label:'🥉 침+주',desc:'침S+ × 주S+/S (37.5%)',n:[],c:['S+'],j:['S+','S'],h:[]},
-{label:'💎 4중 최상',desc:'Neo S × 모두 최상위',n:['S'],c:['S+'],j:['S+'],h:['A+']},
-{label:'🎯 우량 침착',desc:'Neo S × 침S+ (36.1%)',n:['S'],c:['S+'],j:[],h:[]},
-{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[]}
+{label:'🥇 승률왕',desc:'Neo:S × 침S+ × 주A (45.7%, n=35)',n:['S'],c:['S+'],j:['A'],h:[],y:[]},
+{label:'💰 수익왕',desc:'Neo:B × 주A이상 (+5.63%, n=103)',n:['B'],c:[],j:['S+','S','A+','A'],h:[],y:[]},
+{label:'🛡️ 베어왕',desc:'침S+ × 주S이상 (22+24년, 43.9%)',n:[],c:['S+'],j:['S+','S'],h:[],y:['22','24']},
+{label:'🏆 최강 안정',desc:'주S+ × 하A+ (39.8%, n=108)',n:[],c:[],j:['S+'],h:['A+'],y:[]},
+{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[],y:[]}
 ];
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
-const [yf,setYf]=useState('all');
+const [yf,setYf]=useState([]);
 const [hideSL,setHideSL]=useState(false);
 const [sortMode,setSortMode]=useState('profit');
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
-if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
+if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(selN.length&&!selN.includes(r.g))return false;
 if(selCC.length&&!selCC.includes(r.ccG))return false;
 if(selJD.length&&!selJD.includes(r.jdG))return false;
@@ -420,17 +420,18 @@ const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
 const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
-const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);};
+const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);setYf(p.y||[]);};
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
 const _sorts=[{id:'profit',l:'💰 익절순'},{id:'newest',l:'🆕 최신순'},{id:'oldest',l:'📜 오래된순'}];
 return (<div style={{padding:'12px'}}>
 <div style={{marginBottom:12,padding:10,background:'#fef3c7',borderRadius:8,border:'1px solid #fbbf24'}}>
-<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 최적 프리셋 (검증된 강력 패턴)</div>
+<div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 1위 조합 프리셋 (클릭 한 번에 적용)</div>
 <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-{_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:130,textAlign:'left'}}><span style={{fontWeight:700}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
+{_presets.map((p,i)=>(<button key={i} onClick={()=>applyP(p)} style={{padding:'8px 12px',borderRadius:6,border:'1px solid #fbbf24',background:'#fff',color:'#92400e',fontSize:11,fontWeight:600,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'flex-start',minWidth:160,textAlign:'left'}}><span style={{fontWeight:700,fontSize:12}}>{p.label}</span>{p.desc&&<span style={{fontSize:9,color:'#a16207',marginTop:2}}>{p.desc}</span>}</button>))}
 </div></div>
-<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도</div>
-{['all','21','22','23','24','25','26'].map(y=>(<button key={y} onClick={()=>setYf(y)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf===y?'#1e293b':'#cbd5e1'),background:yf===y?'#1e293b':'#fff',color:yf===y?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y==='all'?'전체':y+'년'}</button>))}
+<div style={{marginBottom:10}}><div style={{fontSize:12,fontWeight:700,marginBottom:6}}>📅 연도 (다중선택 가능)</div>
+<button onClick={()=>setYf([])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf.length===0?'#1e293b':'#cbd5e1'),background:yf.length===0?'#1e293b':'#fff',color:yf.length===0?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>전체</button>
+{_years.map(y=>(<button key={y} onClick={()=>setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(yf.includes(y)?'#1e293b':'#cbd5e1'),background:yf.includes(y)?'#1e293b':'#fff',color:yf.includes(y)?'#fff':'#475569',fontSize:11,marginRight:4,cursor:'pointer'}}>{y}년</button>))}
 <button onClick={()=>setHideSL(!hideSL)} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(hideSL?'#dc2626':'#cbd5e1'),background:hideSL?'#dc2626':'#fff',color:hideSL?'#fff':'#475569',fontSize:11,marginLeft:8,cursor:'pointer'}}>손절 숨김</button>
 </div>
 <div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#10b981'}}>💰 네오 (거래대금)</div>{_ng.map(g=>(<Tg key={g} arr={selN} setArr={setSelN} val={g} col="#10b981"/>))}</div>
