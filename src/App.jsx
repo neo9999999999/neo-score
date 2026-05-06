@@ -397,6 +397,7 @@ const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
 const [yf,setYf]=useState('all');
 const [hideSL,setHideSL]=useState(false);
+const [sortMode,setSortMode]=useState('profit');
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
 if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
@@ -407,8 +408,11 @@ if(selHS.length&&!selHS.includes(r.hsG))return false;
 if(hideSL&&(r.r==='SL'||String(r.r||'').startsWith('SL')))return false;
 return true;
 });
-return arr.sort((a,b)=>(b.t||0)-(a.t||0));
-},[selN,selCC,selJD,selHS,yf,hideSL]);
+if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
+if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
+if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
+return arr;
+},[selN,selCC,selJD,selHS,yf,hideSL,sortMode]);
 const stats=useMemo(()=>{
 if(!filtered.length)return null;
 const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
@@ -418,6 +422,7 @@ return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
 const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);};
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
+const _sorts=[{id:'profit',l:'💰 익절순'},{id:'newest',l:'🆕 최신순'},{id:'oldest',l:'📜 오래된순'}];
 return (<div style={{padding:'12px'}}>
 <div style={{marginBottom:12,padding:10,background:'#fef3c7',borderRadius:8,border:'1px solid #fbbf24'}}>
 <div style={{fontSize:12,fontWeight:700,marginBottom:8,color:'#92400e'}}>⭐ 최적 프리셋 (검증된 강력 패턴)</div>
@@ -432,7 +437,11 @@ return (<div style={{padding:'12px'}}>
 <div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#0ea5e9'}}>🎯 침착해</div>{_g7.map(g=>(<Tg key={g} arr={selCC} setArr={setSelCC} val={g} col="#0ea5e9"/>))}</div>
 <div style={{marginBottom:8}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#f59e0b'}}>🥇 주도주</div>{_g7.map(g=>(<Tg key={g} arr={selJD} setArr={setSelJD} val={g} col="#f59e0b"/>))}</div>
 <div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:6,color:'#ef4444'}}>🔥 하승훈</div>{_hsg.map(g=>(<Tg key={g} arr={selHS} setArr={setSelHS} val={g} col="#ef4444"/>))}</div>
-{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:12,fontSize:12}}><strong>총 {stats.n}건</strong> · 5%+ 익절 {stats.p5}건 ({(stats.p5/stats.n*100).toFixed(1)}%) · 손절 {stats.sl}건 ({(stats.sl/stats.n*100).toFixed(1)}%) · 평균 수익 {stats.avg.toFixed(2)}%</div>)}
+{stats&&(<div style={{padding:10,background:'#f1f5f9',borderRadius:8,marginBottom:8,fontSize:12}}><strong>총 {stats.n}건</strong> · 5%+ 익절 {stats.p5}건 ({(stats.p5/stats.n*100).toFixed(1)}%) · 손절 {stats.sl}건 ({(stats.sl/stats.n*100).toFixed(1)}%) · 평균 수익 {stats.avg.toFixed(2)}%</div>)}
+<div style={{marginBottom:12,display:'flex',gap:6,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:11,fontWeight:700,color:'#475569',marginRight:4}}>정렬:</span>
+{_sorts.map(s=>(<button key={s.id} onClick={()=>setSortMode(s.id)} style={{padding:'6px 12px',borderRadius:6,border:'1px solid '+(sortMode===s.id?'#1e293b':'#cbd5e1'),background:sortMode===s.id?'#1e293b':'#fff',color:sortMode===s.id?'#fff':'#475569',fontSize:11,fontWeight:sortMode===s.id?700:500,cursor:'pointer'}}>{s.l}</button>))}
+</div>
 <div style={{maxHeight:'60vh',overflowY:'auto',border:'1px solid #e2e8f0',borderRadius:8}}>
 <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
 <thead style={{position:'sticky',top:0,background:'#f8fafc',zIndex:1}}><tr><th style={{padding:'8px 6px',textAlign:'left'}}>종목</th><th style={{padding:'8px 6px'}}>날짜</th><th style={{padding:'8px 6px'}}>등락</th><th style={{padding:'8px 6px'}}>네</th><th style={{padding:'8px 6px'}}>침</th><th style={{padding:'8px 6px'}}>주</th><th style={{padding:'8px 6px'}}>하</th><th style={{padding:'8px 6px'}}>결과</th><th style={{padding:'8px 6px'}}>수익</th></tr></thead>
