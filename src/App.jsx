@@ -1312,8 +1312,8 @@ export default function App(){
         {page==="jdtoday"&&<JudojuToday apiUrl={API_URL}/>}
         {page==="hstoday"&&<HaseunghoonToday apiUrl={API_URL}/>}
         {page==="ccdb"&&<ChimchakhaeDB records={D} onRowClick={showFromD}/>}
-        {page==="jddb"&&<div style={{padding:"40px 20px",textAlign:"center",color:"#64748b"}}>주도주 분석 DB 준비중</div>}
-        {page==="hsdb"&&<div style={{padding:"40px 20px",textAlign:"center",color:"#64748b"}}>하승훈 분석 DB 준비중</div>}
+        {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
+        {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
