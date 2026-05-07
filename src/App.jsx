@@ -429,12 +429,12 @@ const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
-const [yf,setYf]=useState('all');
+const [yf,setYf]=useState([]); // [] = 전체, ['21'] = 단일년도, ['21','22'] = 다중선택
 const [activePreset,setActivePreset]=useState('alpha6');
 const [sortMode,setSortMode]=useState('profit');
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
-if(yf!=='all'&&r.d&&r.d.slice(2,4)!==yf)return false;
+if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(selN.length&&!selN.includes(r.g))return false;
 if(selCC.length&&!selCC.includes(r.ccG))return false;
 if(selJD.length&&!selJD.includes(r.jdG))return false;
@@ -454,9 +454,11 @@ const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
 const _applyFilter=(p)=>{setSelN(p.n||[]);setSelCC(p.c||[]);setSelJD(p.j||[]);setSelHS(p.h||[]);};
-const applyP=(p)=>{_applyFilter(p);if(p.yr!==undefined&&p.yr!==null)setYf(p.yr);setActivePreset(p.id);};
-const resetAll=()=>{setSelN([]);setSelCC([]);setSelJD([]);setSelHS([]);setYf('all');setActivePreset(null);};
-useEffect(()=>{const m=_yrAutoMap[yf];if(m){_applyFilter(m);}},[yf]);
+const applyP=(p)=>{_applyFilter(p);if(p.yr==='all')setYf([]);else if(p.yr)setYf([p.yr]);setActivePreset(p.id);};
+const resetAll=()=>{setSelN([]);setSelCC([]);setSelJD([]);setSelHS([]);setYf([]);setActivePreset(null);};
+const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
+// 단일 선택일 때만 자동 프리셋 적용 (다중선택은 사용자가 직접 필터 조정)
+useEffect(()=>{let key=null;if(yf.length===0)key='all';else if(yf.length===1)key=yf[0];if(key){const m=_yrAutoMap[key];if(m)_applyFilter(m);}},[yf]);
 // Toss-style segment button
 const Seg=({active,children,onClick,full,first,last})=>(<button onClick={onClick} style={{flex:full?'1 1 0':'0 0 auto',padding:'10px 14px',border:'none',background:active?_T.text:'transparent',color:active?'#fff':_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',borderRadius:active?10:0,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
 // Grade chip - color tinted when active
@@ -476,10 +478,10 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 </div>
 <button onClick={resetAll} style={{width:'100%',padding:'10px',borderRadius:10,border:'1px solid '+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:'pointer'}}>초기화</button>
 </Card>
-{/* Year filter */}
-<Card title="연도">
-<div style={{display:'flex',background:_T.bg,borderRadius:12,padding:4,gap:0}}>
-{_yrs.map(y=>(<Seg key={y.id} active={yf===y.id} onClick={()=>setYf(y.id)} full>{y.l}</Seg>))}
+{/* Year filter — 다중선택 지원 ([] = 전체, ['21','22'] = 다중) */}
+<Card title="연도" hint={yf.length>=2?yf.join('+')+'년 ('+yf.length+'개)':'중복 선택 가능'}>
+<div style={{display:'flex',background:_T.bg,borderRadius:12,padding:4,gap:0,flexWrap:'wrap'}}>
+{_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)} full>{y.l}</Seg>);})}
 </div>
 </Card>
 {/* Grade selectors */}
