@@ -400,14 +400,30 @@ function MultiFilterDB({onRowClick}={}){
 const _g7=['S+','S','A+','A','B+','B','C'];
 const _hsg=['A+','A','C'];
 const _ng=['S','A','B','X'];
+// 검증된 프리셋 (24,355건 6년 백테스트 직접 산출)
 const _presets=[
-{label:'🏆 최강',desc:'주S+ × 하A+ (39.8%)',n:[],c:[],j:['S+'],h:['A+'],mc:'all'},
-{label:'🥈 3중 강',desc:'침/주 S+~S × 하A+',n:[],c:['S+','S'],j:['S+','S'],h:['A+'],mc:'all'},
-{label:'🌊 약세후 강자',desc:'침S+ × 주S↑ + 시장약세 (54%)',n:[],c:['S+'],j:['S+','S'],h:[],mc:'bear'},
-{label:'🌞 강세장 식',desc:'시장강세 × 침S+ (60%)',n:[],c:['S+'],j:['S+','S'],h:[],mc:'bull'},
-{label:'💠 4중 최상',desc:'Neo S × 모두 최상위',n:['S'],c:['S+'],j:['S+'],h:['A+'],mc:'all'},
-{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[],mc:'all'}
+// Tier 1 — 6년 검증된 알파
+{label:'🌟 6년 알파',desc:'침S+×주S (6/6년 양수, n=163, +3.16%)',n:[],c:['S+'],j:['S'],h:[],mc:'all',yr:'all'},
+{label:'💎 6년 수익왕',desc:'Neo:B×주A (5/5년 양수, n=103, +5.63%)',n:['B'],c:[],j:['A'],h:[],mc:'all',yr:'all'},
+// Tier 2 — 단일년도 1위
+{label:'21형',desc:'Neo:S 침S 주A+ 하A (52%·+9.89%)',n:['S'],c:['S'],j:['A+'],h:['A'],mc:'all',yr:'21'},
+{label:'22형',desc:'침C 주B (베어보합 +0.09%)',n:[],c:['C'],j:['B'],h:[],mc:'all',yr:'22'},
+{label:'23형',desc:'Neo:B 침B 주B+ (51.5%·+5.98%)',n:['B'],c:['B'],j:['B+'],h:[],mc:'all',yr:'23'},
+{label:'24형',desc:'침S+×주S (42.9%·+3.49%)',n:[],c:['S+'],j:['S'],h:[],mc:'all',yr:'24'},
+{label:'25형',desc:'Neo:S 침S+ 주A+ (47.2%·+5.25%)',n:['S'],c:['S+'],j:['A+'],h:[],mc:'all',yr:'25'},
+{label:'26형',desc:'Neo:A 침B+ 주B (50%·+6.99%)',n:['A'],c:['B+'],j:['B'],h:[],mc:'all',yr:'26'},
+{label:'🔄 초기화',desc:'',n:[],c:[],j:[],h:[],mc:'all',yr:null}
 ];
+// 년도별 자동 적용 매핑 (yf 변경시 디폴트 필터)
+const _yrAutoMap={
+'all':{n:[],c:['S+'],j:['S'],h:[],mc:'all'},
+'21':{n:['S'],c:['S'],j:['A+'],h:['A'],mc:'all'},
+'22':{n:[],c:['C'],j:['B'],h:[],mc:'all'},
+'23':{n:['B'],c:['B'],j:['B+'],h:[],mc:'all'},
+'24':{n:[],c:['S+'],j:['S'],h:[],mc:'all'},
+'25':{n:['S'],c:['S+'],j:['A+'],h:[],mc:'all'},
+'26':{n:['A'],c:['B+'],j:['B'],h:[],mc:'all'}
+};
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
@@ -441,7 +457,10 @@ const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
 const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
 },[filtered]);
-const applyP=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);setMc(p.mc||'all');};
+const _applyFilter=(p)=>{setSelN(p.n);setSelCC(p.c);setSelJD(p.j);setSelHS(p.h);setMc(p.mc||'all');};
+const applyP=(p)=>{_applyFilter(p);if(p.yr!==undefined&&p.yr!==null)setYf(p.yr);};
+// 년도 변경시 자동으로 그 년도의 1위 조합 필터 세팅 (검증된 알파)
+useEffect(()=>{const m=_yrAutoMap[yf];if(m){_applyFilter(m);}},[yf]);
 const Tg=({arr,setArr,val,col})=>(<button onClick={()=>setArr(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val])} style={{padding:'6px 10px',borderRadius:6,border:'1px solid '+(arr.includes(val)?col:'#cbd5e1'),background:arr.includes(val)?col:'#fff',color:arr.includes(val)?'#fff':'#475569',fontSize:11,fontWeight:arr.includes(val)?700:500,cursor:'pointer',marginRight:4,marginBottom:4}}>{val}</button>);
 const _sorts=[{id:'profit',l:'💰 익절순'},{id:'newest',l:'🆕 최신순'},{id:'oldest',l:'📜 오래된순'}];
 const _mcs=[{id:'all',l:'전체'},{id:'bear',l:'약세 후'},{id:'flat',l:'훡보'},{id:'bull',l:'강세 후'}];
