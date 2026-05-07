@@ -397,41 +397,31 @@ return(<div key={gk} style={{padding:"8px 10px",background:"#1a1a2e",borderRadiu
 
 
 function MultiFilterDB({onRowClick}={}){
-// Toss palette
-const _T={primary:'#3182f6',primaryBg:'#e8f3ff',text:'#191f28',body:'#333d4b',sub:'#4e5968',hint:'#6b7684',mute:'#8b95a1',line:'#e5e8eb',bg:'#f9fafb',card:'#ffffff',up:'#f04452',down:'#1f6dee'};
+// Toss / LINE 통합 팔레트
+const _T={text:'#191f28',body:'#333d4b',sub:'#4e5968',hint:'#6b7684',mute:'#8b95a1',line:'#e5e8eb',linelt:'#f2f4f6',bg:'#f9fafb',card:'#ffffff',up:'#f04452',down:'#1f6dee',accentN:'#0d8050',accentC:'#0367c4',accentJ:'#b54708',accentH:'#c81e1e'};
 const _g6=['S+','S','A+','A','B+','B'];
 const _hsg=['A+','A'];
 const _ng=['S','A','B','X'];
-// 검증된 프리셋 (24,355건 6년 백테스트 직접 산출)
 const _presets=[
-// Tier 1 — 6년 검증된 알파
-{id:'alpha6',label:'6년 알파',sub:'침S+ × 주S',stat:'+3.16%',tone:'gold',n:[],c:['S+'],j:['S'],h:[],yr:'all'},
-{id:'profit6',label:'6년 수익왕',sub:'네오:B × 주A',stat:'+5.63%',tone:'gold',n:['B'],c:[],j:['A'],h:[],yr:'all'},
-// Tier 2 — 단일년도 1위
-{id:'y21',label:'21형',sub:'Neo:S 침S 주A+ 하A',stat:'+9.89%',tone:'plain',n:['S'],c:['S'],j:['A+'],h:['A'],yr:'21'},
-{id:'y22',label:'22형',sub:'Neo:S 침A+ 주A',stat:'+0.04%',tone:'plain',n:['S'],c:['A+'],j:['A'],h:[],yr:'22'},
-{id:'y23',label:'23형',sub:'Neo:B 침B 주B+',stat:'+5.98%',tone:'plain',n:['B'],c:['B'],j:['B+'],h:[],yr:'23'},
-{id:'y24',label:'24형',sub:'침S+ × 주S',stat:'+3.49%',tone:'plain',n:[],c:['S+'],j:['S'],h:[],yr:'24'},
-{id:'y25',label:'25형',sub:'Neo:S 침S+ 주A+',stat:'+5.25%',tone:'plain',n:['S'],c:['S+'],j:['A+'],h:[],yr:'25'},
-{id:'y26',label:'26형',sub:'Neo:A 침B+ 주B',stat:'+6.99%',tone:'plain',n:['A'],c:['B+'],j:['B'],h:[],yr:'26'}
+{id:'alpha6',label:'6년 알파',sub:'침S+ × 주S',stat:'+3.16%',n:[],c:['S+'],j:['S'],h:[],yr:'all'},
+{id:'profit6',label:'6년 수익왕',sub:'네오:B × 주A',stat:'+5.63%',n:['B'],c:[],j:['A'],h:[],yr:'all'},
+{id:'y21',label:'21형',sub:'Neo:S 침S 주A+ 하A',stat:'+9.89%',n:['S'],c:['S'],j:['A+'],h:['A'],yr:'21'},
+{id:'y22',label:'22형',sub:'Neo:S 침A+ 주A',stat:'+0.04%',n:['S'],c:['A+'],j:['A'],h:[],yr:'22'},
+{id:'y23',label:'23형',sub:'Neo:B 침B 주B+',stat:'+5.98%',n:['B'],c:['B'],j:['B+'],h:[],yr:'23'},
+{id:'y24',label:'24형',sub:'침S+ × 주S',stat:'+3.49%',n:[],c:['S+'],j:['S'],h:[],yr:'24'},
+{id:'y25',label:'25형',sub:'Neo:S 침S+ 주A+',stat:'+5.25%',n:['S'],c:['S+'],j:['A+'],h:[],yr:'25'},
+{id:'y26',label:'26형',sub:'Neo:A 침B+ 주B',stat:'+6.99%',n:['A'],c:['B+'],j:['B'],h:[],yr:'26'}
 ];
-// 년도별 자동 적용 매핑 (yf 변경시 디폴트 필터)
-const _yrAutoMap={
-'all':{n:[],c:['S+'],j:['S'],h:[]},
-'21':{n:['S'],c:['S'],j:['A+'],h:['A']},
-'22':{n:['S'],c:['A+'],j:['A'],h:[]},
-'23':{n:['B'],c:['B'],j:['B+'],h:[]},
-'24':{n:[],c:['S+'],j:['S'],h:[]},
-'25':{n:['S'],c:['S+'],j:['A+'],h:[]},
-'26':{n:['A'],c:['B+'],j:['B'],h:[]}
-};
+const _yrAutoMap={'all':{n:[],c:['S+'],j:['S'],h:[]},'21':{n:['S'],c:['S'],j:['A+'],h:['A']},'22':{n:['S'],c:['A+'],j:['A'],h:[]},'23':{n:['B'],c:['B'],j:['B+'],h:[]},'24':{n:[],c:['S+'],j:['S'],h:[]},'25':{n:['S'],c:['S+'],j:['A+'],h:[]},'26':{n:['A'],c:['B+'],j:['B'],h:[]}};
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
 const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
-const [yf,setYf]=useState([]); // [] = 전체, ['21'] = 단일년도, ['21','22'] = 다중선택
+const [yf,setYf]=useState([]);
 const [activePreset,setActivePreset]=useState('alpha6');
 const [sortMode,setSortMode]=useState('profit');
+const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('mfdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
+useEffect(()=>{try{localStorage.setItem('mfdb_invAmt_v1',String(invAmt));}catch(e){}},[invAmt]);
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
@@ -450,67 +440,84 @@ const stats=useMemo(()=>{
 if(!filtered.length)return null;
 const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
 const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
-const avg=filtered.reduce((a,b)=>a+(b.t||0),0)/filtered.length;
-return {n:filtered.length,p5:p5.length,sl:sl.length,avg};
-},[filtered]);
+const sumRet=filtered.reduce((a,b)=>a+(b.t||0),0);
+const avg=sumRet/filtered.length;
+const totalInvest=invAmt*filtered.length;
+const totalPnl=Math.round(invAmt*sumRet/100);
+const ret=totalInvest>0?(totalPnl/totalInvest*100):0;
+return {n:filtered.length,p5:p5.length,sl:sl.length,avg,totalInvest,totalPnl,ret};
+},[filtered,invAmt]);
 const _applyFilter=(p)=>{setSelN(p.n||[]);setSelCC(p.c||[]);setSelJD(p.j||[]);setSelHS(p.h||[]);};
 const applyP=(p)=>{_applyFilter(p);if(p.yr==='all')setYf([]);else if(p.yr)setYf([p.yr]);setActivePreset(p.id);};
 const resetAll=()=>{setSelN([]);setSelCC([]);setSelJD([]);setSelHS([]);setYf([]);setActivePreset(null);};
 const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
-// 단일 선택일 때만 자동 프리셋 적용 (다중선택은 사용자가 직접 필터 조정)
 useEffect(()=>{let key=null;if(yf.length===0)key='all';else if(yf.length===1)key=yf[0];if(key){const m=_yrAutoMap[key];if(m)_applyFilter(m);}},[yf]);
-// Toss-style segment button
-const Seg=({active,children,onClick,full,first,last})=>(<button onClick={onClick} style={{flex:full?'1 1 0':'0 0 auto',padding:'10px 14px',border:'none',background:active?_T.text:'transparent',color:active?'#fff':_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',borderRadius:active?10:0,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
-// Grade chip - color tinted when active
-const Chip=({arr,setArr,val,col,bg})=>{const active=arr.includes(val);return(<button onClick={()=>{setArr(active?arr.filter(x=>x!==val):[...arr,val]);setActivePreset(null);}} style={{padding:'8px 14px',borderRadius:10,border:'1px solid '+(active?col:_T.line),background:active?bg:_T.card,color:active?col:_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',marginRight:6,marginBottom:6,minWidth:42,letterSpacing:'-0.2px',transition:'all .15s'}}>{val}</button>);};
-// Section card
-const Card=({title,hint,children})=>(<div style={{background:_T.card,borderRadius:14,padding:'16px 16px 12px',marginBottom:10,border:'1px solid '+_T.line}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:10}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:11,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
+// 통일 active 스타일 = solid black bg, white text
+const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'9px 8px',border:'none',background:active?_T.text:'transparent',color:active?'#fff':_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',borderRadius:8,transition:'all .12s',letterSpacing:'-0.2px'}}>{children}</button>);
+// 등급 칩 — black active 통일, 컬러는 카테고리 헤더 텍스트로만 표시
+const Chip=({arr,setArr,val})=>{const active=arr.includes(val);return(<button onClick={()=>{setArr(active?arr.filter(x=>x!==val):[...arr,val]);setActivePreset(null);}} style={{padding:'7px 12px',borderRadius:8,border:'1px solid '+(active?_T.text:_T.line),background:active?_T.text:_T.card,color:active?'#fff':_T.body,fontSize:13,fontWeight:active?700:600,cursor:'pointer',marginRight:5,marginBottom:5,minWidth:38,letterSpacing:'-0.2px',transition:'all .12s'}}>{val}</button>);};
+const Card=({title,hint,children,pad})=>(<div style={{background:_T.card,borderRadius:12,padding:pad||'12px 12px 10px',marginBottom:8,border:'1px solid '+_T.line}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:8}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:11,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
 const _sorts=[{id:'profit',l:'익절순'},{id:'newest',l:'최신순'},{id:'oldest',l:'오래된순'}];
 const _yrs=[{id:'all',l:'전체'},{id:'21',l:'21'},{id:'22',l:'22'},{id:'23',l:'23'},{id:'24',l:'24'},{id:'25',l:'25'},{id:'26',l:'26'}];
-return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
-{/* Preset card */}
+const _amtPresets=[100000,300000,500000,1000000,3000000];
+const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+'만':n.toLocaleString());
+const GradeRow=({label,col,arr,setArr,opts})=>(<div style={{marginBottom:8,display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}><div style={{fontSize:11,fontWeight:700,color:col,letterSpacing:'-0.2px',width:54,flexShrink:0}}>{label}</div><div style={{flex:1,display:'flex',flexWrap:'wrap'}}>{opts.map(g=>(<Chip key={g} arr={arr} setArr={setArr} val={g}/>))}</div></div>);
+return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
+{/* 검증된 프리셋 */}
 <Card title="검증된 프리셋" hint="6년 24,355건 백테스트">
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
-{_presets.slice(0,2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'14px 14px',borderRadius:12,border:'1px solid '+(a?_T.primary:'#ffd97d'),background:a?_T.primaryBg:'#fff8e1',cursor:'pointer',textAlign:'left',transition:'all .15s'}}><div style={{fontSize:14,fontWeight:800,color:a?_T.primary:'#a16207',letterSpacing:'-0.3px',marginBottom:2}}>{p.label}</div><div style={{fontSize:11,color:_T.sub,marginBottom:4,fontWeight:500}}>{p.sub}</div><div style={{fontSize:13,fontWeight:700,color:_T.up}}>{p.stat}</div></button>);})}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:6}}>
+{_presets.slice(0,2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'10px 12px',borderRadius:10,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{fontSize:13,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px',marginBottom:1}}>{p.label}</div><div style={{fontSize:10,color:a?'rgba(255,255,255,0.65)':_T.hint,marginBottom:3,fontWeight:500}}>{p.sub}</div><div style={{fontSize:12,fontWeight:700,color:a?'#ff7a85':_T.up}}>{p.stat}</div></button>);})}
 </div>
-<div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:6,marginBottom:8}}>
-{_presets.slice(2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'10px 4px',borderRadius:10,border:'1px solid '+(a?_T.primary:_T.line),background:a?_T.primaryBg:_T.card,cursor:'pointer',transition:'all .15s'}}><div style={{fontSize:13,fontWeight:800,color:a?_T.primary:_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:_T.up,fontWeight:600,marginTop:2}}>{p.stat}</div></button>);})}
+<div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:5,marginBottom:6}}>
+{_presets.slice(2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'8px 4px',borderRadius:8,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:a?'#ff7a85':_T.up,fontWeight:600,marginTop:1}}>{p.stat}</div></button>);})}
 </div>
-<button onClick={resetAll} style={{width:'100%',padding:'10px',borderRadius:10,border:'1px solid '+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:'pointer'}}>초기화</button>
+<button onClick={resetAll} style={{width:'100%',padding:'8px',borderRadius:8,border:'1px solid '+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:'pointer'}}>초기화</button>
 </Card>
-{/* Year filter — 다중선택 지원 ([] = 전체, ['21','22'] = 다중) */}
-<Card title="연도" hint={yf.length>=2?yf.join('+')+'년 ('+yf.length+'개)':'중복 선택 가능'}>
-<div style={{display:'flex',background:_T.bg,borderRadius:12,padding:4,gap:0,flexWrap:'wrap'}}>
-{_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)} full>{y.l}</Seg>);})}
+{/* 연도 + 등급 결합 — 한 카드로 압축 */}
+<Card title="필터" hint={yf.length>=2?yf.join('+')+'년':null}>
+<div style={{display:'flex',background:_T.linelt,borderRadius:8,padding:3,marginBottom:10}}>
+{_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)}>{y.l}</Seg>);})}
 </div>
+<GradeRow label="네오" col={_T.accentN} arr={selN} setArr={setSelN} opts={_ng}/>
+<GradeRow label="침착해" col={_T.accentC} arr={selCC} setArr={setSelCC} opts={_g6}/>
+<GradeRow label="주도주" col={_T.accentJ} arr={selJD} setArr={setSelJD} opts={_g6}/>
+<GradeRow label="하승훈" col={_T.accentH} arr={selHS} setArr={setSelHS} opts={_hsg}/>
 </Card>
-{/* Grade selectors */}
-<Card title="등급 필터" hint="중복 선택 가능">
-<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:600,marginBottom:8,color:'#0d8050',letterSpacing:'-0.2px'}}>네오 · 거래대금</div>{_ng.map(g=>(<Chip key={g} arr={selN} setArr={setSelN} val={g} col="#0d8050" bg="#e7f9ed"/>))}</div>
-<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:600,marginBottom:8,color:'#0367c4',letterSpacing:'-0.2px'}}>침착해</div>{_g6.map(g=>(<Chip key={g} arr={selCC} setArr={setSelCC} val={g} col="#0367c4" bg="#e6f3ff"/>))}</div>
-<div style={{marginBottom:12}}><div style={{fontSize:12,fontWeight:600,marginBottom:8,color:'#b54708',letterSpacing:'-0.2px'}}>주도주</div>{_g6.map(g=>(<Chip key={g} arr={selJD} setArr={setSelJD} val={g} col="#b54708" bg="#fff4e6"/>))}</div>
-<div><div style={{fontSize:12,fontWeight:600,marginBottom:8,color:'#c81e1e',letterSpacing:'-0.2px'}}>하승훈</div>{_hsg.map(g=>(<Chip key={g} arr={selHS} setArr={setSelHS} val={g} col="#c81e1e" bg="#ffe9e9"/>))}</div>
-</Card>
-{/* Stats summary */}
-{stats&&(<div style={{background:_T.text,borderRadius:14,padding:'18px 18px',marginBottom:10,color:'#fff'}}>
-<div style={{display:'flex',gap:0,marginBottom:0}}>
-<div style={{flex:1}}><div style={{fontSize:11,opacity:0.6,marginBottom:4,letterSpacing:'-0.2px'}}>총 건수</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px'}}>{stats.n.toLocaleString()}<span style={{fontSize:13,fontWeight:500,opacity:0.7,marginLeft:2}}>건</span></div></div>
-<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.15)',paddingLeft:14}}><div style={{fontSize:11,opacity:0.6,marginBottom:4,letterSpacing:'-0.2px'}}>익절률 (5%+)</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:'#ff7a85'}}>{(stats.p5/stats.n*100).toFixed(1)}<span style={{fontSize:13,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
-<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.15)',paddingLeft:14}}><div style={{fontSize:11,opacity:0.6,marginBottom:4,letterSpacing:'-0.2px'}}>평균 수익</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?'#ff7a85':'#7eb6ff'}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:13,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
+{/* 결과 요약 */}
+{stats&&(<div style={{background:_T.text,borderRadius:12,padding:'14px 16px',marginBottom:8,color:'#fff'}}>
+<div style={{display:'flex',gap:0}}>
+<div style={{flex:1}}><div style={{fontSize:11,opacity:0.55,marginBottom:3,letterSpacing:'-0.2px'}}>총 건수</div><div style={{fontSize:20,fontWeight:800,letterSpacing:'-0.5px'}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,opacity:0.7,marginLeft:1}}>건</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.15)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:3,letterSpacing:'-0.2px'}}>익절률</div><div style={{fontSize:20,fontWeight:800,letterSpacing:'-0.5px',color:'#ff7a85'}}>{(stats.p5/stats.n*100).toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.15)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:3,letterSpacing:'-0.2px'}}>평균 수익</div><div style={{fontSize:20,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?'#ff7a85':'#7eb6ff'}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
 </div>
 </div>)}
-{/* Sort */}
-<div style={{display:'flex',background:_T.card,borderRadius:12,padding:4,border:'1px solid '+_T.line,marginBottom:10}}>
-{_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)} full>{s.l}</Seg>))}
+{/* 투자금 계산기 */}
+{stats&&(<Card title="투자금 계산기" hint="1건당 동일 투자">
+<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+<input type="number" value={invAmt} onChange={e=>setInvAmt(+e.target.value||0)} step="100000" style={{flex:1,padding:'9px 12px',border:'1px solid '+_T.line,borderRadius:8,fontSize:14,fontWeight:600,color:_T.text,outline:'none',letterSpacing:'-0.3px'}}/>
+<span style={{fontSize:13,color:_T.sub,fontWeight:600}}>원</span>
 </div>
-{/* Table */}
-<div style={{background:_T.card,borderRadius:14,border:'1px solid '+_T.line,overflow:'hidden'}}>
+<div style={{display:'flex',gap:5,marginBottom:10,flexWrap:'wrap'}}>
+{_amtPresets.map(a=>(<button key={a} onClick={()=>setInvAmt(a)} style={{padding:'5px 10px',borderRadius:14,border:'1px solid '+(invAmt===a?_T.text:_T.line),background:invAmt===a?_T.text:_T.card,color:invAmt===a?'#fff':_T.sub,fontSize:11,fontWeight:600,cursor:'pointer',letterSpacing:'-0.2px'}}>{_man(a)}원</button>))}
+</div>
+<div style={{display:'flex',padding:'10px 12px',background:_T.linelt,borderRadius:8}}>
+<div style={{flex:1}}><div style={{fontSize:10,color:_T.hint,marginBottom:2}}>총 투입</div><div style={{fontSize:14,fontWeight:700,color:_T.body,letterSpacing:'-0.3px'}}>{_man(stats.totalInvest)}원</div></div>
+<div style={{flex:1}}><div style={{fontSize:10,color:_T.hint,marginBottom:2}}>총 손익</div><div style={{fontSize:14,fontWeight:700,letterSpacing:'-0.3px',color:stats.totalPnl>=0?_T.up:_T.down}}>{stats.totalPnl>=0?'+':''}{_man(Math.abs(stats.totalPnl))}원</div></div>
+<div style={{flex:1}}><div style={{fontSize:10,color:_T.hint,marginBottom:2}}>수익률</div><div style={{fontSize:14,fontWeight:700,letterSpacing:'-0.3px',color:stats.ret>=0?_T.up:_T.down}}>{stats.ret>=0?'+':''}{stats.ret.toFixed(2)}%</div></div>
+</div>
+</Card>)}
+{/* 정렬 */}
+<div style={{display:'flex',background:_T.linelt,borderRadius:8,padding:3,marginBottom:8}}>
+{_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
+</div>
+{/* 거래 리스트 */}
+<div style={{background:_T.card,borderRadius:12,border:'1px solid '+_T.line,overflow:'hidden'}}>
 <div style={{maxHeight:'62vh',overflowY:'auto'}}>
 <table style={{width:'100%',fontSize:12,borderCollapse:'collapse'}}>
-<thead style={{position:'sticky',top:0,background:_T.bg,zIndex:1}}><tr style={{borderBottom:'1px solid '+_T.line}}><th style={{padding:'12px 8px',textAlign:'left',fontSize:11,fontWeight:600,color:_T.hint,letterSpacing:'-0.2px'}}>종목</th><th style={{padding:'12px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>날짜</th><th style={{padding:'12px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>등락</th><th style={{padding:'12px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>네</th><th style={{padding:'12px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>침</th><th style={{padding:'12px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>주</th><th style={{padding:'12px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>하</th><th style={{padding:'12px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>결과</th><th style={{padding:'12px 8px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>수익</th></tr></thead>
-<tbody>{filtered.slice(0,300).map((r,i)=>(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid '+_T.bg}}><td style={{padding:'10px 8px',fontWeight:600,color:_T.text,letterSpacing:'-0.2px'}}>{r.n}</td><td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.d?r.d.slice(2):''}</td><td style={{padding:'10px 6px',textAlign:'right',color:(r.ch||0)>0?_T.up:_T.down,fontWeight:600}}>{r.ch}%</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.g}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.ccG}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.jdG}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.hsG}</td><td style={{padding:'10px 6px',textAlign:'center',fontSize:11,color:_T.sub,fontWeight:500}}>{r.r}</td><td style={{padding:'10px 8px',textAlign:'right',color:(r.t||0)>=0?_T.up:_T.down,fontWeight:700}}>{(r.t||0)>=0?'+':''}{(r.t||0).toFixed(1)}%</td></tr>))}</tbody></table>
+<thead style={{position:'sticky',top:0,background:_T.linelt,zIndex:1}}><tr><th style={{padding:'10px 8px',textAlign:'left',fontSize:11,fontWeight:600,color:_T.hint,letterSpacing:'-0.2px'}}>종목</th><th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>날짜</th><th style={{padding:'10px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>등락</th><th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>네</th><th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>침</th><th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>주</th><th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>하</th><th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>결과</th><th style={{padding:'10px 8px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>수익</th></tr></thead>
+<tbody>{filtered.slice(0,300).map((r,i)=>{const won=Math.round(invAmt*((r.t||0)/100));return(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid '+_T.linelt}}><td style={{padding:'10px 8px',fontWeight:600,color:_T.text,letterSpacing:'-0.2px'}}>{r.n}</td><td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.d?r.d.slice(2):''}</td><td style={{padding:'10px 6px',textAlign:'right',color:(r.ch||0)>0?_T.up:_T.down,fontWeight:600}}>{r.ch}%</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.g}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.ccG}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.jdG}</td><td style={{padding:'10px 4px',textAlign:'center',fontWeight:700,color:_T.body}}>{r.hsG}</td><td style={{padding:'10px 6px',textAlign:'center',fontSize:11,color:_T.sub,fontWeight:500}}>{r.r}</td><td style={{padding:'10px 8px',textAlign:'right',fontWeight:700}}><div style={{color:(r.t||0)>=0?_T.up:_T.down}}>{(r.t||0)>=0?'+':''}{(r.t||0).toFixed(1)}%</div><div style={{fontSize:10,color:_T.hint,fontWeight:500,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div></td></tr>);})}</tbody></table>
 </div>
-{filtered.length>300&&(<div style={{padding:'10px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.bg}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
+{filtered.length>300&&(<div style={{padding:'10px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
 </div>
 </div>);
 }
