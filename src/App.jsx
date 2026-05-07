@@ -538,7 +538,7 @@ function AIAnalysis({onSave}){
     try {
       const today = new Date().toLocaleDateString("ko-KR");
       const sysPrompt = "당신은 한국 주식 매매 전문가입니다 (종가돌파매매 + 눌림목매매 둘 다 가능). 4개 분석 결과를 종합해 셋 중 하나를 명확히 결정: 1)돌파매매진입 2)눌림목매매대기 3)매수금지\n\n## 판정 기준\n- 돌파 적합: 외+기 동반매수 + 거래대금 500억+ + 윗꼬리≤5% + 신고가/저항돌파\n- 눌림목 적합: 추세 좋은데 윗꼬리>10% 또는 거래대금 부족 → 5/10/20일선 지지 대기\n- 매수금지: 수급 악화/추세 약/데이터 부족\n\n## 룰\n- 돌파: TP1=+10%, TP2=+20%, SL=-5%, 보유 10일\n- 눌림목: 5/10일선 1차매수, 추가하락시 2차, 손절 직전저점-3%, 익절 전고점\n\n오늘: " + today + "\n\n## 검증된 룰\n- 매수 조건: NEO 4점+ AND 침/주/하 중 2개 이상 SSA+\n- TP1=10%, TP2=20%, SL=-5%, 보유 10일\n- 매수 타이밍: 14:50~15:20 (장 마감 직전)\n\n## 응답 형식 (반드시 단일 JSON, 모든 필드 채우기)\n{\"finalGrade\":\"S/A/B/X\",\"verdict\":\"돌파매매진입|눌림목매매대기|매수금지 (셋 중 정확히 하나)\",\"confidence\":0~100,\"summary\":\"한줄평 (이모지 포함). 예: 🚀 LX하우시스 돌파매매 진입! 외+기 동반 + 800억 거래대금 (적합도 72% vs 눌림목 28%) | ⏸️ 기다렸다 눌림목매매! 5일선 32000 지지 대기 | ⛔ 매수금지! 수급 악화\",\"consensus\":\"[테마분석] 종목 테마(예: AI반도체/2차전지/방산/건설). 테마 내 위치: 대장주/2등주/3등주/후발주 (이유: 시총·거래대금·등락률 비교). 짝꿍 종목 3개 (같은 테마 유사 흐름): A코드-A명, B코드-B명, C코드-C명. [4분석 종합] 4개 분석 일치/불일치 + 종합 의견 3-4문장\",\"marketContext\":\"오늘 미국선물/마켓흐름/주요뉴스 가정 반영 1-2문장\",\"buyTiming\":\"14:50~15:20 분할매수 등 구체 진입 타이밍\",\"buyStrategy\":\"포지션 비중: 총자금 200만원 기준 X% (예: A=30만/15%, B=20만/10%, X=0). 돌파진입이면: 1차 진입가(60% 자금) + 2차 진입가(40% 자금) + 사이즈. 눌림목대기면: 1차매수가(5/10일선 구체가격, 50%) + 2차매수가(추가하락시 가격, 50%) + 며칠 대기. 금지면: 매수금지 사유\",\"exitPlan\":{\"tp1\":\"돌파=+10% 구체가격(50% 익절), 눌림목=익절가(전고점 구체가격)\",\"tp2\":\"돌파=+20% 구체가격(잔여 청산), 눌림목=N/A\",\"sl\":\"기본손절: 돌파=-5% 구체가격, 눌림목=직전저점-3% 구체가격. ⚠️ 강제손절(즉시청산): 외인 순매도 전환 또는 KOSPI -2% 급락 또는 거래대금 전일 50% 이하 감소 시\",\"timeStop\":\"10일 만기 청산 가이드\"},\"scenarios\":{\"bullish\":\"익일 갭상승 시나리오 + 대응\",\"neutral\":\"보합 시나리오 + 대응\",\"bearish\":\"하락 시나리오 + 대응 (추가매수 vs 손절)\"},\"addBuy\":\"추가매수 트리거 조건 (예: 진입가 -3% 도달 시 등)\",\"riskFactors\":[\"주요 리스크 1\",\"리스크 2\",\"리스크 3\"],\"watchPoints\":[\"매매 진행 중 모니터링 포인트 1\",\"포인트 2\"]}";
-      const userPrompt = "4개 분석 결과 (JSON):\n\n[NeoAi] " + JSON.stringify(aiResult).slice(0, 1500) +
+      const userPrompt = "4개 분석 결과 (JSON):\n\n[시장컨디션] " + (stockData && stockData.marketCondition ? ("직전월 평균수익 " + stockData.prevMonthAvgRet + "%, 직전월 익절률 " + stockData.prevMonthWinRate + "%, 시장상태=" + stockData.marketCondition + " (표본 " + stockData.prevMonthN + "건). 검증된 패턴: 약세후(-1%이하) 침S+×주S이상 신호는 평균+10.9%·승률 53%, 강세후(+1%이상)는 평균-3.5%·승률 24%, 황보는 평균+0.8%. 시장상태 반영해 매매강도/타이밍 결정하라.") : "데이터부족 - 시장컨디션 분석 생략") + "\n\n[NeoAi] " + JSON.stringify(aiResult).slice(0, 1500) +
         "\n\n[침착해] " + JSON.stringify(chimResult).slice(0, 1500) +
         "\n\n[주도주] " + JSON.stringify(jdResult).slice(0, 1500) +
         "\n\n[하승훈] " + JSON.stringify(hsResult).slice(0, 1500) +
@@ -610,6 +610,20 @@ function AIAnalysis({onSave}){
         const invDays = (invData.output || []).slice(0, 30).map(r => ({ date: r.stck_bsop_date || "", foreign: Math.round((+r.frgn_ntby_tr_pbmn||0) / 100 * 10) / 10, org: Math.round((+r.orgn_ntby_tr_pbmn||0) / 100 * 10) / 10, indiv: Math.round((+r.prsn_ntby_tr_pbmn||0) / 100 * 10) / 10 }));
         const today_d = days[0] || {};
         stockData = { code: codeStr, name: ohlcData.name || "", market: ohlcData.market || "", todayPrice: today_d.close, todayChange: today_d.rate, todayAmt: today_d.amt || Math.round((today_d.close * today_d.vol) / 100000000), days: days, invDays: invDays, baseDate: toYmd, isBacktest: !!backDate };
+        try {
+          const _bdY = +String(toYmd).slice(2, 4), _bdM = +String(toYmd).slice(4, 6);
+          const _pYY = _bdM === 1 ? String(_bdY-1).padStart(2,"0") : String(_bdY).padStart(2,"0");
+          const _pMM = _bdM === 1 ? "12" : String(_bdM-1).padStart(2,"0");
+          const _pYM = _pYY + "-" + _pMM;
+          const _ms = (typeof _mStats !== "undefined") ? _mStats[_pYM] : null;
+          if (_ms && _ms.n >= 30) {
+            const _par = _ms.ret / _ms.n, _pwr = _ms.w / _ms.n;
+            stockData.prevMonthAvgRet = +_par.toFixed(2);
+            stockData.prevMonthWinRate = +(_pwr * 100).toFixed(1);
+            stockData.prevMonthN = _ms.n;
+            stockData.marketCondition = _par < -1 ? "WEAK" : _par > 1 ? "STRONG" : "NEUTRAL";
+          }
+        } catch(e) {}
         if (backDate) {
           try {
             const nextDay = new Date(baseDate.getTime() + 86400000);
