@@ -405,6 +405,9 @@ const _ng=['S','A','B','X'];
 const _presets=[
 {id:'alpha6',label:'6년 알파',sub:'침S+ × 주S',stat:'+3.16%',n:[],c:['S+'],j:['S'],h:[],yr:'all'},
 {id:'profit6',label:'6년 수익왕',sub:'네오:B × 주A',stat:'+5.63%',n:['B'],c:[],j:['A'],h:[],yr:'all'},
+{id:'jb_normal',label:'종배 보통',sub:'점수3+ 100~1000억',stat:'+1.06%',special:'jb_normal',n:[],c:[],j:[],h:[],yr:'all'},
+{id:'jb_strict',label:'종배 엄격',sub:'+ 60일 신고가',stat:'+1.42%',special:'jb_strict',n:[],c:[],j:[],h:[],yr:'all'},
+{id:'jb_extreme',label:'종배 초엄격',sub:'+ 120일 신고가',stat:'+2.16%',special:'jb_extreme',n:[],c:[],j:[],h:[],yr:'all'},
 {id:'y21',label:'21형',sub:'Neo:S 침S 주A+ 하A',stat:'+9.89%',n:['S'],c:['S'],j:['A+'],h:['A'],yr:'21'},
 {id:'y22',label:'22형',sub:'Neo:S 침A+ 주A',stat:'+0.04%',n:['S'],c:['A+'],j:['A'],h:[],yr:'22'},
 {id:'y23',label:'23형',sub:'Neo:B 침B 주B+',stat:'+5.98%',n:['B'],c:['B'],j:['B+'],h:[],yr:'23'},
@@ -412,6 +415,12 @@ const _presets=[
 {id:'y25',label:'25형',sub:'Neo:S 침S+ 주A+',stat:'+5.25%',n:['S'],c:['S+'],j:['A+'],h:[],yr:'25'},
 {id:'y26',label:'26형',sub:'Neo:A 침B+ 주B',stat:'+6.99%',n:['A'],c:['B+'],j:['B'],h:[],yr:'26'}
 ];
+const _jbAmt=(s)=>{const m=String(s||'').match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes('兆')||s.includes('조')?n*10000:n;};
+const _jbSupplyOK=(iv)=>iv==='기관'||iv==='기만'||iv==='기+외'||iv==='외+기'||iv==='외만'||iv==='외인';
+const _jbBase=(r)=>{const ch=+r.ch||0;if(!(ch>=15&&ch<29))return false;if(_jbAmt(r.mc)<50)return false;if(!_jbSupplyOK(r.iv))return false;return true;};
+const _jbNormal=(r)=>{if(!_jbBase(r))return false;const a=_jbAmt(r.mc);if(!(a>=100&&a<1000))return false;if((+r.sc||0)<3)return false;return true;};
+const _jbStrict=(r)=>_jbNormal(r)&&r.h60===1;
+const _jbExtreme=(r)=>_jbNormal(r)&&r.h120===1;
 const _yrAutoMap={'all':{n:[],c:['S+'],j:['S'],h:[]},'21':{n:['S'],c:['S'],j:['A+'],h:['A']},'22':{n:['S'],c:['A+'],j:['A'],h:[]},'23':{n:['B'],c:['B'],j:['B+'],h:[]},'24':{n:[],c:['S+'],j:['S'],h:[]},'25':{n:['S'],c:['S+'],j:['A+'],h:[]},'26':{n:['A'],c:['B+'],j:['B'],h:[]}};
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
@@ -419,12 +428,17 @@ const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
 const [yf,setYf]=useState([]);
 const [activePreset,setActivePreset]=useState('alpha6');
+const [specialMode,setSpecialMode]=useState(null); // 'jb_normal'|'jb_strict'|'jb_extreme'|null
 const [sortMode,setSortMode]=useState('profit');
 const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('mfdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
 useEffect(()=>{try{localStorage.setItem('mfdb_invAmt_v1',String(invAmt));}catch(e){}},[invAmt]);
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
+// 종배 특수모드 — 등급 chip 무시, 데이터 기반 조건만 적용
+if(specialMode==='jb_normal')return _jbNormal(r);
+if(specialMode==='jb_strict')return _jbStrict(r);
+if(specialMode==='jb_extreme')return _jbExtreme(r);
 if(selN.length&&!selN.includes(r.g))return false;
 if(selCC.length&&!selCC.includes(r.ccG))return false;
 if(selJD.length&&!selJD.includes(r.jdG))return false;
@@ -435,7 +449,7 @@ if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[selN,selCC,selJD,selHS,yf,sortMode]);
+},[selN,selCC,selJD,selHS,yf,sortMode,specialMode]);
 const stats=useMemo(()=>{
 if(!filtered.length)return null;
 const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
@@ -448,10 +462,10 @@ const ret=totalInvest>0?(totalPnl/totalInvest*100):0;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg,totalInvest,totalPnl,ret};
 },[filtered,invAmt]);
 const _applyFilter=(p)=>{setSelN(p.n||[]);setSelCC(p.c||[]);setSelJD(p.j||[]);setSelHS(p.h||[]);};
-const applyP=(p)=>{_applyFilter(p);if(p.yr==='all')setYf([]);else if(p.yr)setYf([p.yr]);setActivePreset(p.id);};
-const resetAll=()=>{setSelN([]);setSelCC([]);setSelJD([]);setSelHS([]);setYf([]);setActivePreset(null);};
+const applyP=(p)=>{_applyFilter(p);if(p.yr==='all')setYf([]);else if(p.yr)setYf([p.yr]);setActivePreset(p.id);setSpecialMode(p.special||null);};
+const resetAll=()=>{setSelN([]);setSelCC([]);setSelJD([]);setSelHS([]);setYf([]);setActivePreset(null);setSpecialMode(null);};
 const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
-useEffect(()=>{let key=null;if(yf.length===0)key='all';else if(yf.length===1)key=yf[0];if(key){const m=_yrAutoMap[key];if(m)_applyFilter(m);}},[yf]);
+useEffect(()=>{if(specialMode)return;let key=null;if(yf.length===0)key='all';else if(yf.length===1)key=yf[0];if(key){const m=_yrAutoMap[key];if(m)_applyFilter(m);}},[yf,specialMode]);
 // 통일 active 스타일 = solid black bg, white text
 const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'7px 8px',border:'none',background:active?_T.text:'transparent',color:active?'#fff':_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',borderRadius:7,transition:'all .12s',letterSpacing:'-0.2px'}}>{children}</button>);
 // 등급 칩 — black active 통일, 컬러는 카테고리 헤더 텍스트로만 표시
@@ -468,11 +482,17 @@ const GradeRow=({label,col,arr,setArr,opts})=>(<div style={{marginBottom:5,displ
 return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
 {/* 검증된 프리셋 */}
 <Card title="검증된 프리셋" hint="6년 24,355건">
+{/* 1행: 6년 등급 베스트 (상단 강조 2개) */}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,marginBottom:5}}>
 {_presets.slice(0,2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'8px 11px',borderRadius:9,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6}}><div style={{fontSize:13,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:12,fontWeight:700,color:a?'#ff7a85':_T.up}}>{p.stat}</div></div><div style={{fontSize:10,color:a?'rgba(255,255,255,0.6)':_T.hint,marginTop:1,fontWeight:500}}>{p.sub}</div></button>);})}
 </div>
+{/* 2행: 종배 시리즈 (보통/엄격/초엄격) */}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:5,marginBottom:5}}>
+{_presets.slice(2,5).map(p=>{const a=activePreset===p.id;const _bgs={'jb_normal':'#1f6dee','jb_strict':'#c81e1e','jb_extreme':'#7c3aed'};const bg=_bgs[p.id]||_T.text;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'8px 10px',borderRadius:9,border:'1px solid '+(a?bg:_T.line),background:a?bg:_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:11,fontWeight:700,color:a?'#fff':_T.up}}>{p.stat}</div></div><div style={{fontSize:9,color:a?'rgba(255,255,255,0.7)':_T.hint,marginTop:2,fontWeight:500}}>{p.sub}</div></button>);})}
+</div>
+{/* 3행: 연도형 21~26 + 리셋 */}
 <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr) auto',gap:5}}>
-{_presets.slice(2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'6px 2px',borderRadius:8,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:a?'#ff7a85':_T.up,fontWeight:600,marginTop:1}}>{p.stat}</div></button>);})}
+{_presets.slice(5).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'6px 2px',borderRadius:8,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:a?'#ff7a85':_T.up,fontWeight:600,marginTop:1}}>{p.stat}</div></button>);})}
 <button onClick={resetAll} style={{padding:'6px 12px',borderRadius:8,border:'1px solid '+_T.line,background:_T.linelt,color:_T.sub,fontSize:11,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap'}}>↻</button>
 </div>
 </Card>
@@ -668,12 +688,10 @@ const [loading,setLoading]=useState(false);
 const [err,setErr]=useState(null);
 const [saving,setSaving]=useState(false);
 const [saveMsg,setSaveMsg]=useState(null);
-// 좁히기 모드 (백테스트 기반)
-// 전체  : 등락 15-29 & 거래대금≥50억 & 수급OK              (일평균 5.7 / 익절 30.9% / 평균 -1.0%)
-// 보통  : + 점수≥3 + 거래대금 100~1000억                  (일평균 2.0 / 익절 34.5% / 평균 +1.1%)
-// 엄격  : + 점수≥4 + 거래대금 100~1000억                  (일평균 1.2 / 익절 35.9% / 평균 +2.3%)
-const [filterMode,setFilterMode]=useState(()=>{try{return localStorage.getItem("today_filter_mode_v1")||"normal";}catch(e){return "normal";}});
-useEffect(()=>{try{localStorage.setItem("today_filter_mode_v1",filterMode);}catch(e){}},[filterMode]);
+// 백테스트 기반 3단계 분리 (같은 종목도 보통/엄격/초엄격에 모두 노출)
+// 보통  : 등락15-29 + 50억+ + 수급 + sc≥3 + 100~1000억              (일평균 2.0 / 익절 34.5% / +1.06%)
+// 엄격  : 보통 + 60일 신고가                                       (일평균 1.7 / 익절 35.6% / +1.42%)
+// 초엄격: 보통 + 120일 신고가                                      (일평균 1.6 / 익절 36.8% / +2.16%)
 const _normMkt=(m)=>(m==="KOSDAQ"||m==="KQ"||m==="코스닥")?"KO":(m==="KOSPI"||m==="KS"||m==="코스피")?"KS":m;
 const _qualifySupply=(inv)=>inv==="기관"||inv==="기만"||inv==="기+외"||inv==="외+기"||inv==="외만"||inv==="외인";
 const _supplyLabel=(inv)=>{
@@ -686,9 +704,9 @@ const _classify=(s)=>{
   const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
   const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
   const sc=+s.score||0;
+  const h60=+s.h60||0, h120=+s.h120||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
-  // 사유 수집 (미통과시 사용)
   const reasons=[];
   if(!(ch>=15&&ch<29))reasons.push(ch<15?`등락 ${ch}% (15% 미달)`:`등락 ${ch}% (29% 초과)`);
   if(amt<50)reasons.push(`거래대금 ${amt}억 (50억 미달)`);
@@ -696,13 +714,13 @@ const _classify=(s)=>{
   if(!_qualifySupply(inv))reasons.push(`수급 ${inv||"없음"} (기관/외+기/외인 외)`);
   const baseOK=reasons.length===0;
   const cat=baseOK?"종배":"기타";
-  // 좁히기 등급: 강(점수≥4 + 100~1000억) / 중(점수≥3 + 100~1000억) / 약(통과만)
+  // 백테스트 기반 통과 등급 (기존 토글용 strength도 유지)
+  const passNormal=baseOK&&sc>=3&&amt>=100&&amt<1000;
+  const passStrict=passNormal&&h60===1;
+  const passExtreme=passNormal&&h120===1;
   let strength="약";
-  if(baseOK){
-    if(sc>=4&&amt>=100&&amt<1000)strength="강";
-    else if(sc>=3&&amt>=100&&amt<1000)strength="중";
-  }
-  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",strength};
+  if(passNormal){if(sc>=4)strength="강";else strength="중";}
+  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",strength,h60,h120,passNormal,passStrict,passExtreme};
 };
 const load=useCallback(async()=>{
   setLoading(true);setErr(null);
@@ -757,27 +775,27 @@ return(<div style={{padding:"12px"}}>
 </div></div>
 {saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
-{/* 좁히기 모드 토글 */}
+{/* 백테스트 기반 3단계 분리: 보통 / 엄격 / 초엄격 — 같은 종목이라도 각 그룹에 노출 */}
 {(()=>{
   const cmainAll=data.cmain||[];
-  const filtered=filterMode==="strict"?cmainAll.filter(x=>x.strength==="강"):filterMode==="normal"?cmainAll.filter(x=>x.strength==="강"||x.strength==="중"):cmainAll;
-  const _modes=[
-    {id:"all",l:"전체",sub:"통과 전체",stat:"≈5.7/일"},
-    {id:"normal",l:"보통",sub:"점수3+ 100~1000억",stat:"≈2/일 익절 34.5%"},
-    {id:"strict",l:"엄격",sub:"점수4+ 100~1000억",stat:"≈1/일 익절 35.9%"}
-  ];
-  return(<>
-  <div style={{background:_T.card,border:"1px solid "+_T.line,borderRadius:12,padding:"10px 12px",marginBottom:10}}>
-    <div style={{fontSize:11,fontWeight:700,color:_T.hint,marginBottom:7,letterSpacing:"-0.2px"}}>좁히기 모드 · 백테스트 6년 검증</div>
-    <div style={{display:"flex",gap:5}}>
-    {_modes.map(m=>{const a=filterMode===m.id;return(<button key={m.id} onClick={()=>setFilterMode(m.id)} style={{flex:"1 1 0",padding:"8px 6px",borderRadius:9,border:"1px solid "+(a?_T.text:_T.line),background:a?_T.text:_T.card,color:a?"#fff":_T.body,cursor:"pointer",letterSpacing:"-0.2px",transition:"all .12s"}}><div style={{fontSize:13,fontWeight:800}}>{m.l}</div><div style={{fontSize:9,fontWeight:600,marginTop:2,opacity:0.75}}>{m.sub}</div><div style={{fontSize:9,fontWeight:700,color:a?"#ff7a85":_T.up,marginTop:1}}>{m.stat}</div></button>);})}
+  const normal=cmainAll.filter(x=>x.passNormal);
+  const strict=cmainAll.filter(x=>x.passStrict);
+  const extreme=cmainAll.filter(x=>x.passExtreme);
+  const Stats=({c,wn,ev,col})=>(<div style={{display:"flex",alignItems:"baseline",gap:8,marginLeft:"auto"}}><span style={{fontSize:11,fontWeight:700,color:_T.hint}}>{c}건</span><span style={{fontSize:10,fontWeight:600,color:_T.mute}}>익절 {wn}</span><span style={{fontSize:11,fontWeight:800,color:col}}>{ev}</span></div>);
+  const Block=({label,emoji,desc,arr,col,winRate,avg})=>(<div style={{marginBottom:18}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"10px 12px",background:col,borderRadius:10}}>
+      <span style={{fontSize:18}}>{emoji}</span>
+      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>{label}</span>
+      <span style={{fontSize:11,fontWeight:700,color:"#fff",background:"rgba(255,255,255,0.22)",padding:"2px 8px",borderRadius:10}}>{arr.length}건</span>
+      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>익절 {winRate} · 평균 {avg}</div>
     </div>
-  </div>
-  {/* 통합 네오 종배 */}
-  <div style={{marginBottom:18}}>
-  <SectionHeader label="네오 종배" count={filtered.length} accent={_T.up} emoji="🚀" desc={filterMode==="strict"?"엄격 · 점수4+ 거래대금 100~1000억":filterMode==="normal"?"보통 · 점수3+ 거래대금 100~1000억":"전체 · 등락 15-29 / 거래대금≥50억 / 수급OK"}/>
-  {!filtered.length?<Empty msg={cmainAll.length?`전체 ${cmainAll.length}건 중 ${filterMode==="strict"?"엄격":"보통"} 조건 충족 종목 없음 — 전체 모드로 전환하세요`:"오늘 조건 충족 종목 없음"}/>:filtered.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
-  </div>
+    <div style={{fontSize:11,color:_T.hint,fontWeight:500,marginBottom:8,letterSpacing:"-0.2px"}}>{desc}</div>
+    {!arr.length?<Empty msg="해당 조건 충족 종목 없음"/>:arr.map((s,i)=><Card key={s.code+i} s={s} accent={col} emoji={emoji}/>)}
+  </div>);
+  return(<>
+  <Block label="네오 종배 · 보통" emoji="🚀" desc="점수≥3 + 거래대금 100~1000억 · 백테스트 일평균 2건" arr={normal} col="#1f6dee" winRate="34.5%" avg="+1.06%"/>
+  <Block label="네오 종배 · 엄격" emoji="🔥" desc="보통 + 60일 신고가 · 백테스트 일평균 1.7건" arr={strict} col="#c81e1e" winRate="35.6%" avg="+1.42%"/>
+  <Block label="네오 종배 · 초엄격" emoji="💎" desc="보통 + 120일 신고가 · 백테스트 일평균 1.6건" arr={extreme} col="#7c3aed" winRate="36.8%" avg="+2.16%"/>
   </>);
 })()}
 {/* 기타 — 필터 미통과 (접기) */}
