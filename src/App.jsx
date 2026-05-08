@@ -570,13 +570,13 @@ const load=useCallback(async()=>{
     const cetc=proc.filter(s=>s.category==="기타");
     const newData={date:j.date,time:j.time,all:proc,cmain,cetc,summary:{total:proc.length,cmain:cmain.length,cetc:cetc.length}};
     setData(newData);
-    try{localStorage.setItem("today_signals_v2",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
+    try{localStorage.setItem("today_signals_v3",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
     if(onSignalsLoaded)onSignalsLoaded(proc);
   }catch(e){setErr(e.message);}
   setLoading(false);
 },[]);
 // 마운트 시 캐시만 로드 (자동 fetch 안 함 — 수동 조회만)
-useEffect(()=>{try{const c=localStorage.getItem("today_signals_v2");if(c){const p=JSON.parse(c);if(p&&p.data){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
+useEffect(()=>{try{localStorage.removeItem("today_signals_v2");}catch(e){}try{const c=localStorage.getItem("today_signals_v3");if(c){const p=JSON.parse(c);if(p&&p.data&&p.data.cmain){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
 const saveSignals=async()=>{
   if(!data||!data.all||!data.all.length)return;
   setSaving(true);setSaveMsg(null);
@@ -601,20 +601,20 @@ if(!data)return(<div style={{padding:"12px"}}><div style={{padding:"50px 20px",t
 return(<div style={{padding:"12px"}}>
 {/* 상단 — 날짜 + 조회/저장 버튼 */}
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}>
-<div><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div><div style={{fontSize:11,color:_T.hint,marginTop:2}}>총 {data.summary.total}건 · 통과 {data.summary.cmain}건 · 미통과 {data.summary.cetc}건</div></div>
+<div><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div><div style={{fontSize:11,color:_T.hint,marginTop:2}}>총 {(data.summary&&data.summary.total)||0}건 · 통과 {(data.summary&&data.summary.cmain)||0}건 · 미통과 {(data.summary&&data.summary.cetc)||0}건</div></div>
 <div style={{display:"flex",gap:6}}>
-<button onClick={saveSignals} disabled={saving||!data.summary.cmain} style={{padding:"7px 12px",borderRadius:8,border:"none",background:saving?_T.line:_T.text,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
+<button onClick={saveSignals} disabled={saving||!(data.summary&&data.summary.cmain)} style={{padding:"7px 12px",borderRadius:8,border:"none",background:saving?_T.line:_T.text,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
 <button onClick={load} style={{padding:"7px 12px",borderRadius:8,border:"1px solid "+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:"pointer",letterSpacing:"-0.2px"}}>🔄 새로조회</button>
 </div></div>
 {saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
 {/* 통합 네오 종배 */}
 <div style={{marginBottom:18}}>
-<SectionHeader label="네오 종배" count={data.summary.cmain} accent={_T.up} emoji="🚀" desc="등락 15-29% · 거래대금≥50억 · 수급=기관/외+기/외인"/>
-{data.summary.cmain===0?<Empty msg="오늘 조건 충족 종목 없음"/>:data.cmain.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
+<SectionHeader label="네오 종배" count={(data.summary&&data.summary.cmain)||0} accent={_T.up} emoji="🚀" desc="등락 15-29% · 거래대금≥50억 · 수급=기관/외+기/외인"/>
+{!(data.cmain&&data.cmain.length)?<Empty msg="오늘 조건 충족 종목 없음"/>:data.cmain.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
 </div>
 {/* 기타 — 필터 미통과 (접기) */}
-{data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
+{data.cetc&&data.cetc.length>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.cetc.length}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
 </div>);
 }
 
