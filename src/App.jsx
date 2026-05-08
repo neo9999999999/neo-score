@@ -667,9 +667,10 @@ if(selSup.length){
 }
 return true;
 });
-// 정렬 — 라이브(_isLive) 신호는 항상 최상단에
-if(sortMode==='profit')return arr.sort((a,b)=>{if(a._isLive&&!b._isLive)return -1;if(b._isLive&&!a._isLive)return 1;return (b.t||0)-(a.t||0);});
-if(sortMode==='oldest')return arr.sort((a,b)=>{if(a._isLive&&!b._isLive)return -1;if(b._isLive&&!a._isLive)return 1;return String(a.d||'').localeCompare(String(b.d||''));});
+// 정렬 모드별 동작
+if(sortMode==='live')return arr.filter(x=>x._isLive).sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
+if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
+if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
 },[yf,selSup,sortMode,mode,liveAsD]);
@@ -688,12 +689,12 @@ const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.fil
 const toggleSup=(s)=>{setSelSup(selSup.includes(s)?selSup.filter(x=>x!==s):[...selSup,s]);};
 const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'8px 8px',border:'none',background:active?_T.accent:'transparent',color:active?'#fff':_T.sub,fontSize:12,fontWeight:active?700:500,cursor:'pointer',borderRadius:8,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
 const Card=({title,hint,children,pad})=>(<div style={{background:_T.card,borderRadius:14,padding:pad||'14px 14px',marginBottom:10,border:'1px solid '+_T.line,boxShadow:'0 1px 0 rgba(255,255,255,0.02)'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:10}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:11,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
-const _sorts=[{id:'profit',l:'익절순'},{id:'newest',l:'최신순'},{id:'oldest',l:'오래된순'}];
+const _sorts=[{id:'live',l:'📡 진행중'},{id:'profit',l:'익절순'},{id:'newest',l:'최신순'},{id:'oldest',l:'오래된순'}];
 const _yrs=[{id:'all',l:'전체'},{id:'21',l:'21'},{id:'22',l:'22'},{id:'23',l:'23'},{id:'24',l:'24'},{id:'25',l:'25'},{id:'26',l:'26'}];
 const _amtPresets=[100000,300000,500000,1000000,3000000];
 const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+'만':n.toLocaleString());
-const _resLbl=(r)=>{const s=String(r||"");if(!s)return "—";if(s==="BOTH")return "익절";if(s==="TP1")return "1차익절";if(s==="TP2")return "익절";if(s==="TP1_BE")return "익절+본절";if(s==="TP1_SL")return "익절+손절";if(s==="TP1_FSL")return "익절+강제SL";if(s==="SL")return "손절";if(s==="FSL")return "강제손절";if(s==="TRAIL")return "트레일익절";if(s==="TO")return "15일만료";if(s.endsWith("일보유"))return s;return s;};
-const _resCol=(r)=>{const s=String(r||"");if(s==="SL"||s==="FSL")return _T.down;if(s==="TO"||s.endsWith("일보유"))return _T.mute;return _T.up;};
+const _resLbl=(r)=>{const s=String(r||"");if(!s)return "—";if(s==="진행중")return "진행중";if(s==="BOTH")return "익절";if(s==="TP1")return "1차익절";if(s==="TP2")return "익절";if(s==="TP1_BE")return "익절+본절";if(s==="TP1_SL")return "익절+손절";if(s==="TP1_FSL")return "익절+강제SL";if(s==="SL")return "손절";if(s==="FSL")return "강제손절";if(s==="TRAIL")return "트레일익절";if(s==="TO")return "15일만료";if(s.endsWith("일보유"))return s;return s;};
+const _resCol=(r)=>{const s=String(r||"");if(s==="진행중")return"#f59e0b";if(s==="SL"||s==="FSL")return _T.down;if(s==="TO"||s.endsWith("일보유"))return _T.mute;return _T.up;};
 return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif",color:_T.text}}>
 {/* 모드 토글 — 맞춤 / 네오 7% / 네오 25% */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:14,padding:4,marginBottom:10,gap:2}}>
@@ -761,49 +762,67 @@ const tp1=r.tp1||0, tp2=r.tp2||0;
 const tp1Reached=!!(r.tp1d&&r.tp1dy);
 const tp2Reached=!!(r.tp2d&&r.tp2dy)||r.r==='BOTH'||r.r==='TP2';
 const _profit=(r.t||0);
-return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'16px 18px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
-{/* 1행: 종목명 (큼) + 라이브 배지 + 최종수익 또는 진행중 */}
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:10}}>
+// 모드별 익절 표시: 7% 모드는 단일, 25%/custom은 1차/2차 분리
+const _showSingle=mode==='neo7';
+return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
+{/* 1행: 종목명 (큼) + 수급/LIVE + 우측 진행중/결과 */}
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:12}}>
 <div style={{flex:1,minWidth:0,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
-<span style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
-<span style={{fontSize:10,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'2px 8px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
-{r._isLive&&<span style={{fontSize:9,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'2px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
+<span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
+<span style={{fontSize:11,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
+{r._isLive&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
 </div>
-<div style={{textAlign:'right',flexShrink:0}}>
-{r._isLive?(<div style={{fontSize:14,fontWeight:800,color:'#f59e0b',letterSpacing:'-0.3px'}}>진행중</div>):(<>
-<div style={{fontSize:18,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.4px',lineHeight:1}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-<div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:3}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
-</>)}
+{!r._isLive&&<span style={{fontWeight:800,color:_resCol(r.r),fontSize:13,padding:'4px 10px',background:_T.bg,borderRadius:6,border:'1px solid '+_T.line}}>{_resLbl(r.r)}</span>}
+{r._isLive&&<span style={{fontSize:13,fontWeight:800,color:'#f59e0b',padding:'4px 10px',background:'rgba(245,158,11,0.12)',borderRadius:6,border:'1px solid rgba(245,158,11,0.35)'}}>진행중</span>}
 </div>
-</div>
-{/* 2행: 기본 정보 라인 */}
-<div style={{display:'flex',gap:8,fontSize:11,color:_T.sub,fontWeight:600,marginBottom:10,flexWrap:'wrap',alignItems:'center'}}>
-<span style={{color:_T.body}}>{r.mc}</span>
+{/* 2행: 기본 정보 — 폰트 키움 */}
+<div style={{display:'flex',gap:10,fontSize:12,color:_T.body,fontWeight:600,marginBottom:12,flexWrap:'wrap',alignItems:'baseline'}}>
+<span><b style={{color:_T.text,fontSize:13}}>{r.mc}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span>당일 <b style={{color:_T.body}}>+{r.ch}%</b></span>
+<span style={{color:_T.sub}}>당일 <b style={{color:_T.body}}>+{r.ch}%</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span>매수 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
+<span style={{color:_T.sub}}>📅 매수 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span>청산 <b style={{color:_T.body}}>{r.exd||'—'}</b></span>
+<span style={{color:_T.sub}}>청산 <b style={{color:_T.body}}>{r.exd||'—'}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span>소요 <b style={{color:_T.body}}>{r.exdy?r.exdy+'일':'—'}</b></span>
-<span style={{marginLeft:'auto',fontWeight:800,color:_resCol(r.r),fontSize:11,padding:'2px 8px',background:_T.bg,borderRadius:5,border:'1px solid '+_T.line}}>{_resLbl(r.r)}</span>
+<span style={{color:_T.sub}}>소요 <b style={{color:_T.body}}>{r.exdy?r.exdy+'일':'—'}</b></span>
 </div>
-{/* 3행: 1차/2차/최종 — 한 줄 (모바일 대응) */}
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6,padding:'10px 12px',background:_T.bg,borderRadius:9,border:'1px solid '+_T.line}}>
-<div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-<div style={{fontSize:9,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:'-0.2px'}}>1차 (+{tp1}%)</div>
-{tp1Reached?<div style={{fontSize:13,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{r.tp1dy}</div>:<div style={{fontSize:11,fontWeight:700,color:_T.mute}}>미도달</div>}
-</div>
-<div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-<div style={{fontSize:9,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:'-0.2px'}}>2차 (+{tp2}%)</div>
-{tp2Reached?<div style={{fontSize:13,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>{r.tp2dy?'D+'+r.tp2dy:'도달'}</div>:<div style={{fontSize:11,fontWeight:700,color:_T.mute}}>미도달</div>}
-</div>
-<div style={{textAlign:'center'}}>
-<div style={{fontSize:9,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:'-0.2px'}}>최종</div>
-<div style={{fontSize:13,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-</div>
-</div>
+{/* 3행: 익절 정보 — 모드별 분기 */}
+{_showSingle?(
+  // 7% 모드: 단일 익절 + 최종수익
+  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
+    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>익절 도달 (+{tp1}%)</div>
+      {tp1Reached?<div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{r.tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{r.tp1d}</span></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>미도달</div>}
+    </div>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
+      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
+      <div style={{fontSize:16,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
+      <div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:2}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
+      </>)}
+    </div>
+  </div>
+):(
+  // 25%/맞춤 모드: 1차/2차/최종
+  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
+    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>1차 (+{tp1}%)</div>
+      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>D+{r.tp1dy}일</div><div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{r.tp1d}</div></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
+    </div>
+    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>2차 (+{tp2}%)</div>
+      {tp2Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>{r.tp2dy?'D+'+r.tp2dy+'일':'도달'}</div>{r.tp2d&&<div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{r.tp2d}</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
+    </div>
+    <div style={{textAlign:'center'}}>
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
+      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
+      <div style={{fontSize:15,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px',lineHeight:1.1}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
+      <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
+      </>)}
+    </div>
+  </div>
+)}
 </div>);})}
 </div>
 {filtered.length>300&&(<div style={{padding:'12px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
@@ -896,42 +915,43 @@ const [activeTab,setActiveTab]=useState(()=>{try{return localStorage.getItem("to
 useEffect(()=>{try{localStorage.setItem("today_tab_v1",activeTab);}catch(e){}},[activeTab]);
 const _supColor=(t)=>t==="기관"?"#475569":t==="외+기"?"#7c3aed":t==="외인"?"#3b82f6":_T.mute;
 const _fmtKQty=(n)=>{const a=Math.abs(n);if(a>=10000)return(n>=0?'+':'-')+Math.round(a/1000)/10+'만';if(a>=1000)return(n>=0?'+':'-')+Math.round(a/100)/10+'천';return(n>=0?'+':'')+n.toLocaleString();};
-// 카드 — 종목명 큼, 등락률 종목명과 같은 사이즈, 정보 그룹핑
+// 카드 — 종목명 큼, 등락률 작게, 정보 폰트 키워서 가독성 확보
 const Card=({s,accent})=>{
   const prog=+s.prog||0;const progPos=prog>0;
   const _copy=(e)=>{
     e.stopPropagation();
     navigator.clipboard.writeText(s.code).then(()=>{
-      const b=e.currentTarget,o=b.innerHTML;
-      b.innerHTML="✓";b.style.color=_T.green;
-      setTimeout(()=>{b.innerHTML=o;b.style.color=_T.sub;},1200);
+      const b=e.currentTarget,o=b.textContent;
+      b.textContent="✓ 복사됨";b.style.background=_T.green;b.style.color="#fff";b.style.borderColor=_T.green;
+      setTimeout(()=>{b.textContent=o;b.style.background=_T.bg;b.style.color=_T.body;b.style.borderColor=_T.line;},1200);
     });
   };
   return(
     <div style={{padding:"16px 18px",borderRadius:13,border:"1px solid "+_T.line,marginBottom:10,background:_T.card,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=accent+"60";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=_T.line;}}>
-      {/* 1행: 종목명 + 코드/복사 아이콘 + 등락률 (같은 라인, 같은 weight) */}
+      {/* 1행: 종목명 (큼) + 코드 + 복사 버튼 + 등락률 (작게) */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:12}}>
         <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <span style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
-          <span style={{fontSize:11,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
-          <button onClick={_copy} title="코드 복사" style={{fontSize:13,padding:"3px 7px",borderRadius:5,border:"none",background:"transparent",color:_T.sub,cursor:"pointer",lineHeight:1}}>📋</button>
+          <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
+          <span style={{fontSize:12,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
+          <button onClick={_copy} style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,cursor:"pointer",letterSpacing:"-0.2px",transition:"all .15s"}}>복사</button>
         </div>
-        <div style={{fontSize:18,fontWeight:800,color:_T.up,letterSpacing:"-0.4px",flexShrink:0}}>+{(+s.change).toFixed(2)}%</div>
+        <div style={{fontSize:13,fontWeight:700,color:_T.up,letterSpacing:"-0.2px",flexShrink:0}}>+{(+s.change).toFixed(2)}%</div>
       </div>
-      {/* 2행: 정보 그룹 — 좌(수급/거래대금/주가) + 우(점수/신고가) */}
-      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",padding:"10px 12px",background:_T.bg,borderRadius:9,border:"1px solid "+_T.line}}>
-        {/* 수급 칩 */}
-        <span style={{fontSize:10,fontWeight:700,color:"#fff",background:_supColor(s.supplyTag),padding:"3px 9px",borderRadius:5,letterSpacing:"-0.2px"}}>{s.supplyTag}</span>
-        {/* 거래대금 */}
-        <span style={{fontSize:12,color:_T.body,fontWeight:700}}>{s.amount}억</span>
+      {/* 2행: 정보 그룹 — 폰트 키워서 가독성 확보 */}
+      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"12px 14px",background:_T.bg,borderRadius:10,border:"1px solid "+_T.line}}>
+        {/* 수급 — 큰 칩 */}
+        <span style={{fontSize:12,fontWeight:700,color:"#fff",background:_supColor(s.supplyTag),padding:"4px 11px",borderRadius:6,letterSpacing:"-0.2px"}}>{s.supplyTag}</span>
+        {/* 거래대금 — 강조 */}
+        <span style={{fontSize:14,color:_T.text,fontWeight:800,letterSpacing:"-0.3px"}}>{s.amount}억</span>
+        <span style={{color:_T.mute,fontSize:11}}>·</span>
         {/* 점수 */}
-        <span style={{fontSize:11,fontWeight:700,color:_T.body,background:_T.card,padding:"2px 8px",borderRadius:4,border:"1px solid "+_T.line}}>점수 {s.score}</span>
+        <span style={{fontSize:12,fontWeight:700,color:_T.body}}>점수 <b style={{color:_T.text}}>{s.score}</b></span>
         {/* 신고가 */}
-        {s.h120===1?(<span style={{fontSize:10,fontWeight:700,color:_T.green,background:"rgba(16,185,129,0.12)",border:"1px solid rgba(16,185,129,0.35)",padding:"2px 8px",borderRadius:4,letterSpacing:"-0.2px"}}>120일↑</span>):s.h60===1&&(<span style={{fontSize:10,fontWeight:700,color:_T.green,background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.25)",padding:"2px 8px",borderRadius:4,letterSpacing:"-0.2px"}}>60일↑</span>)}
-        {/* 프로그램 매매 */}
-        {prog!==0&&(<span style={{fontSize:10,fontWeight:700,color:progPos?_T.green:_T.down,background:progPos?"rgba(16,185,129,0.12)":"rgba(88,166,255,0.12)",border:"1px solid "+(progPos?"rgba(16,185,129,0.35)":"rgba(88,166,255,0.35)"),padding:"2px 8px",borderRadius:4}}>프로그램 {_fmtKQty(prog)}</span>)}
-        {/* 주가 — 우측 정렬 */}
-        {s.price>0&&<span style={{marginLeft:"auto",fontSize:11,fontWeight:600,color:_T.sub}}>{(+s.price).toLocaleString()}원 · {s.market}</span>}
+        {s.h120===1?(<span style={{fontSize:11,fontWeight:700,color:_T.green,background:"rgba(16,185,129,0.12)",border:"1px solid rgba(16,185,129,0.35)",padding:"3px 9px",borderRadius:5,letterSpacing:"-0.2px"}}>120일↑</span>):s.h60===1&&(<span style={{fontSize:11,fontWeight:700,color:_T.green,background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.25)",padding:"3px 9px",borderRadius:5,letterSpacing:"-0.2px"}}>60일↑</span>)}
+        {/* 프로그램 */}
+        {prog!==0&&(<span style={{fontSize:11,fontWeight:700,color:progPos?_T.green:_T.down,background:progPos?"rgba(16,185,129,0.12)":"rgba(88,166,255,0.12)",border:"1px solid "+(progPos?"rgba(16,185,129,0.35)":"rgba(88,166,255,0.35)"),padding:"3px 9px",borderRadius:5}}>프로그램 {_fmtKQty(prog)}</span>)}
+        {/* 우측: 주가 + 시장 */}
+        {s.price>0&&<span style={{marginLeft:"auto",fontSize:12,fontWeight:700,color:_T.body}}>{(+s.price).toLocaleString()}원 <span style={{color:_T.hint,fontWeight:500,marginLeft:4}}>{s.market}</span></span>}
       </div>
     </div>
   );
@@ -1979,8 +1999,8 @@ export default function App(){
         {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {(page==="filterdb"||page==="neobaedb")&&<NeoBaeFilterDB theme={theme} onRowClick={showFromD}/>}
-        {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
-        {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
+        {page==="ai"&&<div style={{background:_isDark?"#0d1117":"transparent",borderRadius:14,padding:_isDark?"4px":0,marginTop:_isDark?8:0}}><AIAnalysis onSave={saveHistory}/></div>}
+        {page==="history"&&<div style={{background:_isDark?"#0d1117":"transparent"}}><History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/></div>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
