@@ -525,7 +525,7 @@ return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',font
 }
 
 
-function TodaySignals({onSignalsLoaded,onSignalClick}){
+function TodaySignals({onSignalsLoaded,onSignalClick,filterCategory}){
 const [data,setData]=useState(null);
 const [loading,setLoading]=useState(false);
 const [err,setErr]=useState(null);
@@ -605,17 +605,17 @@ return(<div style={{padding:"12px"}}>
 {saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
 {/* 90%종배 */}
-<div style={{marginBottom:18}}>
+{(!filterCategory||filterCategory==="90")&&(<div style={{marginBottom:18}}>
 <SectionHeader label="네오 90%종배" count={data.summary.c90} accent={_T.up} emoji="🌟" desc="100만원/종목"/>
 {data.summary.c90===0?<Empty msg="오늘 90%종배 신호 없음 (침=S 또는 하=A+ 미충족)"/>:data.c90.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🌟"/>)}
-</div>
+</div>)}
 {/* 일반종배 */}
-<div style={{marginBottom:18}}>
+{(!filterCategory||filterCategory==="일반")&&(<div style={{marginBottom:18}}>
 <SectionHeader label="네오 일반종배" count={data.summary.cgen} accent={_T.blue} emoji="⚡" desc="20만원/종목"/>
-{data.summary.cgen===0?<Empty msg="오늘 일반종배 신호 없음 (등락 15-29% & 거래대금≥50억 & 수급=기만 미충족)"/>:data.cgen.map((s,i)=><Card key={s.code+i} s={s} accent={_T.blue} emoji="⚡"/>)}
-</div>
-{/* 기타 — 필터 미통과 (접기) */}
-{data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
+{data.summary.cgen===0?<Empty msg="오늘 일반종배 신호 없음 (등락 15-29% & 거래대금≥50억 & 수급=기관 미충족)"/>:data.cgen.map((s,i)=><Card key={s.code+i} s={s} accent={_T.blue} emoji="⚡"/>)}
+</div>)}
+{/* 기타 — 필터 미통과 (접기) — 전체 모드(filterCategory 없음)에서만 표시 */}
+{!filterCategory&&data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
 </div>);
 }
 
@@ -1559,7 +1559,7 @@ export default function App(){
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0}}>NEO-SCORE</h1><p style={{fontSize:12,color:"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
-        {(page==="db"||page==="ccdb"||page==="jddb"||page==="hsdb"||page==="filterdb")&&<div style={{padding:"14px 12px 6px"}}><div style={{display:"flex",background:"#f2f4f6",borderRadius:12,padding:4,gap:0}}>{[{id:"db",l:"네오"},{id:"ccdb",l:"침착해"},{id:"jddb",l:"주도주"},{id:"hsdb",l:"하승훈"},{id:"filterdb",l:"맞춤"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 1 0",padding:"10px 8px",border:"none",background:page===o.id?"#191f28":"transparent",color:page===o.id?"#fff":"#4e5968",fontSize:13,fontWeight:page===o.id?700:500,cursor:"pointer",borderRadius:10,letterSpacing:"-0.3px",transition:"all .15s"}}>{o.l}</button>))}</div></div>}{page==="db"&&<SignalDB/>}
+        {(page==="filterdb"||page==="today_general"||page==="today_90")&&<div style={{padding:"14px 12px 6px"}}><div style={{display:"flex",background:"#f2f4f6",borderRadius:12,padding:4,gap:0}}>{[{id:"filterdb",l:"맞춤"},{id:"today_general",l:"네오 일반종배"},{id:"today_90",l:"네오 90%종배"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 1 0",padding:"10px 8px",border:"none",background:page===o.id?"#191f28":"transparent",color:page===o.id?"#fff":"#4e5968",fontSize:13,fontWeight:page===o.id?700:500,cursor:"pointer",borderRadius:10,letterSpacing:"-0.3px",transition:"all .15s"}}>{o.l}</button>))}</div></div>}{page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
         {page==="jdtoday"&&<JudojuToday apiUrl={API_URL}/>}
         {page==="hstoday"&&<HaseunghoonToday apiUrl={API_URL}/>}
@@ -1567,6 +1567,8 @@ export default function App(){
         {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {page==="filterdb"&&<MultiFilterDB onRowClick={showFromD}/>}
+        {page==="today_general"&&<TodaySignals filterCategory="일반" onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
+        {page==="today_90"&&<TodaySignals filterCategory="90" onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
@@ -1574,13 +1576,14 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e5e8eb",display:"flex",justifyContent:"center",zIndex:100,boxShadow:"0 -2px 8px rgba(0,0,0,0.02)"}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"db",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>(
-            <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
-              <span style={{fontSize:20,opacity:page===t.id?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
-              <span style={{fontSize:11,fontWeight:page===t.id?700:500,color:page===t.id?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
+          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"filterdb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
+            const _act=t.id==="filterdb"?(page==="filterdb"||page==="today_general"||page==="today_90"):page===t.id;
+            return(<button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
+              <span style={{fontSize:20,opacity:_act?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
+              <span style={{fontSize:11,fontWeight:_act?700:500,color:_act?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
               {t.badge>0&&<span style={{position:"absolute",top:6,right:"calc(50% - 18px)",background:"#f04452",color:"#fff",fontSize:9,fontWeight:700,padding:"0px 4px",borderRadius:8,minWidth:14,textAlign:"center"}}>{t.badge}</span>}
-            </button>
-          ))}
+            </button>);
+          })}
         </div>
       </div>
     </div>
