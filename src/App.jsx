@@ -541,12 +541,16 @@ const _classify=(s)=>{
   const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
-  // 가격 0/누락 시 통과 처리 (API 미제공 케이스)
-  const priceOK=px<=0||px>=1000;
-  const baseOK=ch>=15&&ch<29&&amt>=50&&priceOK&&_isInstOnly(inv);
+  // 사유 수집 (미통과시 사용)
+  const reasons=[];
+  if(!(ch>=15&&ch<29))reasons.push(ch<15?`등락 ${ch}% (15% 미달)`:`등락 ${ch}% (29% 초과)`);
+  if(amt<50)reasons.push(`거래대금 ${amt}억 (50억 미달)`);
+  if(px>0&&px<1000)reasons.push(`주가 ${px.toLocaleString()}원 (1,000원 미달)`);
+  if(!_isInstOnly(inv))reasons.push(`수급 ${inv||"없음"} (기관 외)`);
+  const baseOK=reasons.length===0;
   const is90=baseOK&&((cc.grade==="S"||cc.grade==="S+")||(hs.grade==="A+"||hs.grade==="S"||hs.grade==="S+"));
   let cat="기타"; if(is90)cat="90"; else if(baseOK)cat="일반";
-  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat};
+  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,failReason:reasons[0]||""};
 };
 const load=useCallback(async()=>{
   setLoading(true);setErr(null);
@@ -611,7 +615,7 @@ return(<div style={{padding:"12px"}}>
 {data.summary.cgen===0?<Empty msg="오늘 일반종배 신호 없음 (등락 15-29% & 거래대금≥50억 & 수급=기만 미충족)"/>:data.cgen.map((s,i)=><Card key={s.code+i} s={s} accent={_T.blue} emoji="⚡"/>)}
 </div>
 {/* 기타 — 필터 미통과 (접기) */}
-{data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 등락/거래대금/수급/주가 조건 미충족</summary><div style={{padding:"8px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"8px 12px",fontSize:11,color:_T.mute,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><span style={{flex:1,fontWeight:600,color:_T.sub}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4}}>{s.code}</span><span style={{color:_T.up,fontWeight:700}}>+{s.change}%</span><span style={{minWidth:60}}>침{s.ccG}/하{s.hsG}</span><span style={{minWidth:36}}>{s.investor||"—"}</span><span style={{minWidth:48,textAlign:"right"}}>{s.amount}억</span></div>))}</div></details>)}
+{data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
 </div>);
 }
 
