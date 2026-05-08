@@ -668,8 +668,12 @@ const [loading,setLoading]=useState(false);
 const [err,setErr]=useState(null);
 const [saving,setSaving]=useState(false);
 const [saveMsg,setSaveMsg]=useState(null);
-// 통합 종배 룰
-// 등락 15-29% & 거래대금≥50억 & 주가≥1000원 & 수급=(기관 | 기+외 | 외인)
+// 좁히기 모드 (백테스트 기반)
+// 전체  : 등락 15-29 & 거래대금≥50억 & 수급OK              (일평균 5.7 / 익절 30.9% / 평균 -1.0%)
+// 보통  : + 점수≥3 + 거래대금 100~1000억                  (일평균 2.0 / 익절 34.5% / 평균 +1.1%)
+// 엄격  : + 점수≥4 + 거래대금 100~1000억                  (일평균 1.2 / 익절 35.9% / 평균 +2.3%)
+const [filterMode,setFilterMode]=useState(()=>{try{return localStorage.getItem("today_filter_mode_v1")||"normal";}catch(e){return "normal";}});
+useEffect(()=>{try{localStorage.setItem("today_filter_mode_v1",filterMode);}catch(e){}},[filterMode]);
 const _normMkt=(m)=>(m==="KOSDAQ"||m==="KQ"||m==="코스닥")?"KO":(m==="KOSPI"||m==="KS"||m==="코스피")?"KS":m;
 const _qualifySupply=(inv)=>inv==="기관"||inv==="기만"||inv==="기+외"||inv==="외+기"||inv==="외만"||inv==="외인";
 const _supplyLabel=(inv)=>{
@@ -681,6 +685,7 @@ const _supplyLabel=(inv)=>{
 const _classify=(s)=>{
   const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
   const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
+  const sc=+s.score||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
   // 사유 수집 (미통과시 사용)
@@ -691,7 +696,13 @@ const _classify=(s)=>{
   if(!_qualifySupply(inv))reasons.push(`수급 ${inv||"없음"} (기관/외+기/외인 외)`);
   const baseOK=reasons.length===0;
   const cat=baseOK?"종배":"기타";
-  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,supplyTag:_supplyLabel(inv),failReason:reasons[0]||""};
+  // 좁히기 등급: 강(점수≥4 + 100~1000억) / 중(점수≥3 + 100~1000억) / 약(통과만)
+  let strength="약";
+  if(baseOK){
+    if(sc>=4&&amt>=100&&amt<1000)strength="강";
+    else if(sc>=3&&amt>=100&&amt<1000)strength="중";
+  }
+  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",strength};
 };
 const load=useCallback(async()=>{
   setLoading(true);setErr(null);
@@ -746,11 +757,29 @@ return(<div style={{padding:"12px"}}>
 </div></div>
 {saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
-{/* 통합 네오 종배 */}
-<div style={{marginBottom:18}}>
-<SectionHeader label="네오 종배" count={(data.summary&&data.summary.cmain)||0} accent={_T.up} emoji="🚀" desc="등락 15-29% · 거래대금≥50억 · 수급=기관/외+기/외인"/>
-{!(data.cmain&&data.cmain.length)?<Empty msg="오늘 조건 충족 종목 없음"/>:data.cmain.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
-</div>
+{/* 좁히기 모드 토글 */}
+{(()=>{
+  const cmainAll=data.cmain||[];
+  const filtered=filterMode==="strict"?cmainAll.filter(x=>x.strength==="강"):filterMode==="normal"?cmainAll.filter(x=>x.strength==="강"||x.strength==="중"):cmainAll;
+  const _modes=[
+    {id:"all",l:"전체",sub:"통과 전체",stat:"≈5.7/일"},
+    {id:"normal",l:"보통",sub:"점수3+ 100~1000억",stat:"≈2/일 익절 34.5%"},
+    {id:"strict",l:"엄격",sub:"점수4+ 100~1000억",stat:"≈1/일 익절 35.9%"}
+  ];
+  return(<>
+  <div style={{background:_T.card,border:"1px solid "+_T.line,borderRadius:12,padding:"10px 12px",marginBottom:10}}>
+    <div style={{fontSize:11,fontWeight:700,color:_T.hint,marginBottom:7,letterSpacing:"-0.2px"}}>좁히기 모드 · 백테스트 6년 검증</div>
+    <div style={{display:"flex",gap:5}}>
+    {_modes.map(m=>{const a=filterMode===m.id;return(<button key={m.id} onClick={()=>setFilterMode(m.id)} style={{flex:"1 1 0",padding:"8px 6px",borderRadius:9,border:"1px solid "+(a?_T.text:_T.line),background:a?_T.text:_T.card,color:a?"#fff":_T.body,cursor:"pointer",letterSpacing:"-0.2px",transition:"all .12s"}}><div style={{fontSize:13,fontWeight:800}}>{m.l}</div><div style={{fontSize:9,fontWeight:600,marginTop:2,opacity:0.75}}>{m.sub}</div><div style={{fontSize:9,fontWeight:700,color:a?"#ff7a85":_T.up,marginTop:1}}>{m.stat}</div></button>);})}
+    </div>
+  </div>
+  {/* 통합 네오 종배 */}
+  <div style={{marginBottom:18}}>
+  <SectionHeader label="네오 종배" count={filtered.length} accent={_T.up} emoji="🚀" desc={filterMode==="strict"?"엄격 · 점수4+ 거래대금 100~1000억":filterMode==="normal"?"보통 · 점수3+ 거래대금 100~1000억":"전체 · 등락 15-29 / 거래대금≥50억 / 수급OK"}/>
+  {!filtered.length?<Empty msg={cmainAll.length?`전체 ${cmainAll.length}건 중 ${filterMode==="strict"?"엄격":"보통"} 조건 충족 종목 없음 — 전체 모드로 전환하세요`:"오늘 조건 충족 종목 없음"}/>:filtered.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
+  </div>
+  </>);
+})()}
 {/* 기타 — 필터 미통과 (접기) */}
 {data.cetc&&data.cetc.length>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.cetc.length}건) — 사유 펼쳐보기</summary><div style={{padding:"4px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"10px 12px",fontSize:11,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:3}}><span style={{fontWeight:700,color:_T.sub,fontSize:12}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4,color:_T.hint}}>{s.code}</span><span style={{color:_T.up,fontWeight:700,fontSize:12}}>+{s.change}%</span><span style={{color:_T.mute,fontSize:10}}>침{s.ccG}/하{s.hsG} · {s.investor||"—"} · {s.amount}억</span></div><div style={{fontSize:10,color:_T.up,fontWeight:600,letterSpacing:"-0.2px",opacity:0.85}}>⚠️ {s.failReason||"기타"}</div></div></div>))}</div></details>)}
 </div>);
