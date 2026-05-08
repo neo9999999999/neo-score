@@ -532,14 +532,18 @@ const [err,setErr]=useState(null);
 const [saving,setSaving]=useState(false);
 const [saveMsg,setSaveMsg]=useState(null);
 // 전략 룰 분류
-// 일반종배: 등락 15-29% & 거래대금≥50억 & 주가≥1000원 & 수급=기만
+// 일반종배: 등락 15-29% & 거래대금≥50억 & 주가≥1000원 & 수급=기관(only 기관 매수)
 // 90%종배:  위 + (침착해=S/S+ OR 하승훈=A+/S/S+)
+const _normMkt=(m)=>(m==="KOSDAQ"||m==="KQ"||m==="코스닥")?"KO":(m==="KOSPI"||m==="KS"||m==="코스피")?"KS":m;
+const _isInstOnly=(inv)=>inv==="기만"||inv==="기관";  // 기관만 순매수 (외+기는 제외)
 const _classify=(s)=>{
   const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
-  const inv=s.investor||"", mkt=s.market||"", wk=+s.wick||0;
+  const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
-  const baseOK=ch>=15&&ch<29&&amt>=50&&px>=1000&&inv==="기만";
+  // 가격 0/누락 시 통과 처리 (API 미제공 케이스)
+  const priceOK=px<=0||px>=1000;
+  const baseOK=ch>=15&&ch<29&&amt>=50&&priceOK&&_isInstOnly(inv);
   const is90=baseOK&&((cc.grade==="S"||cc.grade==="S+")||(hs.grade==="A+"||hs.grade==="S"||hs.grade==="S+"));
   let cat="기타"; if(is90)cat="90"; else if(baseOK)cat="일반";
   return {...s,ccG:cc.grade,hsG:hs.grade,category:cat};
