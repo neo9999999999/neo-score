@@ -758,9 +758,20 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {filtered.slice(0,300).map((r,i)=>{
 const won=Math.round(invAmt*((r.t||0)/100));
 const sLbl=_supLabel(r.iv);
-const tp1=r.tp1||0, tp2=r.tp2||0;
-const tp1Reached=!!(r.tp1d&&r.tp1dy);
-const tp2Reached=!!(r.tp2d&&r.tp2dy)||r.r==='BOTH'||r.r==='TP2';
+// 모드별 표시 익절가 — 7%/25% 모드는 모드 룰 적용, 맞춤은 historical 등급별 tp1/tp2
+let tp1=r.tp1||0, tp2=r.tp2||0;
+if(mode==='neo7'){tp1=7;tp2=7;}
+else if(mode==='neo25'){tp1=25;tp2=50;}
+// 도달일 재계산 (OHLC에서 모드 익절가 기준)
+const _calcReach=(target)=>{if(!r.ohlc||!r.ohlc.length)return null;for(let i=0;i<Math.min(r.ohlc.length,25);i++){if((+r.ohlc[i].h||0)>=target)return i+1;}return null;};
+let tp1Reached, tp2Reached, tp1dy, tp2dy, tp1d, tp2d;
+if(mode==='neo7'||mode==='neo25'){
+  const d1=_calcReach(tp1);tp1Reached=d1!=null;tp1dy=d1||0;tp1d=d1!=null&&r.ohlc?r.ohlc[d1-1].d:'';
+  const d2=mode==='neo25'?_calcReach(tp2):null;tp2Reached=d2!=null;tp2dy=d2||0;tp2d=d2!=null&&r.ohlc?r.ohlc[d2-1].d:'';
+}else{
+  tp1Reached=!!(r.tp1d&&r.tp1dy);tp2Reached=!!(r.tp2d&&r.tp2dy)||r.r==='BOTH'||r.r==='TP2';
+  tp1dy=r.tp1dy||0;tp2dy=r.tp2dy||0;tp1d=r.tp1d||'';tp2d=r.tp2d||'';
+}
 const _profit=(r.t||0);
 // 모드별 익절 표시: 7% 모드는 단일, 25%/custom은 1차/2차 분리
 const _showSingle=mode==='neo7';
@@ -793,7 +804,7 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
     <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>익절 도달 (+{tp1}%)</div>
-      {tp1Reached?<div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{r.tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{r.tp1d}</span></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>미도달</div>}
+      {tp1Reached?<div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>미도달</div>}
     </div>
     <div style={{textAlign:'center'}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
@@ -808,11 +819,11 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
     <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>1차 (+{tp1}%)</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>D+{r.tp1dy}일</div><div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{r.tp1d}</div></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
+      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>D+{tp1dy}일</div><div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{tp1d}</div></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
     </div>
     <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>2차 (+{tp2}%)</div>
-      {tp2Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>{r.tp2dy?'D+'+r.tp2dy+'일':'도달'}</div>{r.tp2d&&<div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{r.tp2d}</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
+      {tp2Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>{tp2dy?'D+'+tp2dy+'일':'도달'}</div>{tp2d&&<div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:3}}>{tp2d}</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
     </div>
     <div style={{textAlign:'center'}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
