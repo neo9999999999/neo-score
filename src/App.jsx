@@ -1992,15 +1992,14 @@ export default function App(){
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0,color:_isDark?"#e6edf3":"#1e293b"}}>NEO-SCORE</h1><p style={{fontSize:12,color:_isDark?"#6e7681":"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
-        {(page==="filterdb"||page==="neobaedb")&&<div style={{padding:"14px 12px 6px"}}><div style={{display:"flex",background:"#f2f4f6",borderRadius:12,padding:4,gap:0}}>{[{id:"filterdb",l:"맞춤"},{id:"neobaedb",l:"네오 종배"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 1 0",padding:"10px 8px",border:"none",background:page===o.id?"#191f28":"transparent",color:page===o.id?"#fff":"#4e5968",fontSize:13,fontWeight:page===o.id?700:500,cursor:"pointer",borderRadius:10,letterSpacing:"-0.3px",transition:"all .15s"}}>{o.l}</button>))}</div></div>}{page==="db"&&<SignalDB/>}
+        {page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
         {page==="jdtoday"&&<JudojuToday apiUrl={API_URL}/>}
         {page==="hstoday"&&<HaseunghoonToday apiUrl={API_URL}/>}
         {page==="ccdb"&&<ChimchakhaeDB records={D} onRowClick={showFromD}/>}
         {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
-        {page==="filterdb"&&<MultiFilterDB onRowClick={showFromD}/>}
-        {page==="neobaedb"&&<NeoBaeFilterDB onRowClick={showFromD}/>}
+        {(page==="filterdb"||page==="neobaedb")&&<NeoBaeFilterDB onRowClick={showFromD}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
@@ -2008,8 +2007,8 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:_isDark?"#161b22":"#fff",borderTop:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),display:"flex",justifyContent:"center",zIndex:100,boxShadow:_isDark?"0 -2px 12px rgba(0,0,0,0.4)":"0 -2px 8px rgba(0,0,0,0.02)"}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"filterdb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
-            const _act=t.id==="filterdb"?(page==="filterdb"||page==="neobaedb"):page===t.id;
+          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"neobaedb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
+            const _act=t.id==="neobaedb"?(page==="filterdb"||page==="neobaedb"):page===t.id;
             const _activeColor=_isDark?"#e6edf3":"#191f28";const _inactiveColor=_isDark?"#6e7681":"#8b95a1";
             return(<button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
               <span style={{fontSize:20,opacity:_act?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
