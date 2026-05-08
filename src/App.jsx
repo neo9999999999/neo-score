@@ -602,13 +602,12 @@ useEffect(()=>{
 // 라이브 신호 분류 — 주말 제외 (월~금만)
 const _liveDate=(d)=>{const s=String(d||"");return s.length===8?s.slice(2,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8):s;};
 const _isWeekday=(dStr)=>{if(!dStr||dStr.length!==8)return false;const dt=new Date(+dStr.slice(0,4),+dStr.slice(4,6)-1,+dStr.slice(6,8));const day=dt.getDay();return day>=1&&day<=5;};
+// 라이브 신호 분류 — 완화 조건 (등락 15-29 + 100억+ + 평일)
+// 점수/120일/수급은 historical 백테스트와 달리 라이브에선 풀어 표시
 const liveClassify=(s)=>{
   if(!_isWeekday(s.signal_date))return null;
   const ch=+s.rate||0;if(!(ch>=15&&ch<29))return null;
   const a=+s.vol||0;if(a<100)return null;
-  const inv=s.supply||"";if(!_qualifyInst(inv))return null;
-  if((+s.score||0)<3)return null;
-  if(s.h120!==1)return null;
   return a>=5000?"neo25":"neo7";
 };
 // 라이브 신호 → D 형식으로 변환 (메인 리스트와 통합)
@@ -636,9 +635,15 @@ const merged=[...D,...liveAsD];
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(!(r.ch>=15&&r.ch<29))return false;
-if(r.g==="X")return false;
 const amt=_amtNum(r.mc);
-// 모드별 자동 필터
+// 라이브 신호 — mode 필터 우회 (단 거래대금 영역만 매칭)
+if(r._isLive){
+  if(mode==='neo7')return amt>=100&&amt<5000;
+  if(mode==='neo25')return amt>=5000;
+  return amt>=100; // custom 모드 — 모든 라이브 신호
+}
+if(r.g==="X")return false;
+// historical — 모드별 자동 필터
 if(mode==='neo7'){
   if(amt<100||amt>=5000)return false;
   if(!_qualifyInst(r.iv))return false;
