@@ -405,7 +405,8 @@ const _ng=['S','A','B','X'];
 const _presets=[
 {id:'alpha6',label:'6년 알파',sub:'침S+ × 주S',stat:'+3.16%',n:[],c:['S+'],j:['S'],h:[],yr:'all'},
 {id:'profit6',label:'6년 수익왕',sub:'네오:B × 주A',stat:'+5.63%',n:['B'],c:[],j:['A'],h:[],yr:'all'},
-{id:'jb_final',label:'종배 확정안',sub:'기관/점수3+/120일신고가',stat:'+1.42%',special:'jb_final',n:[],c:[],j:[],h:[],yr:'all'},
+{id:'neo7',label:'네오 7%',sub:'100~5000억 / 기관·기+외 / 점수3+ / 120일신고',stat:'+0.39%',special:'neo7',n:[],c:[],j:[],h:[],yr:'all'},
+{id:'neo25',label:'네오 25%',sub:'5000억+ / 기관·기+외 / 점수3+ / 120일신고',stat:'+4.75%',special:'neo25',n:[],c:[],j:[],h:[],yr:'all'},
 {id:'y21',label:'21형',sub:'Neo:S 침S 주A+ 하A',stat:'+9.89%',n:['S'],c:['S'],j:['A+'],h:['A'],yr:'21'},
 {id:'y22',label:'22형',sub:'Neo:S 침A+ 주A',stat:'+0.04%',n:['S'],c:['A+'],j:['A'],h:[],yr:'22'},
 {id:'y23',label:'23형',sub:'Neo:B 침B 주B+',stat:'+5.98%',n:['B'],c:['B'],j:['B+'],h:[],yr:'23'},
@@ -415,16 +416,11 @@ const _presets=[
 ];
 const _jbAmt=(s)=>{const m=String(s||'').match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes('兆')||s.includes('조')?n*10000:n;};
 const _jbInst=(iv)=>iv==='기관'||iv==='기만'||iv==='기+외'||iv==='외+기';
-// 종배 확정안: 등락15-29% + 거래대금100억+ + 수급기관 + 점수3+ + 120일 신고가
-const _jbFinal=(r)=>{
-  const ch=+r.ch||0;
-  if(!(ch>=15&&ch<29))return false;
-  if(_jbAmt(r.mc)<100)return false;
-  if(!_jbInst(r.iv))return false;
-  if((+r.sc||0)<3)return false;
-  if(r.h120!==1)return false;
-  return true;
-};
+const _neoBase=(r)=>{const ch=+r.ch||0;if(!(ch>=15&&ch<29))return false;if(!_jbInst(r.iv))return false;if((+r.sc||0)<3)return false;if(r.h120!==1)return false;return true;};
+// 네오 7%: 100~5000억 + 기관/기+외 + 점수3+ + 120일 신고가 / 7% 즉익 + 25일 만기
+const _neo7=(r)=>{if(!_neoBase(r))return false;const a=_jbAmt(r.mc);return a>=100&&a<5000;};
+// 네오 25%: 5000억+ + 기관/기+외 + 점수3+ + 120일 신고가 / 25% 즉익 + 25일 만기
+const _neo25=(r)=>{if(!_neoBase(r))return false;return _jbAmt(r.mc)>=5000;};
 const _yrAutoMap={'all':{n:[],c:['S+'],j:['S'],h:[]},'21':{n:['S'],c:['S'],j:['A+'],h:['A']},'22':{n:['S'],c:['A+'],j:['A'],h:[]},'23':{n:['B'],c:['B'],j:['B+'],h:[]},'24':{n:[],c:['S+'],j:['S'],h:[]},'25':{n:['S'],c:['S+'],j:['A+'],h:[]},'26':{n:['A'],c:['B+'],j:['B'],h:[]}};
 const [selN,setSelN]=useState([]);
 const [selCC,setSelCC]=useState([]);
@@ -439,8 +435,9 @@ useEffect(()=>{try{localStorage.setItem('mfdb_invAmt_v1',String(invAmt));}catch(
 const filtered=useMemo(()=>{
 let arr=D.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
-// 종배 확정안 — 데이터 기반 조건만 적용 (등급 chip 무시)
-if(specialMode==='jb_final')return _jbFinal(r);
+// 네오 7%/25% — 데이터 기반 조건만 적용 (등급 chip 무시)
+if(specialMode==='neo7')return _neo7(r);
+if(specialMode==='neo25')return _neo25(r);
 if(selN.length&&!selN.includes(r.g))return false;
 if(selCC.length&&!selCC.includes(r.ccG))return false;
 if(selJD.length&&!selJD.includes(r.jdG))return false;
@@ -488,13 +485,13 @@ return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',font
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,marginBottom:5}}>
 {_presets.slice(0,2).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'8px 11px',borderRadius:9,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6}}><div style={{fontSize:13,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:12,fontWeight:700,color:a?'#ff7a85':_T.up}}>{p.stat}</div></div><div style={{fontSize:10,color:a?'rgba(255,255,255,0.6)':_T.hint,marginTop:1,fontWeight:500}}>{p.sub}</div></button>);})}
 </div>
-{/* 2행: 종배 확정안 (단일) */}
-<div style={{marginBottom:5}}>
-{_presets.slice(2,3).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{width:'100%',padding:'10px 12px',borderRadius:9,border:'1px solid '+(a?'#7c3aed':_T.line),background:a?'#7c3aed':_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6}}><div style={{fontSize:13,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>🎯 {p.label}</div><div style={{fontSize:12,fontWeight:700,color:a?'#fff':_T.up}}>{p.stat}</div></div><div style={{fontSize:10,color:a?'rgba(255,255,255,0.75)':_T.hint,marginTop:2,fontWeight:500}}>{p.sub} · 5년 백테스트 모든 연도 양수</div></button>);})}
+{/* 2행: 네오 7% / 네오 25% — 두 모드 */}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:5,marginBottom:5}}>
+{_presets.slice(2,4).map(p=>{const a=activePreset===p.id;const bg=p.id==='neo7'?'#1f6dee':'#c81e1e';const emo=p.id==='neo7'?'🚀':'🐉';return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'10px 12px',borderRadius:9,border:'1px solid '+(a?bg:_T.line),background:a?bg:_T.card,cursor:'pointer',textAlign:'left',transition:'all .12s'}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:6}}><div style={{fontSize:13,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{emo} {p.label}</div><div style={{fontSize:12,fontWeight:700,color:a?'#fff':_T.up}}>{p.stat}</div></div><div style={{fontSize:10,color:a?'rgba(255,255,255,0.75)':_T.hint,marginTop:2,fontWeight:500,letterSpacing:'-0.2px'}}>{p.sub}</div></button>);})}
 </div>
 {/* 3행: 연도형 21~26 + 리셋 */}
 <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr) auto',gap:5}}>
-{_presets.slice(3).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'6px 2px',borderRadius:8,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:a?'#ff7a85':_T.up,fontWeight:600,marginTop:1}}>{p.stat}</div></button>);})}
+{_presets.slice(4).map(p=>{const a=activePreset===p.id;return(<button key={p.id} onClick={()=>applyP(p)} style={{padding:'6px 2px',borderRadius:8,border:'1px solid '+(a?_T.text:_T.line),background:a?_T.text:_T.card,cursor:'pointer',transition:'all .12s'}}><div style={{fontSize:12,fontWeight:800,color:a?'#fff':_T.text,letterSpacing:'-0.3px'}}>{p.label}</div><div style={{fontSize:10,color:a?'#ff7a85':_T.up,fontWeight:600,marginTop:1}}>{p.stat}</div></button>);})}
 <button onClick={resetAll} style={{padding:'6px 12px',borderRadius:8,border:'1px solid '+_T.line,background:_T.linelt,color:_T.sub,fontSize:11,fontWeight:600,cursor:'pointer',whiteSpace:'nowrap'}}>↻</button>
 </div>
 </Card>
@@ -702,6 +699,7 @@ const _supplyLabel=(inv)=>{
   if(inv==="외만"||inv==="외인")return "외인";
   return inv||"없음";
 };
+const _qualifyInst=(inv)=>inv==="기관"||inv==="기만"||inv==="기+외"||inv==="외+기";
 const _classify=(s)=>{
   const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
   const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
@@ -709,17 +707,21 @@ const _classify=(s)=>{
   const h60=+s.h60||0, h120=+s.h120||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
-  // 진입 조건 미통과 사유
+  // 진입 조건 미통과 사유 (네오7%, 네오25% 공통 base)
   const reasons=[];
   if(!(ch>=15&&ch<29))reasons.push(ch<15?`등락 ${ch}% (15% 미달)`:`등락 ${ch}% (29% 초과)`);
   if(amt<100)reasons.push(`거래대금 ${amt}억 (100억 미달)`);
   if(px>0&&px<1000)reasons.push(`주가 ${px.toLocaleString()}원 (1,000원 미달)`);
-  if(!_qualifySupply(inv))reasons.push(`수급 ${inv||"없음"} (기관/외+기/외인 외)`);
+  if(!_qualifyInst(inv))reasons.push(`수급 ${inv||"없음"} (기관/기+외 외)`);
   if(sc<3)reasons.push(`점수 ${sc} (3점 미달)`);
   if(h120!==1)reasons.push(`120일 신고가 미달성`);
   const baseOK=reasons.length===0;
-  const cat=baseOK?"종배":"기타";
-  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",h60,h120};
+  // 모드 분류: 100~5000억=neo7, 5000억+=neo25
+  let category="기타";
+  if(baseOK){
+    category=amt>=5000?"neo25":(amt>=100&&amt<5000?"neo7":"기타");
+  }
+  return {...s,ccG:cc.grade,hsG:hs.grade,category,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",h60,h120};
 };
 const load=useCallback(async()=>{
   setLoading(true);setErr(null);
@@ -731,22 +733,23 @@ const load=useCallback(async()=>{
     const seen=new Set();
     const uniq=all.filter(x=>{if(seen.has(x.code))return false;seen.add(x.code);return true;});
     const proc=uniq.map(_classify).sort((a,b)=>(b.amount||0)-(a.amount||0));
-    const cmain=proc.filter(s=>s.category==="종배");
+    const neo7=proc.filter(s=>s.category==="neo7");
+    const neo25=proc.filter(s=>s.category==="neo25");
     const cetc=proc.filter(s=>s.category==="기타");
-    const newData={date:j.date,time:j.time,all:proc,cmain,cetc,summary:{total:proc.length,cmain:cmain.length,cetc:cetc.length}};
+    const newData={date:j.date,time:j.time,all:proc,neo7,neo25,cetc,summary:{total:proc.length,neo7:neo7.length,neo25:neo25.length,cetc:cetc.length}};
     setData(newData);
-    try{localStorage.setItem("today_signals_v3",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
+    try{localStorage.setItem("today_signals_v4",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
     if(onSignalsLoaded)onSignalsLoaded(proc);
   }catch(e){setErr(e.message);}
   setLoading(false);
 },[]);
 // 마운트 시 캐시만 로드 (자동 fetch 안 함 — 수동 조회만)
-useEffect(()=>{try{localStorage.removeItem("today_signals_v2");}catch(e){}try{const c=localStorage.getItem("today_signals_v3");if(c){const p=JSON.parse(c);if(p&&p.data&&p.data.cmain){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
+useEffect(()=>{try{localStorage.removeItem("today_signals_v2");localStorage.removeItem("today_signals_v3");}catch(e){}try{const c=localStorage.getItem("today_signals_v4");if(c){const p=JSON.parse(c);if(p&&p.data&&(p.data.neo7||p.data.neo25)){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
 const saveSignals=async()=>{
   if(!data||!data.all||!data.all.length)return;
   setSaving(true);setSaveMsg(null);
   try{
-    const targets=data.all.filter(s=>s.category==="종배");
+    const targets=data.all.filter(s=>s.category==="neo7"||s.category==="neo25");
     const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(targets.map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:"네오종배",supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});
     const j=await r.json();
     setSaveMsg(j.github_ok?("✅ "+j.added+"건 저장"):"⚠️ GITHUB_TOKEN 미설정");
@@ -767,26 +770,71 @@ if(!data)return(<div style={{padding:"12px"}}><div style={{padding:"50px 20px",t
 return(<div style={{padding:"12px"}}>
 {/* 상단 — 날짜 + 조회/저장 버튼 */}
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}>
-<div><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div><div style={{fontSize:11,color:_T.hint,marginTop:2}}>총 {(data.summary&&data.summary.total)||0}건 · 통과 {(data.summary&&data.summary.cmain)||0}건 · 미통과 {(data.summary&&data.summary.cetc)||0}건</div></div>
+<div><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div><div style={{fontSize:11,color:_T.hint,marginTop:2}}>총 {(data.summary&&data.summary.total)||0}건 · 7% {(data.summary&&data.summary.neo7)||0}건 · 25% {(data.summary&&data.summary.neo25)||0}건 · 미통과 {(data.summary&&data.summary.cetc)||0}건</div></div>
 <div style={{display:"flex",gap:6}}>
-<button onClick={saveSignals} disabled={saving||!(data.summary&&data.summary.cmain)} style={{padding:"7px 12px",borderRadius:8,border:"none",background:saving?_T.line:_T.text,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
+<button onClick={saveSignals} disabled={saving||!(data.summary&&(data.summary.neo7+data.summary.neo25))} style={{padding:"7px 12px",borderRadius:8,border:"none",background:saving?_T.line:_T.text,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
 <button onClick={load} style={{padding:"7px 12px",borderRadius:8,border:"1px solid "+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:"pointer",letterSpacing:"-0.2px"}}>🔄 새로조회</button>
 </div></div>
 {saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
-{/* 종배 단일 확정 모드 — 5년 백테스트 검증 */}
+{/* 네오 7% — 100~5000억 종목 */}
 {(()=>{
-  const list=data.cmain||[];
+  const list=data.neo7||[];
+  const COL="#1f6dee";
   return(<div style={{marginBottom:18}}>
-    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"10px 12px",background:"#191f28",borderRadius:10}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"10px 12px",background:COL,borderRadius:10}}>
       <span style={{fontSize:18}}>🚀</span>
-      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>네오 종배</span>
+      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>네오 7%</span>
       <span style={{fontSize:11,fontWeight:700,color:"#fff",background:"rgba(255,255,255,0.22)",padding:"2px 8px",borderRadius:10}}>{list.length}건</span>
-      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>익절 78.6% · 평균 +1.42%</div>
+      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>익절 76.7% · 평균 +0.99%</div>
     </div>
-    <div style={{fontSize:11,color:_T.hint,fontWeight:500,marginBottom:4,letterSpacing:"-0.2px"}}>등락 15-29% · 거래대금 100억+ · 수급 기관 · 점수3+ · 120일 신고가</div>
-    <div style={{fontSize:11,color:_T.hint,fontWeight:500,marginBottom:8,letterSpacing:"-0.2px"}}>청산: +7% 도달시 즉시 익절 / 25일 만기 청산 / 손절 없음</div>
-    {!list.length?<Empty msg="오늘 조건 충족 종목 없음"/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🚀"/>)}
+    <div style={{padding:"8px 10px",background:_T.bg,border:"1px solid "+_T.line,borderRadius:8,marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:700,color:_T.text,marginBottom:4,letterSpacing:"-0.2px"}}>📋 진입 조건 (모두 충족)</div>
+      <div style={{fontSize:10,color:_T.sub,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+        · 당일 등락률 +15% ~ +29%<br/>
+        · 거래대금 <b>100억 ~ 5,000억 미만</b><br/>
+        · 수급 기관 또는 기관+외인 동반매수<br/>
+        · 점수 3점 이상 (수급+거래대금+윗꼬리 종합)<br/>
+        · 120일 최고 종가 갱신
+      </div>
+      <div style={{fontSize:11,fontWeight:700,color:_T.text,marginTop:8,marginBottom:4,letterSpacing:"-0.2px"}}>💰 청산 룰</div>
+      <div style={{fontSize:10,color:_T.sub,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+        · <b>+7% 도달시 100% 즉시 익절</b><br/>
+        · 미도달시 25일 만기 강제 청산<br/>
+        · 손절가 없음 (만기까지 보유)
+      </div>
+    </div>
+    {!list.length?<Empty msg="오늘 7% 조건 충족 종목 없음"/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={COL} emoji="🚀"/>)}
+  </div>);
+})()}
+{/* 네오 25% — 5000억+ 대장주 */}
+{(()=>{
+  const list=data.neo25||[];
+  const COL="#c81e1e";
+  return(<div style={{marginBottom:18}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"10px 12px",background:COL,borderRadius:10}}>
+      <span style={{fontSize:18}}>🐉</span>
+      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>네오 25%</span>
+      <span style={{fontSize:11,fontWeight:700,color:"#fff",background:"rgba(255,255,255,0.22)",padding:"2px 8px",borderRadius:10}}>{list.length}건</span>
+      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>익절 51.3% · 평균 +4.75%</div>
+    </div>
+    <div style={{padding:"8px 10px",background:_T.bg,border:"1px solid "+_T.line,borderRadius:8,marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:700,color:_T.text,marginBottom:4,letterSpacing:"-0.2px"}}>📋 진입 조건 (모두 충족)</div>
+      <div style={{fontSize:10,color:_T.sub,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+        · 당일 등락률 +15% ~ +29%<br/>
+        · 거래대금 <b>5,000억 이상 (대장주)</b><br/>
+        · 수급 기관 또는 기관+외인 동반매수<br/>
+        · 점수 3점 이상<br/>
+        · 120일 최고 종가 갱신
+      </div>
+      <div style={{fontSize:11,fontWeight:700,color:_T.text,marginTop:8,marginBottom:4,letterSpacing:"-0.2px"}}>💰 청산 룰</div>
+      <div style={{fontSize:10,color:_T.sub,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+        · <b>+25% 도달시 100% 즉시 익절</b> (대장주는 큰 수익 추구)<br/>
+        · 미도달시 25일 만기 강제 청산<br/>
+        · 손절가 없음
+      </div>
+    </div>
+    {!list.length?<Empty msg="오늘 25% 조건 충족 종목 없음"/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={COL} emoji="🐉"/>)}
   </div>);
 })()}
 {/* 기타 — 필터 미통과 (접기) */}
