@@ -525,6 +525,120 @@ return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',font
 }
 
 
+function NeoBaeFilterDB({onRowClick}={}){
+const _T={text:'#191f28',body:'#333d4b',sub:'#4e5968',hint:'#6b7684',mute:'#8b95a1',line:'#e5e8eb',linelt:'#f2f4f6',bg:'#f9fafb',card:'#ffffff',up:'#f04452',down:'#1f6dee'};
+const _supplyOpts=[
+{id:"기관",l:"기관",col:"#191f28",match:(iv)=>iv==="기만"||iv==="기관"},
+{id:"기+외",l:"기+외",col:"#7c3aed",match:(iv)=>iv==="기+외"||iv==="외+기"},
+{id:"외인",l:"외인",col:"#3182f6",match:(iv)=>iv==="외만"||iv==="외인"}
+];
+const _qualifyAny=(iv)=>_supplyOpts.some(o=>o.match(iv));
+const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
+const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
+const [yf,setYf]=useState([]);
+const [selSup,setSelSup]=useState([]);
+const [sortMode,setSortMode]=useState('profit');
+const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('nbdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
+useEffect(()=>{try{localStorage.setItem('nbdb_invAmt_v1',String(invAmt));}catch(e){}},[invAmt]);
+const filtered=useMemo(()=>{
+let arr=D.filter(r=>{
+if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
+if(!(r.ch>=15&&r.ch<29))return false;
+if(r.g==="X")return false;
+if(selSup.length){
+const ok=selSup.some(sid=>{const o=_supplyOpts.find(x=>x.id===sid);return o&&o.match(r.iv);});
+if(!ok)return false;
+}else{
+if(!_qualifyAny(r.iv))return false;
+}
+return true;
+});
+if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
+if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
+if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
+return arr;
+},[yf,selSup,sortMode]);
+const stats=useMemo(()=>{
+if(!filtered.length)return null;
+const p5=filtered.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL'));
+const sl=filtered.filter(x=>x.r==='SL'||String(x.r||'').startsWith('SL'));
+const sumRet=filtered.reduce((a,b)=>a+(b.t||0),0);
+const avg=sumRet/filtered.length;
+const totalInvest=invAmt*filtered.length;
+const totalPnl=Math.round(invAmt*sumRet/100);
+const ret=totalInvest>0?(totalPnl/totalInvest*100):0;
+return {n:filtered.length,p5:p5.length,sl:sl.length,avg,totalInvest,totalPnl,ret};
+},[filtered,invAmt]);
+const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
+const toggleSup=(s)=>{setSelSup(selSup.includes(s)?selSup.filter(x=>x!==s):[...selSup,s]);};
+const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'7px 8px',border:'none',background:active?_T.text:'transparent',color:active?'#fff':_T.sub,fontSize:13,fontWeight:active?700:500,cursor:'pointer',borderRadius:7,transition:'all .12s',letterSpacing:'-0.2px'}}>{children}</button>);
+const Card=({title,hint,children,pad})=>(<div style={{background:_T.card,borderRadius:12,padding:pad||'10px 12px',marginBottom:8,border:'1px solid '+_T.line}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:6}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:11,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
+const _sorts=[{id:'profit',l:'익절순'},{id:'newest',l:'최신순'},{id:'oldest',l:'오래된순'}];
+const _yrs=[{id:'all',l:'전체'},{id:'21',l:'21'},{id:'22',l:'22'},{id:'23',l:'23'},{id:'24',l:'24'},{id:'25',l:'25'},{id:'26',l:'26'}];
+const _amtPresets=[100000,300000,500000,1000000,3000000];
+const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+'만':n.toLocaleString());
+return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
+<Card title="필터" hint={yf.length>=2?yf.join('+')+'년 · 등락 15-29% · 거래대금≥50억':'등락 15-29% · 거래대금≥50억 자동'}>
+<div style={{display:'flex',background:_T.linelt,borderRadius:8,padding:2,marginBottom:8}}>
+{_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)}>{y.l}</Seg>);})}
+</div>
+<div style={{fontSize:11,fontWeight:600,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px'}}>수급 (다중선택, 미선택시 전체 통과)</div>
+<div style={{display:'flex',gap:5}}>
+{_supplyOpts.map(o=>{const a=selSup.includes(o.id);return(<button key={o.id} onClick={()=>toggleSup(o.id)} style={{flex:'1 1 0',padding:'10px 8px',borderRadius:8,border:'1px solid '+(a?o.col:_T.line),background:a?o.col:_T.card,color:a?'#fff':_T.body,fontSize:12,fontWeight:a?700:600,cursor:'pointer',letterSpacing:'-0.2px',transition:'all .12s'}}>{o.l}</button>);})}
+</div>
+</Card>
+{stats&&(<div style={{background:_T.text,borderRadius:14,padding:'16px',marginBottom:8,color:'#fff'}}>
+<div style={{display:'flex',marginBottom:14}}>
+<div style={{flex:1}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>총 건수</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px'}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,opacity:0.7,marginLeft:1}}>건</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.12)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>익절률</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:'#ff7a85'}}>{(stats.p5/stats.n*100).toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.12)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>평균 수익</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?'#ff7a85':'#7eb6ff'}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
+</div>
+<div style={{height:1,background:'rgba(255,255,255,0.08)',margin:'0 -16px 14px'}}/>
+<div style={{fontSize:11,opacity:0.55,marginBottom:8,letterSpacing:'-0.2px',fontWeight:500}}>1건당 투자금</div>
+<div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+<input type="number" value={invAmt} onChange={e=>setInvAmt(+e.target.value||0)} step="100000" style={{flex:1,padding:'9px 12px',border:'1px solid rgba(255,255,255,0.15)',borderRadius:8,fontSize:14,fontWeight:700,color:'#fff',background:'rgba(255,255,255,0.06)',outline:'none',letterSpacing:'-0.3px'}}/>
+<span style={{fontSize:13,opacity:0.7,fontWeight:600}}>원</span>
+</div>
+<div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
+{_amtPresets.map(a=>(<button key={a} onClick={()=>setInvAmt(a)} style={{padding:'5px 11px',borderRadius:16,border:'1px solid '+(invAmt===a?'#fff':'rgba(255,255,255,0.18)'),background:invAmt===a?'#fff':'transparent',color:invAmt===a?_T.text:'rgba(255,255,255,0.7)',fontSize:11,fontWeight:700,cursor:'pointer',letterSpacing:'-0.2px',transition:'all .12s'}}>{_man(a)}원</button>))}
+</div>
+<div style={{display:'flex'}}>
+<div style={{flex:1}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>총 투입</div><div style={{fontSize:18,fontWeight:800,letterSpacing:'-0.4px'}}>{_man(stats.totalInvest)}<span style={{fontSize:11,fontWeight:500,opacity:0.7,marginLeft:1}}>원</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.12)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>총 손익</div><div style={{fontSize:18,fontWeight:800,letterSpacing:'-0.4px',color:stats.totalPnl>=0?'#ff7a85':'#7eb6ff'}}>{stats.totalPnl>=0?'+':''}{_man(Math.abs(stats.totalPnl))}<span style={{fontSize:11,fontWeight:500,opacity:0.8,marginLeft:1}}>원</span></div></div>
+<div style={{flex:1,borderLeft:'1px solid rgba(255,255,255,0.12)',paddingLeft:12}}><div style={{fontSize:11,opacity:0.55,marginBottom:4,letterSpacing:'-0.2px',fontWeight:500}}>수익률</div><div style={{fontSize:18,fontWeight:800,letterSpacing:'-0.4px',color:stats.ret>=0?'#ff7a85':'#7eb6ff'}}>{stats.ret>=0?'+':''}{stats.ret.toFixed(2)}<span style={{fontSize:11,fontWeight:500,opacity:0.8,marginLeft:1}}>%</span></div></div>
+</div>
+</div>)}
+<div style={{display:'flex',background:_T.linelt,borderRadius:8,padding:3,marginBottom:8}}>
+{_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
+</div>
+<div style={{background:_T.card,borderRadius:12,border:'1px solid '+_T.line,overflow:'hidden'}}>
+<div style={{maxHeight:'62vh',overflowY:'auto'}}>
+<table style={{width:'100%',fontSize:12,borderCollapse:'collapse'}}>
+<thead style={{position:'sticky',top:0,background:_T.linelt,zIndex:1}}><tr>
+<th style={{padding:'10px 8px',textAlign:'left',fontSize:11,fontWeight:600,color:_T.hint,letterSpacing:'-0.2px'}}>종목</th>
+<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>날짜</th>
+<th style={{padding:'10px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>등락</th>
+<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>수급</th>
+<th style={{padding:'10px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>거래대금</th>
+<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>결과</th>
+<th style={{padding:'10px 8px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>수익</th>
+</tr></thead>
+<tbody>{filtered.slice(0,300).map((r,i)=>{const won=Math.round(invAmt*((r.t||0)/100));const sLbl=_supLabel(r.iv);return(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid '+_T.linelt}}>
+<td style={{padding:'10px 8px',fontWeight:600,color:_T.text,letterSpacing:'-0.2px'}}>{r.n}</td>
+<td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.d?r.d.slice(2):''}</td>
+<td style={{padding:'10px 6px',textAlign:'right',color:_T.up,fontWeight:600}}>+{r.ch}%</td>
+<td style={{padding:'10px 6px',textAlign:'center'}}><span style={{fontSize:10,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'2px 7px',borderRadius:8,letterSpacing:'-0.2px'}}>{sLbl}</span></td>
+<td style={{padding:'10px 6px',textAlign:'right',color:_T.body,fontSize:11}}>{r.mc}</td>
+<td style={{padding:'10px 6px',textAlign:'center',fontSize:11,color:_T.sub,fontWeight:500}}>{r.r}</td>
+<td style={{padding:'10px 8px',textAlign:'right',fontWeight:700}}><div style={{color:(r.t||0)>=0?_T.up:_T.down}}>{(r.t||0)>=0?'+':''}{(r.t||0).toFixed(1)}%</div><div style={{fontSize:10,color:_T.hint,fontWeight:500,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div></td>
+</tr>);})}</tbody></table>
+</div>
+{filtered.length>300&&(<div style={{padding:'10px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
+</div>
+</div>);
+}
+
+
 function TodaySignals({onSignalsLoaded,onSignalClick}){
 const [data,setData]=useState(null);
 const [loading,setLoading]=useState(false);
@@ -1558,7 +1672,7 @@ export default function App(){
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0}}>NEO-SCORE</h1><p style={{fontSize:12,color:"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
-        {page==="db"&&<SignalDB/>}
+        {(page==="filterdb"||page==="neobaedb")&&<div style={{padding:"14px 12px 6px"}}><div style={{display:"flex",background:"#f2f4f6",borderRadius:12,padding:4,gap:0}}>{[{id:"filterdb",l:"맞춤"},{id:"neobaedb",l:"네오 종배"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 1 0",padding:"10px 8px",border:"none",background:page===o.id?"#191f28":"transparent",color:page===o.id?"#fff":"#4e5968",fontSize:13,fontWeight:page===o.id?700:500,cursor:"pointer",borderRadius:10,letterSpacing:"-0.3px",transition:"all .15s"}}>{o.l}</button>))}</div></div>}{page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
         {page==="jdtoday"&&<JudojuToday apiUrl={API_URL}/>}
         {page==="hstoday"&&<HaseunghoonToday apiUrl={API_URL}/>}
@@ -1566,6 +1680,7 @@ export default function App(){
         {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {page==="filterdb"&&<MultiFilterDB onRowClick={showFromD}/>}
+        {page==="neobaedb"&&<NeoBaeFilterDB onRowClick={showFromD}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
@@ -1573,13 +1688,14 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e5e8eb",display:"flex",justifyContent:"center",zIndex:100,boxShadow:"0 -2px 8px rgba(0,0,0,0.02)"}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"filterdb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>(
-            <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
-              <span style={{fontSize:20,opacity:page===t.id?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
-              <span style={{fontSize:11,fontWeight:page===t.id?700:500,color:page===t.id?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
+          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"filterdb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
+            const _act=t.id==="filterdb"?(page==="filterdb"||page==="neobaedb"):page===t.id;
+            return(<button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
+              <span style={{fontSize:20,opacity:_act?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
+              <span style={{fontSize:11,fontWeight:_act?700:500,color:_act?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
               {t.badge>0&&<span style={{position:"absolute",top:6,right:"calc(50% - 18px)",background:"#f04452",color:"#fff",fontSize:9,fontWeight:700,padding:"0px 4px",borderRadius:8,minWidth:14,textAlign:"center"}}>{t.badge}</span>}
-            </button>
-          ))}
+            </button>);
+          })}
         </div>
       </div>
     </div>
