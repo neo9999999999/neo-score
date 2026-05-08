@@ -506,32 +506,6 @@ const _resLbl=(r)=>{const s=String(r||"");if(!s)return "—";if(s==="BOTH")retur
 const _resCol=(r)=>{const s=String(r||"");if(s==="SL"||s==="FSL")return _T.down;if(s==="TO"||s.endsWith("일보유"))return _T.mute;return _T.up;};
 const GradeRow=({label,col,arr,setArr,opts})=>(<div style={{marginBottom:5,display:'flex',alignItems:'center',gap:8}}><div style={{fontSize:11,fontWeight:700,color:col,letterSpacing:'-0.2px',width:48,flexShrink:0}}>{label}</div><div style={{flex:1,display:'flex',flexWrap:'wrap'}}>{opts.map(g=>(<Chip key={g} arr={arr} setArr={setArr} val={g}/>))}</div></div>);
 return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
-{/* 라이브 누적 신호 — sector-api signals.json 자동 fetch */}
-<Card title="📡 라이브 누적 신호" hint={liveLoaded?`총 ${liveSignals.length}건 / 7%: ${liveByCat.neo7.length}건 · 25%: ${liveByCat.neo25.length}건`:"로딩 중..."}>
-{liveLoaded&&(<>
-<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:6}}>
-{[{id:'neo7',l:'🚀 네오 7%',col:'#1f6dee',arr:liveByCat.neo7},{id:'neo25',l:'🐉 네오 25%',col:'#c81e1e',arr:liveByCat.neo25}].map(b=>(
-  <div key={b.id} style={{border:'1px solid '+_T.line,borderRadius:9,padding:'8px 10px',background:_T.linelt}}>
-    <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:4}}>
-      <span style={{fontSize:12,fontWeight:800,color:b.col,letterSpacing:'-0.3px'}}>{b.l}</span>
-      <span style={{fontSize:11,fontWeight:700,color:_T.text}}>{b.arr.length}건</span>
-    </div>
-    <div style={{maxHeight:140,overflowY:'auto'}}>
-      {b.arr.length?b.arr.slice(0,30).map((s,i)=>(
-        <div key={s.id||(s.code+s.signal_date)} onClick={()=>onRowClick&&onRowClick({n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:s.rate,mc:s.vol+'억',iv:s.supply,sc:s.score,g:s.grade,t:0,r:s.outcome||''})} style={{display:'flex',alignItems:'center',gap:6,padding:'5px 0',borderTop:i?'1px solid '+_T.line:'none',cursor:onRowClick?'pointer':'default'}}>
-          <span style={{fontSize:10,color:_T.hint,fontWeight:600,minWidth:50,fontFamily:'ui-monospace,monospace'}}>{_liveDate(s.signal_date)}</span>
-          <span style={{fontSize:11,fontWeight:700,color:_T.text,flex:1,letterSpacing:'-0.2px'}}>{s.name}</span>
-          <span style={{fontSize:10,color:_T.up,fontWeight:700}}>+{(+s.rate).toFixed(1)}%</span>
-          <span style={{fontSize:10,color:_T.hint,fontWeight:500}}>{s.vol}억</span>
-        </div>
-      )):<div style={{fontSize:11,color:_T.mute,textAlign:'center',padding:'14px 0'}}>누적 신호 없음</div>}
-    </div>
-  </div>
-))}
-</div>
-<div style={{fontSize:10,color:_T.hint,fontWeight:500,letterSpacing:'-0.2px',padding:'4px 2px'}}>매일 KST 15:00 자동 누적 / 클릭시 일자별 차트 모달</div>
-</>)}
-</Card>
 {/* 검증된 프리셋 */}
 <Card title="검증된 프리셋" hint="6년 24,355건">
 {/* 1행: 6년 등급 베스트 (상단 강조 2개) */}
@@ -616,6 +590,42 @@ const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 
 // 모드 state — custom(맞춤) / neo7 / neo25
 const [mode,setMode]=useState(()=>{try{return localStorage.getItem('nbdb_mode_v2')||'neo7';}catch(e){return 'neo7';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
+// 라이브 누적 신호 fetch (sector-api signals.json)
+const [liveSignals,setLiveSignals]=useState([]);
+const [liveLoaded,setLiveLoaded]=useState(false);
+useEffect(()=>{
+  fetch("https://raw.githubusercontent.com/neo9999999999/sector-api/main/data/signals.json?_="+Date.now())
+    .then(r=>r.json()).then(d=>{setLiveSignals(Array.isArray(d)?d:[]);setLiveLoaded(true);}).catch(()=>setLiveLoaded(true));
+},[]);
+// 라이브 신호 분류 + 일자별 그룹화
+const _liveDate=(d)=>{const s=String(d||"");return s.length===8?s.slice(2,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8):s;};
+const _liveDateSlash=(d)=>{const s=String(d||"");return s.length===8?+s.slice(4,6)+"/"+ +s.slice(6,8):s;};
+const liveClassify=(s)=>{
+  const ch=+s.rate||0;if(!(ch>=15&&ch<29))return null;
+  const a=+s.vol||0;if(a<100)return null;
+  const inv=s.supply||"";if(!_qualifyInst(inv))return null;
+  if((+s.score||0)<3)return null;
+  if(s.h120!==1)return null;
+  return a>=5000?"neo25":"neo7";
+};
+const liveByDate=useMemo(()=>{
+  // 모드별 필터 + 일자별 그룹화
+  const filtered=liveSignals.filter(s=>{
+    const c=liveClassify(s);if(!c)return false;
+    if(mode==='neo7')return c==='neo7';
+    if(mode==='neo25')return c==='neo25';
+    return true;
+  });
+  const byDate={};
+  for(const s of filtered){
+    const d=s.signal_date||"";
+    if(!byDate[d])byDate[d]=[];
+    byDate[d].push({...s,_cat:liveClassify(s)});
+  }
+  // 최신 일자 → 오래된 일자 순
+  const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+  return dates.map(d=>({date:d,items:byDate[d]}));
+},[liveSignals,mode]);
 const [yf,setYf]=useState([]);
 const [selSup,setSelSup]=useState([]);
 const [sortMode,setSortMode]=useState('profit');
@@ -734,6 +744,38 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{display:'flex',background:_T.card,border:'1px solid '+_T.line,borderRadius:10,padding:3,marginBottom:10}}>
 {_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
 </div>
+{/* 📡 라이브 누적 신호 — 일자별 그룹 (signals.json 자동 fetch) */}
+{liveLoaded&&liveByDate.length>0&&(<div style={{background:_T.card,borderRadius:14,border:'1px solid '+_T.line,marginBottom:10,overflow:'hidden'}}>
+<div style={{padding:'12px 14px',background:'linear-gradient(135deg, '+_T.accent+'22 0%, transparent 100%)',borderBottom:'1px solid '+_T.line,display:'flex',alignItems:'baseline',justifyContent:'space-between'}}>
+<div>
+<span style={{fontSize:13,fontWeight:800,color:_T.text,letterSpacing:'-0.3px'}}>📡 라이브 누적 신호</span>
+<span style={{fontSize:11,fontWeight:600,color:_T.hint,marginLeft:8}}>매일 KST 15:00 자동 추가</span>
+</div>
+<span style={{fontSize:11,fontWeight:700,color:_T.accent}}>총 {liveByDate.reduce((a,b)=>a+b.items.length,0)}건 · {liveByDate.length}일</span>
+</div>
+<div style={{maxHeight:'40vh',overflowY:'auto'}}>
+{liveByDate.slice(0,30).map(({date,items},dIdx)=>{
+  const dateLabel=_liveDate(date);const monDay=_liveDateSlash(date);
+  return(<div key={date} style={{borderTop:dIdx?'1px solid '+_T.line:'none'}}>
+    <div style={{padding:'9px 14px',background:_T.linelt,display:'flex',alignItems:'baseline',gap:8,position:'sticky',top:0,zIndex:1}}>
+      <span style={{fontSize:12,fontWeight:800,color:_T.text,letterSpacing:'-0.3px'}}>{monDay}</span>
+      <span style={{fontSize:10,color:_T.hint,fontWeight:500}}>{dateLabel}</span>
+      <span style={{marginLeft:'auto',fontSize:10,fontWeight:700,color:_T.body,background:_T.bg,padding:'2px 8px',borderRadius:5,border:'1px solid '+_T.line}}>{items.length}건</span>
+    </div>
+    {items.map((s,i)=>{const col=s._cat==='neo7'?'#1f6dee':'#c81e1e';const lbl=s._cat==='neo7'?'7%':'25%';return(
+      <div key={s.id||(s.code+s.signal_date)} onClick={()=>onRowClick&&onRowClick({n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:s.rate,mc:s.vol+'억',iv:s.supply,sc:s.score,g:s.grade,t:0,r:'진행중',exd:'',exdy:0})} style={{padding:'10px 14px',display:'flex',alignItems:'center',gap:10,cursor:onRowClick?'pointer':'default',borderTop:'1px solid '+_T.line,transition:'all .12s'}} onMouseEnter={e=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+        <span style={{fontSize:9,fontWeight:800,color:'#fff',background:col,padding:'2px 6px',borderRadius:4,minWidth:30,textAlign:'center',letterSpacing:'-0.2px'}}>{lbl}</span>
+        <span style={{fontSize:13,fontWeight:700,color:_T.text,flex:1,letterSpacing:'-0.2px',minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.name}</span>
+        <span style={{fontSize:11,color:_T.up,fontWeight:700,minWidth:50,textAlign:'right'}}>+{(+s.rate).toFixed(1)}%</span>
+        <span style={{fontSize:10,color:_T.sub,fontWeight:600,minWidth:60,textAlign:'right'}}>{s.vol}억</span>
+        <span style={{fontSize:9,color:_T.hint,fontWeight:600,padding:'2px 6px',borderRadius:4,background:_T.bg,border:'1px solid '+_T.line,letterSpacing:'-0.2px'}}>{s.supply}</span>
+        <span style={{fontSize:10,fontWeight:700,color:'#f59e0b'}}>진행중</span>
+      </div>);})}
+  </div>);
+})}
+</div>
+<div style={{padding:'8px 14px',fontSize:10,color:_T.hint,fontWeight:500,background:_T.linelt,borderTop:'1px solid '+_T.line,letterSpacing:'-0.2px'}}>※ 청산 결과 추적 미구현 — 진입 정보만 누적 (4/18 이후 backtest 데이터 미반영분 포함)</div>
+</div>)}
 {/* 종목 리스트 — 카드형 */}
 <div style={{background:_T.card,borderRadius:14,border:'1px solid '+_T.line,overflow:'hidden'}}>
 <div style={{maxHeight:'62vh',overflowY:'auto'}}>
@@ -744,37 +786,47 @@ const tp1=r.tp1||0, tp2=r.tp2||0;
 const tp1Reached=!!(r.tp1d&&r.tp1dy);
 const tp2Reached=!!(r.tp2d&&r.tp2dy)||r.r==='BOTH'||r.r==='TP2';
 const _profit=(r.t||0);
-return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'14px 16px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
-{/* 1행: 종목명 + 등락률 */}
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline',marginBottom:8}}>
+return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'16px 18px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
+{/* 1행: 종목명 (큼) + 최종수익 (가장 큼) */}
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
 <div style={{flex:1,minWidth:0}}>
-<div style={{fontSize:15,fontWeight:800,color:_T.text,letterSpacing:'-0.3px'}}>{r.n}</div>
-<div style={{fontSize:11,color:_T.hint,marginTop:3,letterSpacing:'-0.2px'}}>{r.d?r.d.slice(2):''} · {r.mc}</div>
+<div style={{fontSize:16,fontWeight:800,color:_T.text,letterSpacing:'-0.3px',marginBottom:5}}>{r.n}</div>
+<div style={{display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+<span style={{fontSize:10,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'2px 8px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
+<span style={{fontSize:11,color:_T.sub,fontWeight:600}}>{r.mc}</span>
+<span style={{color:_T.mute,fontSize:10}}>·</span>
+<span style={{fontSize:11,color:_T.sub,fontWeight:500}}>당일 +{r.ch}%</span>
 </div>
-<div style={{textAlign:'right',marginLeft:12}}>
-<div style={{fontSize:18,fontWeight:800,color:_T.up,letterSpacing:'-0.4px',lineHeight:1}}>+{r.ch}%</div>
-<span style={{display:'inline-block',marginTop:6,fontSize:10,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:6,letterSpacing:'-0.2px'}}>{sLbl}</span>
+</div>
+<div style={{textAlign:'right',marginLeft:14,flexShrink:0}}>
+<div style={{fontSize:11,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:'-0.2px'}}>최종 수익</div>
+<div style={{fontSize:22,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.5px',lineHeight:1}}>{_profit>=0?'+':''}{_profit.toFixed(1)}<span style={{fontSize:14}}>%</span></div>
+<div style={{fontSize:11,color:_T.sub,fontWeight:600,marginTop:5}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
 </div>
 </div>
-{/* 2행: 결과 메타 정보 */}
-<div style={{display:'flex',gap:8,fontSize:11,color:_T.sub,fontWeight:500,marginBottom:6,flexWrap:'wrap',letterSpacing:'-0.2px'}}>
+{/* 2행: 익절 진행 박스 (1차/2차 도달 + 일자) — 정보 핵심 */}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:8}}>
+<div style={{padding:'9px 12px',background:tp1Reached?'rgba(248,81,73,0.08)':_T.bg,border:'1px solid '+(tp1Reached?'rgba(248,81,73,0.3)':_T.line),borderRadius:9}}>
+<div style={{fontSize:10,fontWeight:600,color:_T.hint,marginBottom:4,letterSpacing:'-0.2px'}}>1차 익절 (+{tp1}%)</div>
+{tp1Reached?(
+  <div><span style={{fontSize:14,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{r.tp1dy}일</span><span style={{fontSize:10,color:_T.sub,fontWeight:500,marginLeft:4}}>{r.tp1d}</span></div>
+):<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>미도달</div>}
+</div>
+<div style={{padding:'9px 12px',background:tp2Reached?'rgba(248,81,73,0.08)':_T.bg,border:'1px solid '+(tp2Reached?'rgba(248,81,73,0.3)':_T.line),borderRadius:9}}>
+<div style={{fontSize:10,fontWeight:600,color:_T.hint,marginBottom:4,letterSpacing:'-0.2px'}}>2차 익절 (+{tp2}%)</div>
+{tp2Reached?(
+  <div><span style={{fontSize:14,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>{r.tp2dy?'D+'+r.tp2dy+'일':'도달'}</span>{r.tp2d&&<span style={{fontSize:10,color:_T.sub,fontWeight:500,marginLeft:4}}>{r.tp2d}</span>}</div>
+):<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>미도달</div>}
+</div>
+</div>
+{/* 3행: 매수일/청산일/소요/결과 */}
+<div style={{display:'flex',gap:10,fontSize:11,color:_T.sub,fontWeight:500,flexWrap:'wrap',letterSpacing:'-0.2px',padding:'6px 10px',background:_T.bg,borderRadius:8,border:'1px solid '+_T.line}}>
+<span>📅 매수 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
+<span style={{color:_T.mute}}>·</span>
 <span>청산 <b style={{color:_T.body}}>{r.exd||'—'}</b></span>
 <span style={{color:_T.mute}}>·</span>
 <span>소요 <b style={{color:_T.body}}>{r.exdy?r.exdy+'일':'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{fontWeight:700,color:_resCol(r.r)}}>{_resLbl(r.r)}</span>
-</div>
-{/* 3행: 수익 (강조) */}
-<div style={{padding:'8px 10px',background:_T.bg,borderRadius:9,border:'1px solid '+_T.line}}>
-<div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:6}}>
-<span style={{fontSize:11,color:_T.hint,fontWeight:600,letterSpacing:'-0.2px'}}>최종 수익</span>
-<span style={{fontSize:15,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(2)}% <span style={{fontSize:11,color:_T.sub,fontWeight:600,marginLeft:2}}>({won>=0?'+':''}{_man(Math.abs(won))}원)</span></span>
-</div>
-<div style={{display:'flex',gap:8,fontSize:10,color:_T.hint,fontWeight:500,letterSpacing:'-0.2px'}}>
-<span>1차: {tp1Reached?(<span style={{color:_T.up,fontWeight:700}}>+{tp1}% (D+{r.tp1dy})</span>):<span style={{color:_T.mute}}>미도달</span>}</span>
-<span style={{color:_T.mute}}>·</span>
-<span>2차: {tp2Reached?(<span style={{color:_T.up,fontWeight:700}}>+{tp2}%{r.tp2dy?' (D+'+r.tp2dy+')':''}</span>):<span style={{color:_T.mute}}>미도달</span>}</span>
-</div>
+<span style={{marginLeft:'auto',fontWeight:800,color:_resCol(r.r),fontSize:12}}>{_resLbl(r.r)}</span>
 </div>
 </div>);})}
 </div>
@@ -1922,6 +1974,10 @@ function VerifyTab(){const [code,setCode]=useState("");const [date,setDate]=useS
 
 export default function App(){
   const [page,setPage]=useState("ai");useEffect(()=>{try{const _trash=["__bg21_resume","__data2021_partial","__supply_backup","__data2026_v2_partial","__correctedDataJS","__bf_v3","appCode_b64","chunk_ai","chunk_neo","chunk_app","__data2025_partial","__data2024_partial","__data2023_partial","__data2022_partial"];for(const _k of _trash)if(localStorage.getItem(_k))localStorage.removeItem(_k);let _tot=0;for(const _k of Object.keys(localStorage))_tot+=(localStorage.getItem(_k)||"").length;if(_tot>4000000){const _td=_getCacheDateKey();Object.keys(localStorage).forEach(_k=>{if(_k.startsWith("aianalyze_")&&!_k.endsWith(_td))localStorage.removeItem(_k);});}}catch(e){}},[]);const [detailModal,setDetailModal]=useState(null);const showFromD=(r)=>setDetailModal({name:r.n,date:r.d,market:r.m,total:r.v1Total,grade:r.v1Grade,sections:{supply:{score:r.v1Supply,max:25},breakout:{score:r.v1Breakout,max:25},momentum:{score:r.v1Momentum,max:20},sectorMaterial:{score:r.v1Sm,max:15},accumulation:{score:r.v1Acc,max:15}}});
+  // 다크/라이트 모드 — body의 data-theme 속성으로 전체 페이지 동기화
+  const [theme,setTheme]=useState(()=>{try{return localStorage.getItem("neo_theme")||"dark";}catch(e){return "dark";}});
+  useEffect(()=>{try{localStorage.setItem("neo_theme",theme);document.documentElement.setAttribute("data-theme",theme);document.body.style.background=theme==="dark"?"#0d1117":"#ffffff";document.body.style.color=theme==="dark"?"#e6edf3":"#1e293b";}catch(e){}},[theme]);
+  const _isDark=theme==="dark";
   const [history,setHistory]=useState(()=>{try{return JSON.parse(localStorage.getItem("neo_history")||"[]")}catch{return[]}});
   const [todaySignals,setTodaySignals]=useState([]);
   useEffect(()=>{fetch(HIST_URL).then(r=>r.json()).then(d=>{if(!d||!Array.isArray(d.history))return;window.__historySha=d.sha;if(d.history.length===0){try{const local=JSON.parse(localStorage.getItem("neo_history")||"[]");if(local.length>0){fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:local})}).then(r=>r.json()).then(d2=>{if(d2&&d2.sha)window.__historySha=d2.sha}).catch(()=>{});return;}}catch(_){}}setHistory(d.history);try{localStorage.setItem("neo_history",JSON.stringify(d.history))}catch(_){}}).catch(()=>{})},[]);
@@ -1929,10 +1985,12 @@ export default function App(){
   const clearHistory=useCallback(()=>{setHistory([]);localStorage.removeItem("neo_history");fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:[]})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{})},[]);
   const deleteHistoryItem=useCallback((idx)=>{setHistory(prev=>{const next=prev.filter((_,i)=>i!==idx);localStorage.setItem("neo_history",JSON.stringify(next));fetch(HIST_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({history:next,sha:window.__historySha})}).then(r=>r.json()).then(d=>{if(d&&d.sha)window.__historySha=d.sha}).catch(()=>{});return next})},[]);
   return(
-    <div style={{background:"#fff",minHeight:"100vh",fontFamily:"-apple-system,'Pretendard',sans-serif",color:"#1e293b",fontSize:15,paddingBottom:68}}>
+    <div style={{background:_isDark?"#0d1117":"#fff",minHeight:"100vh",fontFamily:"-apple-system,'Pretendard',sans-serif",color:_isDark?"#e6edf3":"#1e293b",fontSize:15,paddingBottom:68,transition:"background .2s"}}>
       <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet"/>
+      {/* 다크/라이트 토글 — 우상단 고정 */}
+      <button onClick={()=>setTheme(_isDark?"light":"dark")} title={_isDark?"라이트 모드":"다크 모드"} style={{position:"fixed",top:14,right:14,zIndex:200,width:42,height:42,borderRadius:21,border:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),background:_isDark?"#161b22":"#fff",color:_isDark?"#e6edf3":"#1e293b",cursor:"pointer",fontSize:18,boxShadow:"0 2px 10px rgba(0,0,0,0.15)",transition:"all .15s"}}>{_isDark?"☀️":"🌙"}</button>
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
-        <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0}}>NEO-SCORE</h1><p style={{fontSize:12,color:"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
+        <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0,color:_isDark?"#e6edf3":"#1e293b"}}>NEO-SCORE</h1><p style={{fontSize:12,color:_isDark?"#6e7681":"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
         {page==="today"&&<TodaySignals onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
         {(page==="filterdb"||page==="neobaedb")&&<div style={{padding:"14px 12px 6px"}}><div style={{display:"flex",background:"#f2f4f6",borderRadius:12,padding:4,gap:0}}>{[{id:"filterdb",l:"맞춤"},{id:"neobaedb",l:"네오 종배"}].map(o=>(<button key={o.id} onClick={()=>setPage(o.id)} style={{flex:"1 1 0",padding:"10px 8px",border:"none",background:page===o.id?"#191f28":"transparent",color:page===o.id?"#fff":"#4e5968",fontSize:13,fontWeight:page===o.id?700:500,cursor:"pointer",borderRadius:10,letterSpacing:"-0.3px",transition:"all .15s"}}>{o.l}</button>))}</div></div>}{page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
@@ -1948,13 +2006,14 @@ export default function App(){
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
-      <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e5e8eb",display:"flex",justifyContent:"center",zIndex:100,boxShadow:"0 -2px 8px rgba(0,0,0,0.02)"}}>
+      <div style={{position:"fixed",bottom:0,left:0,right:0,background:_isDark?"#161b22":"#fff",borderTop:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),display:"flex",justifyContent:"center",zIndex:100,boxShadow:_isDark?"0 -2px 12px rgba(0,0,0,0.4)":"0 -2px 8px rgba(0,0,0,0.02)"}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
           {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"filterdb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
             const _act=t.id==="filterdb"?(page==="filterdb"||page==="neobaedb"):page===t.id;
+            const _activeColor=_isDark?"#e6edf3":"#191f28";const _inactiveColor=_isDark?"#6e7681":"#8b95a1";
             return(<button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
               <span style={{fontSize:20,opacity:_act?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
-              <span style={{fontSize:11,fontWeight:_act?700:500,color:_act?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
+              <span style={{fontSize:11,fontWeight:_act?700:500,color:_act?_activeColor:_inactiveColor,letterSpacing:"-0.2px"}}>{t.label}</span>
               {t.badge>0&&<span style={{position:"absolute",top:6,right:"calc(50% - 18px)",background:"#f04452",color:"#fff",fontSize:9,fontWeight:700,padding:"0px 4px",borderRadius:8,minWidth:14,textAlign:"center"}}>{t.badge}</span>}
             </button>);
           })}
