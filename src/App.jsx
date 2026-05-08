@@ -616,52 +616,48 @@ return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',font
 <div style={{display:'flex',background:_T.linelt,borderRadius:8,padding:3,marginBottom:8}}>
 {_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
 </div>
-{/* 수급 타입별 3개 섹션 — 사용자가 selSup 선택시 해당 것만, 미선택시 전체 */}
-{_supplyOpts.map(opt=>{
-const visible=selSup.length===0||selSup.includes(opt.id);
-if(!visible)return null;
-const rows=filtered.filter(r=>opt.match(r.iv));
-const n=rows.length;
-const p5=rows.filter(x=>(x.t||0)>=5&&x.r!=='SL'&&!String(x.r||'').startsWith('SL')).length;
-const sumRet=rows.reduce((a,b)=>a+(b.t||0),0);
-const avg=n>0?sumRet/n:0;
-const secPnl=Math.round(invAmt*sumRet/100);
-return(<div key={opt.id} style={{marginBottom:14}}>
-<div style={{display:'flex',alignItems:'center',gap:10,padding:'12px 14px',background:opt.col,borderRadius:'12px 12px 0 0',color:'#fff'}}>
-<span style={{fontSize:14,fontWeight:800,letterSpacing:'-0.3px'}}>{opt.l}</span>
-<span style={{fontSize:10,fontWeight:700,background:'rgba(255,255,255,0.2)',padding:'2px 8px',borderRadius:10}}>{n.toLocaleString()}건</span>
-<div style={{marginLeft:'auto',display:'flex',gap:14,fontSize:11}}>
-<span style={{opacity:0.85}}>익절률 <b style={{fontWeight:800}}>{n>0?(p5/n*100).toFixed(1):0}%</b></span>
-<span style={{opacity:0.85}}>평균 <b style={{fontWeight:800,color:avg>=0?'#ff7a85':'#7eb6ff'}}>{avg>=0?'+':''}{avg.toFixed(2)}%</b></span>
-<span style={{opacity:0.85}}>손익 <b style={{fontWeight:800,color:secPnl>=0?'#ff7a85':'#7eb6ff'}}>{secPnl>=0?'+':''}{_man(Math.abs(secPnl))}원</b></span>
-</div>
-</div>
-<div style={{background:_T.card,borderRadius:'0 0 12px 12px',border:'1px solid '+_T.line,borderTop:'none',overflow:'hidden'}}>
-{n===0?(<div style={{padding:'24px',textAlign:'center',color:_T.mute,fontSize:12}}>해당 수급 종목 없음</div>):(<><div style={{maxHeight:'40vh',overflowY:'auto'}}>
+{/* 단일 통합 리스트 (수급 필터는 위 카드에서 다중선택) */}
+<div style={{background:_T.card,borderRadius:12,border:'1px solid '+_T.line,overflow:'hidden'}}>
+<div style={{maxHeight:'62vh',overflowY:'auto'}}>
 <table style={{width:'100%',fontSize:12,borderCollapse:'collapse'}}>
 <thead style={{position:'sticky',top:0,background:_T.linelt,zIndex:1}}><tr>
 <th style={{padding:'10px 8px',textAlign:'left',fontSize:11,fontWeight:600,color:_T.hint,letterSpacing:'-0.2px'}}>종목</th>
-<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>날짜</th>
-<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>청산일</th>
 <th style={{padding:'10px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>등락</th>
 <th style={{padding:'10px 6px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>거래대금</th>
+<th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>수급</th>
+<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>매수일</th>
+<th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>청산일</th>
+<th style={{padding:'10px 4px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>소요</th>
 <th style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_T.hint}}>결과</th>
-<th style={{padding:'10px 8px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>수익</th>
+<th style={{padding:'10px 8px',textAlign:'right',fontSize:11,fontWeight:600,color:_T.hint}}>수익 (최종 / 1차 / 2차)</th>
 </tr></thead>
-<tbody>{rows.slice(0,200).map((r,i)=>{const won=Math.round(invAmt*((r.t||0)/100));return(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid '+_T.linelt}}>
+<tbody>{filtered.slice(0,300).map((r,i)=>{
+const won=Math.round(invAmt*((r.t||0)/100));
+const sLbl=_supLabel(r.iv);
+const tp1=r.tp1||0, tp2=r.tp2||0;
+const tp1Reached=!!(r.tp1d&&r.tp1dy);
+const tp2Reached=!!(r.tp2d&&r.tp2dy)||r.r==='BOTH'||r.r==='TP2';
+return(<tr key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',borderTop:'1px solid '+_T.linelt}}>
 <td style={{padding:'10px 8px',fontWeight:600,color:_T.text,letterSpacing:'-0.2px'}}>{r.n}</td>
-<td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.d?r.d.slice(2):''}</td>
-<td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.exd||'—'}</td>
 <td style={{padding:'10px 6px',textAlign:'right',color:_T.up,fontWeight:600}}>+{r.ch}%</td>
 <td style={{padding:'10px 6px',textAlign:'right',color:_T.body,fontSize:11}}>{r.mc}</td>
+<td style={{padding:'10px 4px',textAlign:'center'}}><span style={{fontSize:10,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'2px 7px',borderRadius:8}}>{sLbl}</span></td>
+<td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.d?r.d.slice(2):''}</td>
+<td style={{padding:'10px 6px',textAlign:'center',color:_T.hint,fontSize:11}}>{r.exd||'—'}</td>
+<td style={{padding:'10px 4px',textAlign:'center',color:_T.body,fontSize:11,fontWeight:600}}>{r.exdy?r.exdy+'일':'—'}</td>
 <td style={{padding:'10px 6px',textAlign:'center',fontSize:11,fontWeight:600,color:_resCol(r.r)}}>{_resLbl(r.r)}</td>
-<td style={{padding:'10px 8px',textAlign:'right',fontWeight:700}}><div style={{color:(r.t||0)>=0?_T.up:_T.down}}>{(r.t||0)>=0?'+':''}{(r.t||0).toFixed(1)}%</div><div style={{fontSize:10,color:_T.hint,fontWeight:500,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div></td>
+<td style={{padding:'10px 8px',textAlign:'right',fontWeight:700}}>
+<div style={{color:(r.t||0)>=0?_T.up:_T.down,fontSize:13}}>{(r.t||0)>=0?'+':''}{(r.t||0).toFixed(1)}%<span style={{fontSize:10,color:_T.hint,fontWeight:500,marginLeft:4}}>({won>=0?'+':''}{_man(Math.abs(won))}원)</span></div>
+<div style={{fontSize:10,color:_T.hint,fontWeight:500,marginTop:2,letterSpacing:'-0.2px'}}>
+1차: {tp1Reached?(<span style={{color:_T.up,fontWeight:700}}>+{tp1}% (D+{r.tp1dy})</span>):<span>미도달</span>}
+{' · '}
+2차: {tp2Reached?(<span style={{color:_T.up,fontWeight:700}}>+{tp2}%{r.tp2dy?' (D+'+r.tp2dy+')':''}</span>):<span>미도달</span>}
+</div>
+</td>
 </tr>);})}</tbody></table>
 </div>
-{rows.length>200&&(<div style={{padding:'10px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 200건만 표시 · 전체 {rows.length.toLocaleString()}건</div>)}</>)}
+{filtered.length>300&&(<div style={{padding:'10px',textAlign:'center',color:_T.mute,fontSize:11,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
 </div>
-</div>);
-})}
 </div>);
 }
 
