@@ -525,7 +525,91 @@ return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',font
 }
 
 
-function TodaySignals({onSignalsLoaded,onSignalClick}){const [data,setData]=useState(null);const [loading,setLoading]=useState(true);const [err,setErr]=useState(null);const [saving,setSaving]=useState(false);const [saveMsg,setSaveMsg]=useState(null);const load=useCallback(async()=>{setLoading(true);setErr(null);try{const r=await fetch(API_URL);const j=await r.json();if(j.ok){const _all=[...(j.signals?.S||[]),...(j.signals?.A||[]),...(j.signals?.B||[]),...(j.signals?.X||[])];const _seen=new Set();const _uniq=_all.filter(x=>{if(_seen.has(x.code))return false;_seen.add(x.code);return true});const _new={S:[],A:[],B:[],X:[]};for(const _x of _uniq){const _a=_x.amount||0,_c=_x.change||0;if(_a<100||_c<10||_c>29)continue;const _g=_a>=5000?'S':_a>=2500?'A':'B';_new[_g].push({..._x,grade:_g});}j.signals=_new;j.all=[..._new.S,..._new.A,..._new.B,..._new.X];j.summary={total:j.all.length,S:_new.S.length,A:_new.A.length,B:_new.B.length,X:_new.X.length};setData(j);(()=>{const _s=JSON.stringify({ts:Date.now(),data:j});try{localStorage.setItem("today_signals_cache",_s);}catch(e){const _td=_getCacheDateKey();Object.keys(localStorage).forEach(_k=>{if(_k.startsWith("aianalyze_")&&!_k.endsWith(_td))localStorage.removeItem(_k);});try{localStorage.setItem("today_signals_cache",_s);}catch(e2){}}})();if(onSignalsLoaded)onSignalsLoaded(j.all||[]);}else setErr(j.error||"API 오류")}catch(e){setErr(e.message)}setLoading(false)},[]);useEffect(()=>{try{const _c=localStorage.getItem("today_signals_cache");if(_c){const _p=JSON.parse(_c);if(_p&&_p.ts&&Date.now()-_p.ts<259200000&&_p.data){setData(_p.data);setLoading(false);if(onSignalsLoaded)onSignalsLoaded(_p.data.all||[]);return;}}}catch(e){}load();},[load]);const saveSignals=async()=>{if(!data||!data.all||!data.all.length)return;setSaving(true);setSaveMsg(null);try{const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data.all.filter(s=>s.grade!=="X").map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:s.grade,supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});const j=await r.json();setSaveMsg(j.github_ok?("✅ "+j.added+"건 저장"):("⚠️ GITHUB_TOKEN 미설정 — Vercel 환경변수 추가 필요"));}catch(e){setSaveMsg("오류: "+e.message);}setSaving(false);};const gC=g=>GI[g]?.c||"#94a3b8";if(loading)return(<div style={{textAlign:"center",padding:"60px 20px"}}><div style={{fontSize:36,marginBottom:12}}>⏳</div><div style={{fontSize:16,fontWeight:600,color:"#64748b"}}>KIS API 스크리닝 중...</div><div style={{fontSize:13,color:"#94a3b8",marginTop:4}}>거래대금·등락률 상위 종목 분석 중</div></div>);if(err)return(<div style={{textAlign:"center",padding:"40px 20px"}}><div style={{fontSize:36,marginBottom:12}}>⚠️</div><div style={{fontSize:15,color:"#dc2626",marginBottom:8}}>{err}</div><button onClick={load} style={{padding:"8px 20px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",fontSize:14,fontWeight:600,cursor:"pointer"}}>다시 시도</button></div>);if(!data)return null;return(<div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><div style={{fontSize:14,color:"#64748b"}}>{data.date} · {data.time} KST</div><div style={{display:"flex",gap:6}}><button onClick={saveSignals} disabled={saving} style={{padding:"5px 12px",borderRadius:8,border:"none",background:saving?"#e2e8f0":"#1e293b",color:saving?"#94a3b8":"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer"}}>📌 신호저장</button><button onClick={load} style={{padding:"5px 12px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",fontSize:12,fontWeight:600,cursor:"pointer"}}>🔄</button></div></div>{saveMsg&&<div style={{padding:"8px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",border:"1px solid "+(saveMsg.startsWith("✅")?"#fee2e2":"#fcd34d"),color:saveMsg.startsWith("✅")?"#dc2626":"#d97706",fontSize:12,marginBottom:10}}>{saveMsg}</div>}<div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>{["S","A","B","X"].map(g=>(<div key={g} style={{textAlign:"center",padding:"10px 0",borderRadius:10,background:gC(g)+"10",border:"1px solid "+gC(g)+"30"}}><div style={{fontSize:22,fontWeight:900,color:gC(g)}}>{data.summary[g]}</div><div style={{fontSize:11,color:"#64748b"}}>{g}등급</div></div>))}</div>{data.all.filter(s=>s.grade!=="X").length===0?(<div style={{textAlign:"center",padding:"40px",color:"#94a3b8"}}><div style={{fontSize:36,marginBottom:8}}>📭</div><div style={{fontSize:15}}>오늘은 10%+ 돌파 시그널이 없습니다</div><div style={{fontSize:13,marginTop:4}}>장 마감 후(15:30~) 결과가 갱신됩니다</div></div>):data.all.filter(s=>s.grade!=="X").map((s,i)=>(<div key={i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:6,background:"#fff",cursor:onSignalClick?"pointer":"default"}}><div style={{width:42,height:42,borderRadius:10,background:gC(s.grade)+"12",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><span style={{fontSize:18,fontWeight:900,color:gC(s.grade)}}>{s.grade}</span></div><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontWeight:700,fontSize:15}}>{s.name}</span><span style={{fontSize:12,fontWeight:700,color:"#dc2626"}}>+{s.change}%</span></div><div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>{s.score}점 · {s.investor} · {s.market} · {s.amount}억</div></div><div style={{textAlign:"right",flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}><div style={{fontSize:12,fontWeight:700,color:"#1e293b",fontFamily:"monospace"}}>{s.code}</div><button onClick={(e)=>{e.stopPropagation();navigator.clipboard.writeText(s.code).then(()=>{const b=e.currentTarget;const o=b.textContent;b.textContent="✓ 복사됨";b.style.background="#10b981";b.style.color="#fff";setTimeout(()=>{b.textContent=o;b.style.background="#f1f5f9";b.style.color="#475569";},1200);})}} style={{fontSize:10,fontWeight:600,padding:"3px 8px",borderRadius:6,border:"1px solid #cbd5e1",background:"#f1f5f9",color:"#475569",cursor:"pointer"}}>복사</button></div></div>))}</div>);}
+function TodaySignals({onSignalsLoaded,onSignalClick}){
+const [data,setData]=useState(null);
+const [loading,setLoading]=useState(false);
+const [err,setErr]=useState(null);
+const [saving,setSaving]=useState(false);
+const [saveMsg,setSaveMsg]=useState(null);
+// 전략 룰 분류
+// 일반종배: 등락 15-29% & 거래대금≥50억 & 주가≥1000원 & 수급=기만
+// 90%종배:  위 + (침착해=S/S+ OR 하승훈=A+/S/S+)
+const _classify=(s)=>{
+  const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
+  const inv=s.investor||"", mkt=s.market||"", wk=+s.wick||0;
+  const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
+  const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
+  const baseOK=ch>=15&&ch<29&&amt>=50&&px>=1000&&inv==="기만";
+  const is90=baseOK&&((cc.grade==="S"||cc.grade==="S+")||(hs.grade==="A+"||hs.grade==="S"||hs.grade==="S+"));
+  let cat="기타"; if(is90)cat="90"; else if(baseOK)cat="일반";
+  return {...s,ccG:cc.grade,hsG:hs.grade,category:cat};
+};
+const load=useCallback(async()=>{
+  setLoading(true);setErr(null);
+  try{
+    const r=await fetch(API_URL);
+    const j=await r.json();
+    if(!j.ok){setErr(j.error||"API 오류");setLoading(false);return;}
+    const all=[...(j.signals?.S||[]),...(j.signals?.A||[]),...(j.signals?.B||[]),...(j.signals?.X||[])];
+    const seen=new Set();
+    const uniq=all.filter(x=>{if(seen.has(x.code))return false;seen.add(x.code);return true;});
+    const proc=uniq.map(_classify).sort((a,b)=>(b.amount||0)-(a.amount||0));
+    const c90=proc.filter(s=>s.category==="90");
+    const cgen=proc.filter(s=>s.category==="일반");
+    const cetc=proc.filter(s=>s.category==="기타");
+    const newData={date:j.date,time:j.time,all:proc,c90,cgen,cetc,summary:{total:proc.length,c90:c90.length,cgen:cgen.length,cetc:cetc.length}};
+    setData(newData);
+    try{localStorage.setItem("today_signals_v2",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
+    if(onSignalsLoaded)onSignalsLoaded(proc);
+  }catch(e){setErr(e.message);}
+  setLoading(false);
+},[]);
+// 마운트 시 캐시만 로드 (자동 fetch 안 함 — 수동 조회만)
+useEffect(()=>{try{const c=localStorage.getItem("today_signals_v2");if(c){const p=JSON.parse(c);if(p&&p.data){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
+const saveSignals=async()=>{
+  if(!data||!data.all||!data.all.length)return;
+  setSaving(true);setSaveMsg(null);
+  try{
+    const targets=data.all.filter(s=>s.category!=="기타");
+    const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(targets.map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:s.category==="90"?"90종배":"일반종배",supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});
+    const j=await r.json();
+    setSaveMsg(j.github_ok?("✅ "+j.added+"건 저장"):"⚠️ GITHUB_TOKEN 미설정");
+  }catch(e){setSaveMsg("오류: "+e.message);}
+  setSaving(false);
+};
+const _T={text:"#191f28",sub:"#4e5968",hint:"#6b7684",mute:"#8b95a1",line:"#e5e8eb",bg:"#f9fafb",card:"#ffffff",up:"#f04452",down:"#1f6dee",cc:"#0367c4",hs:"#c81e1e",blue:"#3182f6"};
+const Card=({s,accent,emoji})=>(<div onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderRadius:12,border:"1px solid "+_T.line,marginBottom:6,background:_T.card,cursor:onSignalClick?"pointer":"default"}}><div style={{width:46,height:46,borderRadius:11,background:accent+"15",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:18}}>{emoji}</div><div style={{flex:1,minWidth:0}}><div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}><span style={{fontWeight:700,fontSize:15,color:_T.text,letterSpacing:"-0.3px"}}>{s.name}</span><span style={{fontSize:11,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace",background:_T.bg,padding:"2px 6px",borderRadius:5}}>{s.code}</span><span style={{fontSize:13,fontWeight:800,color:_T.up}}>+{s.change}%</span></div><div style={{fontSize:11,color:_T.mute,marginTop:4,letterSpacing:"-0.2px",display:"flex",gap:8,flexWrap:"wrap"}}><span>침<b style={{color:_T.cc,fontWeight:700}}>{s.ccG}</b></span><span>·</span><span>하<b style={{color:_T.hs,fontWeight:700}}>{s.hsG}</b></span><span>·</span><span style={{fontWeight:600,color:_T.sub}}>{s.investor||"—"}</span><span>·</span><span>{s.market}</span><span>·</span><span>{s.amount}억</span>{s.price>0&&<><span>·</span><span>{(+s.price).toLocaleString()}원</span></>}</div></div><button onClick={(e)=>{e.stopPropagation();navigator.clipboard.writeText(s.code).then(()=>{const b=e.currentTarget,o=b.textContent;b.textContent="✓";b.style.background="#10b981";b.style.color="#fff";setTimeout(()=>{b.textContent=o;b.style.background=_T.bg;b.style.color=_T.sub;},1200);});}} style={{fontSize:11,fontWeight:700,padding:"7px 11px",borderRadius:8,border:"1px solid "+_T.line,background:_T.bg,color:_T.sub,cursor:"pointer",flexShrink:0,letterSpacing:"-0.2px"}}>복사</button></div>);
+const SectionHeader=({label,count,color,accent,emoji,desc})=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{fontSize:18}}>{emoji}</span><span style={{fontSize:15,fontWeight:800,color:_T.text,letterSpacing:"-0.3px"}}>{label}</span><span style={{fontSize:11,fontWeight:700,color:"#fff",background:accent,padding:"2px 8px",borderRadius:10}}>{count}건</span>{desc&&<span style={{fontSize:11,color:_T.hint,fontWeight:500}}>{desc}</span>}</div>);
+const Empty=({msg})=>(<div style={{padding:"18px",textAlign:"center",color:_T.mute,fontSize:12,background:_T.bg,borderRadius:10,border:"1px dashed "+_T.line}}>{msg}</div>);
+// 로딩 화면
+if(loading)return(<div style={{padding:"12px"}}><div style={{textAlign:"center",padding:"60px 20px"}}><div style={{fontSize:36,marginBottom:12}}>⏳</div><div style={{fontSize:16,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>KIS 조회 중...</div><div style={{fontSize:12,color:_T.hint,marginTop:6}}>등락률 상위 종목 분석 + 등급 산출</div></div></div>);
+// 데이터 없을 때 - 조회 버튼만 표시
+if(!data)return(<div style={{padding:"12px"}}><div style={{padding:"50px 20px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:16,fontWeight:700,color:_T.text,marginBottom:8,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.hint,marginBottom:20,lineHeight:1.6}}>KIS API에서 등락 +15% 이상 종목 가져와서<br/>네오 일반종배 / 90%종배로 자동 분류</div>{err&&<div style={{padding:"10px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:12}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"13px 28px",borderRadius:10,border:"none",background:_T.text,color:"#fff",fontSize:14,fontWeight:700,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
+// 메인 화면
+return(<div style={{padding:"12px"}}>
+{/* 상단 — 날짜 + 조회/저장 버튼 */}
+<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}>
+<div><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div><div style={{fontSize:11,color:_T.hint,marginTop:2}}>총 {data.summary.total}건 · 90%종배 {data.summary.c90} · 일반 {data.summary.cgen}</div></div>
+<div style={{display:"flex",gap:6}}>
+<button onClick={saveSignals} disabled={saving||!data.summary.c90&&!data.summary.cgen} style={{padding:"7px 12px",borderRadius:8,border:"none",background:saving?_T.line:_T.text,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
+<button onClick={load} style={{padding:"7px 12px",borderRadius:8,border:"1px solid "+_T.line,background:_T.card,color:_T.sub,fontSize:12,fontWeight:600,cursor:"pointer",letterSpacing:"-0.2px"}}>🔄 새로조회</button>
+</div></div>
+{saveMsg&&<div style={{padding:"9px 12px",borderRadius:8,background:saveMsg.startsWith("✅")?"#f0fdf4":"#fffbeb",color:saveMsg.startsWith("✅")?"#16a34a":"#d97706",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
+{err&&<div style={{padding:"9px 12px",borderRadius:8,background:"#fef2f2",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
+{/* 90%종배 */}
+<div style={{marginBottom:18}}>
+<SectionHeader label="네오 90%종배" count={data.summary.c90} accent={_T.up} emoji="🌟" desc="100만원/종목"/>
+{data.summary.c90===0?<Empty msg="오늘 90%종배 신호 없음 (침=S 또는 하=A+ 미충족)"/>:data.c90.map((s,i)=><Card key={s.code+i} s={s} accent={_T.up} emoji="🌟"/>)}
+</div>
+{/* 일반종배 */}
+<div style={{marginBottom:18}}>
+<SectionHeader label="네오 일반종배" count={data.summary.cgen} accent={_T.blue} emoji="⚡" desc="20만원/종목"/>
+{data.summary.cgen===0?<Empty msg="오늘 일반종배 신호 없음 (등락 15-29% & 거래대금≥50억 & 수급=기만 미충족)"/>:data.cgen.map((s,i)=><Card key={s.code+i} s={s} accent={_T.blue} emoji="⚡"/>)}
+</div>
+{/* 기타 — 필터 미통과 (접기) */}
+{data.summary.cetc>0&&(<details style={{marginBottom:10}}><summary style={{cursor:"pointer",fontSize:12,color:_T.hint,fontWeight:600,padding:"10px 12px",background:_T.bg,borderRadius:8,letterSpacing:"-0.2px"}}>📭 필터 미통과 ({data.summary.cetc}건) — 등락/거래대금/수급/주가 조건 미충족</summary><div style={{padding:"8px 0"}}>{data.cetc.map((s,i)=>(<div key={s.code+i} onClick={()=>onSignalClick&&onSignalClick(s.code)} style={{display:"flex",padding:"8px 12px",fontSize:11,color:_T.mute,borderBottom:"1px solid "+_T.bg,cursor:"pointer",gap:10,alignItems:"center"}}><span style={{flex:1,fontWeight:600,color:_T.sub}}>{s.name}</span><span style={{fontFamily:"ui-monospace,monospace",fontSize:10,background:_T.bg,padding:"2px 6px",borderRadius:4}}>{s.code}</span><span style={{color:_T.up,fontWeight:700}}>+{s.change}%</span><span style={{minWidth:60}}>침{s.ccG}/하{s.hsG}</span><span style={{minWidth:36}}>{s.investor||"—"}</span><span style={{minWidth:48,textAlign:"right"}}>{s.amount}억</span></div>))}</div></details>)}
+</div>);
+}
 
 function compressImg(file,maxW){return new Promise(function(res,rej){var img=new Image();img.onload=function(){var w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW}var c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);var d=c.toDataURL("image/jpeg",0.7);res({name:file.name,data:d.split(",")[1],type:"image/jpeg"})};img.onerror=rej;img.src=URL.createObjectURL(file)})}
 async function fetchStockSnapshot(code){
@@ -1482,7 +1566,7 @@ export default function App(){
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:"#fff",borderTop:"1px solid #e5e8eb",display:"flex",justifyContent:"center",zIndex:100,boxShadow:"0 -2px 8px rgba(0,0,0,0.02)"}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"db",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오오늘",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>(
+          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"db",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>(
             <button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
               <span style={{fontSize:20,opacity:page===t.id?1:0.55,transition:"opacity .15s"}}>{t.icon}</span>
               <span style={{fontSize:11,fontWeight:page===t.id?700:500,color:page===t.id?"#191f28":"#8b95a1",letterSpacing:"-0.2px"}}>{t.label}</span>
