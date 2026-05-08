@@ -728,7 +728,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 </div>
 </>)}
 </Card>
-{stats&&(<div style={{background:'linear-gradient(135deg, #1c2229 0%, #161b22 100%)',borderRadius:16,padding:'18px',marginBottom:10,color:'#fff',border:'1px solid '+_T.line}}>
+{stats&&(<div style={{background:theme==='dark'?'linear-gradient(135deg, #1c2229 0%, #161b22 100%)':'linear-gradient(135deg, #ffffff 0%, '+_T.linelt+' 100%)',borderRadius:16,padding:'18px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
 <div style={{display:'flex',marginBottom:16}}>
 <div style={{flex:1}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>총 건수</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.text}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
 <div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>익절률</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.up}}>{(stats.p5/stats.n*100).toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
@@ -1999,8 +1999,8 @@ export default function App(){
         {page==="jddb"&&<JudojuDB onRowClick={showFromD}/>}
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {(page==="filterdb"||page==="neobaedb")&&<NeoBaeFilterDB theme={theme} onRowClick={showFromD}/>}
-        {page==="ai"&&<div style={{background:_isDark?"#0d1117":"transparent",borderRadius:14,padding:_isDark?"4px":0,marginTop:_isDark?8:0}}><AIAnalysis onSave={saveHistory}/></div>}
-        {page==="history"&&<div style={{background:_isDark?"#0d1117":"transparent"}}><History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/></div>}
+        {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
+        {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
