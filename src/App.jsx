@@ -428,8 +428,35 @@ const [selJD,setSelJD]=useState([]);
 const [selHS,setSelHS]=useState([]);
 const [yf,setYf]=useState([]);
 const [activePreset,setActivePreset]=useState('alpha6');
-const [specialMode,setSpecialMode]=useState(null); // 'jb_normal'|'jb_strict'|'jb_extreme'|null
+const [specialMode,setSpecialMode]=useState(null); // 'neo7'|'neo25'|null
 const [sortMode,setSortMode]=useState('profit');
+// 라이브 누적 신호 (sector-api signals.json fetch)
+const [liveSignals,setLiveSignals]=useState([]);
+const [liveLoaded,setLiveLoaded]=useState(false);
+useEffect(()=>{
+  fetch("https://raw.githubusercontent.com/neo9999999999/sector-api/main/data/signals.json?_="+Date.now())
+    .then(r=>r.json())
+    .then(d=>{setLiveSignals(Array.isArray(d)?d:[]);setLiveLoaded(true);})
+    .catch(()=>{setLiveLoaded(true);});
+},[]);
+// 라이브 신호 분류 (네오 7% / 네오 25%)
+const liveClassify=(s)=>{
+  const ch=+s.rate||0;if(!(ch>=15&&ch<29))return null;
+  const a=+s.vol||0;if(a<100)return null;
+  const inv=s.supply||"";if(!(inv==="기관"||inv==="기만"||inv==="기+외"||inv==="외+기"))return null;
+  if((+s.score||0)<3)return null;
+  if(s.h120!==1)return null;
+  return a>=5000?"neo25":"neo7";
+};
+const liveByCat=useMemo(()=>{
+  const r={neo7:[],neo25:[]};
+  for(const s of liveSignals){const c=liveClassify(s);if(c)r[c].push(s);}
+  // 최신순 정렬
+  r.neo7.sort((a,b)=>String(b.signal_date||"").localeCompare(String(a.signal_date||"")));
+  r.neo25.sort((a,b)=>String(b.signal_date||"").localeCompare(String(a.signal_date||"")));
+  return r;
+},[liveSignals]);
+const _liveDate=(d)=>{const s=String(d||"");return s.length===8?s.slice(2,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8):s;};
 const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('mfdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
 useEffect(()=>{try{localStorage.setItem('mfdb_invAmt_v1',String(invAmt));}catch(e){}},[invAmt]);
 const filtered=useMemo(()=>{
@@ -479,6 +506,32 @@ const _resLbl=(r)=>{const s=String(r||"");if(!s)return "—";if(s==="BOTH")retur
 const _resCol=(r)=>{const s=String(r||"");if(s==="SL"||s==="FSL")return _T.down;if(s==="TO"||s.endsWith("일보유"))return _T.mute;return _T.up;};
 const GradeRow=({label,col,arr,setArr,opts})=>(<div style={{marginBottom:5,display:'flex',alignItems:'center',gap:8}}><div style={{fontSize:11,fontWeight:700,color:col,letterSpacing:'-0.2px',width:48,flexShrink:0}}>{label}</div><div style={{flex:1,display:'flex',flexWrap:'wrap'}}>{opts.map(g=>(<Chip key={g} arr={arr} setArr={setArr} val={g}/>))}</div></div>);
 return (<div style={{padding:'10px 12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif"}}>
+{/* 라이브 누적 신호 — sector-api signals.json 자동 fetch */}
+<Card title="📡 라이브 누적 신호" hint={liveLoaded?`총 ${liveSignals.length}건 / 7%: ${liveByCat.neo7.length}건 · 25%: ${liveByCat.neo25.length}건`:"로딩 중..."}>
+{liveLoaded&&(<>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6,marginBottom:6}}>
+{[{id:'neo7',l:'🚀 네오 7%',col:'#1f6dee',arr:liveByCat.neo7},{id:'neo25',l:'🐉 네오 25%',col:'#c81e1e',arr:liveByCat.neo25}].map(b=>(
+  <div key={b.id} style={{border:'1px solid '+_T.line,borderRadius:9,padding:'8px 10px',background:_T.linelt}}>
+    <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:4}}>
+      <span style={{fontSize:12,fontWeight:800,color:b.col,letterSpacing:'-0.3px'}}>{b.l}</span>
+      <span style={{fontSize:11,fontWeight:700,color:_T.text}}>{b.arr.length}건</span>
+    </div>
+    <div style={{maxHeight:140,overflowY:'auto'}}>
+      {b.arr.length?b.arr.slice(0,30).map((s,i)=>(
+        <div key={s.id||(s.code+s.signal_date)} onClick={()=>onRowClick&&onRowClick({n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:s.rate,mc:s.vol+'억',iv:s.supply,sc:s.score,g:s.grade,t:0,r:s.outcome||''})} style={{display:'flex',alignItems:'center',gap:6,padding:'5px 0',borderTop:i?'1px solid '+_T.line:'none',cursor:onRowClick?'pointer':'default'}}>
+          <span style={{fontSize:10,color:_T.hint,fontWeight:600,minWidth:50,fontFamily:'ui-monospace,monospace'}}>{_liveDate(s.signal_date)}</span>
+          <span style={{fontSize:11,fontWeight:700,color:_T.text,flex:1,letterSpacing:'-0.2px'}}>{s.name}</span>
+          <span style={{fontSize:10,color:_T.up,fontWeight:700}}>+{(+s.rate).toFixed(1)}%</span>
+          <span style={{fontSize:10,color:_T.hint,fontWeight:500}}>{s.vol}억</span>
+        </div>
+      )):<div style={{fontSize:11,color:_T.mute,textAlign:'center',padding:'14px 0'}}>누적 신호 없음</div>}
+    </div>
+  </div>
+))}
+</div>
+<div style={{fontSize:10,color:_T.hint,fontWeight:500,letterSpacing:'-0.2px',padding:'4px 2px'}}>매일 KST 15:00 자동 누적 / 클릭시 일자별 차트 모달</div>
+</>)}
+</Card>
 {/* 검증된 프리셋 */}
 <Card title="검증된 프리셋" hint="6년 24,355건">
 {/* 1행: 6년 등급 베스트 (상단 강조 2개) */}
