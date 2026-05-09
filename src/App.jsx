@@ -663,6 +663,7 @@ const liveAsD=useMemo(()=>{
     return {
       n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:+s.rate||0,mc:s.vol+'억',iv:s.supply,sc:+s.score||0,g:s.grade,
       h60:s.h60===1?1:0,h120:s.h120===1?1:0,
+      ma5:+s.ma5||0,ma20:+s.ma20||0,ma60:+s.ma60||0,maAlign:s.maAlign===1?1:0,cum5:+s.cum5||0,
       tp1:cat==='neo7'?7:25,tp2:cat==='neo7'?7:25,
       t:0,r:'진행중',exd:'',exdy:0,
       tp1d:'',tp2d:'',tp1dy:0,tp2dy:0,
@@ -955,6 +956,8 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:11,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
+{r._isLive&&r.maAlign===1&&<span style={{fontSize:10,fontWeight:700,color:'#fff',background:'#10b981',padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="MA5 > MA20 > MA60">📈 MA정배열</span>}
+{r._isLive&&Math.abs(+r.cum5||0)>=1&&<span style={{fontSize:10,fontWeight:700,color:(+r.cum5||0)>=0?'#dc2626':'#2563eb',background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="5일 누적 등락률">5일 {(+r.cum5||0)>=0?'+':''}{(+r.cum5||0).toFixed(1)}%</span>}
 </div>
 {!r._isLive&&<span style={{fontWeight:800,color:_resCol(r.r),fontSize:13,padding:'4px 10px',background:_T.bg,borderRadius:6,border:'1px solid '+_T.line}}>{_resLbl(r.r)}</span>}
 {r._isLive&&<span style={{fontSize:13,fontWeight:800,color:'#f59e0b',padding:'4px 10px',background:'rgba(245,158,11,0.12)',borderRadius:6,border:'1px solid rgba(245,158,11,0.35)'}}>진행중</span>}
