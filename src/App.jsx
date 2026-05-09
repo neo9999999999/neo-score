@@ -613,6 +613,15 @@ const _neo90Filter=(r)=>{
   const hsAplus=r.hsG==='A+';
   return ccS||hsAplus;
 };
+// 옵션B 정밀형 = 네오 90% + 60일+120일 둘 다 신고가 + 외만 제외 (기만/기+외만)
+const _neo90BFilter=(r)=>{
+  if(!_neo90Filter(r))return false;
+  if(r.h60!==1||r.h120!==1)return false;
+  // 외만 제외: 기만 또는 기+외/외+기만 통과
+  const inv=r.iv;
+  if(!(inv==='기관'||inv==='기만'||inv==='기+외'||inv==='외+기'))return false;
+  return true;
+};
 // 시뮬: 5% 도달 후 트레일 -3% (peak × 0.97 가격 기준), 15일 만기
 const _simNeo90=(ohlc)=>{
   if(!ohlc||!ohlc.length)return null;
@@ -698,6 +707,9 @@ if(mode==='neo25'){
 if(mode==='neo90'){
   return _neo90Filter(r);
 }
+if(mode==='neo90b'){
+  return _neo90BFilter(r);
+}
 // 맞춤 모드 — 수급 다중선택
 if(selSup.length){
   const ok=selSup.some(sid=>{const o=_supplyOpts.find(x=>x.id===sid);return o&&o.match(r.iv);});
@@ -707,8 +719,8 @@ if(selSup.length){
 }
 return true;
 });
-// 네오 90% 모드: 시뮬 결과로 t/r/exd/tp1d 덮어쓰기
-if(mode==='neo90'){
+// 네오 90%/옵션B 모드: 시뮬 결과로 t/r/exd/tp1d 덮어쓰기
+if(mode==='neo90'||mode==='neo90b'){
   arr=arr.map(r=>{
     if(r._isLive)return r;
     const sim=_simNeo90(r.ohlc);
@@ -751,15 +763,16 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   {id:'custom',l:'네오 맞춤',sub:'자유 검색',col:_T.accent},
   {id:'neo7',l:'네오 7%',sub:'100~5000억',col:'#1f6dee'},
   {id:'neo25',l:'네오 25%',sub:'5000억+',col:'#c81e1e'},
-  {id:'neo90',l:'네오 90%',sub:'침S/하A+ 트레일',col:'#10b981'}
+  {id:'neo90',l:'네오 90%',sub:'침S/하A+ 트레일',col:'#10b981'},
+  {id:'neo90b',l:'옵션B',sub:'90% + 60+120신고 정밀',col:'#f59e0b'}
 ].map(m=>{const a=mode===m.id;return(
-  <button key={m.id} onClick={()=>setMode(m.id)} style={{flex:'1 1 0',padding:'11px 8px',border:'none',background:a?m.col:'transparent',color:a?'#fff':_T.sub,borderRadius:11,cursor:'pointer',transition:'all .15s',letterSpacing:'-0.3px',fontWeight:a?800:600}}>
-    <div style={{fontSize:13}}>{m.l}</div>
-    <div style={{fontSize:10,fontWeight:500,opacity:a?0.85:0.7,marginTop:2}}>{m.sub}</div>
+  <button key={m.id} onClick={()=>setMode(m.id)} style={{flex:'1 1 0',padding:'10px 6px',border:'none',background:a?m.col:'transparent',color:a?'#fff':_T.sub,borderRadius:10,cursor:'pointer',transition:'all .15s',letterSpacing:'-0.3px',fontWeight:a?800:600,minWidth:0}}>
+    <div style={{fontSize:12,whiteSpace:'nowrap'}}>{m.l}</div>
+    <div style={{fontSize:9,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
 {/* 필터 카드 */}
-<Card title={mode==='custom'?'필터 (맞춤)':mode==='neo7'?'네오 7% 자동 필터':mode==='neo25'?'네오 25% 자동 필터':'네오 90% 자동 필터'} hint={mode==='neo7'?'+7% 즉익 · 25일 만기 · 평균 +0.99%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':yf.length>=2?yf.join('+')+'년':'등락 15-29% · 거래대금≥50억'}>
+<Card title={mode==='custom'?'필터 (맞춤)':mode==='neo7'?'네오 7% 자동 필터':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='neo7'?'+7% 즉익 · 25일 만기 · 평균 +0.99%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':yf.length>=2?yf.join('+')+'년':'등락 15-29% · 거래대금≥50억'}>
 {mode!=='custom'&&(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
 {mode==='neo7'&&(<>
   · 등락률 +15% ~ +29%<br/>
@@ -782,6 +795,15 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   · 등급 <b style={{color:_T.text}}>침착해 S/S+ 또는 하승훈 A+</b><br/>
   · 청산: <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> (peak × 0.97)<br/>
   · <b style={{color:_T.text}}>15일 만기 강제 청산 / 손절 없음</b>
+</>)}
+{mode==='neo90b'&&(<>
+  · 등락률 +15% ~ +29%<br/>
+  · 거래대금 <b style={{color:_T.text}}>50억 이상</b><br/>
+  · 수급 <b style={{color:_T.text}}>기만 또는 기+외</b> (외만 제외)<br/>
+  · 등급 <b style={{color:_T.text}}>침착해 S/S+ 또는 하승훈 A+</b><br/>
+  · 신고가 <b style={{color:_T.text}}>60일 + 120일 동시 갱신</b><br/>
+  · 청산: <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> · 15일 만기 · 손절X<br/>
+  · 6년 백테스트 <b style={{color:_T.text}}>1건당 +30% 효율</b> (네오 90% 대비)
 </>)}
 </div>)}
 {/* 연도 필터 — 모든 모드에서 표시 */}
@@ -830,14 +852,14 @@ const sLbl=_supLabel(r.iv);
 let tp1=r.tp1||0, tp2=r.tp2||0;
 if(mode==='neo7'){tp1=7;tp2=7;}
 else if(mode==='neo25'){tp1=25;tp2=50;}
-else if(mode==='neo90'){tp1=5;tp2=0;}
+else if(mode==='neo90'||mode==='neo90b'){tp1=5;tp2=0;}
 // 도달일 재계산 (OHLC에서 모드 익절가 기준)
 const _calcReach=(target)=>{if(!r.ohlc||!r.ohlc.length)return null;for(let i=0;i<Math.min(r.ohlc.length,25);i++){if((+r.ohlc[i].h||0)>=target)return i+1;}return null;};
 let tp1Reached, tp2Reached, tp1dy, tp2dy, tp1d, tp2d;
 if(mode==='neo7'||mode==='neo25'){
   const d1=_calcReach(tp1);tp1Reached=d1!=null;tp1dy=d1||0;tp1d=d1!=null&&r.ohlc?r.ohlc[d1-1].d:'';
   const d2=mode==='neo25'?_calcReach(tp2):null;tp2Reached=d2!=null;tp2dy=d2||0;tp2d=d2!=null&&r.ohlc?r.ohlc[d2-1].d:'';
-}else if(mode==='neo90'){
+}else if(mode==='neo90'||mode==='neo90b'){
   // simNeo90 결과 활용
   tp1Reached=!!(r.tp1d&&r.tp1dy);tp1dy=r.tp1dy||0;tp1d=r.tp1d||'';
   tp2Reached=false;tp2dy=0;tp2d='';
@@ -846,8 +868,8 @@ if(mode==='neo7'||mode==='neo25'){
   tp1dy=r.tp1dy||0;tp2dy=r.tp2dy||0;tp1d=r.tp1d||'';tp2d=r.tp2d||'';
 }
 const _profit=(r.t||0);
-// 모드별 익절 표시: 7%/90% 모드는 단일, 25%/custom은 1차/2차 분리
-const _showSingle=mode==='neo7'||mode==='neo90';
+// 모드별 익절 표시: 7%/90%/옵션B 모드는 단일, 25%/custom은 1차/2차 분리
+const _showSingle=mode==='neo7'||mode==='neo90'||mode==='neo90b';
 return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
 {/* 1행: 종목명 (큼) + 수급/LIVE + 우측 진행중/결과 */}
 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:12}}>
@@ -876,8 +898,8 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   // 7%/90% 모드: 단일 익절 + 최종수익
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
     <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
-      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='neo90'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{mode==='neo90'&&r._peak>0&&<div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='neo90'?'5% 미도달':'미도달'}</div>}
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='neo90'||mode==='neo90b'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
+      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{(mode==='neo90'||mode==='neo90b')&&r._peak>0&&<div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='neo90'||mode==='neo90b'?'5% 미도달':'미도달'}</div>}
     </div>
     <div style={{textAlign:'center'}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
