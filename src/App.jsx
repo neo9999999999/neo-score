@@ -589,8 +589,8 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
-// 모드 state — leader(대장주) / neo7 / neo25 / neo90 / neo90b
-const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo7','neo25','neo90','neo90b'];return valid.includes(v)?v:'neo7';}catch(e){return 'neo7';}});
+// 모드 state — leader(네오 테마) / neo25 / neo90 / neo90b
+const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo25','neo90','neo90b'];if(valid.includes(v))return v;if(v==='neo7'||v==='custom')return 'neo25';return 'leader';}catch(e){return 'leader';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
 // 라이브 누적 신호 fetch (sector-api signals.json)
 const [liveSignals,setLiveSignals]=useState([]);
@@ -648,13 +648,13 @@ const _simNeo90=(ohlc)=>{
   }
   return {t,r:'시간컷',tp1d:firstReachDate,tp1dy:firstReachDay,exd:last.d,exdy:lastIdx+1,_peak:peak};
 };
-// 라이브 신호 분류 — 완화 조건 (등락 15-29 + 100억+ + 평일)
-// 점수/120일/수급은 historical 백테스트와 달리 라이브에선 풀어 표시
+// 라이브 신호 분류 — 완화 조건 (등락 10-29 + 500억+ + 평일)
+// 5000억+ → neo25, 그 외 → leader (네오 테마, 1,2,3등주 후보)
 const liveClassify=(s)=>{
   if(!_isWeekday(s.signal_date))return null;
-  const ch=+s.rate||0;if(!(ch>=15&&ch<29))return null;
-  const a=+s.vol||0;if(a<100)return null;
-  return a>=5000?"neo25":"neo7";
+  const ch=+s.rate||0;if(!(ch>=10&&ch<29))return null;
+  const a=+s.vol||0;if(a<500)return null;
+  return a>=5000?"neo25":"leader";
 };
 // 라이브 신호 → D 형식으로 변환 (메인 리스트와 통합)
 const liveAsD=useMemo(()=>{
@@ -664,7 +664,7 @@ const liveAsD=useMemo(()=>{
       n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:+s.rate||0,mc:s.vol+'억',iv:s.supply,sc:+s.score||0,g:s.grade,
       h60:s.h60===1?1:0,h120:s.h120===1?1:0,
       ma5:+s.ma5||0,ma20:+s.ma20||0,ma60:+s.ma60||0,maAlign:s.maAlign===1?1:0,cum5:+s.cum5||0,
-      tp1:cat==='neo7'?7:25,tp2:cat==='neo7'?7:25,
+      tp1:cat==='neo25'?25:5,tp2:cat==='neo25'?50:0,
       t:0,r:'진행중',exd:'',exdy:0,
       tp1d:'',tp2d:'',tp1dy:0,tp2dy:0,
       _isLive:true,_cat:cat
@@ -689,7 +689,6 @@ const amt=_amtNum(r.mc);
 // 라이브 신호 — mode 필터 우회 (단 거래대금 영역만 매칭)
 if(r._isLive){
   if(mode==='leader')return amt>=500;
-  if(mode==='neo7')return amt>=100&&amt<5000;
   if(mode==='neo25')return amt>=5000;
   return amt>=100;
 }
@@ -699,13 +698,6 @@ if(mode==='leader'){
   if(amt<500)return false;
   // 시장 KS/KO만
   if(r.m!=='KS'&&r.m!=='KO')return false;
-  return true;
-}
-if(mode==='neo7'){
-  if(amt<100||amt>=5000)return false;
-  if(!_qualifyInst(r.iv))return false;
-  if((+r.sc||0)<3)return false;
-  if(r.h120!==1)return false;
   return true;
 }
 if(mode==='neo25'){
@@ -816,11 +808,10 @@ const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+'만':n.toLocaleS
 const _resLbl=(r)=>{const s=String(r||"");if(!s)return "—";if(s==="진행중")return "진행중";if(s==="BOTH")return "익절";if(s==="TP1")return "1차익절";if(s==="TP2")return "익절";if(s==="TP1_BE")return "익절+본절";if(s==="TP1_SL")return "익절+손절";if(s==="TP1_FSL")return "익절+강제SL";if(s==="SL")return "손절";if(s==="FSL")return "강제손절";if(s==="TRAIL")return "트레일익절";if(s==="TO")return "15일만료";if(s.endsWith("일보유"))return s;return s;};
 const _resCol=(r)=>{const s=String(r||"");if(s==="진행중")return"#f59e0b";if(s==="SL"||s==="FSL")return _T.down;if(s==="TO"||s.endsWith("일보유"))return _T.mute;return _T.up;};
 return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamily:"-apple-system, 'Pretendard', sans-serif",color:_T.text}}>
-{/* 모드 토글 — 맞춤 / 네오 7% / 네오 25% */}
+{/* 모드 토글 — 네오 테마 / 네오 25% / 네오 90% / 옵션B */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:14,padding:4,marginBottom:10,gap:2}}>
 {[
-  {id:'leader',l:'대장주',sub:'테마 1,2,3등',col:'#a855f7'},
-  {id:'neo7',l:'네오 7%',sub:'100~5000억',col:'#1f6dee'},
+  {id:'leader',l:'네오 테마',sub:'1,2,3등주',col:'#a855f7'},
   {id:'neo25',l:'네오 25%',sub:'5000억+',col:'#c81e1e'},
   {id:'neo90',l:'네오 90%',sub:'침S/하A+ 트레일',col:'#10b981'},
   {id:'neo90b',l:'옵션B',sub:'90% + 60+120신고 정밀',col:'#f59e0b'}
@@ -831,7 +822,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   </button>);})}
 </div>
 {/* 필터 카드 */}
-<Card title={mode==='leader'?'대장주 자동 필터 (테마 1,2,3등)':mode==='neo7'?'네오 7% 자동 필터':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='leader'?'시장별 ≥3건 발화 → 1,2,3등 추출 · 베팅 50/33.5/16.5':mode==='neo7'?'+7% 즉익 · 25일 만기 · 평균 +0.99%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':'등락 15-29% · 거래대금≥50억'}>
+<Card title={mode==='leader'?'네오 테마 자동 필터 (1,2,3등주)':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='leader'?'시장별 ≥3건 발화 → 1,2,3등 추출 · 베팅 50/33.5/16.5':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':'등락 15-29% · 거래대금≥50억'}>
 {(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
 {mode==='leader'&&(<>
   · 등락률 +10% ~ +28%<br/>
@@ -839,13 +830,6 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 발화</b> 시 등락률 1,2,3등 추출<br/>
   · 베팅 가중: <b style={{color:_T.text}}>1등 50% / 2등 33.5% / 3등 16.5%</b><br/>
   · 청산: <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> · 15일 만기
-</>)}
-{mode==='neo7'&&(<>
-  · 등락률 +15% ~ +29%<br/>
-  · 거래대금 <b style={{color:_T.text}}>100억 ~ 5,000억</b><br/>
-  · 수급 <b style={{color:_T.text}}>기관 또는 기관+외인</b><br/>
-  · 점수 <b style={{color:_T.text}}>3점 이상</b> + 120일 신고가<br/>
-  · 청산: <b style={{color:_T.text}}>+7% 즉시 익절 / 25일 만기</b>
 </>)}
 {mode==='neo25'&&(<>
   · 등락률 +15% ~ +29%<br/>
@@ -925,15 +909,14 @@ const won=Math.round(invAmt*((r.t||0)/100));
 const sLbl=_supLabel(r.iv);
 // 모드별 표시 익절가 — 7%/25%/90% 모드는 모드 룰, 맞춤은 historical 등급별 tp1/tp2
 let tp1=r.tp1||0, tp2=r.tp2||0;
-if(mode==='neo7'){tp1=7;tp2=7;}
-else if(mode==='neo25'){tp1=25;tp2=50;}
+if(mode==='neo25'){tp1=25;tp2=50;}
 else if(mode==='neo90'||mode==='neo90b'||mode==='leader'){tp1=5;tp2=0;}
 // 도달일 재계산 (OHLC에서 모드 익절가 기준)
 const _calcReach=(target)=>{if(!r.ohlc||!r.ohlc.length)return null;for(let i=0;i<Math.min(r.ohlc.length,25);i++){if((+r.ohlc[i].h||0)>=target)return i+1;}return null;};
 let tp1Reached, tp2Reached, tp1dy, tp2dy, tp1d, tp2d;
-if(mode==='neo7'||mode==='neo25'){
+if(mode==='neo25'){
   const d1=_calcReach(tp1);tp1Reached=d1!=null;tp1dy=d1||0;tp1d=d1!=null&&r.ohlc?r.ohlc[d1-1].d:'';
-  const d2=mode==='neo25'?_calcReach(tp2):null;tp2Reached=d2!=null;tp2dy=d2||0;tp2d=d2!=null&&r.ohlc?r.ohlc[d2-1].d:'';
+  const d2=_calcReach(tp2);tp2Reached=d2!=null;tp2dy=d2||0;tp2d=d2!=null&&r.ohlc?r.ohlc[d2-1].d:'';
 }else if(mode==='neo90'||mode==='neo90b'||mode==='leader'){
   // simNeo90 결과 활용
   tp1Reached=!!(r.tp1d&&r.tp1dy);tp1dy=r.tp1dy||0;tp1d=r.tp1d||'';
@@ -943,8 +926,8 @@ if(mode==='neo7'||mode==='neo25'){
   tp1dy=r.tp1dy||0;tp2dy=r.tp2dy||0;tp1d=r.tp1d||'';tp2d=r.tp2d||'';
 }
 const _profit=(r.t||0);
-// 모드별 익절 표시: 7%/90%/옵션B/대장주 모드는 단일, 25%는 1차/2차 분리
-const _showSingle=mode==='neo7'||mode==='neo90'||mode==='neo90b'||mode==='leader';
+// 모드별 익절 표시: 90%/옵션B/네오테마 모드는 단일, 25%는 1차/2차 분리
+const _showSingle=mode==='neo90'||mode==='neo90b'||mode==='leader';
 // 대장주 랭크 배지 색상
 const _rankCol=r._rank===1?'#dc2626':r._rank===2?'#f59e0b':r._rank===3?'#10b981':null;
 return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
@@ -1071,20 +1054,18 @@ const _classify=(s)=>{
   const h60=+s.h60||0, h120=+s.h120||0;
   const cc=calcChimchakhaeScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk});
   const hs=calcHaseunghoonScore({change:ch,amount:amt,investor:inv,market:mkt,wick:wk,breakType:""});
-  // 진입 조건 미통과 사유 (네오7%, 네오25% 공통 base)
+  // 진입 조건 미통과 사유 (네오 25% base)
   const reasons=[];
   if(!(ch>=15&&ch<29))reasons.push(ch<15?`등락 ${ch}% (15% 미달)`:`등락 ${ch}% (29% 초과)`);
-  if(amt<100)reasons.push(`거래대금 ${amt}억 (100억 미달)`);
+  if(amt<5000)reasons.push(`거래대금 ${amt}억 (5,000억 미달)`);
   if(px>0&&px<1000)reasons.push(`주가 ${px.toLocaleString()}원 (1,000원 미달)`);
   if(!_qualifyInst(inv))reasons.push(`수급 ${inv||"없음"} (기관/기+외 외)`);
   if(sc<3)reasons.push(`점수 ${sc} (3점 미달)`);
   if(h120!==1)reasons.push(`120일 신고가 미달성`);
   const baseOK=reasons.length===0;
-  // 모드 분류: 100~5000억=neo7, 5000억+=neo25
+  // 모드 분류: 5000억+=neo25 (네오 25%) / 그 외=기타 (네오 테마는 별도 _classifyLeaders로 추출)
   let category="기타";
-  if(baseOK){
-    category=amt>=5000?"neo25":(amt>=100&&amt<5000?"neo7":"기타");
-  }
+  if(baseOK&&amt>=5000)category="neo25";
   return {...s,ccG:cc.grade,hsG:hs.grade,category,supplyTag:_supplyLabel(inv),failReason:reasons[0]||"",h60,h120};
 };
 const load=useCallback(async()=>{
@@ -1097,10 +1078,10 @@ const load=useCallback(async()=>{
     const seen=new Set();
     const uniq=all.filter(x=>{if(seen.has(x.code))return false;seen.add(x.code);return true;});
     const proc=uniq.map(_classify).sort((a,b)=>(b.amount||0)-(a.amount||0));
-    const neo7=proc.filter(s=>s.category==="neo7");
     const neo25=proc.filter(s=>s.category==="neo25");
+    const leader=_classifyLeaders(proc);
     const cetc=proc.filter(s=>s.category==="기타");
-    const newData={date:j.date,time:j.time,all:proc,neo7,neo25,cetc,summary:{total:proc.length,neo7:neo7.length,neo25:neo25.length,cetc:cetc.length}};
+    const newData={date:j.date,time:j.time,all:proc,neo25,leader,cetc,summary:{total:proc.length,neo25:neo25.length,leader:leader.length,cetc:cetc.length}};
     setData(newData);
     try{localStorage.setItem("today_signals_v4",JSON.stringify({ts:Date.now(),data:newData}));}catch(e){}
     if(onSignalsLoaded)onSignalsLoaded(proc);
@@ -1108,12 +1089,12 @@ const load=useCallback(async()=>{
   setLoading(false);
 },[]);
 // 마운트 시 캐시만 로드 (자동 fetch 안 함 — 수동 조회만)
-useEffect(()=>{try{localStorage.removeItem("today_signals_v2");localStorage.removeItem("today_signals_v3");}catch(e){}try{const c=localStorage.getItem("today_signals_v4");if(c){const p=JSON.parse(c);if(p&&p.data&&(p.data.neo7||p.data.neo25)){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
+useEffect(()=>{try{localStorage.removeItem("today_signals_v2");localStorage.removeItem("today_signals_v3");}catch(e){}try{const c=localStorage.getItem("today_signals_v4");if(c){const p=JSON.parse(c);if(p&&p.data&&(p.data.neo25||p.data.leader)){setData(p.data);if(onSignalsLoaded)onSignalsLoaded(p.data.all||[]);}}}catch(e){}},[]);
 const saveSignals=async()=>{
   if(!data||!data.all||!data.all.length)return;
   setSaving(true);setSaveMsg(null);
   try{
-    const targets=data.all.filter(s=>s.category==="neo7"||s.category==="neo25");
+    const targets=data.all.filter(s=>s.category==="neo25");
     const r=await fetch(TRACK_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(targets.map(s=>({code:s.code,name:s.name,entry_price:s.price,rate:s.change,score:s.score,grade:"네오종배",supply:s.investor,wick:s.wick,vol:s.amount,market:s.market,tp1:s.tp1,tp2:s.tp2,sl:s.sl})))});
     const j=await r.json();
     setSaveMsg(j.github_ok?("✅ "+j.added+"건 저장"):"⚠️ GITHUB_TOKEN 미설정");
@@ -1123,8 +1104,8 @@ const saveSignals=async()=>{
 const _T=theme==="dark"
   ?{text:"#e6edf3",body:"#c9d1d9",sub:"#8b949e",hint:"#6e7681",mute:"#484f58",line:"#30363d",linelt:"#21262d",bg:"#0d1117",card:"#161b22",cardHov:"#1c2229",up:"#f85149",down:"#58a6ff",green:"#10b981",cc:"#22d3ee",hs:"#f97316",blue:"#3b82f6",accent:"#7c3aed"}
   :{text:"#191f28",body:"#333d4b",sub:"#4e5968",hint:"#6b7684",mute:"#8b95a1",line:"#e5e8eb",linelt:"#f2f4f6",bg:"#f9fafb",card:"#ffffff",cardHov:"#f5f7fa",up:"#f04452",down:"#1f6dee",green:"#10b981",cc:"#0367c4",hs:"#c81e1e",blue:"#3182f6",accent:"#7c3aed"};
-// 활성 탭 (좌우 분기): neo7 | neo25
-const [activeTab,setActiveTab]=useState(()=>{try{return localStorage.getItem("today_tab_v1")||"neo7";}catch(e){return "neo7";}});
+// 활성 탭 (좌우 분기): neo25 | leader (네오 테마)
+const [activeTab,setActiveTab]=useState(()=>{try{const v=localStorage.getItem("today_tab_v1");if(v==="neo25"||v==="leader")return v;return "neo25";}catch(e){return "neo25";}});
 useEffect(()=>{try{localStorage.setItem("today_tab_v1",activeTab);}catch(e){}},[activeTab]);
 // 테마 1,2,3등 자본 (200만 기본)
 const [leaderCapital,setLeaderCapital]=useState(()=>{try{return +localStorage.getItem("today_leader_cap_v1")||2000000;}catch(e){return 2000000;}});
@@ -1179,8 +1160,8 @@ if(loading)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"
 if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
-  neo7:{l:"네오 7%",emoji:"🚀",col:"#1f6dee",cnt:(data.summary&&data.summary.neo7)||0,winRate:"76.7%",avg:"+0.99%",amtRange:"100억 ~ 5,000억 미만",tp:"+7%",strategy:"소형~중형 종목, 빠른 익절 + 빠른 회전"},
-  neo25:{l:"네오 25%",emoji:"🐉",col:"#c81e1e",cnt:(data.summary&&data.summary.neo25)||0,winRate:"51.3%",avg:"+4.75%",amtRange:"5,000억 이상",tp:"+25%",strategy:"대장주, 큰 수익 추구"}
+  neo25:{l:"네오 25%",emoji:"🐉",col:"#c81e1e",cnt:(data.summary&&data.summary.neo25)||0,winRate:"51.3%",avg:"+4.75%",amtRange:"5,000억 이상",tp:"+25%",strategy:"대장주, 큰 수익 추구"},
+  leader:{l:"네오 테마",emoji:"📈",col:"#a855f7",cnt:(data.summary&&data.summary.leader)||0,winRate:"—",avg:"+4.70%",amtRange:"500억 이상 / 시장별 ≥3건 발화",tp:"5% 후 트레일",strategy:"테마 1,2,3등주 (베팅 50/33.5/16.5)"}
 };
 const tab=_tabConf[activeTab];
 const list=data[activeTab]||[];
@@ -1189,19 +1170,19 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}>
   <div>
     <div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div>
-    <div style={{fontSize:11,color:_T.hint,marginTop:3}}>총 {(data.summary&&data.summary.total)||0}건 · 7% <b style={{color:"#1f6dee"}}>{_tabConf.neo7.cnt}</b> · 25% <b style={{color:"#c81e1e"}}>{_tabConf.neo25.cnt}</b> · 미통과 {(data.summary&&data.summary.cetc)||0}</div>
+    <div style={{fontSize:11,color:_T.hint,marginTop:3}}>총 {(data.summary&&data.summary.total)||0}건 · 25% <b style={{color:"#c81e1e"}}>{_tabConf.neo25.cnt}</b> · 테마 <b style={{color:"#a855f7"}}>{_tabConf.leader.cnt}</b> · 미통과 {(data.summary&&data.summary.cetc)||0}</div>
   </div>
   <div style={{display:"flex",gap:6}}>
-    <button onClick={saveSignals} disabled={saving||!(data.summary&&(data.summary.neo7+data.summary.neo25))} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.accent,background:saving?_T.line:_T.accent,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
+    <button onClick={saveSignals} disabled={saving||!(data.summary&&data.summary.neo25)} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.accent,background:saving?_T.line:_T.accent,color:saving?_T.mute:"#fff",fontSize:12,fontWeight:700,cursor:saving?"default":"pointer",letterSpacing:"-0.2px"}}>📌 신호저장</button>
     <button onClick={load} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,fontSize:12,fontWeight:600,cursor:"pointer",letterSpacing:"-0.2px"}}>🔄 새로조회</button>
   </div>
 </div>
 {saveMsg&&<div style={{padding:"10px 14px",borderRadius:9,background:saveMsg.startsWith("✅")?"rgba(16,185,129,0.12)":"rgba(245,158,11,0.12)",border:"1px solid "+(saveMsg.startsWith("✅")?"rgba(16,185,129,0.35)":"rgba(245,158,11,0.35)"),color:saveMsg.startsWith("✅")?_T.green:"#f59e0b",fontSize:12,marginBottom:10,fontWeight:600}}>{saveMsg}</div>}
 {err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:10,fontWeight:600}}>⚠️ {err}</div>}
 
-{/* 좌우 탭 — 네오 7% / 네오 25% */}
+{/* 좌우 탭 — 네오 25% / 네오 테마 (1,2,3등주) */}
 <div style={{display:"flex",gap:6,marginBottom:12}}>
-  {["neo7","neo25"].map(tk=>{
+  {["neo25","leader"].map(tk=>{
     const t=_tabConf[tk];const a=activeTab===tk;
     return(
       <button key={tk} onClick={()=>setActiveTab(tk)} style={{flex:"1 1 0",padding:"14px 12px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",transition:"all .12s",textAlign:"left"}}>
@@ -1221,48 +1202,39 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
     <span style={{fontSize:11,fontWeight:700,color:tab.col,letterSpacing:"-0.2px"}}>📋 진입 조건</span>
     <span style={{fontSize:10,color:_T.hint,fontWeight:500}}>{tab.strategy}</span>
   </div>
-  <div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px",marginBottom:10}}>
+  {activeTab==='leader'?(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px",marginBottom:10}}>
+    · 등락률 <b style={{color:_T.text}}>+10% ~ +28%</b><br/>
+    · 거래대금 <b style={{color:_T.text}}>500억 이상</b><br/>
+    · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 동시 발화</b> 시 1,2,3등 추출<br/>
+    · 베팅 가중 <b style={{color:_T.text}}>1등 50% / 2등 33.5% / 3등 16.5%</b>
+  </div>):(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px",marginBottom:10}}>
     · 등락률 <b style={{color:_T.text}}>+15% ~ +29%</b><br/>
     · 거래대금 <b style={{color:_T.text}}>{tab.amtRange}</b><br/>
     · 수급 <b style={{color:_T.text}}>기관 또는 기관+외인</b> 동반매수<br/>
     · 점수 <b style={{color:_T.text}}>3점 이상</b> + <b style={{color:_T.text}}>120일 신고가</b>
-  </div>
+  </div>)}
   <div style={{height:1,background:_T.line,margin:"0 -14px 10px"}}/>
   <div style={{display:"flex",gap:8,alignItems:"baseline",marginBottom:6}}>
     <span style={{fontSize:11,fontWeight:700,color:tab.col,letterSpacing:"-0.2px"}}>💰 청산 룰</span>
   </div>
-  <div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+  {activeTab==='leader'?(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
+    · <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> (peak × 0.97)<br/>
+    · <b style={{color:_T.text}}>15일 만기 강제 청산</b> · 손절가 없음<br/>
+    · 5년4개월 백테스트 평균 <b style={{color:_T.up}}>+4.70%</b> (모든 연도 양수)
+  </div>):(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
     · <b style={{color:_T.text}}>{tab.tp} 도달시 100% 즉시 익절</b><br/>
     · 미도달시 <b style={{color:_T.text}}>25일 만기 강제 청산</b><br/>
     · 손절가 없음
-  </div>
+  </div>)}
 </div>
 
 {/* 활성 탭 종목 리스트 */}
-<div style={{marginBottom:18}}>
-  {!list.length?<Empty msg={`오늘 ${tab.l} 조건 충족 종목 없음`}/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={tab.col}/>)}
-</div>
-
-{/* 📈 테마 1,2,3등 — 시장별 ≥3건 발화 시 */}
-{(()=>{
-  const leaders=_classifyLeaders(data.all||[]);
-  if(!leaders.length)return null;
-  const COL="#a855f7";
+{activeTab==='leader'?(()=>{
+  const leaders=data.leader||[];
+  if(!leaders.length)return <div style={{marginBottom:18}}><Empty msg="오늘 1,2,3등 조건 충족 시장 없음 (시장별 ≥3건 발화 필요)"/></div>;
   const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+"만":n.toLocaleString());
   return(<div style={{marginBottom:18}}>
-    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"12px 14px",background:COL,borderRadius:11}}>
-      <span style={{fontSize:18}}>📈</span>
-      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>테마 1,2,3등</span>
-      <span style={{fontSize:11,fontWeight:700,color:"#fff",background:"rgba(255,255,255,0.22)",padding:"2px 8px",borderRadius:10}}>{leaders.length}건</span>
-      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>26-01 백테스트 +30.19%</div>
-    </div>
     <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:11,marginBottom:8}}>
-      <div style={{fontSize:11,fontWeight:700,color:COL,marginBottom:6,letterSpacing:"-0.2px"}}>📋 진입 룰</div>
-      <div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px",marginBottom:8}}>
-        · 거래대금 <b style={{color:_T.text}}>500억 이상</b> + 등락률 <b style={{color:_T.text}}>10~28%</b><br/>
-        · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 동시 발화</b> 시 1,2,3등 선정<br/>
-        · D일 14:50~15:30 분할 매수 / D+1 시초가 매도
-      </div>
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
         <span style={{fontSize:11,fontWeight:700,color:_T.text,letterSpacing:"-0.2px"}}>💰 자본</span>
         <input type="number" value={leaderCapital} onChange={e=>setLeaderCapital(+e.target.value||0)} step="100000" style={{flex:1,padding:"6px 10px",border:"1px solid "+_T.line,borderRadius:7,fontSize:12,fontWeight:700,color:_T.text,background:_T.bg,outline:"none"}}/>
@@ -1303,7 +1275,9 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
       </div>);
     })}
   </div>);
-})()}
+})():(<div style={{marginBottom:18}}>
+  {!list.length?<Empty msg={`오늘 ${tab.l} 조건 충족 종목 없음`}/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={tab.col}/>)}
+</div>)}
 
 {/* 미통과 — 접기 (다크) */}
 {data.cetc&&data.cetc.length>0&&(<details style={{marginBottom:10}}>
