@@ -957,6 +957,32 @@ const _supplyLabel=(inv)=>{
   return inv||"없음";
 };
 const _qualifyInst=(inv)=>inv==="기관"||inv==="기만"||inv==="기+외"||inv==="외+기";
+// 테마 1,2,3등 추출 — 시장별 ≥3건 발화 시 등락률 1,2,3등 선정
+// 진입 조건: 거래대금 500억+ / 등락률 10-28% / 같은 시장 ≥3건 동시 발화
+const _classifyLeaders=(allSignals)=>{
+  if(!allSignals||!allSignals.length)return [];
+  const filt=allSignals.filter(s=>{
+    const ch=+s.change||0;const amt=+s.amount||0;
+    return ch>=10&&ch<28&&amt>=500;
+  });
+  const byMkt={KOSPI:[],KOSDAQ:[]};
+  for(const s of filt){
+    const mkt=_normMkt(s.market||"");
+    if(mkt==="KS")byMkt.KOSPI.push(s);
+    else if(mkt==="KO")byMkt.KOSDAQ.push(s);
+  }
+  const out=[];
+  for(const mk of ["KOSPI","KOSDAQ"]){
+    if(byMkt[mk].length>=3){
+      const sorted=[...byMkt[mk]].sort((a,b)=>(+b.change||0)-(+a.change||0));
+      sorted.slice(0,3).forEach((s,i)=>{
+        out.push({...s,_rank:i+1,_mktLabel:mk});
+      });
+    }
+  }
+  return out;
+};
+const _LEADER_WEIGHTS=[0.50,0.335,0.165]; // 1등 50% / 2등 33.5% / 3등 16.5%
 const _classify=(s)=>{
   const ch=+s.change||0, amt=+s.amount||0, px=+s.price||0;
   const inv=s.investor||"", mkt=_normMkt(s.market||""), wk=+s.wick||0;
@@ -1019,6 +1045,9 @@ const _T=theme==="dark"
 // 활성 탭 (좌우 분기): neo7 | neo25
 const [activeTab,setActiveTab]=useState(()=>{try{return localStorage.getItem("today_tab_v1")||"neo7";}catch(e){return "neo7";}});
 useEffect(()=>{try{localStorage.setItem("today_tab_v1",activeTab);}catch(e){}},[activeTab]);
+// 테마 1,2,3등 자본 (200만 기본)
+const [leaderCapital,setLeaderCapital]=useState(()=>{try{return +localStorage.getItem("today_leader_cap_v1")||2000000;}catch(e){return 2000000;}});
+useEffect(()=>{try{localStorage.setItem("today_leader_cap_v1",String(leaderCapital));}catch(e){}},[leaderCapital]);
 const _supColor=(t)=>t==="기관"?"#475569":t==="외+기"?"#7c3aed":t==="외인"?"#3b82f6":_T.mute;
 const _fmtKQty=(n)=>{const a=Math.abs(n);if(a>=10000)return(n>=0?'+':'-')+Math.round(a/1000)/10+'만';if(a>=1000)return(n>=0?'+':'-')+Math.round(a/100)/10+'천';return(n>=0?'+':'')+n.toLocaleString();};
 // 카드 — 종목명 큼, 등락률 작게, 정보 폰트 키워서 가독성 확보
@@ -1132,6 +1161,68 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
 <div style={{marginBottom:18}}>
   {!list.length?<Empty msg={`오늘 ${tab.l} 조건 충족 종목 없음`}/>:list.map((s,i)=><Card key={s.code+i} s={s} accent={tab.col}/>)}
 </div>
+
+{/* 📈 테마 1,2,3등 — 시장별 ≥3건 발화 시 */}
+{(()=>{
+  const leaders=_classifyLeaders(data.all||[]);
+  if(!leaders.length)return null;
+  const COL="#a855f7";
+  const _man=(n)=>(n>=10000?Math.round(n/10000).toLocaleString()+"만":n.toLocaleString());
+  return(<div style={{marginBottom:18}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:"12px 14px",background:COL,borderRadius:11}}>
+      <span style={{fontSize:18}}>📈</span>
+      <span style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:"-0.3px"}}>테마 1,2,3등</span>
+      <span style={{fontSize:11,fontWeight:700,color:"#fff",background:"rgba(255,255,255,0.22)",padding:"2px 8px",borderRadius:10}}>{leaders.length}건</span>
+      <div style={{marginLeft:"auto",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.85)",letterSpacing:"-0.2px"}}>26-01 백테스트 +30.19%</div>
+    </div>
+    <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:11,marginBottom:8}}>
+      <div style={{fontSize:11,fontWeight:700,color:COL,marginBottom:6,letterSpacing:"-0.2px"}}>📋 진입 룰</div>
+      <div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px",marginBottom:8}}>
+        · 거래대금 <b style={{color:_T.text}}>500억 이상</b> + 등락률 <b style={{color:_T.text}}>10~28%</b><br/>
+        · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 동시 발화</b> 시 1,2,3등 선정<br/>
+        · D일 14:50~15:30 분할 매수 / D+1 시초가 매도
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+        <span style={{fontSize:11,fontWeight:700,color:_T.text,letterSpacing:"-0.2px"}}>💰 자본</span>
+        <input type="number" value={leaderCapital} onChange={e=>setLeaderCapital(+e.target.value||0)} step="100000" style={{flex:1,padding:"6px 10px",border:"1px solid "+_T.line,borderRadius:7,fontSize:12,fontWeight:700,color:_T.text,background:_T.bg,outline:"none"}}/>
+        <span style={{fontSize:11,fontWeight:600,color:_T.sub}}>원</span>
+      </div>
+      <div style={{display:"flex",gap:6,fontSize:10,fontWeight:600,color:_T.hint,letterSpacing:"-0.2px"}}>
+        <span>1등: <b style={{color:_T.text}}>{_man(Math.round(leaderCapital*0.5))}원 (50%)</b></span>
+        <span>·</span>
+        <span>2등: <b style={{color:_T.text}}>{_man(Math.round(leaderCapital*0.335))}원 (33.5%)</b></span>
+        <span>·</span>
+        <span>3등: <b style={{color:_T.text}}>{_man(Math.round(leaderCapital*0.165))}원 (16.5%)</b></span>
+      </div>
+    </div>
+    {leaders.map((s,i)=>{
+      const w=_LEADER_WEIGHTS[s._rank-1]||0;
+      const amt=Math.round(leaderCapital*w);
+      const rankCol=s._rank===1?"#dc2626":s._rank===2?"#f59e0b":"#10b981";
+      return(<div key={s.code+i} style={{padding:"14px 16px",borderRadius:12,border:"1px solid "+_T.line,marginBottom:8,background:_T.card}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:10}}>
+          <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+            <span style={{fontSize:14,fontWeight:800,color:"#fff",background:rankCol,padding:"3px 10px",borderRadius:6,letterSpacing:"-0.2px"}}>{s._rank}등</span>
+            <span style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
+            <span style={{fontSize:11,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
+            <span style={{fontSize:10,fontWeight:600,color:_T.sub,padding:"2px 7px",borderRadius:4,background:_T.bg,border:"1px solid "+_T.line}}>{s._mktLabel}</span>
+          </div>
+          <div style={{fontSize:14,fontWeight:800,color:_T.up,letterSpacing:"-0.3px"}}>+{(+s.change).toFixed(2)}%</div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,padding:"10px 12px",background:_T.bg,borderRadius:9,border:"1px solid "+_T.line}}>
+          <div>
+            <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:"-0.2px"}}>매수 비중</div>
+            <div style={{fontSize:14,fontWeight:800,color:rankCol,letterSpacing:"-0.3px"}}>{(w*100).toFixed(1)}% <span style={{fontSize:11,color:_T.sub,fontWeight:600,marginLeft:3}}>{_man(amt)}원</span></div>
+          </div>
+          <div>
+            <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:3,letterSpacing:"-0.2px"}}>거래대금 · 수급</div>
+            <div style={{fontSize:13,fontWeight:700,color:_T.body,letterSpacing:"-0.2px"}}>{s.amount}억 <span style={{fontSize:10,color:_T.sub,marginLeft:4}}>{s.investor||"—"}</span></div>
+          </div>
+        </div>
+      </div>);
+    })}
+  </div>);
+})()}
 
 {/* 미통과 — 접기 (다크) */}
 {data.cetc&&data.cetc.length>0&&(<details style={{marginBottom:10}}>
