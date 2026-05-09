@@ -589,8 +589,8 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
-// 모드 state — custom(맞춤) / neo7 / neo25
-const [mode,setMode]=useState(()=>{try{return localStorage.getItem('nbdb_mode_v2')||'neo7';}catch(e){return 'neo7';}});
+// 모드 state — leader(대장주) / neo7 / neo25 / neo90 / neo90b
+const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo7','neo25','neo90','neo90b'];return valid.includes(v)?v:'neo7';}catch(e){return 'neo7';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
 // 라이브 누적 신호 fetch (sector-api signals.json)
 const [liveSignals,setLiveSignals]=useState([]);
@@ -678,18 +678,28 @@ useEffect(()=>{try{localStorage.setItem('nbdb_invAmt_v1',String(invAmt));}catch(
 const filtered=useMemo(()=>{
 // historical D + 라이브 신호 통합
 const merged=[...D,...liveAsD];
+// 모드별 등락률 범위
+const _chMin=mode==='leader'?10:15;
+const _chMax=mode==='leader'?28:29;
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
-if(!(r.ch>=15&&r.ch<29))return false;
+if(!(r.ch>=_chMin&&r.ch<_chMax))return false;
 const amt=_amtNum(r.mc);
 // 라이브 신호 — mode 필터 우회 (단 거래대금 영역만 매칭)
 if(r._isLive){
+  if(mode==='leader')return amt>=500;
   if(mode==='neo7')return amt>=100&&amt<5000;
   if(mode==='neo25')return amt>=5000;
-  return amt>=100; // custom 모드 — 모든 라이브 신호
+  return amt>=100;
 }
 if(r.g==="X")return false;
 // historical — 모드별 자동 필터
+if(mode==='leader'){
+  if(amt<500)return false;
+  // 시장 KS/KO만
+  if(r.m!=='KS'&&r.m!=='KO')return false;
+  return true;
+}
 if(mode==='neo7'){
   if(amt<100||amt>=5000)return false;
   if(!_qualifyInst(r.iv))return false;
@@ -710,15 +720,37 @@ if(mode==='neo90'){
 if(mode==='neo90b'){
   return _neo90BFilter(r);
 }
-// 맞춤 모드 — 수급 다중선택
-if(selSup.length){
-  const ok=selSup.some(sid=>{const o=_supplyOpts.find(x=>x.id===sid);return o&&o.match(r.iv);});
-  if(!ok)return false;
-}else{
-  if(!_qualifyAny(r.iv))return false;
-}
 return true;
 });
+// 대장주 모드: 시장별 ≥3건 발화 시 1,2,3등 추출
+if(mode==='leader'){
+  const groups={};
+  for(const r of arr){
+    const mkt=r.m==='KS'?'KOSPI':r.m==='KO'?'KOSDAQ':'';
+    if(!mkt)continue;
+    const key=(r.d||'')+'|'+mkt;
+    if(!groups[key])groups[key]=[];
+    groups[key].push(r);
+  }
+  const newArr=[];
+  for(const k of Object.keys(groups)){
+    const g=groups[k];
+    if(g.length<3)continue;
+    const sorted=[...g].sort((a,b)=>(+b.ch||0)-(+a.ch||0));
+    const mktLabel=k.split('|')[1];
+    sorted.slice(0,3).forEach((rr,i)=>{
+      newArr.push({...rr,_rank:i+1,_mktLabel:mktLabel});
+    });
+  }
+  arr=newArr;
+  // 시뮬 적용 (네오 90% 트레일링과 동일)
+  arr=arr.map(rr=>{
+    if(rr._isLive)return rr;
+    const sim=_simNeo90(rr.ohlc);
+    if(!sim)return rr;
+    return {...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d,tp1dy:sim.tp1dy,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak};
+  });
+}
 // 네오 90%/옵션B 모드: 시뮬 결과로 t/r/exd/tp1d 덮어쓰기
 if(mode==='neo90'||mode==='neo90b'){
   arr=arr.map(r=>{
@@ -746,6 +778,32 @@ const totalPnl=Math.round(invAmt*sumRet/100);
 const ret=totalInvest>0?(totalPnl/totalInvest*100):0;
 return {n:filtered.length,p5:p5.length,sl:sl.length,avg,totalInvest,totalPnl,ret};
 },[filtered,invAmt]);
+// 대장주 모드 — 랭크별 통계
+const leaderStats=useMemo(()=>{
+  if(mode!=='leader'||!filtered.length)return null;
+  const byRank={1:[],2:[],3:[]};
+  for(const r of filtered){
+    if(r._rank>=1&&r._rank<=3)byRank[r._rank].push(+r.t||0);
+  }
+  const calc=(arr)=>{
+    if(!arr.length)return {n:0,avg:0,winRate:0};
+    const avg=arr.reduce((a,b)=>a+b,0)/arr.length;
+    const winRate=arr.filter(x=>x>=5).length/arr.length*100;
+    return {n:arr.length,avg,winRate};
+  };
+  const r1=calc(byRank[1]),r2=calc(byRank[2]),r3=calc(byRank[3]);
+  // 이벤트(일자/시장) 단위 가중수익 = 0.5*1등 + 0.335*2등 + 0.165*3등
+  const events={};
+  for(const r of filtered){
+    const k=(r.d||'')+'|'+(r._mktLabel||'');
+    if(!events[k])events[k]={1:null,2:null,3:null};
+    events[k][r._rank]=+r.t||0;
+  }
+  const evtArr=Object.values(events).filter(e=>e[1]!=null&&e[2]!=null&&e[3]!=null);
+  const wsum=evtArr.reduce((a,e)=>a+(0.5*e[1]+0.335*e[2]+0.165*e[3]),0);
+  const wAvg=evtArr.length?wsum/evtArr.length:0;
+  return {r1,r2,r3,events:evtArr.length,wAvg};
+},[filtered,mode]);
 const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
 const toggleSup=(s)=>{setSelSup(selSup.includes(s)?selSup.filter(x=>x!==s):[...selSup,s]);};
 const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'8px 8px',border:'none',background:active?_T.accent:'transparent',color:active?'#fff':_T.sub,fontSize:12,fontWeight:active?700:500,cursor:'pointer',borderRadius:8,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
@@ -760,7 +818,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {/* 모드 토글 — 맞춤 / 네오 7% / 네오 25% */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:14,padding:4,marginBottom:10,gap:2}}>
 {[
-  {id:'custom',l:'네오 맞춤',sub:'자유 검색',col:_T.accent},
+  {id:'leader',l:'대장주',sub:'테마 1,2,3등',col:'#a855f7'},
   {id:'neo7',l:'네오 7%',sub:'100~5000억',col:'#1f6dee'},
   {id:'neo25',l:'네오 25%',sub:'5000억+',col:'#c81e1e'},
   {id:'neo90',l:'네오 90%',sub:'침S/하A+ 트레일',col:'#10b981'},
@@ -772,8 +830,15 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   </button>);})}
 </div>
 {/* 필터 카드 */}
-<Card title={mode==='custom'?'필터 (맞춤)':mode==='neo7'?'네오 7% 자동 필터':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='neo7'?'+7% 즉익 · 25일 만기 · 평균 +0.99%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':yf.length>=2?yf.join('+')+'년':'등락 15-29% · 거래대금≥50억'}>
-{mode!=='custom'&&(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
+<Card title={mode==='leader'?'대장주 자동 필터 (테마 1,2,3등)':mode==='neo7'?'네오 7% 자동 필터':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='leader'?'시장별 ≥3건 발화 → 1,2,3등 추출 · 베팅 50/33.5/16.5':mode==='neo7'?'+7% 즉익 · 25일 만기 · 평균 +0.99%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':'등락 15-29% · 거래대금≥50억'}>
+{(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
+{mode==='leader'&&(<>
+  · 등락률 +10% ~ +28%<br/>
+  · 거래대금 <b style={{color:_T.text}}>500억 이상</b><br/>
+  · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 발화</b> 시 등락률 1,2,3등 추출<br/>
+  · 베팅 가중: <b style={{color:_T.text}}>1등 50% / 2등 33.5% / 3등 16.5%</b><br/>
+  · 청산: <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> · 15일 만기
+</>)}
 {mode==='neo7'&&(<>
   · 등락률 +15% ~ +29%<br/>
   · 거래대금 <b style={{color:_T.text}}>100억 ~ 5,000억</b><br/>
@@ -807,17 +872,26 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 </>)}
 </div>)}
 {/* 연도 필터 — 모든 모드에서 표시 */}
-<div style={{display:'flex',background:_T.bg,borderRadius:10,padding:3,gap:1,marginBottom:mode==='custom'?10:0}}>
+<div style={{display:'flex',background:_T.bg,borderRadius:10,padding:3,gap:1,marginBottom:0}}>
 {_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)}>{y.l}</Seg>);})}
 </div>
-{/* 수급 필터 — 맞춤 모드에서만 */}
-{mode==='custom'&&(<>
-<div style={{fontSize:11,fontWeight:600,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px'}}>수급 (다중선택, 미선택시 전체)</div>
-<div style={{display:'flex',gap:5}}>
-{_supplyOpts.map(o=>{const a=selSup.includes(o.id);return(<button key={o.id} onClick={()=>toggleSup(o.id)} style={{flex:'1 1 0',padding:'11px 8px',borderRadius:9,border:'1px solid '+(a?o.col:_T.line),background:a?o.col:_T.bg,color:a?'#fff':_T.body,fontSize:12,fontWeight:a?700:600,cursor:'pointer',letterSpacing:'-0.2px',transition:'all .15s'}}>{o.l}</button>);})}
-</div>
-</>)}
 </Card>
+{leaderStats&&(<div style={{background:_T.card,borderRadius:14,padding:'16px 18px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
+<div style={{fontSize:12,fontWeight:700,color:'#a855f7',marginBottom:10,letterSpacing:'-0.3px'}}>📈 랭크별 통계 (테마 1,2,3등)</div>
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:12}}>
+{[{rank:1,col:'#dc2626',d:leaderStats.r1},{rank:2,col:'#f59e0b',d:leaderStats.r2},{rank:3,col:'#10b981',d:leaderStats.r3}].map(x=>(
+<div key={x.rank} style={{padding:'10px',borderRadius:10,background:_T.bg,border:'1px solid '+_T.line,textAlign:'center'}}>
+  <div style={{display:'inline-block',padding:'2px 8px',borderRadius:5,background:x.col,color:'#fff',fontSize:10,fontWeight:900,marginBottom:6}}>{x.rank}등</div>
+  <div style={{fontSize:18,fontWeight:800,color:x.d.avg>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{x.d.avg>=0?'+':''}{x.d.avg.toFixed(2)}%</div>
+  <div style={{fontSize:10,color:_T.sub,marginTop:3}}>n={x.d.n} · 익절 {x.d.winRate.toFixed(0)}%</div>
+</div>))}
+</div>
+<div style={{display:'flex',padding:'10px 12px',background:_T.linelt,borderRadius:8,gap:14,alignItems:'baseline'}}>
+<div style={{fontSize:11,color:_T.hint,fontWeight:600}}>이벤트 가중평균</div>
+<div style={{fontSize:18,fontWeight:800,color:leaderStats.wAvg>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{leaderStats.wAvg>=0?'+':''}{leaderStats.wAvg.toFixed(2)}%</div>
+<div style={{fontSize:10,color:_T.sub,marginLeft:'auto'}}>{leaderStats.events}이벤트 · 0.5×1등 + 0.335×2등 + 0.165×3등</div>
+</div>
+</div>)}
 {stats&&(<div style={{background:_T.card,borderRadius:14,padding:'18px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
 <div style={{display:'flex',marginBottom:16}}>
 <div style={{flex:1}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>총 건수</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.text}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
@@ -852,14 +926,14 @@ const sLbl=_supLabel(r.iv);
 let tp1=r.tp1||0, tp2=r.tp2||0;
 if(mode==='neo7'){tp1=7;tp2=7;}
 else if(mode==='neo25'){tp1=25;tp2=50;}
-else if(mode==='neo90'||mode==='neo90b'){tp1=5;tp2=0;}
+else if(mode==='neo90'||mode==='neo90b'||mode==='leader'){tp1=5;tp2=0;}
 // 도달일 재계산 (OHLC에서 모드 익절가 기준)
 const _calcReach=(target)=>{if(!r.ohlc||!r.ohlc.length)return null;for(let i=0;i<Math.min(r.ohlc.length,25);i++){if((+r.ohlc[i].h||0)>=target)return i+1;}return null;};
 let tp1Reached, tp2Reached, tp1dy, tp2dy, tp1d, tp2d;
 if(mode==='neo7'||mode==='neo25'){
   const d1=_calcReach(tp1);tp1Reached=d1!=null;tp1dy=d1||0;tp1d=d1!=null&&r.ohlc?r.ohlc[d1-1].d:'';
   const d2=mode==='neo25'?_calcReach(tp2):null;tp2Reached=d2!=null;tp2dy=d2||0;tp2d=d2!=null&&r.ohlc?r.ohlc[d2-1].d:'';
-}else if(mode==='neo90'||mode==='neo90b'){
+}else if(mode==='neo90'||mode==='neo90b'||mode==='leader'){
   // simNeo90 결과 활용
   tp1Reached=!!(r.tp1d&&r.tp1dy);tp1dy=r.tp1dy||0;tp1d=r.tp1d||'';
   tp2Reached=false;tp2dy=0;tp2d='';
@@ -868,12 +942,16 @@ if(mode==='neo7'||mode==='neo25'){
   tp1dy=r.tp1dy||0;tp2dy=r.tp2dy||0;tp1d=r.tp1d||'';tp2d=r.tp2d||'';
 }
 const _profit=(r.t||0);
-// 모드별 익절 표시: 7%/90%/옵션B 모드는 단일, 25%/custom은 1차/2차 분리
-const _showSingle=mode==='neo7'||mode==='neo90'||mode==='neo90b';
+// 모드별 익절 표시: 7%/90%/옵션B/대장주 모드는 단일, 25%는 1차/2차 분리
+const _showSingle=mode==='neo7'||mode==='neo90'||mode==='neo90b'||mode==='leader';
+// 대장주 랭크 배지 색상
+const _rankCol=r._rank===1?'#dc2626':r._rank===2?'#f59e0b':r._rank===3?'#10b981':null;
 return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
 {/* 1행: 종목명 (큼) + 수급/LIVE + 우측 진행중/결과 */}
 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:12}}>
 <div style={{flex:1,minWidth:0,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+{_rankCol&&<span style={{fontSize:11,fontWeight:900,color:'#fff',background:_rankCol,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',minWidth:32,textAlign:'center'}}>{r._rank}등</span>}
+{_rankCol&&r._mktLabel&&<span style={{fontSize:10,fontWeight:700,color:_T.body,background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._mktLabel}</span>}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:11,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
