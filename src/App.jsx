@@ -622,6 +622,12 @@ const _neo90BFilter=(r)=>{
   if(!(inv==='기관'||inv==='기만'||inv==='기+외'||inv==='외+기'))return false;
   return true;
 };
+// 시뮬: D+1 시초가 매도 (대장주 모드용 — 분봉 데이터 누적 전까지 보수적 시뮬)
+const _simNextOpen=(ohlc)=>{
+  if(!ohlc||!ohlc.length)return null;
+  const t=+ohlc[0].o||0;
+  return {t:Math.round(t*10)/10,r:'시초가매도',tp1d:ohlc[0].d,tp1dy:1,exd:ohlc[0].d,exdy:1,_peak:0};
+};
 // 시뮬: 5% 도달 후 트레일 -3% (peak × 0.97 가격 기준), 15일 만기
 const _simNeo90=(ohlc)=>{
   if(!ohlc||!ohlc.length)return null;
@@ -736,10 +742,10 @@ if(mode==='leader'){
     });
   }
   arr=newArr;
-  // 시뮬 적용 (네오 90% 트레일링과 동일)
+  // 시뮬 적용 (D+1 시초가 매도 — 트레일링은 분봉 데이터 누적 후 적용 예정)
   arr=arr.map(rr=>{
     if(rr._isLive)return rr;
-    const sim=_simNeo90(rr.ohlc);
+    const sim=_simNextOpen(rr.ohlc);
     if(!sim)return rr;
     return {...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d,tp1dy:sim.tp1dy,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak};
   });
@@ -822,14 +828,14 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   </button>);})}
 </div>
 {/* 필터 카드 */}
-<Card title={mode==='leader'?'네오 테마 자동 필터 (1,2,3등주)':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='leader'?'시장별 ≥3건 발화 → 1,2,3등 추출 · 베팅 50/33.5/16.5':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':'등락 15-29% · 거래대금≥50억'}>
+<Card title={mode==='leader'?'네오 테마 자동 필터 (1,2,3등주)':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='neo90b'?'옵션B 자동 필터 (정밀)':'필터'} hint={mode==='leader'?'D+1 시초가 매도 · 5년4개월 가중평균 +0.12% (분봉 검증 전 보수치)':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='neo90b'?'5% 후 트레일 -3% · 15일 만기 · 평균 +5.65% · 효율 +30%':'등락 15-29% · 거래대금≥50억'}>
 {(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
 {mode==='leader'&&(<>
   · 등락률 +10% ~ +28%<br/>
   · 거래대금 <b style={{color:_T.text}}>500억 이상</b><br/>
   · 시장별 (KOSPI/KOSDAQ) <b style={{color:_T.text}}>≥3건 발화</b> 시 등락률 1,2,3등 추출<br/>
   · 베팅 가중: <b style={{color:_T.text}}>1등 50% / 2등 33.5% / 3등 16.5%</b><br/>
-  · 청산: <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> · 15일 만기
+  · 청산: <b style={{color:_T.text}}>D+1 시초가 매도</b> · 분봉 데이터 누적 후 트레일링 검증 예정
 </>)}
 {mode==='neo25'&&(<>
   · 등락률 +15% ~ +29%<br/>
@@ -962,8 +968,8 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   // 7%/90% 모드: 단일 익절 + 최종수익
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
     <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
-      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='neo90'||mode==='neo90b'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{(mode==='neo90'||mode==='neo90b')&&r._peak>0&&<div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='neo90'||mode==='neo90b'?'5% 미도달':'미도달'}</div>}
+      <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='leader'?`D+1 시초가 매도`:mode==='neo90'||mode==='neo90b'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
+      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:10,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{(mode==='neo90'||mode==='neo90b')&&r._peak>0&&<div style={{fontSize:10,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='leader'?'대기':mode==='neo90'||mode==='neo90b'?'5% 미도달':'미도달'}</div>}
     </div>
     <div style={{textAlign:'center'}}>
       <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
@@ -1161,7 +1167,7 @@ if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
   neo25:{l:"네오 25%",emoji:"🐉",col:"#c81e1e",cnt:(data.summary&&data.summary.neo25)||0,winRate:"51.3%",avg:"+4.75%",amtRange:"5,000억 이상",tp:"+25%",strategy:"대장주, 큰 수익 추구"},
-  leader:{l:"네오 테마",emoji:"📈",col:"#a855f7",cnt:(data.summary&&data.summary.leader)||0,winRate:"—",avg:"+4.70%",amtRange:"500억 이상 / 시장별 ≥3건 발화",tp:"5% 후 트레일",strategy:"테마 1,2,3등주 (베팅 50/33.5/16.5)"}
+  leader:{l:"네오 테마",emoji:"📈",col:"#a855f7",cnt:(data.summary&&data.summary.leader)||0,winRate:"—",avg:"+0.12%",amtRange:"500억 이상 / 시장별 ≥3건 발화",tp:"D+1 시초가",strategy:"테마 1,2,3등주 (베팅 50/33.5/16.5)"}
 };
 const tab=_tabConf[activeTab];
 const list=data[activeTab]||[];
@@ -1218,9 +1224,9 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
     <span style={{fontSize:11,fontWeight:700,color:tab.col,letterSpacing:"-0.2px"}}>💰 청산 룰</span>
   </div>
   {activeTab==='leader'?(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
-    · <b style={{color:_T.text}}>+5% 도달 후 트레일링 -3%</b> (peak × 0.97)<br/>
-    · <b style={{color:_T.text}}>15일 만기 강제 청산</b> · 손절가 없음<br/>
-    · 5년4개월 백테스트 평균 <b style={{color:_T.up}}>+4.70%</b> (모든 연도 양수)
+    · <b style={{color:_T.text}}>D+1 시초가 매도</b> (당일 종가 진입 → 익일 시가 청산)<br/>
+    · 5년4개월 백테스트 평균 <b style={{color:_T.text}}>+0.12%</b> (분봉 누적 전 보수치)<br/>
+    · 분봉 데이터 누적 후 <b style={{color:_T.up}}>+4.70%</b> 트레일링 검증 예정
   </div>):(<div style={{fontSize:11,color:_T.body,fontWeight:500,lineHeight:1.7,letterSpacing:"-0.2px"}}>
     · <b style={{color:_T.text}}>{tab.tp} 도달시 100% 즉시 익절</b><br/>
     · 미도달시 <b style={{color:_T.text}}>25일 만기 강제 청산</b><br/>
