@@ -1204,11 +1204,17 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 </div>
 </div>)}
 {stats&&(<div style={{background:_T.card,borderRadius:14,padding:'18px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
-<div style={{display:'flex',marginBottom:14}}>
-<div style={{flex:1}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>총 건수 {yf.length>0?'('+yf.join('+')+'년)':'(전체)'}</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.text}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
-<div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>익절률</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.up}}>{stats.winRate.toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
-<div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>평균 수익</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?_T.up:_T.down}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:10}}>
+<div><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>총 건수 {yf.length>0?'('+yf.join('+')+'년)':'(전체)'}</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.text}}>{stats.n.toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
+<div style={{borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>익절률</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.up}}>{stats.winRate.toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
+<div style={{borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>평균 수익</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?_T.up:_T.down}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
 </div>
+{/* 적중률 — 추천이 실제 베스트와 일치한 비율 */}
+{stats.totalCheck>0&&(<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,marginBottom:14,padding:'12px 0',borderTop:'1px solid '+_T.line,borderBottom:'1px solid '+_T.line}}>
+<div><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>✅ 적중</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:_T.up}}>{stats.totalHit.toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
+<div style={{borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>❌ 실패</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:_T.down}}>{(stats.totalCheck-stats.totalHit).toLocaleString()}<span style={{fontSize:12,fontWeight:500,color:_T.sub,marginLeft:2}}>건</span></div></div>
+<div style={{borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>🎯 적중률</div><div style={{fontSize:22,fontWeight:800,letterSpacing:'-0.5px',color:stats.recAccuracy>=50?_T.up:stats.recAccuracy>=33?'#f59e0b':_T.down}}>{stats.recAccuracy.toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
+</div>)}
 {/* 결과 분류 — 익절 / 손절 (단순) */}
 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
 {[
@@ -1234,13 +1240,9 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   {stats.cnt.live>0&&<span style={{color:'#f59e0b'}}>📡 진행중: <b>{stats.cnt.live}</b>건</span>}
   {stats.ratio>0&&<span style={{marginLeft:'auto',color:_T.text,fontWeight:700}}>손익비 <b>{stats.ratio.toFixed(2)}</b></span>}
 </div>)}
-{/* 추천 적중률 — 추천한 청산이 실제 베스트와 일치한 비율 */}
-{stats.totalCheck>0&&(<div style={{padding:'12px 14px',background:_T.card,borderRadius:10,marginBottom:12,border:'1px solid '+_T.line}}>
-  <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:8}}>
-    <div style={{fontSize:12,fontWeight:800,color:_T.text,letterSpacing:'-0.2px'}}>🎯 청산 추천 적중률</div>
-    <div style={{fontSize:18,fontWeight:800,color:stats.recAccuracy>=50?_T.up:stats.recAccuracy>=33?'#f59e0b':_T.down,letterSpacing:'-0.3px'}}>{stats.recAccuracy.toFixed(1)}<span style={{fontSize:12,fontWeight:600,color:_T.sub,marginLeft:2}}>%</span></div>
-  </div>
-  <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:6,letterSpacing:'-0.2px'}}>{stats.totalHit}건 적중 / {stats.totalCheck}건 검증 (라이브 제외)</div>
+{/* 추천별 적중률 (시초가/종가/트레일 각각) */}
+{stats.totalCheck>0&&(<div style={{padding:'10px 12px',background:_T.linelt,borderRadius:8,marginBottom:12}}>
+  <div style={{fontSize:10,fontWeight:700,color:_T.hint,marginBottom:5,letterSpacing:'-0.2px'}}>추천별 적중 (어느 추천이 더 잘 맞나?)</div>
   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
   {[
     {k:'시초가',l:'🐌 시초가',col:'#1f6dee'},
@@ -1248,15 +1250,14 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     {k:'트레일+5',l:'🚀 트레일',col:'#10b981'}
   ].map(x=>{
     const d=stats.recCnt[x.k];
-    if(!d||d.n===0)return(<div key={x.k} style={{padding:'7px',borderRadius:7,background:_T.bg,border:'1px solid '+_T.line,textAlign:'center'}}>
+    if(!d||d.n===0)return(<div key={x.k} style={{padding:'6px',borderRadius:6,background:_T.bg,border:'1px solid '+_T.line,textAlign:'center'}}>
       <div style={{fontSize:10,fontWeight:700,color:_T.mute}}>{x.l}</div>
-      <div style={{fontSize:11,color:_T.mute,marginTop:2}}>0건</div>
+      <div style={{fontSize:11,color:_T.mute,marginTop:1}}>0건</div>
     </div>);
     const acc=d.n?d.hit/d.n*100:0;
-    return(<div key={x.k} style={{padding:'7px',borderRadius:7,background:_T.bg,border:'1px solid '+x.col,textAlign:'center'}}>
+    return(<div key={x.k} style={{padding:'6px',borderRadius:6,background:_T.bg,border:'1px solid '+x.col,textAlign:'center'}}>
       <div style={{fontSize:10,fontWeight:800,color:x.col,letterSpacing:'-0.2px'}}>{x.l}</div>
-      <div style={{fontSize:14,fontWeight:800,color:_T.text,marginTop:2,letterSpacing:'-0.3px'}}>{acc.toFixed(0)}<span style={{fontSize:9,fontWeight:600,color:_T.sub,marginLeft:1}}>%</span></div>
-      <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:1}}>{d.hit}/{d.n}건</div>
+      <div style={{fontSize:13,fontWeight:800,color:_T.text,marginTop:1,letterSpacing:'-0.3px'}}>{acc.toFixed(0)}<span style={{fontSize:9,fontWeight:600,color:_T.sub,marginLeft:1}}>%</span> <span style={{fontSize:9,color:_T.sub,fontWeight:600}}>({d.hit}/{d.n})</span></div>
     </div>);
   })}
   </div>
@@ -1494,7 +1495,9 @@ const _classifyBest01=(allSignals)=>{
   const out=[];
   for(const s of allSignals){
     const r=ranks.get(s.code);if(!r)continue;
-    const ch=_ch(s),amt=_am(s),sc=+s.score||0,iv=s.supply||'',h60=+s.h60||0,h120=+s.h120||0;
+    // 수급: 라이브(supply) / API_URL(investor) 양쪽 호환
+    const iv=s.supply||s.investor||s.supplyTag||'';
+    const ch=_ch(s),amt=_am(s),sc=+s.score||0,h60=+s.h60||0,h120=+s.h120||0;
     if(!(ch>=15&&ch<28))continue;
     const inA=r.rank===2&&_qFE(iv)&&amt>=1000&&h120===1;
     const inB=r.rank===2&&_qInst(iv)&&amt>=500&&sc>=3&&h120===1;
