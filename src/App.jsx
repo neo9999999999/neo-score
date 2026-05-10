@@ -828,7 +828,9 @@ const _chMin=mode==='leader'?10:15;
 const _chMax=mode==='leader'?28:29;
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
-if(!(r.ch>=_chMin&&r.ch<_chMax))return false;
+const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
+// 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
+if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
 const amt=_amtNum(r.mc);
 // 라이브 신호 — mode 필터 우회 (단 거래대금 영역만 매칭)
 if(r._isLive){
@@ -843,11 +845,22 @@ if(mode==='leader'){
   if(r.m!=='KS'&&r.m!=='KO')return false;
   return true;
 }
-if(mode==='neo25')return _isNeo25(r);
-if(mode==='neo90')return _neo90Filter(r);
+// 최근 30일 (4/17+) 종목은 strict 우회 — leader rank 1|2이면 모든 모드에서 통과
+const isRecent=(r.d||'')>='2026-04-17';
+const isLeader=r._rank===1||r._rank===2;
+if(mode==='neo25'){
+  if(isRecent&&isLeader&&_qualifyInst(r.iv)&&amt>=500)return true;
+  return _isNeo25(r);
+}
+if(mode==='neo90'){
+  if(isRecent&&isLeader&&_qualifyAny(r.iv)&&amt>=500)return true;
+  return _neo90Filter(r);
+}
 if(mode==='best01'){
-  // best01 합집합: A ∪ B ∪ C (시초가 매도용 검증된 룰)
   const ch=+r.ch||0;
+  // 최근 종목은 leader rank 1|2 + supply qualifies + mc≥500이면 통과
+  if(isRecent&&isLeader&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3)return true;
+  // 기존 strict 룰 (백테스트 검증 — 5년)
   if(!(ch>=15&&ch<28))return false;
   const inA=r._rank===2&&(r.iv==='기+외'||r.iv==='외+기')&&amt>=1000&&r.h120===1;
   const inB=r._rank===2&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3&&r.h120===1;
@@ -888,34 +901,31 @@ if(mode==='leader'){
     return {...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d||'',tp1dy:sim.tp1dy||0,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak||0};
   });
 }
-// 네오 90% 모드: 시뮬 결과로 t/r/exd/tp1d 덮어쓰기 (트레일링)
-if(mode==='neo90'){
+// 네오 90% / 25% / best01 — exitMethod 따라 시뮬 적용 (모든 모드 공통)
+if(mode==='neo90'||mode==='neo25'||mode==='best01'){
   arr=arr.map(r=>{
     if(r._isLive)return r;
-    const sim=_simNeo90(r.ohlc);
-    if(!sim)return r;
-    return {...r,t:sim.t,r:sim.r,tp1d:sim.tp1d,tp1dy:sim.tp1dy,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak};
-  });
-}
-// best01 모드: 시초가 매도 시뮬 + tier 배지 부착 (A/B/C 어디 속하는지)
-if(mode==='best01'){
-  arr=arr.map(r=>{
-    if(r._isLive)return r;
-    const amt=_amtNum(r.mc);
-    const inA=r._rank===2&&(r.iv==='기+외'||r.iv==='외+기')&&amt>=1000&&r.h120===1;
-    const inB=r._rank===2&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3&&r.h120===1;
-    const inC=(r._rank===1||r._rank===2)&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3&&r.h60===1;
-    let tier='C',tierCol='#10b981',tierLabel='C';
-    if(inA&&inB&&inC){tier='ABC';tierCol='#dc2626';tierLabel='🥇 A∩B∩C';}
-    else if(inA&&inB){tier='AB';tierCol='#ea580c';tierLabel='A∩B';}
-    else if(inA&&inC){tier='AC';tierCol='#ea580c';tierLabel='A∩C';}
-    else if(inB&&inC){tier='BC';tierCol='#f59e0b';tierLabel='B∩C';}
-    else if(inA){tier='A';tierCol='#a855f7';tierLabel='A only';}
-    else if(inB){tier='B';tierCol='#1f6dee';tierLabel='B only';}
-    const sim=_simNextOpen(r.ohlc);
-    const base={...r,_tier:tier,_tierCol:tierCol,_tierLabel:tierLabel,_inA:inA,_inB:inB,_inC:inC};
+    let sim;
+    if(exitMethod==='close')sim=_simNextClose(r.ohlc);
+    else if(exitMethod==='trail')sim=_simNeo90(r.ohlc);
+    else sim=_simNextOpen(r.ohlc);
+    let base=r;
+    if(mode==='best01'){
+      const amt=_amtNum(r.mc);
+      const inA=r._rank===2&&(r.iv==='기+외'||r.iv==='외+기')&&amt>=1000&&r.h120===1;
+      const inB=r._rank===2&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3&&r.h120===1;
+      const inC=(r._rank===1||r._rank===2)&&_qualifyInst(r.iv)&&amt>=500&&(+r.sc||0)>=3&&r.h60===1;
+      let tier='C',tierCol='#10b981',tierLabel='C';
+      if(inA&&inB&&inC){tier='ABC';tierCol='#dc2626';tierLabel='🥇 A∩B∩C';}
+      else if(inA&&inB){tier='AB';tierCol='#ea580c';tierLabel='A∩B';}
+      else if(inA&&inC){tier='AC';tierCol='#ea580c';tierLabel='A∩C';}
+      else if(inB&&inC){tier='BC';tierCol='#f59e0b';tierLabel='B∩C';}
+      else if(inA){tier='A';tierCol='#a855f7';tierLabel='A only';}
+      else if(inB){tier='B';tierCol='#1f6dee';tierLabel='B only';}
+      base={...r,_tier:tier,_tierCol:tierCol,_tierLabel:tierLabel,_inA:inA,_inB:inB,_inC:inC};
+    }
     if(!sim)return base;
-    return {...base,t:sim.t,r:sim.r,tp1d:sim.tp1d,tp1dy:sim.tp1dy,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak};
+    return {...base,t:sim.t,r:sim.r,tp1d:sim.tp1d||'',tp1dy:sim.tp1dy||0,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak||0};
   });
 }
 // 정렬 모드별 동작
@@ -1107,11 +1117,11 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     <div style={{fontSize:9,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
-{/* 청산 방식 토글 (대장주 전용) */}
-{mode==='leader'&&(<div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
+{/* 청산 방식 토글 (모든 모드 공통) */}
+<div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
 {[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
   <button key={e.id} onClick={()=>setExitMethod(e.id)} style={{flex:'1 1 0',padding:'8px 6px',border:'none',background:a?e.col:'transparent',color:a?'#fff':_T.sub,borderRadius:8,cursor:'pointer',fontSize:11,fontWeight:a?800:600,letterSpacing:'-0.2px',whiteSpace:'nowrap',minWidth:0,overflow:'hidden',textOverflow:'ellipsis'}}>{e.l}</button>);})}
-</div>)}
+</div>
 {/* 필터 카드 */}
 <Card title={mode==='leader'?'네오 대장주 자동 필터 (1,2,3등주)':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='best01'?'최고조합01 — 시초가 매도 합집합 (A∪B∪C)':'필터'} hint={mode==='leader'?'D+1 시초가 매도 · 5년4개월 가중평균 +0.12%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='best01'?'D+1 시초가 매도 · 비용후 +0.79%/거래 · 모든 연도+ · 자본25% 분산 시 연 +28%':'등락 15-29% · 거래대금≥50억'}>
 {(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
