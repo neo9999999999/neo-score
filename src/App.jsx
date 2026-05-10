@@ -638,8 +638,8 @@ const _matchRec=(recLabel,actualBest)=>{
   return false;
 };
 // 모드 state — leader / neo25 / neo90 / best01 (시초가 매도 최고조합)
-const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo25','neo90','best01'];if(valid.includes(v))return v;if(v==='neo7'||v==='custom'||v==='neo90b')return 'best01';if(v==='mix')return 'best01';return 'leader';}catch(e){return 'leader';}});
-useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
+const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v3');const valid=['leader','neo25','neo90','best01'];if(valid.includes(v))return v;return 'leader';}catch(e){return 'leader';}});
+useEffect(()=>{try{localStorage.setItem('nbdb_mode_v3',mode);}catch(e){}},[mode]);
 // 라이브 누적 신호 fetch (sector-api signals.json)
 const [liveSignals,setLiveSignals]=useState([]);
 const [liveLoaded,setLiveLoaded]=useState(false);
