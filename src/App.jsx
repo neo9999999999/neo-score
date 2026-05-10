@@ -836,49 +836,40 @@ if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(Stri
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
 },[yf,selSup,sortMode,mode,liveAsD,_leaderSet]);
-// 결과 4분류 — 익절(TP)/손절(SL)/기간만료익절/기간만료손절
+// 결과 단순 분류 — 익절(t≥1) / 손절(t≤-1) / 무사통과 / 진행중
 const _classifyResult=(r)=>{
-  const t=+r.t||0,res=String(r.r||'');
-  if(res==='BOTH'||res==='TP1'||res==='TP2'||res==='TRAIL'||res==='TP1_BE')return 'win';
-  if(res==='SL'||res==='FSL'||res.startsWith('SL'))return 'sl';
-  if(res==='TP1_SL'||res==='TP1_FSL')return t>0?'win':'sl';
-  if(res==='TO'||res==='시초가매도'||res==='종가매도'||res==='시간컷'||res==='기간만료'||res.endsWith('일보유')){
-    if(t>=1)return 'expWin';if(t<=-1)return 'expLose';return 'flat';
-  }
-  if(res==='진행중'||r._isLive)return 'live';
-  if(t>=5)return 'win';if(t<=-5)return 'sl';
-  if(t>=1)return 'expWin';if(t<=-1)return 'expLose';
+  if(r._isLive||String(r.r||'')==='진행중')return 'live';
+  const t=+r.t||0;
+  if(t>=1)return 'win';
+  if(t<=-1)return 'sl';
   return 'flat';
 };
 const stats=useMemo(()=>{
 if(!filtered.length)return null;
-const cnt={win:0,sl:0,expWin:0,expLose:0,flat:0,live:0};
-const sum={win:0,sl:0,expWin:0,expLose:0,flat:0};
+const cnt={win:0,sl:0,flat:0,live:0};
+const sum={win:0,sl:0,flat:0};
 for(const r of filtered){
   const c=_classifyResult(r);
   if(cnt[c]!==undefined)cnt[c]++;
   if(sum[c]!==undefined)sum[c]+=(+r.t||0);
 }
-const realRows=filtered.filter(x=>!x._isLive);
+const realRows=filtered.filter(x=>!x._isLive&&String(x.r||'')!=='진행중');
 const realN=realRows.length||1;
 const sumRet=realRows.reduce((a,b)=>a+(+b.t||0),0);
 const avg=sumRet/realN;
 const totalInvest=invAmt*realN;
 const totalPnl=Math.round(invAmt*sumRet/100);
 const ret=totalInvest>0?(totalPnl/totalInvest*100):0;
-const winN=cnt.win+cnt.expWin;
-const lossN=cnt.sl+cnt.expLose;
-const winRate=realN?winN/realN*100:0;
-const lossRate=realN?lossN/realN*100:0;
+const winRate=realN?cnt.win/realN*100:0;
+const lossRate=realN?cnt.sl/realN*100:0;
 const avgWin=cnt.win?sum.win/cnt.win:0;
 const avgSL=cnt.sl?sum.sl/cnt.sl:0;
-const avgExpWin=cnt.expWin?sum.expWin/cnt.expWin:0;
-const avgExpLose=cnt.expLose?sum.expLose/cnt.expLose:0;
 const avgFlat=cnt.flat?sum.flat/cnt.flat:0;
+const ratio=avgSL<0?Math.abs(avgWin/avgSL):0;
 return {n:filtered.length,realN,avg,totalInvest,totalPnl,ret,
-  cnt,winRate,lossRate,winN,lossN,
-  avgWin,avgSL,avgExpWin,avgExpLose,avgFlat,
-  p5:winN,sl:cnt.sl};
+  cnt,winRate,lossRate,
+  avgWin,avgSL,avgFlat,ratio,
+  p5:cnt.win,sl:cnt.sl};
 },[filtered,invAmt]);
 // 3-way 청산 평균 — 모든 모드에서 비교 가능
 const exitStats=useMemo(()=>{
@@ -1161,29 +1152,31 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>익절률</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:_T.up}}>{stats.winRate.toFixed(1)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
 <div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:11,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>평균 수익</div><div style={{fontSize:24,fontWeight:800,letterSpacing:'-0.5px',color:stats.avg>=0?_T.up:_T.down}}>{stats.avg>=0?'+':''}{stats.avg.toFixed(2)}<span style={{fontSize:12,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
 </div>
-{/* 4분류 결과 — 익절(TP) / 만기익절 / 만기손절 / 손절(SL) */}
-<div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,marginBottom:14}}>
+{/* 결과 분류 — 익절 / 손절 (단순) */}
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
 {[
-  {k:'win',l:'익절 (TP)',sub:'TP/트레일 발동',col:'#dc2626',n:stats.cnt.win,avg:stats.avgWin},
-  {k:'expWin',l:'만기 익절',sub:'만기 +수익',col:'#f59e0b',n:stats.cnt.expWin,avg:stats.avgExpWin},
-  {k:'expLose',l:'만기 손절',sub:'만기 -수익',col:'#3b82f6',n:stats.cnt.expLose,avg:stats.avgExpLose},
-  {k:'sl',l:'손절 (SL)',sub:'SL 발동',col:'#1f6dee',n:stats.cnt.sl,avg:stats.avgSL}
+  {k:'win',l:'익절',sub:'+1% 이상',col:'#dc2626',n:stats.cnt.win,avg:stats.avgWin},
+  {k:'sl',l:'손절',sub:'-1% 이상',col:'#1f6dee',n:stats.cnt.sl,avg:stats.avgSL}
 ].map(x=>{
   const pct=stats.realN?x.n/stats.realN*100:0;
-  return(<div key={x.k} style={{padding:'10px 8px',borderRadius:10,background:_T.bg,border:'1px solid '+(x.n>0?x.col:_T.line),textAlign:'center'}}>
-    <div style={{fontSize:10,fontWeight:800,color:x.col,letterSpacing:'-0.2px'}}>{x.l}</div>
-    <div style={{fontSize:8,color:_T.sub,fontWeight:600,marginTop:1}}>{x.sub}</div>
-    <div style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:'-0.3px',marginTop:5}}>{x.n}<span style={{fontSize:10,fontWeight:600,color:_T.sub,marginLeft:2}}>건</span></div>
-    <div style={{fontSize:10,color:_T.hint,fontWeight:700,marginTop:1}}>{pct.toFixed(1)}%</div>
-    {x.n>0&&<div style={{fontSize:10,color:x.avg>=0?_T.up:_T.down,fontWeight:700,marginTop:2}}>평균 {x.avg>=0?'+':''}{x.avg.toFixed(2)}%</div>}
+  return(<div key={x.k} style={{padding:'12px 14px',borderRadius:10,background:_T.bg,border:'1px solid '+(x.n>0?x.col:_T.line)}}>
+    <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:6}}>
+      <span style={{fontSize:12,fontWeight:800,color:x.col,letterSpacing:'-0.2px'}}>{x.l}</span>
+      <span style={{fontSize:10,color:_T.hint,fontWeight:600}}>{x.sub}</span>
+    </div>
+    <div style={{display:'flex',alignItems:'baseline',gap:6}}>
+      <span style={{fontSize:22,fontWeight:800,color:_T.text,letterSpacing:'-0.3px'}}>{x.n}</span>
+      <span style={{fontSize:11,color:_T.sub,fontWeight:600}}>건 ({pct.toFixed(1)}%)</span>
+    </div>
+    {x.n>0&&<div style={{fontSize:11,color:x.avg>=0?_T.up:_T.down,fontWeight:700,marginTop:3,letterSpacing:'-0.2px'}}>평균 {x.avg>=0?'+':''}{x.avg.toFixed(2)}%</div>}
   </div>);
 })}
 </div>
-{stats.cnt.flat>0&&(<div style={{padding:'8px 12px',background:_T.linelt,borderRadius:8,marginBottom:12,fontSize:11,color:_T.body,fontWeight:600,letterSpacing:'-0.2px'}}>
-  📭 무사통과(±1% 이내): <b>{stats.cnt.flat}</b>건 ({(stats.cnt.flat/stats.realN*100).toFixed(1)}%) · 평균 {stats.avgFlat>=0?'+':''}{stats.avgFlat.toFixed(2)}%
-  {stats.cnt.live>0&&<span style={{marginLeft:14,color:'#f59e0b'}}>📡 진행중: <b>{stats.cnt.live}</b>건</span>}
+{(stats.cnt.flat>0||stats.cnt.live>0)&&(<div style={{padding:'8px 12px',background:_T.linelt,borderRadius:8,marginBottom:12,fontSize:11,color:_T.body,fontWeight:600,letterSpacing:'-0.2px',display:'flex',gap:14,flexWrap:'wrap',alignItems:'center'}}>
+  {stats.cnt.flat>0&&<span>📭 무사통과(±1%): <b>{stats.cnt.flat}</b>건 ({(stats.cnt.flat/stats.realN*100).toFixed(1)}%) · 평균 {stats.avgFlat>=0?'+':''}{stats.avgFlat.toFixed(2)}%</span>}
+  {stats.cnt.live>0&&<span style={{color:'#f59e0b'}}>📡 진행중: <b>{stats.cnt.live}</b>건</span>}
+  {stats.ratio>0&&<span style={{marginLeft:'auto',color:_T.text,fontWeight:700}}>손익비 <b>{stats.ratio.toFixed(2)}</b></span>}
 </div>)}
-{stats.cnt.flat===0&&stats.cnt.live>0&&(<div style={{padding:'8px 12px',background:'rgba(245,158,11,0.10)',borderRadius:8,marginBottom:12,fontSize:11,color:'#f59e0b',fontWeight:600}}>📡 진행중: <b>{stats.cnt.live}</b>건</div>)}
 <div style={{height:1,background:_T.line,margin:'0 -18px 16px'}}/>
 <div style={{fontSize:11,color:_T.hint,marginBottom:8,letterSpacing:'-0.2px',fontWeight:600}}>1건당 투자금</div>
 <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
