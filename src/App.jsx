@@ -743,9 +743,9 @@ const liveAsD=useMemo(()=>{
     const cat=liveClassify(s);if(!cat)return null;
     const ymd=String(s.signal_date||'').replace(/-/g,''); // '20260501' (8 digits)
     if(ymd.length!==8)return null;
-    const dShort=ymd.slice(2,4)+'-'+ymd.slice(4,6)+'-'+ymd.slice(6,8); // '26-05-01' — matches D[r].d
-    const dFull='20'+dShort; // '2026-05-01' — display form
-    const dupKey=(s.name||'')+'|'+dShort;
+    const dShort=ymd.slice(2,4)+'-'+ymd.slice(4,6)+'-'+ymd.slice(6,8); // '26-05-01'
+    const dFull='20'+dShort; // '2026-05-01' — D[r].d 형식 (line 54: d:"20"+r[1])
+    const dupKey=(s.name||'')+'|'+dFull;
     if(hSet.has(dupKey))return null; // 중복 제거 — historical에 이미 있음 (OHLC 트레일까지 있는 것 우선)
     // 주말 제외
     const dt=new Date(+ymd.slice(0,4),+ymd.slice(4,6)-1,+ymd.slice(6,8));
