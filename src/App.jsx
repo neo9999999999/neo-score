@@ -1642,7 +1642,17 @@ const _T=theme==="dark"
   ?{text:"#e6edf3",body:"#c9d1d9",sub:"#8b949e",hint:"#6e7681",mute:"#484f58",line:"#30363d",linelt:"#21262d",bg:"#0d1117",card:"#161b22",cardHov:"#1c2229",up:"#f85149",down:"#58a6ff",green:"#10b981",cc:"#22d3ee",hs:"#f97316",blue:"#3b82f6",accent:"#7c3aed"}
   :{text:"#191f28",body:"#333d4b",sub:"#4e5968",hint:"#6b7684",mute:"#8b95a1",line:"#e5e8eb",linelt:"#f2f4f6",bg:"#f9fafb",card:"#ffffff",cardHov:"#f5f7fa",up:"#f04452",down:"#1f6dee",green:"#10b981",cc:"#0367c4",hs:"#c81e1e",blue:"#3182f6",accent:"#7c3aed"};
 // 활성 탭 (좌우 분기): neo25 | leader | best01
-const [activeTab,setActiveTab]=useState(()=>{try{const v=localStorage.getItem("today_tab_v1");if(v==="neo25"||v==="leader"||v==="best01")return v;return "best01";}catch(e){return "best01";}});
+const [activeTab,setActiveTab]=useState(()=>{try{
+  // 강제 마이그레이션 — 한 번만 leader로 리셋 (best01 박혀있던 사용자 구제)
+  if(!localStorage.getItem("today_tab_migrated_v2")){
+    localStorage.setItem("today_tab_migrated_v2","1");
+    localStorage.removeItem("today_tab_v1");
+    return "leader";
+  }
+  const v=localStorage.getItem("today_tab_v1");
+  if(v==="neo25"||v==="leader"||v==="best01")return v;
+  return "leader";
+}catch(e){return "leader";}});
 useEffect(()=>{try{localStorage.setItem("today_tab_v1",activeTab);}catch(e){}},[activeTab]);
 // 테마 1,2,3등 자본 (200만 기본)
 const [leaderCapital,setLeaderCapital]=useState(()=>{try{return +localStorage.getItem("today_leader_cap_v1")||2000000;}catch(e){return 2000000;}});
@@ -1718,7 +1728,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
 {/* 상단 — 날짜 + 조회/저장 버튼 */}
 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}>
   <div>
-    <div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}</div>
+    <div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>{data.date} · {data.time}{(()=>{const dt=new Date();const day=dt.getDay();return (day===0||day===6)?<span style={{fontSize:10,fontWeight:600,color:"#f59e0b",marginLeft:6,padding:"1px 6px",borderRadius:4,background:"rgba(245,158,11,0.15)"}}>최근 영업일 종가</span>:null;})()}</div>
     <div style={{fontSize:11,color:_T.hint,marginTop:3}}>총 {(data.summary&&data.summary.total)||0}건 · 25% <b style={{color:"#c81e1e"}}>{_tabConf.neo25.cnt}</b> · 대장주 <b style={{color:"#a855f7"}}>{_tabConf.leader.cnt}</b> · 최고01 <b style={{color:"#f59e0b"}}>{_tabConf.best01.cnt}</b> · 미통과 {(data.summary&&data.summary.cetc)||0}</div>
   </div>
   <div style={{display:"flex",gap:6}}>
