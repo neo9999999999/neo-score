@@ -589,6 +589,15 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
+// 청산 추천 — 거래대금/시장 기반 (분석 결과: 5000억+ 차익실현 / 1000~3000억 KOSDAQ 변동성↑)
+const _exitRec=(amt,mkt)=>{
+  const isKQ=mkt==='KO'||mkt==='KOSDAQ'||mkt==='코스닥';
+  if(amt>=5000)return {l:'🐌 시초가',col:'#1f6dee',sub:'대형주 차익실현 압력'};
+  if(amt>=1000&&amt<=3000&&isKQ)return {l:'🚀 트레일',col:'#10b981',sub:'KOSDAQ 변동성 ↑'};
+  if(amt>=1000&&amt<=3000)return {l:'📈 트레일',col:'#0d8050',sub:'중형주 추가상승 가능'};
+  if(amt<1000)return {l:'⚖️ 균형',col:'#f59e0b',sub:'소형주 (변동 큼)'};
+  return {l:'⚖️ 균형',col:'#8b95a1',sub:'시초가/트레일 둘 다'};
+};
 // 모드 state — leader / neo25 / neo90 / best01 (시초가 매도 최고조합)
 const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo25','neo90','best01'];if(valid.includes(v))return v;if(v==='neo7'||v==='custom'||v==='neo90b')return 'best01';if(v==='mix')return 'best01';return 'leader';}catch(e){return 'leader';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
@@ -1231,6 +1240,7 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
 {_rankCol&&<span style={{fontSize:11,fontWeight:900,color:'#fff',background:_rankCol,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',minWidth:32,textAlign:'center'}}>{r._rank}등</span>}
 {_rankCol&&r._mktLabel&&<span style={{fontSize:10,fontWeight:700,color:_T.body,background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._mktLabel}</span>}
 {r._tierLabel&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:r._tierCol,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._tierLabel}</span>}
+{(()=>{const rec=_exitRec(_amtNum(r.mc),r.m);return(<span style={{fontSize:10,fontWeight:800,color:'#fff',background:rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={rec.sub}>{rec.l}</span>);})()}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:11,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
@@ -1489,8 +1499,18 @@ useEffect(()=>{try{localStorage.setItem("today_leader_cap_v1",String(leaderCapit
 const _supColor=(t)=>t==="기관"?"#475569":t==="외+기"?"#7c3aed":t==="외인"?"#3b82f6":_T.mute;
 const _fmtKQty=(n)=>{const a=Math.abs(n);if(a>=10000)return(n>=0?'+':'-')+Math.round(a/1000)/10+'만';if(a>=1000)return(n>=0?'+':'-')+Math.round(a/100)/10+'천';return(n>=0?'+':'')+n.toLocaleString();};
 // 카드 — 종목명 큼, 등락률 작게, 정보 폰트 키워서 가독성 확보
+// 청산 추천 (분석 결과: 5000억+ 차익실현 / 1000~3000억 KOSDAQ 변동성↑)
+const _exitRec=(amt,mkt)=>{
+  const isKQ=mkt==='KOSDAQ'||mkt==='KO'||mkt==='코스닥';
+  if(amt>=5000)return {l:'🐌 시초가',col:'#1f6dee',sub:'대형주 차익실현 압력'};
+  if(amt>=1000&&amt<=3000&&isKQ)return {l:'🚀 트레일',col:'#10b981',sub:'KOSDAQ 변동성 ↑'};
+  if(amt>=1000&&amt<=3000)return {l:'📈 트레일',col:'#0d8050',sub:'중형주 추가상승 가능'};
+  if(amt<1000)return {l:'⚖️ 균형',col:'#f59e0b',sub:'소형주 (변동 큼)'};
+  return {l:'⚖️ 균형',col:'#8b95a1',sub:'시초가/트레일 둘 다'};
+};
 const Card=({s,accent})=>{
   const prog=+s.prog||0;const progPos=prog>0;
+  const exitR=_exitRec(+s.amount||0,s.market);
   const _copy=(e)=>{
     e.stopPropagation();
     navigator.clipboard.writeText(s.code).then(()=>{
@@ -1501,12 +1521,13 @@ const Card=({s,accent})=>{
   };
   return(
     <div style={{padding:"16px 18px",borderRadius:13,border:"1px solid "+_T.line,marginBottom:10,background:_T.card,transition:"all .15s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=accent+"60";}} onMouseLeave={e=>{e.currentTarget.style.borderColor=_T.line;}}>
-      {/* 1행: 종목명 (큼) + 코드 + 복사 버튼 + 등락률 (작게) */}
+      {/* 1행: 종목명 (큼) + 코드 + 복사 버튼 + 청산 추천 + 등락률 */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:12}}>
         <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
           <span style={{fontSize:12,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
           <button onClick={_copy} style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,cursor:"pointer",letterSpacing:"-0.2px",transition:"all .15s"}}>복사</button>
+          <span title={exitR.sub} style={{fontSize:11,fontWeight:800,color:"#fff",background:exitR.col,padding:"3px 9px",borderRadius:5,letterSpacing:"-0.2px"}}>{exitR.l}</span>
         </div>
         <div style={{fontSize:13,fontWeight:700,color:_T.up,letterSpacing:"-0.2px",flexShrink:0}}>+{(+s.change).toFixed(2)}%</div>
       </div>
@@ -1638,10 +1659,12 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
       const w=_LEADER_WEIGHTS[s._rank-1]||0;
       const amt=Math.round(leaderCapital*w);
       const rankCol=s._rank===1?"#dc2626":s._rank===2?"#f59e0b":"#10b981";
+      const exitR=_exitRec(+s.amount||0,s.market);
       return(<div key={s.code+i} style={{padding:"14px 16px",borderRadius:12,border:"1px solid "+_T.line,marginBottom:8,background:_T.card}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:10}}>
           <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
             <span style={{fontSize:14,fontWeight:800,color:"#fff",background:rankCol,padding:"3px 10px",borderRadius:6,letterSpacing:"-0.2px"}}>{s._rank}등</span>
+            <span title={exitR.sub} style={{fontSize:10,fontWeight:800,color:"#fff",background:exitR.col,padding:"3px 8px",borderRadius:4,letterSpacing:"-0.2px"}}>{exitR.l}</span>
             <span style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
             <span style={{fontSize:11,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
             <span style={{fontSize:10,fontWeight:600,color:_T.sub,padding:"2px 7px",borderRadius:4,background:_T.bg,border:"1px solid "+_T.line}}>{s._mktLabel}</span>
@@ -1670,11 +1693,13 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
     </div>
     {items.map((s,i)=>{
       const rankCol=s._rank===1?"#dc2626":s._rank===2?"#f59e0b":"#10b981";
+      const exitR=_exitRec(+s.amount||0,s.market);
       return(<div key={s.code+i} style={{padding:"14px 16px",borderRadius:12,border:"1px solid "+_T.line,marginBottom:8,background:_T.card}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,marginBottom:10}}>
           <div style={{flex:1,minWidth:0,display:"flex",alignItems:"center",gap:7,flexWrap:"wrap"}}>
             <span style={{fontSize:13,fontWeight:800,color:"#fff",background:rankCol,padding:"3px 9px",borderRadius:5,letterSpacing:"-0.2px"}}>{s._rank}등</span>
             <span style={{fontSize:10,fontWeight:800,color:"#fff",background:s._tierCol,padding:"3px 8px",borderRadius:4,letterSpacing:"-0.2px"}}>{s._tierLabel}</span>
+            <span title={exitR.sub} style={{fontSize:10,fontWeight:800,color:"#fff",background:exitR.col,padding:"3px 8px",borderRadius:4,letterSpacing:"-0.2px"}}>{exitR.l}</span>
             <span style={{fontSize:18,fontWeight:800,color:_T.text,letterSpacing:"-0.4px"}}>{s.name}</span>
             <span style={{fontSize:11,fontWeight:600,color:_T.hint,fontFamily:"ui-monospace,monospace"}}>{s.code}</span>
             <span style={{fontSize:10,fontWeight:600,color:_T.sub,padding:"2px 6px",borderRadius:4,background:_T.bg,border:"1px solid "+_T.line}}>{s._mktLabel}</span>
