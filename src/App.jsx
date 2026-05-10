@@ -607,6 +607,26 @@ const _exitRec=(amt,mkt)=>{
   // KOSPI 1k~2k: T5 +2.31% / 3k~5k: T5 +1.43% / 5k~10k: T5 +1.90%
   return {l:'🚀 트레일+5',col:'#10b981',sub:'분봉 +5%p 즉익 / 미달 시 종가. 베스트 (평균 +1.43~+2.47%)'};
 };
+// 실제 베스트 청산 계산 (D+1 OHLC 기반)
+const _actualBest=(ohlc)=>{
+  if(!ohlc||!ohlc.length)return null;
+  const open=+ohlc[0].o||0,high=+ohlc[0].h||0,close=+ohlc[0].c||0;
+  const trail5=(high-open)>=5?open+5:close;
+  // 베스트 결정 (수익 가장 높은 것)
+  let best='시초가',val=open;
+  if(close>val+0.1){best='종가';val=close;}
+  if(trail5>val+0.1){best='트레일+5';val=trail5;}
+  return {best,val,open,close,trail5};
+};
+// 추천 vs 실제 베스트 적중 판정
+const _matchRec=(recLabel,actualBest)=>{
+  if(!actualBest)return null;
+  const r=String(recLabel||'');
+  if(r.includes('시초가')&&actualBest.best==='시초가')return true;
+  if(r.includes('종가')&&actualBest.best==='종가')return true;
+  if(r.includes('트레일')&&actualBest.best==='트레일+5')return true;
+  return false;
+};
 // 모드 state — leader / neo25 / neo90 / best01 (시초가 매도 최고조합)
 const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo25','neo90','best01'];if(valid.includes(v))return v;if(v==='neo7'||v==='custom'||v==='neo90b')return 'best01';if(v==='mix')return 'best01';return 'leader';}catch(e){return 'leader';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v2',mode);}catch(e){}},[mode]);
@@ -866,10 +886,27 @@ const stats=useMemo(()=>{
 if(!filtered.length)return null;
 const cnt={win:0,sl:0,flat:0,live:0};
 const sum={win:0,sl:0,flat:0};
+// 추천 적중 통계
+const recCnt={시초가:{n:0,hit:0},종가:{n:0,hit:0},'트레일+5':{n:0,hit:0}};
+let totalHit=0,totalCheck=0;
 for(const r of filtered){
   const c=_classifyResult(r);
   if(cnt[c]!==undefined)cnt[c]++;
   if(sum[c]!==undefined)sum[c]+=(+r.t||0);
+  // 추천 적중 검증 (라이브 제외)
+  if(!r._isLive&&r.ohlc&&r.ohlc.length){
+    const rec=_exitRec(_amtNum(r.mc),r.m);
+    const actual=_actualBest(r.ohlc);
+    if(actual){
+      let recKey='시초가';
+      if(rec.l.includes('종가'))recKey='종가';
+      else if(rec.l.includes('트레일'))recKey='트레일+5';
+      recCnt[recKey].n++;
+      const match=_matchRec(rec.l,actual);
+      if(match){recCnt[recKey].hit++;totalHit++;}
+      totalCheck++;
+    }
+  }
 }
 const realRows=filtered.filter(x=>!x._isLive&&String(x.r||'')!=='진행중');
 const realN=realRows.length||1;
@@ -884,9 +921,11 @@ const avgWin=cnt.win?sum.win/cnt.win:0;
 const avgSL=cnt.sl?sum.sl/cnt.sl:0;
 const avgFlat=cnt.flat?sum.flat/cnt.flat:0;
 const ratio=avgSL<0?Math.abs(avgWin/avgSL):0;
+const recAccuracy=totalCheck?totalHit/totalCheck*100:0;
 return {n:filtered.length,realN,avg,totalInvest,totalPnl,ret,
   cnt,winRate,lossRate,
   avgWin,avgSL,avgFlat,ratio,
+  recCnt,totalHit,totalCheck,recAccuracy,
   p5:cnt.win,sl:cnt.sl};
 },[filtered,invAmt]);
 // 3-way 청산 평균 — 모든 모드에서 비교 가능
@@ -1195,6 +1234,33 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   {stats.cnt.live>0&&<span style={{color:'#f59e0b'}}>📡 진행중: <b>{stats.cnt.live}</b>건</span>}
   {stats.ratio>0&&<span style={{marginLeft:'auto',color:_T.text,fontWeight:700}}>손익비 <b>{stats.ratio.toFixed(2)}</b></span>}
 </div>)}
+{/* 추천 적중률 — 추천한 청산이 실제 베스트와 일치한 비율 */}
+{stats.totalCheck>0&&(<div style={{padding:'12px 14px',background:_T.card,borderRadius:10,marginBottom:12,border:'1px solid '+_T.line}}>
+  <div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:8}}>
+    <div style={{fontSize:12,fontWeight:800,color:_T.text,letterSpacing:'-0.2px'}}>🎯 청산 추천 적중률</div>
+    <div style={{fontSize:18,fontWeight:800,color:stats.recAccuracy>=50?_T.up:stats.recAccuracy>=33?'#f59e0b':_T.down,letterSpacing:'-0.3px'}}>{stats.recAccuracy.toFixed(1)}<span style={{fontSize:12,fontWeight:600,color:_T.sub,marginLeft:2}}>%</span></div>
+  </div>
+  <div style={{fontSize:10,color:_T.hint,fontWeight:600,marginBottom:6,letterSpacing:'-0.2px'}}>{stats.totalHit}건 적중 / {stats.totalCheck}건 검증 (라이브 제외)</div>
+  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
+  {[
+    {k:'시초가',l:'🐌 시초가',col:'#1f6dee'},
+    {k:'종가',l:'📈 종가',col:'#0d8050'},
+    {k:'트레일+5',l:'🚀 트레일',col:'#10b981'}
+  ].map(x=>{
+    const d=stats.recCnt[x.k];
+    if(!d||d.n===0)return(<div key={x.k} style={{padding:'7px',borderRadius:7,background:_T.bg,border:'1px solid '+_T.line,textAlign:'center'}}>
+      <div style={{fontSize:10,fontWeight:700,color:_T.mute}}>{x.l}</div>
+      <div style={{fontSize:11,color:_T.mute,marginTop:2}}>0건</div>
+    </div>);
+    const acc=d.n?d.hit/d.n*100:0;
+    return(<div key={x.k} style={{padding:'7px',borderRadius:7,background:_T.bg,border:'1px solid '+x.col,textAlign:'center'}}>
+      <div style={{fontSize:10,fontWeight:800,color:x.col,letterSpacing:'-0.2px'}}>{x.l}</div>
+      <div style={{fontSize:14,fontWeight:800,color:_T.text,marginTop:2,letterSpacing:'-0.3px'}}>{acc.toFixed(0)}<span style={{fontSize:9,fontWeight:600,color:_T.sub,marginLeft:1}}>%</span></div>
+      <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:1}}>{d.hit}/{d.n}건</div>
+    </div>);
+  })}
+  </div>
+</div>)}
 <div style={{height:1,background:_T.line,margin:'0 -18px 16px'}}/>
 <div style={{fontSize:11,color:_T.hint,marginBottom:8,letterSpacing:'-0.2px',fontWeight:600}}>1건당 투자금</div>
 <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
@@ -1249,7 +1315,14 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
 {_rankCol&&<span style={{fontSize:11,fontWeight:900,color:'#fff',background:_rankCol,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',minWidth:32,textAlign:'center'}}>{r._rank}등</span>}
 {_rankCol&&r._mktLabel&&<span style={{fontSize:10,fontWeight:700,color:_T.body,background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._mktLabel}</span>}
 {r._tierLabel&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:r._tierCol,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._tierLabel}</span>}
-{(()=>{const rec=_exitRec(_amtNum(r.mc),r.m);return(<span style={{fontSize:10,fontWeight:800,color:'#fff',background:rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={rec.sub}>{rec.l}</span>);})()}
+{(()=>{
+  const rec=_exitRec(_amtNum(r.mc),r.m);
+  const actual=!r._isLive?_actualBest(r.ohlc):null;
+  const match=actual?_matchRec(rec.l,actual):null;
+  const matchIcon=match===true?' ✅':match===false?' ❌':'';
+  const matchTitle=actual?`${rec.sub}\n실제 베스트: ${actual.best} (시초가${actual.open>=0?'+':''}${actual.open.toFixed(2)}% / 종가${actual.close>=0?'+':''}${actual.close.toFixed(2)}% / 트레일+5${actual.trail5>=0?'+':''}${actual.trail5.toFixed(2)}%)`:rec.sub;
+  return(<span style={{fontSize:10,fontWeight:800,color:'#fff',background:match===true?'#10b981':match===false?'#dc2626':rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={matchTitle}>{rec.l}{matchIcon}</span>);
+})()}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:11,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:10,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
