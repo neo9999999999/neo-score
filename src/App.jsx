@@ -1,7 +1,9 @@
 // vercel rebuild trigger 1777038639400
 // rebuild 1777034990679
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
-import {R_26} from "./data.js";
+import {R_26 as R_26_OLD} from "./data.js";
+import {R_26_BACKFILL} from "./data_2026_backfill.js";
+const R_26 = [...R_26_BACKFILL, ...R_26_OLD];
 import {R_2025} from "./data_2025.js";
 import {R_2024} from "./data_2024.js";
 import {R_2023} from "./data_2023.js";
