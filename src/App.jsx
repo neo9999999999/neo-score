@@ -589,20 +589,23 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
-// 청산 추천 — 거래대금 구간별 백테스트 결과 (best01 universe n=754)
-//   1조+:        시초가 +1.40% vs 종가 -0.58% → 시초가 압도 (+1.98%p)
-//   3000~5000억: 시초가 +0.94% vs 종가 +0.10% → 시초가 우위 (+0.84%p)
-//   2000~3000억: 시초가 +0.79% vs 종가 -0.05% → 시초가 우위 (+0.83%p)
-//   1000~2000억: 시초가 +1.37% vs 종가 +1.01% → 시초가 약간 (+0.37%p)
-//   5000~10000억:시초가 +0.78% vs 종가 +1.11% → 종가 약간 (-0.33%p)
-//   500~1000억:  시초가 +1.04% vs 종가 +1.33% → 종가 약간 (-0.30%p)
+// 청산 추천 — 다차원 백테스트 (시장 × 거래대금) 기반 (best01 universe n=754)
+// 트레일+5% = 시초가+5%p 도달 즉익 / 미달 시 종가 매도 (분봉 검증 후 정확)
 const _exitRec=(amt,mkt)=>{
-  if(amt>=10000)return {l:'🐌 시초가',col:'#1f6dee',sub:'1조+ 시초가 +1.4% vs 종가 -0.6% (차익실현 압도)'};
-  if(amt>=2000&&amt<5000)return {l:'🐌 시초가',col:'#1f6dee',sub:'2000~5000억 — 시초가가 종가보다 +0.84%p 우위'};
-  if(amt>=1000&&amt<2000)return {l:'📊 시초가↑',col:'#0367c4',sub:'1000~2000억 — 시초가 약간 우위 (+0.37%p), 트레일도 가능'};
-  if(amt>=5000&&amt<10000)return {l:'📈 종가',col:'#0d8050',sub:'5000~10000억 — 종가가 시초가보다 +0.33%p 우위'};
-  if(amt<1000)return {l:'📈 종가',col:'#10b981',sub:'1000억 미만 — 종가가 시초가보다 +0.30%p 우위'};
-  return {l:'⚖️ 비슷',col:'#8b95a1',sub:'데이터 부족'};
+  const isKS=mkt==='KOSPI'||mkt==='KS';
+  const isKQ=mkt==='KOSDAQ'||mkt==='KO';
+  // 1조+ KOSPI: 시초가 압도 (+1.91% vs 트레일 -0.35%, 차익실현 압력)
+  if(amt>=10000&&isKS)return {l:'🐌 시초가',col:'#1f6dee',sub:'1조+ KOSPI: 시초가 +1.91% (트레일 -0.35%, 차익실현 압도)'};
+  // KOSPI 2000~3000억: 시초가 베스트 (시초가 +0.41% vs 트레일 -0.99%)
+  if(amt>=2000&&amt<3000&&isKS)return {l:'🐌 시초가',col:'#1f6dee',sub:'KOSPI 2~3천억: 시초가 +0.41% vs 종가 -2.24% (시초가 안전)'};
+  // KOSPI 500~1000억: 종가 약간 우위
+  if(amt<1000&&isKS)return {l:'📈 종가',col:'#0d8050',sub:'KOSPI 5~10백억: 종가 +1.36% (시초가 +0.83%)'};
+  // KOSDAQ 1000~2000억: 시초가 베스트 (시초가 +1.34% vs 트레일 +1.32%)
+  if(amt>=1000&&amt<2000&&isKQ)return {l:'🐌 시초가',col:'#1f6dee',sub:'KOSDAQ 1~2천억: 시초가 +1.34% (트레일과 비슷)'};
+  // 그 외 모든 경우: 트레일+5% 베스트 (대부분의 케이스)
+  // KOSDAQ 500~1k: T5 +2.02% / 5k~10k: T5 +2.47% / 3k~5k: T5 +1.47%
+  // KOSPI 1k~2k: T5 +2.31% / 3k~5k: T5 +1.43% / 5k~10k: T5 +1.90%
+  return {l:'🚀 트레일+5',col:'#10b981',sub:'분봉 +5%p 즉익 / 미달 시 종가. 베스트 (평균 +1.43~+2.47%)'};
 };
 // 모드 state — leader / neo25 / neo90 / best01 (시초가 매도 최고조합)
 const [mode,setMode]=useState(()=>{try{const v=localStorage.getItem('nbdb_mode_v2');const valid=['leader','neo25','neo90','best01'];if(valid.includes(v))return v;if(v==='neo7'||v==='custom'||v==='neo90b')return 'best01';if(v==='mix')return 'best01';return 'leader';}catch(e){return 'leader';}});
