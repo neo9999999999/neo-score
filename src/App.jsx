@@ -721,10 +721,15 @@ const liveClassify=(s)=>{
 };
 // 라이브 신호 → D 형식으로 변환 (메인 리스트와 통합)
 const liveAsD=useMemo(()=>{
+  // historical D에 이미 있는 (name + date) 는 라이브에서 제외 (dedup)
+  const hSet=new Set(D.map(r=>(r.n||'')+'|'+(r.d||'')));
   return liveSignals.map(s=>{
     const cat=liveClassify(s);if(!cat)return null;
+    const dFull='20'+_liveDate(s.signal_date);
+    const dupKey=(s.name||'')+'|'+dFull;
+    if(hSet.has(dupKey))return null; // 중복 제거 — historical에 이미 있음 (OHLC 트레일까지 있는 것 우선)
     return {
-      n:s.name,d:'20'+_liveDate(s.signal_date),m:s.market,ch:+s.rate||0,mc:s.vol+'억',iv:s.supply,sc:+s.score||0,g:s.grade,
+      n:s.name,d:dFull,m:s.market,ch:+s.rate||0,mc:s.vol+'억',iv:s.supply,sc:+s.score||0,g:s.grade,
       h60:s.h60===1?1:0,h120:s.h120===1?1:0,
       ma5:+s.ma5||0,ma20:+s.ma20||0,ma60:+s.ma60||0,maAlign:s.maAlign===1?1:0,cum5:+s.cum5||0,
       tp1:cat==='neo25'?25:5,tp2:cat==='neo25'?50:0,
