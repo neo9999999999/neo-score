@@ -3,7 +3,15 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import {R_26 as R_26_OLD} from "./data.js";
 import {R_26_BACKFILL} from "./data_2026_backfill.js";
-const R_26 = [...R_26_BACKFILL, ...R_26_OLD];
+import {R_26_EXTEND} from "./data_2026_extend.js";
+// EXTEND = [[name, date, ohlc], ...] — R_26_OLD의 ohlc(인덱스 38)만 새 trail로 교체
+const _extendMap=new Map(R_26_EXTEND.map(r=>[r[0]+'|'+r[1], r[2]]));
+const R_26_OLD_MERGED=R_26_OLD.map(r=>{
+  const newOhlc=_extendMap.get(r[0]+'|'+r[1]);
+  if(!newOhlc)return r;
+  const nr=[...r];nr[38]=newOhlc;return nr;
+});
+const R_26=[...R_26_BACKFILL, ...R_26_OLD_MERGED];
 import {R_2025} from "./data_2025.js";
 import {R_2024} from "./data_2024.js";
 import {R_2023} from "./data_2023.js";
