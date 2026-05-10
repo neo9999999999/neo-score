@@ -868,36 +868,62 @@ const exitStats=useMemo(()=>{
     trail:{avg:avg(trails),winRate:wr(trails,5)}
   };
 },[filtered]);
-// best01 모드 — 연도별 통계 + tier별 분포
+// best01 모드 — 연도별 통계 + 3가지 청산 비교 + tier 분포
 const best01Stats=useMemo(()=>{
   if(mode!=='best01'||!filtered.length)return null;
   const real=filtered.filter(x=>!x._isLive&&x.ohlc&&x.ohlc.length);
   if(!real.length)return null;
+  // 각 row에 3가지 청산 결과 부착
+  const enriched=real.map(r=>{
+    const cmp=_compareExits(r.ohlc);
+    return {r,open:cmp.open,close:cmp.close,trail:cmp.trail};
+  });
+  // 연도별 × 청산별 통계
   const yrs={};
-  for(const r of real){
-    const y=r.d?r.d.slice(2,4):'';if(!y)continue;
-    if(!yrs[y])yrs[y]=[];
-    yrs[y].push(+r.t||0);
+  for(const e of enriched){
+    const y=e.r.d?e.r.d.slice(2,4):'';if(!y)continue;
+    if(!yrs[y])yrs[y]={open:[],close:[],trail:[]};
+    if(e.open!=null)yrs[y].open.push(e.open);
+    if(e.close!=null)yrs[y].close.push(e.close);
+    if(e.trail!=null)yrs[y].trail.push(e.trail);
   }
+  const calcSet=(arr,winTh,feeAdj)=>{
+    if(!arr.length)return null;
+    const avg=arr.reduce((a,b)=>a+b,0)/arr.length;
+    const win=arr.filter(x=>x>=winTh).length;
+    const loss=arr.filter(x=>x<=-winTh).length;
+    const wins=arr.filter(x=>x>=winTh),losses=arr.filter(x=>x<=-winTh);
+    const aw=wins.length?wins.reduce((a,b)=>a+b,0)/wins.length:0;
+    const al=losses.length?losses.reduce((a,b)=>a+b,0)/losses.length:0;
+    return {n:arr.length,avg,adjAvg:avg-feeAdj,winRate:win/arr.length*100,lossRate:loss/arr.length*100,ratio:al<0?Math.abs(aw/al):0,cumAdj:(avg-feeAdj)*arr.length};
+  };
   const yrAvgs=[];
   for(const y of ["21","22","23","24","25","26"]){
     if(!yrs[y])continue;
-    const ts=yrs[y];
-    const avg=ts.reduce((a,b)=>a+b,0)/ts.length;
-    const win=ts.filter(x=>x>=1).length;
-    const loss=ts.filter(x=>x<=-1).length;
-    yrAvgs.push({y,n:ts.length,avg,winRate:win/ts.length*100,lossRate:loss/ts.length*100,cumAdj:(avg-0.25)*ts.length});
+    yrAvgs.push({
+      y,
+      open:calcSet(yrs[y].open,1,0.25),
+      close:calcSet(yrs[y].close,1,0.25),
+      trail:calcSet(yrs[y].trail,5,0.25)
+    });
   }
   // tier별 카운트
   const tiers={ABC:0,AB:0,AC:0,BC:0,A:0,B:0,C:0};
   for(const r of real)if(r._tier&&tiers[r._tier]!==undefined)tiers[r._tier]++;
   // 전체
-  const ts=real.map(x=>+x.t||0);
-  const avg=ts.reduce((a,b)=>a+b,0)/ts.length;
-  const wins=ts.filter(x=>x>=1),losses=ts.filter(x=>x<=-1);
-  const aw=wins.length?wins.reduce((a,b)=>a+b,0)/wins.length:0;
-  const al=losses.length?losses.reduce((a,b)=>a+b,0)/losses.length:0;
-  return {n:real.length,avg,adjAvg:avg-0.25,winRate:wins.length/ts.length*100,lossRate:losses.length/ts.length*100,ratio:al<0?Math.abs(aw/al):0,yrAvgs,tiers,allPos:yrAvgs.length>=5&&yrAvgs.every(x=>x.avg>0)};
+  const opens=enriched.map(e=>e.open).filter(x=>x!=null);
+  const closes=enriched.map(e=>e.close).filter(x=>x!=null);
+  const trails=enriched.map(e=>e.trail).filter(x=>x!=null);
+  // 모든 연도 양수 검증 (각 청산별)
+  const allPos=(k)=>yrAvgs.length>=5&&yrAvgs.every(x=>x[k]&&x[k].avg>0);
+  return {
+    n:real.length,
+    open:calcSet(opens,1,0.25),
+    close:calcSet(closes,1,0.25),
+    trail:calcSet(trails,5,0.25),
+    yrAvgs,tiers,
+    allPosOpen:allPos('open'),allPosClose:allPos('close'),allPosTrail:allPos('trail')
+  };
 },[filtered,mode]);
 // 대장주 모드 — 랭크별 통계
 const leaderStats=useMemo(()=>{
@@ -1029,22 +1055,52 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 </div>
 </div>)}
 {best01Stats&&(<div style={{background:_T.card,borderRadius:14,padding:'16px 18px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
-<div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:10}}>
-  <div style={{fontSize:13,fontWeight:800,color:'#f59e0b',letterSpacing:'-0.3px'}}>📅 최고조합01 — 연도별 (시초가 매도)</div>
-  <div style={{fontSize:10,fontWeight:600,color:_T.sub}}>비용 차감 후 +{best01Stats.adjAvg.toFixed(2)}%/거래 · 손익비 {best01Stats.ratio.toFixed(2)} {best01Stats.allPos&&'· 모든 연도 양수 ✅'}</div>
+<div style={{fontSize:13,fontWeight:800,color:'#f59e0b',letterSpacing:'-0.3px',marginBottom:10}}>📊 최고조합01 — 청산 3가지 종합 비교 (n={best01Stats.n})</div>
+{/* 3가지 청산 전체 평균 비교 */}
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:12}}>
+{[
+  {k:'open',l:'시초가 매도',sub:'D+1 시가',col:'#1f6dee',allPos:best01Stats.allPosOpen},
+  {k:'close',l:'종가 매도',sub:'D+1 종가',col:'#0d8050',allPos:best01Stats.allPosClose},
+  {k:'trail',l:'트레일 -3%',sub:'5%후 / 15일',col:'#a855f7',allPos:best01Stats.allPosTrail}
+].map(x=>{const d=best01Stats[x.k];if(!d)return null;
+  return(<div key={x.k} style={{padding:'10px',borderRadius:10,background:_T.bg,border:'1px solid '+x.col,textAlign:'center'}}>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5}}>
+      <span style={{fontSize:11,fontWeight:800,color:x.col,letterSpacing:'-0.2px'}}>{x.l}</span>
+      {x.allPos&&<span style={{fontSize:9,color:'#10b981',fontWeight:800}}>✅</span>}
+    </div>
+    <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:1}}>{x.sub}</div>
+    <div style={{fontSize:18,fontWeight:800,color:d.adjAvg>=0?_T.up:_T.down,letterSpacing:'-0.3px',marginTop:5}}>{d.adjAvg>=0?'+':''}{d.adjAvg.toFixed(2)}%</div>
+    <div style={{fontSize:9,color:_T.hint,fontWeight:600,marginTop:1}}>비용차감 (원평균 +{d.avg.toFixed(2)}%)</div>
+    <div style={{fontSize:10,color:_T.body,fontWeight:600,marginTop:4}}>익절 {d.winRate.toFixed(0)}% · 손익비 {d.ratio.toFixed(2)}</div>
+    <div style={{fontSize:9,color:d.cumAdj>=0?_T.up:_T.down,fontWeight:700,marginTop:2}}>5년누적 {d.cumAdj>=0?'+':''}{d.cumAdj.toFixed(0)}%</div>
+  </div>);
+})}
 </div>
-{/* 연도별 그리드 */}
-<div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:6,marginBottom:10}}>
-{best01Stats.yrAvgs.map(yr=>(
-<div key={yr.y} style={{padding:'9px 6px',borderRadius:9,background:_T.bg,border:'1px solid '+(yr.avg>=0.5?'#f59e0b':_T.line),textAlign:'center'}}>
-  <div style={{fontSize:10,fontWeight:700,color:_T.hint}}>20{yr.y}</div>
-  <div style={{fontSize:14,fontWeight:800,color:yr.avg>=0?_T.up:_T.down,letterSpacing:'-0.3px',marginTop:2}}>{yr.avg>=0?'+':''}{yr.avg.toFixed(2)}%</div>
-  <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:1}}>n={yr.n} · 익절{yr.winRate.toFixed(0)}%</div>
-  <div style={{fontSize:9,color:yr.cumAdj>=0?_T.up:_T.down,fontWeight:700,marginTop:2}}>누적{yr.cumAdj>=0?'+':''}{yr.cumAdj.toFixed(0)}%</div>
+{/* 연도별 × 청산 비교 표 */}
+<div style={{padding:'10px 12px',background:_T.linelt,borderRadius:8,marginBottom:10}}>
+<div style={{fontSize:10,fontWeight:700,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px'}}>연도별 × 청산 (비용 차감 후 평균)</div>
+<div style={{fontSize:11,fontWeight:600}}>
+<div style={{display:'grid',gridTemplateColumns:'42px repeat(6,1fr) 50px',gap:4,fontSize:10,fontWeight:700,color:_T.hint,marginBottom:4,padding:'0 2px'}}>
+  <span></span>{best01Stats.yrAvgs.map(yr=>(<span key={yr.y} style={{textAlign:'center'}}>20{yr.y}</span>))}<span style={{textAlign:'right',color:_T.text}}>n</span>
 </div>
+{[
+  {k:'open',l:'시초가',col:'#1f6dee'},
+  {k:'close',l:'종가',col:'#0d8050'},
+  {k:'trail',l:'트레일',col:'#a855f7'}
+].map(row=>(
+  <div key={row.k} style={{display:'grid',gridTemplateColumns:'42px repeat(6,1fr) 50px',gap:4,padding:'5px 2px',borderTop:'1px solid '+_T.line,alignItems:'center'}}>
+    <span style={{fontSize:11,fontWeight:800,color:row.col,letterSpacing:'-0.2px'}}>{row.l}</span>
+    {best01Stats.yrAvgs.map(yr=>{
+      const d=yr[row.k];if(!d)return <span key={yr.y}>—</span>;
+      const v=d.adjAvg;
+      return(<span key={yr.y} style={{textAlign:'center',fontSize:11,fontWeight:700,color:v>=0?_T.up:_T.down,letterSpacing:'-0.2px'}}>{v>=0?'+':''}{v.toFixed(2)}%</span>);
+    })}
+    <span style={{textAlign:'right',fontSize:10,color:_T.sub,fontWeight:600}}>{best01Stats[row.k]?.n||0}</span>
+  </div>
 ))}
 </div>
-{/* tier별 분포 */}
+</div>
+{/* tier 분포 */}
 <div style={{padding:'10px 12px',background:_T.linelt,borderRadius:8}}>
 <div style={{fontSize:10,fontWeight:700,color:_T.hint,marginBottom:5,letterSpacing:'-0.2px'}}>Tier 분포 (어느 룰에 속하는지)</div>
 <div style={{display:'flex',gap:8,flexWrap:'wrap',fontSize:11,fontWeight:600,color:_T.body}}>
@@ -1054,6 +1110,15 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {best01Stats.tiers.A>0&&<span><span style={{color:'#a855f7',fontWeight:800}}>A only</span> {best01Stats.tiers.A}</span>}
 {best01Stats.tiers.B>0&&<span><span style={{color:'#1f6dee',fontWeight:800}}>B only</span> {best01Stats.tiers.B}</span>}
 {best01Stats.tiers.C>0&&<span><span style={{color:'#10b981',fontWeight:800}}>🥉 C only</span> {best01Stats.tiers.C}</span>}
+</div>
+</div>
+{/* 트레일링 검증 안내 */}
+<div style={{marginTop:10,padding:'10px 12px',background:'rgba(168,85,247,0.10)',border:'1px solid #a855f7',borderRadius:8}}>
+<div style={{fontSize:11,fontWeight:800,color:'#a855f7',marginBottom:4,letterSpacing:'-0.2px'}}>📡 트레일링 검증 데이터 누적 중</div>
+<div style={{fontSize:10,color:_T.body,fontWeight:500,lineHeight:1.6,letterSpacing:'-0.2px'}}>
+  · KIS 1분봉 자동 수집 (장 마감 5분 후 cron) → <code style={{background:_T.bg,padding:'1px 5px',borderRadius:3,fontSize:9}}>data/intraday/&#123;date&#125;.json</code><br/>
+  · 일봉 종가 기준 트레일링은 보수적 추정 — <b>분봉 누적 후 시간대별 트레일 정확 검증 예정</b><br/>
+  · 위 트레일 통계는 <b>일봉 OHLC 기반 시뮬</b> (실제 분봉 트레일은 더 빠른 익절/손절 가능)
 </div>
 </div>
 </div>)}
