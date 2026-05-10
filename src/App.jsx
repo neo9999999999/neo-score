@@ -652,6 +652,9 @@ const [mode,setMode]=useState(()=>{try{
   return 'leader';
 }catch(e){return 'leader';}});
 useEffect(()=>{try{localStorage.setItem('nbdb_mode_v3',mode);}catch(e){}},[mode]);
+// 청산 방식 (대장주 모드 전용) — 시초가 / 종가 / 트레일+5
+const [exitMethod,setExitMethod]=useState(()=>{try{const v=localStorage.getItem('nbdb_exit_v1');return ['open','close','trail'].includes(v)?v:'open';}catch(e){return 'open';}});
+useEffect(()=>{try{localStorage.setItem('nbdb_exit_v1',exitMethod);}catch(e){}},[exitMethod]);
 // 라이브 누적 신호 fetch (sector-api signals.json)
 const [liveSignals,setLiveSignals]=useState([]);
 const [liveLoaded,setLiveLoaded]=useState(false);
@@ -874,12 +877,15 @@ if(mode==='leader'){
     });
   }
   arr=newArr;
-  // 시뮬 적용 (D+1 시초가 매도)
+  // 시뮬 적용 — exitMethod 따라 시초가/종가/트레일 선택
   arr=arr.map(rr=>{
     if(rr._isLive)return rr;
-    const sim=_simNextOpen(rr.ohlc);
+    let sim;
+    if(exitMethod==='close')sim=_simNextClose(rr.ohlc);
+    else if(exitMethod==='trail')sim=_simNeo90(rr.ohlc);
+    else sim=_simNextOpen(rr.ohlc);
     if(!sim)return rr;
-    return {...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d,tp1dy:sim.tp1dy,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak};
+    return {...rr,t:sim.t,r:sim.r,tp1d:sim.tp1d||'',tp1dy:sim.tp1dy||0,tp2d:'',tp2dy:0,exd:sim.exd,exdy:sim.exdy,_peak:sim._peak||0};
   });
 }
 // 네오 90% 모드: 시뮬 결과로 t/r/exd/tp1d 덮어쓰기 (트레일링)
@@ -918,7 +924,7 @@ if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[yf,selSup,sortMode,mode,liveAsD,_leaderSet]);
+},[yf,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
 // 결과 단순 분류 — 익절(t≥1) / 손절(t≤-1) / 무사통과 / 진행중
 const _classifyResult=(r)=>{
   if(r._isLive||String(r.r||'')==='진행중')return 'live';
@@ -1101,6 +1107,11 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     <div style={{fontSize:9,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
+{/* 청산 방식 토글 (대장주 전용) */}
+{mode==='leader'&&(<div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
+{[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
+  <button key={e.id} onClick={()=>setExitMethod(e.id)} style={{flex:'1 1 0',padding:'8px 6px',border:'none',background:a?e.col:'transparent',color:a?'#fff':_T.sub,borderRadius:8,cursor:'pointer',fontSize:11,fontWeight:a?800:600,letterSpacing:'-0.2px',whiteSpace:'nowrap',minWidth:0,overflow:'hidden',textOverflow:'ellipsis'}}>{e.l}</button>);})}
+</div>)}
 {/* 필터 카드 */}
 <Card title={mode==='leader'?'네오 대장주 자동 필터 (1,2,3등주)':mode==='neo25'?'네오 25% 자동 필터':mode==='neo90'?'네오 90% 자동 필터':mode==='best01'?'최고조합01 — 시초가 매도 합집합 (A∪B∪C)':'필터'} hint={mode==='leader'?'D+1 시초가 매도 · 5년4개월 가중평균 +0.12%':mode==='neo25'?'+25% 즉익 · 25일 만기 · 평균 +4.75%':mode==='neo90'?'5% 후 트레일 -3% · 15일 만기 · 평균 +4.35%':mode==='best01'?'D+1 시초가 매도 · 비용후 +0.79%/거래 · 모든 연도+ · 자본25% 분산 시 연 +28%':'등락 15-29% · 거래대금≥50억'}>
 {(<div style={{fontSize:11,color:_T.sub,fontWeight:500,lineHeight:1.6,padding:'8px 10px',background:_T.linelt,borderRadius:8,marginBottom:10,letterSpacing:'-0.2px'}}>
