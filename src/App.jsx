@@ -741,15 +741,17 @@ const liveAsD=useMemo(()=>{
   const dedupSigs=Array.from(seenSig.values());
   return dedupSigs.map(s=>{
     const cat=liveClassify(s);if(!cat)return null;
-    const dFull='20'+_liveDate(s.signal_date);
-    const dupKey=(s.name||'')+'|'+dFull;
+    const ymd=String(s.signal_date||'').replace(/-/g,''); // '20260501' (8 digits)
+    if(ymd.length!==8)return null;
+    const dShort=ymd.slice(2,4)+'-'+ymd.slice(4,6)+'-'+ymd.slice(6,8); // '26-05-01' — matches D[r].d
+    const dFull='20'+dShort; // '2026-05-01' — display form
+    const dupKey=(s.name||'')+'|'+dShort;
     if(hSet.has(dupKey))return null; // 중복 제거 — historical에 이미 있음 (OHLC 트레일까지 있는 것 우선)
-    // 한국 공휴일/주말 발화 제외
-    const ymd=dFull;
+    // 주말 제외
     const dt=new Date(+ymd.slice(0,4),+ymd.slice(4,6)-1,+ymd.slice(6,8));
     const day=dt.getDay();
-    if(day===0||day===6)return null; // 토일
-    // 한국 공휴일 (2026): 5/1 근로자의 날, 5/5 어린이날, 추후 추가 가능
+    if(day===0||day===6)return null;
+    // 한국 공휴일 (2026): 5/1 근로자의 날, 5/5 어린이날, 광복절, 추석 등
     const holidays=['20260501','20260505','20260815','20260925','20260926','20260927'];
     if(holidays.includes(ymd))return null;
     return {
