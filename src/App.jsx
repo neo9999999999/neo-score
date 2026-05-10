@@ -731,11 +731,27 @@ const liveClassify=(s)=>{
 const liveAsD=useMemo(()=>{
   // historical D에 이미 있는 (name + date) 는 라이브에서 제외 (dedup)
   const hSet=new Set(D.map(r=>(r.n||'')+'|'+(r.d||'')));
-  return liveSignals.map(s=>{
+  // 같은 종목+rate+vol 조합 중 가장 빠른 발화일만 유지 (휴일/주말 cron 중복 제거)
+  const seenSig=new Map(); // key = code|rate|vol → 최초 발화 signal
+  for(const s of liveSignals){
+    const k=(s.code||'')+'|'+(+s.rate||0).toFixed(2)+'|'+(s.vol||0);
+    const prev=seenSig.get(k);
+    if(!prev||(s.signal_date||'')<(prev.signal_date||''))seenSig.set(k,s);
+  }
+  const dedupSigs=Array.from(seenSig.values());
+  return dedupSigs.map(s=>{
     const cat=liveClassify(s);if(!cat)return null;
     const dFull='20'+_liveDate(s.signal_date);
     const dupKey=(s.name||'')+'|'+dFull;
     if(hSet.has(dupKey))return null; // 중복 제거 — historical에 이미 있음 (OHLC 트레일까지 있는 것 우선)
+    // 한국 공휴일/주말 발화 제외
+    const ymd=dFull;
+    const dt=new Date(+ymd.slice(0,4),+ymd.slice(4,6)-1,+ymd.slice(6,8));
+    const day=dt.getDay();
+    if(day===0||day===6)return null; // 토일
+    // 한국 공휴일 (2026): 5/1 근로자의 날, 5/5 어린이날, 추후 추가 가능
+    const holidays=['20260501','20260505','20260815','20260925','20260926','20260927'];
+    if(holidays.includes(ymd))return null;
     return {
       n:s.name,d:dFull,m:s.market,ch:+s.rate||0,mc:s.vol+'억',iv:s.supply,sc:+s.score||0,g:s.grade,
       h60:s.h60===1?1:0,h120:s.h120===1?1:0,
