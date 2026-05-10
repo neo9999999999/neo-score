@@ -1169,15 +1169,16 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   const best=Math.max(...items.map(x=>exitStats[x.k].avg));
   return(<div style={{background:_T.card,borderRadius:14,padding:'14px 16px',marginBottom:10,color:_T.text,border:'1px solid '+_T.line}}>
     <div style={{fontSize:12,fontWeight:700,color:_T.text,marginBottom:8,letterSpacing:'-0.3px',display:'flex',alignItems:'baseline',gap:8}}>
-      📊 청산룰 평균 비교
+      📊 청산룰 평균 비교 <span style={{fontSize:10,color:'#10b981',fontWeight:700}}>(클릭하여 적용)</span>
       <span style={{fontSize:10,color:_T.hint,fontWeight:500}}>{exitStats.n}건 기준</span>
     </div>
     <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
       {items.map(x=>{
         const d=exitStats[x.k];
         const isBest=Math.abs(d.avg-best)<0.001;
-        return(<div key={x.k} style={{padding:'10px 8px',borderRadius:9,background:_T.bg,border:'1px solid '+(isBest?x.col:_T.line),textAlign:'center'}}>
-          <div style={{fontSize:10,fontWeight:700,color:x.col,letterSpacing:'-0.2px',marginBottom:4}}>{x.l}{isBest&&' ★'}</div>
+        const isSelected=exitMethod===x.k;
+        return(<div key={x.k} onClick={()=>setExitMethod(x.k)} style={{padding:'10px 8px',borderRadius:9,background:isSelected?x.col+'18':_T.bg,border:'2px solid '+(isSelected?x.col:_T.line),textAlign:'center',cursor:'pointer',transition:'all 0.15s'}}>
+          <div style={{fontSize:10,fontWeight:700,color:x.col,letterSpacing:'-0.2px',marginBottom:4}}>{x.l}{isBest&&' ★'}{isSelected&&' ✓'}</div>
           <div style={{fontSize:18,fontWeight:800,color:d.avg>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{d.avg>=0?'+':''}{d.avg.toFixed(2)}%</div>
           <div style={{fontSize:9,color:_T.sub,fontWeight:600,marginTop:2}}>승률 {d.winRate.toFixed(0)}%</div>
         </div>);
