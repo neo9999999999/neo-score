@@ -27,6 +27,16 @@ export function NeoPullbackTab({ theme = "dark" }) {
   const [sortKey, setSortKey] = useState('date_desc');
   const [expanded, setExpanded] = useState({});  // index -> bool
   const [showAll, setShowAll] = useState(false);
+  // 투입금 조절 (만원 단위) — 기본: A=10, S=20 (추매도 동일)
+  const [aBuy, setABuy] = useState(() => { try { return +localStorage.getItem('pullback_a_buy') || 10; } catch { return 10; } });
+  const [sBuy, setSBuy] = useState(() => { try { return +localStorage.getItem('pullback_s_buy') || 20; } catch { return 20; } });
+  useEffect(() => { try { localStorage.setItem('pullback_a_buy', String(aBuy)); } catch {} }, [aBuy]);
+  useEffect(() => { try { localStorage.setItem('pullback_s_buy', String(sBuy)); } catch {} }, [sBuy]);
+  // 한 종목당 투입금 (1차 + 추매)
+  const _invest = (grade, addFired) => {
+    const base = grade === 'S' ? sBuy : aBuy;
+    return addFired ? base * 2 : base;  // 추매 발동 시 2배
+  };
 
   const filtered = useMemo(() => {
     let arr = PULLBACK.filter(r => {
@@ -51,10 +61,10 @@ export function NeoPullbackTab({ theme = "dark" }) {
     const winCnt = rets.filter(r => r > 0).length;
     const tp1Cnt = completed.filter(r => r[C.TP1] === 'Y').length;
     const tp2Cnt = completed.filter(r => r[C.TP2] === 'Y').length;
-    // CSV 정확 — 투입금이 이미 추매 반영 (추매 시 base×2)
+    // 추매 발동 + 사용자 설정 투입금
     const addCnt = completed.filter(r => r[C.ADD_FIRED] === 'Y').length;
-    const totalInvest = completed.reduce((a,r) => a + (+r[C.INVEST]||0), 0);
-    const totalPnl = completed.reduce((a,r) => a + (+r[C.INVEST]||0) * (+r[C.RET60]||0) / 100, 0);
+    const totalInvest = completed.reduce((a,r) => a + _invest(r[C.GRADE], r[C.ADD_FIRED]==='Y'), 0);
+    const totalPnl = completed.reduce((a,r) => a + _invest(r[C.GRADE], r[C.ADD_FIRED]==='Y') * (+r[C.RET60]||0) / 100, 0);
     const capitalRet = totalInvest > 0 ? (totalPnl/totalInvest*100) : 0;
     const inprog = filtered.filter(r => r[C.INPROG]).length;
     return { n, avg, winRate: winCnt/n*100, tp1Rate: tp1Cnt/n*100, tp2Rate: tp2Cnt/n*100, addRate: addCnt/n*100, capitalRet, totalInvest, totalPnl, inprog };
@@ -63,6 +73,40 @@ export function NeoPullbackTab({ theme = "dark" }) {
   const years = ['all', ...Array.from(new Set(PULLBACK.map(r=>+r[C.YEAR]))).sort((a,b)=>b-a)];
   const displayLimit = showAll ? filtered.length : 100;
   const display = filtered.slice(0, displayLimit);
+
+  // 년도별 통계 (등급 필터 반영, 년도 필터 무시 — 전체 년도 보기 위해)
+  const yearStats = useMemo(() => {
+    const rows = PULLBACK.filter(r => gradeFilter === 'all' || r[C.GRADE] === gradeFilter);
+    const byYear = {};
+    for (const r of rows) {
+      const y = +r[C.YEAR];
+      if (!byYear[y]) byYear[y] = { n:0, win:0, loss:0, flat:0, inprog:0, tp1:0, tp2:0, addFired:0, invest:0, recovered:0, retSum:0 };
+      const stats = byYear[y];
+      stats.n++;
+      if (r[C.INPROG]) { stats.inprog++; continue; }
+      const ret = +r[C.RET60] || 0;
+      const inv = _invest(r[C.GRADE], r[C.ADD_FIRED]==='Y');
+      stats.invest += inv;
+      stats.recovered += inv * (1 + ret/100);
+      stats.retSum += ret;
+      if (ret >= 1) stats.win++;
+      else if (ret <= -1) stats.loss++;
+      else stats.flat++;
+      if (r[C.TP1] === 'Y') stats.tp1++;
+      if (r[C.TP2] === 'Y') stats.tp2++;
+      if (r[C.ADD_FIRED] === 'Y') stats.addFired++;
+    }
+    return Object.entries(byYear).map(([y, s]) => {
+      const completed = s.n - s.inprog;
+      return {
+        year: +y, ...s, completed,
+        avgRet: completed ? s.retSum / completed : 0,
+        winRate: completed ? s.win/completed*100 : 0,
+        capitalRet: s.invest > 0 ? (s.recovered/s.invest - 1) * 100 : 0,
+        pnl: s.recovered - s.invest
+      };
+    }).sort((a,b) => a.year - b.year);
+  }, [gradeFilter, aBuy, sBuy]);
 
   return (
     <div style={{padding:'4px 0', color:_T.text}}>
@@ -96,6 +140,88 @@ export function NeoPullbackTab({ theme = "dark" }) {
             <Stat l="자본수익률" v={(stats.capitalRet>=0?'+':'')+stats.capitalRet.toFixed(2)+'%'} c={stats.capitalRet>=0?_T.up:_T.down} _T={_T} />
             <Stat l="총 손익" v={(stats.totalPnl>=0?'+':'')+Math.round(stats.totalPnl).toLocaleString()+'만'} c={stats.totalPnl>=0?_T.up:_T.down} sub={`투입 ${Math.round(stats.totalInvest).toLocaleString()}만`} _T={_T} />
           </div>
+        </div>
+      )}
+
+      {/* 투입금 조절 */}
+      <div style={{background:_T.card, border:'1px solid '+_T.line, borderRadius:12, padding:'12px 14px', marginBottom:10}}>
+        <div style={{fontSize:12, fontWeight:800, color:_T.text, marginBottom:8, letterSpacing:'-0.3px'}}>💰 종목당 투입금 (만원) — 1차 매수 / 추매 동일</div>
+        <div style={{display:'flex', gap:10, flexWrap:'wrap', alignItems:'center'}}>
+          <label style={{display:'flex', alignItems:'center', gap:6}}>
+            <span style={{padding:'3px 9px', borderRadius:5, fontSize:11, fontWeight:800, background:'rgba(37,99,235,0.12)', color:'#2563eb'}}>🔵 일반A</span>
+            <input type="number" value={aBuy} onChange={e=>setABuy(Math.max(1,+e.target.value||1))} style={{width:70, padding:'5px 8px', borderRadius:6, border:'1px solid '+_T.line, background:_T.bg, color:_T.text, fontSize:13, fontWeight:700, textAlign:'right'}}/>
+            <span style={{fontSize:12, color:_T.sub}}>만원 (추매시 +{aBuy} → 총 {aBuy*2}만)</span>
+          </label>
+          <label style={{display:'flex', alignItems:'center', gap:6}}>
+            <span style={{padding:'3px 9px', borderRadius:5, fontSize:11, fontWeight:800, background:'rgba(220,38,38,0.12)', color:'#dc2626'}}>🔴 S급</span>
+            <input type="number" value={sBuy} onChange={e=>setSBuy(Math.max(1,+e.target.value||1))} style={{width:70, padding:'5px 8px', borderRadius:6, border:'1px solid '+_T.line, background:_T.bg, color:_T.text, fontSize:13, fontWeight:700, textAlign:'right'}}/>
+            <span style={{fontSize:12, color:_T.sub}}>만원 (추매시 +{sBuy} → 총 {sBuy*2}만)</span>
+          </label>
+          <button onClick={()=>{setABuy(10);setSBuy(20);}} style={{padding:'4px 11px', borderRadius:6, border:'1px solid '+_T.line, background:_T.bg, color:_T.body, fontSize:11, fontWeight:600, cursor:'pointer', marginLeft:'auto'}}>기본 (A=10/S=20)</button>
+        </div>
+      </div>
+
+      {/* 년도별 통계 */}
+      {yearStats.length > 0 && (
+        <div style={{background:_T.card, border:'1px solid '+_T.line, borderRadius:12, padding:'12px 14px', marginBottom:10, overflow:'hidden'}}>
+          <div style={{fontSize:12, fontWeight:800, color:_T.text, marginBottom:8, letterSpacing:'-0.3px'}}>
+            📊 년도별 성과 {gradeFilter !== 'all' && <span style={{color:_gradeColor(gradeFilter), marginLeft:4}}>({gradeFilter}급만)</span>}
+          </div>
+          <div style={{overflowX:'auto'}}>
+            <table style={{width:'100%', minWidth:600, borderCollapse:'collapse', fontSize:12}}>
+              <thead>
+                <tr style={{background:_T.linelt, borderBottom:'2px solid '+_T.line}}>
+                  {['년도','신호','수익','손절','무사','TP1','평균실현','자본수익률','투입','회수','손익'].map(h => (
+                    <th key={h} style={{padding:'7px 6px', textAlign:'center', fontSize:11, fontWeight:700, color:_T.sub, letterSpacing:'-0.2px', whiteSpace:'nowrap'}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {yearStats.map(s => (
+                  <tr key={s.year} style={{borderBottom:'1px solid '+_T.linelt}}>
+                    <td style={{padding:'7px 6px', textAlign:'center', fontWeight:800, color:_T.text, fontSize:12}}>{s.year}{s.inprog>0 && <span style={{fontSize:10, color:'#f59e0b', marginLeft:3}}>+{s.inprog}↻</span>}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', fontWeight:700, color:_T.body}}>{s.n}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.up, fontWeight:700}}>{s.win}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.down, fontWeight:700}}>{s.loss}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.sub}}>{s.flat}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.up, fontSize:11}}>{s.tp1}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:s.avgRet>=0?_T.up:_T.down, fontWeight:700}}>{s.avgRet>=0?'+':''}{s.avgRet.toFixed(2)}%</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:s.capitalRet>=0?_T.up:_T.down, fontWeight:800, fontSize:13}}>{s.capitalRet>=0?'+':''}{s.capitalRet.toFixed(2)}%</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.sub, fontSize:11}}>{Math.round(s.invest).toLocaleString()}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:_T.body, fontSize:11}}>{Math.round(s.recovered).toLocaleString()}</td>
+                    <td style={{padding:'7px 6px', textAlign:'right', color:s.pnl>=0?_T.up:_T.down, fontWeight:800}}>{s.pnl>=0?'+':''}{Math.round(s.pnl).toLocaleString()}</td>
+                  </tr>
+                ))}
+                {/* 총합 */}
+                {(() => {
+                  const tot = yearStats.reduce((a,s) => ({
+                    n: a.n+s.n, win: a.win+s.win, loss: a.loss+s.loss, flat: a.flat+s.flat,
+                    tp1: a.tp1+s.tp1, invest: a.invest+s.invest, recovered: a.recovered+s.recovered,
+                    inprog: a.inprog+s.inprog, retSum: a.retSum+s.retSum, completed: a.completed+s.completed
+                  }), {n:0,win:0,loss:0,flat:0,tp1:0,invest:0,recovered:0,inprog:0,retSum:0,completed:0});
+                  const totAvg = tot.completed ? tot.retSum / tot.completed : 0;
+                  const totCap = tot.invest > 0 ? (tot.recovered/tot.invest - 1) * 100 : 0;
+                  const totPnl = tot.recovered - tot.invest;
+                  return (
+                    <tr style={{borderTop:'2px solid '+_T.line, background:_T.linelt}}>
+                      <td style={{padding:'8px 6px', textAlign:'center', fontWeight:800, color:_T.text}}>합계</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', fontWeight:800, color:_T.text}}>{tot.n}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.up, fontWeight:800}}>{tot.win}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.down, fontWeight:800}}>{tot.loss}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.sub}}>{tot.flat}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.up}}>{tot.tp1}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:totAvg>=0?_T.up:_T.down, fontWeight:800}}>{totAvg>=0?'+':''}{totAvg.toFixed(2)}%</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:totCap>=0?_T.up:_T.down, fontWeight:800, fontSize:14}}>{totCap>=0?'+':''}{totCap.toFixed(2)}%</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.body, fontWeight:700}}>{Math.round(tot.invest).toLocaleString()}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:_T.body, fontWeight:700}}>{Math.round(tot.recovered).toLocaleString()}</td>
+                      <td style={{padding:'8px 6px', textAlign:'right', color:totPnl>=0?_T.up:_T.down, fontWeight:800}}>{totPnl>=0?'+':''}{Math.round(totPnl).toLocaleString()}</td>
+                    </tr>
+                  );
+                })()}
+              </tbody>
+            </table>
+          </div>
+          <div style={{fontSize:10, color:_T.sub, marginTop:6}}>※ 투입/회수/손익 단위: 만원 · ↻ = 진행중 건수</div>
         </div>
       )}
 
