@@ -51,9 +51,10 @@ export function NeoPullbackTab({ theme = "dark" }) {
     const winCnt = rets.filter(r => r > 0).length;
     const tp1Cnt = completed.filter(r => r[C.TP1] === 'Y').length;
     const tp2Cnt = completed.filter(r => r[C.TP2] === 'Y').length;
-    const addCnt = completed.filter(r => r[C.ADD_FIRED] === 'Y').length;
-    const totalInvest = completed.reduce((a,r) => a + (+r[C.INVEST]||0) * (r[C.ADD_FIRED]==='Y'?2:1), 0);
-    const totalPnl = completed.reduce((a,r) => a + (+r[C.INVEST]||0) * (r[C.ADD_FIRED]==='Y'?2:1) * (+r[C.RET60]||0) / 100, 0);
+    // 추매 발동 — CSV 버그 우회: 60일 trough <= -15% 기준
+    const addCnt = completed.filter(r => (+r[C.TROUGH60]||0) <= -15).length;
+    const totalInvest = completed.reduce((a,r) => a + (+r[C.INVEST]||0) * ((+r[C.TROUGH60]||0)<=-15?2:1), 0);
+    const totalPnl = completed.reduce((a,r) => a + (+r[C.INVEST]||0) * ((+r[C.TROUGH60]||0)<=-15?2:1) * (+r[C.RET60]||0) / 100, 0);
     const capitalRet = totalInvest > 0 ? (totalPnl/totalInvest*100) : 0;
     const inprog = filtered.filter(r => r[C.INPROG]).length;
     return { n, avg, winRate: winCnt/n*100, tp1Rate: tp1Cnt/n*100, tp2Rate: tp2Cnt/n*100, addRate: addCnt/n*100, capitalRet, totalInvest, totalPnl, inprog };
@@ -128,6 +129,12 @@ export function NeoPullbackTab({ theme = "dark" }) {
           const isOpen = !!expanded[idx];
           const ret = +r[C.RET60] || 0;
           const grade = r[C.GRADE];
+          // 추매 데이터 재계산 — CSV의 시뮬레이터 버그 보정
+          // 진짜 추매발동: 60일 trough <= -15% 일 때만 (-15% 가격까지 빠져야 추매)
+          const trough = +r[C.TROUGH60] || 0;
+          const realAddFired = trough <= -15;
+          const buy1 = +r[C.BUY1] || 0;
+          const realAddPrice = realAddFired ? Math.round(buy1 * 0.85) : null;
           return (
             <div key={idx} style={{background:_T.card, border:'1px solid '+_T.line, borderRadius:11, padding:'12px 14px', cursor:'pointer'}} onClick={()=>setExpanded(p=>({...p, [idx]: !isOpen}))}>
               {/* 헤더: 종목/등급/날짜 + 수익률 */}
@@ -152,7 +159,7 @@ export function NeoPullbackTab({ theme = "dark" }) {
                   <Tag k="기준봉" v={`+${_fmt(r[C.BASE_CH],1)}% (${r[C.D]})`} _T={_T} />
                   <Tag k="반등" v={`+${_fmt(r[C.REBOUND_CH],2)}%`} _T={_T} />
                   <Tag k="TP1" v={r[C.TP1]==='Y'?`✅ ${r[C.TP1_DAY]}일`:'미달'} c={r[C.TP1]==='Y'?_T.up:_T.mute} _T={_T} />
-                  <Tag k="추매" v={r[C.ADD_FIRED]==='Y'?`✅ ${r[C.ADD_DATE]||'-'}일`:'미발동'} c={r[C.ADD_FIRED]==='Y'?_T.up:_T.mute} _T={_T} />
+                  <Tag k="추매" v={realAddFired?`✅ -15% 도달`:'미발동'} c={realAddFired?_T.up:_T.mute} _T={_T} />
                   <Tag k="60일peak" v={`+${_fmt(r[C.PEAK60],1)}%`} c={_T.up} _T={_T} />
                 </div>
               )}
@@ -181,11 +188,11 @@ export function NeoPullbackTab({ theme = "dark" }) {
                   </Section>
 
                   {/* Section 3: 매수 정보 */}
-                  <Section title="매수" col="#f59e0b" _T={_T}>
-                    <Field l="1차 매수가" v={_won(r[C.BUY1])} _T={_T} />
-                    <Field l="추매 발동" v={r[C.ADD_FIRED]||'-'} c={r[C.ADD_FIRED]==='Y'?_T.up:_T.mute} _T={_T} />
-                    <Field l="추매 도달일" v={r[C.ADD_DATE]?`${r[C.ADD_DATE]}일차`:'-'} _T={_T} />
-                    <Field l="추매 가격" v={r[C.ADD_PRICE]?_won(r[C.ADD_PRICE]):'-'} _T={_T} />
+                  <Section title="매수 (D0 종가 100% → -15% 추매)" col="#f59e0b" _T={_T}>
+                    <Field l="1차 매수가" v={_won(buy1)} _T={_T} />
+                    <Field l="추매 발동" v={realAddFired?'Y':'N'} c={realAddFired?_T.up:_T.mute} _T={_T} />
+                    <Field l="추매 가격 (-15%)" v={realAddPrice?_won(realAddPrice):'-'} _T={_T} />
+                    <Field l="60일 trough" v={`${_fmt(trough,2)}%`} c={trough<=-15?_T.down:_T.sub} _T={_T} />
                   </Section>
 
                   {/* Section 4: 매도 정보 */}
