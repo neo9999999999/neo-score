@@ -167,24 +167,24 @@ export function NeoPullbackTab({ theme = "dark" }) {
               {/* 상세 (펼침 상태) */}
               {isOpen && (
                 <div style={{marginTop:10, paddingTop:10, borderTop:'1px solid '+_T.linelt}}>
-                  {/* Section 1: 기준봉 정보 */}
-                  <Section title="기준봉" col="#a855f7" _T={_T}>
+                  {/* Section 1: 반등봉 (D0 = 매수 시점) — PRIMARY */}
+                  <Section title="반등봉 (D0 = 매수 시점)" col="#10b981" _T={_T}>
+                    <Field l="등락률" v={`+${_fmt(r[C.REBOUND_CH],2)}%`} c={_T.up} _T={_T} />
+                    <Field l="거래대금" v={`${_fmt(r[C.REBOUND_AMT],0)}억`} _T={_T} />
+                    <Field l="몸통" v={`${_fmt(r[C.REBOUND_BODY],0)}%`} _T={_T} />
+                    <Field l="윗꼬리" v={`${_fmt(r[C.REBOUND_WICK],0)}%`} _T={_T} />
+                    <Field l="조정깊이" v={`${_fmt(r[C.DEPTH],2)}%`} c={_T.down} _T={_T} />
+                    <Field l="투입금" v={`${r[C.INVEST]}만원 (${grade}급)`} _T={_T} />
+                  </Section>
+
+                  {/* Section 2: 기준봉 (등급 분류 근거) — SECONDARY */}
+                  <Section title={`기준봉 (등급 ${grade} 분류 근거)`} col="#a855f7" _T={_T}>
                     <Field l="발생일" v={r[C.BASE_DATE]} _T={_T} />
                     <Field l="경과일" v={r[C.D]} _T={_T} />
                     <Field l="등락률" v={`+${_fmt(r[C.BASE_CH],2)}%`} c={_T.up} _T={_T} />
                     <Field l="거래대금" v={`${_fmt(r[C.BASE_AMT],0)}억`} _T={_T} />
                     <Field l="거래배율" v={`${_fmt(r[C.BASE_MULT],2)}배`} _T={_T} />
                     <Field l="종가위치" v={`${_fmt((+r[C.BASE_POS]||0)*100,0)}%`} _T={_T} />
-                  </Section>
-
-                  {/* Section 2: 반등봉 정보 */}
-                  <Section title="반등봉 (D0)" col="#10b981" _T={_T}>
-                    <Field l="등락률" v={`+${_fmt(r[C.REBOUND_CH],2)}%`} c={_T.up} _T={_T} />
-                    <Field l="거래대금" v={`${_fmt(r[C.REBOUND_AMT],0)}억`} _T={_T} />
-                    <Field l="몸통" v={`${_fmt(r[C.REBOUND_BODY],0)}%`} _T={_T} />
-                    <Field l="윗꼬리" v={`${_fmt(r[C.REBOUND_WICK],0)}%`} _T={_T} />
-                    <Field l="조정깊이" v={`${_fmt(r[C.DEPTH],2)}%`} c={_T.down} _T={_T} />
-                    <Field l="투입금" v={`${r[C.INVEST]}만원`} _T={_T} />
                   </Section>
 
                   {/* Section 3: 매수 정보 */}
