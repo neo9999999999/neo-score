@@ -171,10 +171,16 @@ export function TodayPullbackTab({ theme = "dark" }) {
     <div style={{padding:'4px 0', color:_T.text}}>
       {/* 룰 카드 */}
       <div style={{background:_T.card, border:'1px solid '+_T.line, borderRadius:12, padding:'14px 16px', marginBottom:10, fontSize:12, lineHeight:1.7, color:_T.body}}>
-        <div style={{fontSize:14, fontWeight:800, color:_T.text, marginBottom:8}}>📘 오늘 눌림목 반등 후보</div>
-        <div>오늘 신호 중 <b style={{color:_T.text}}>반등봉 조건</b> 만족 종목 자동 추출:</div>
-        <div style={{fontSize:12, color:_T.sub, marginTop:3}}>+5~28% / 50억+ / 몸통 40%+ / 윗꼬리 30% 미만</div>
-        <div style={{fontSize:12, color:_T.sub, marginTop:3}}>→ "기준봉 검증" 클릭 시 과거 60일 OHLC 조회하여 기준봉 (15~30%/1000억+/배율 3x+) 자동 매칭</div>
+        <div style={{fontSize:14, fontWeight:800, color:_T.text, marginBottom:8}}>📘 오늘 반등봉 (D0 = 매수 시점)</div>
+        <div><b style={{color:_T.text}}>반등봉 조건</b> 만족 종목 자동 추출: +5~28% / 50억+ / 몸통 40%+ / 윗꼬리 30% 미만</div>
+        <div style={{fontSize:12, color:_T.sub, marginTop:3}}>→ "기준봉 검증" 클릭 시 과거 60일 OHLC 조회 → 기준봉 (15~30%/1000억+/배율 3x+) 매칭 + S/A 등급 분류</div>
+        <div style={{fontSize:11, color:_T.sub, marginTop:4, paddingTop:4, borderTop:'1px solid '+_T.linelt}}>
+          <b style={{color:'#dc2626'}}>🔴 S급</b> = 기준봉 +25%↑+2천억+ AND D+1~10일 OR 기준봉 5천억+ OR 기준봉 +28%↑ &nbsp;|&nbsp;
+          <b style={{color:'#2563eb'}}>🔵 일반A</b> = 그 외 (S조건 미달)
+        </div>
+        <div style={{fontSize:11, color:_T.sub, marginTop:3}}>
+          매수: D0 종가 100% (A=10만/S=20만) → -15% 추매 1회 / 매도: TP1 +100% 50% / TP2 +200% 잔여 / 60일 만기
+        </div>
       </div>
 
       {/* 새로조회 / 일괄검증 */}
@@ -220,30 +226,36 @@ export function TodayPullbackTab({ theme = "dark" }) {
                   <span style={{fontSize:12, color:_T.sub}}>{amt}억</span>
                 </div>
               </div>
-              {/* 반등봉 정보 */}
-              <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(105px, 1fr))', gap:6, marginTop:8}}>
-                <Mini l="등락" v={`+${ch.toFixed(2)}%`} c={_T.up} _T={_T} />
-                <Mini l="거래대금" v={`${amt}억`} _T={_T} />
-                <Mini l="몸통" v={`${_fmt(s.bodyPct,0)}%`} _T={_T} />
-                <Mini l="윗꼬리" v={`${_fmt(s.upperPct,0)}%`} _T={_T} />
-                <Mini l="종가위치" v={`${_fmt(s.rangePos*100,0)}%`} _T={_T} />
-                <Mini l="수급" v={s.investor||'-'} _T={_T} />
+              {/* 반등봉 (D0 = 매수 시점) — PRIMARY */}
+              <div style={{marginTop:8}}>
+                <div style={{fontSize:11, fontWeight:800, color:'#10b981', marginBottom:6}}>● 반등봉 (D0 = 매수 시점)</div>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(105px, 1fr))', gap:6}}>
+                  <Mini l="등락" v={`+${ch.toFixed(2)}%`} c={_T.up} _T={_T} />
+                  <Mini l="거래대금" v={`${amt}억`} _T={_T} />
+                  <Mini l="몸통" v={`${_fmt(s.bodyPct,0)}%`} _T={_T} />
+                  <Mini l="윗꼬리" v={`${_fmt(s.upperPct,0)}%`} _T={_T} />
+                  <Mini l="종가위치" v={`${_fmt(s.rangePos*100,0)}%`} _T={_T} />
+                  <Mini l="수급" v={s.investor||'-'} _T={_T} />
+                </div>
+                {matched && (
+                  <div style={{marginTop:8, padding:'8px 10px', background:'rgba(16,185,129,0.10)', borderRadius:7, fontSize:12, color:_T.body, lineHeight:1.6}}>
+                    💡 <b style={{color:_T.text}}>매수가 {_won(s.price||s.close)}원</b> (D0 종가) × {v.grade==='S'?'20':'10'}만원 ({v.grade}급)<br/>
+                    💡 <b style={{color:_T.text}}>추매 -15% {_won((+s.price||+s.close||0)*0.85)}원</b> 도달 시 +{v.grade==='S'?'20':'10'}만원<br/>
+                    💡 매도: <b style={{color:_T.text}}>TP1 +100% 50% / TP2 +200% 잔여 / 60일 만기</b>
+                  </div>
+                )}
               </div>
 
-              {/* 기준봉 정보 (검증 후) */}
+              {/* 기준봉 (등급 분류 근거) — SECONDARY */}
               {matched && (
                 <div style={{marginTop:8, paddingTop:8, borderTop:'1px solid '+_T.linelt}}>
-                  <div style={{fontSize:11, fontWeight:800, color:'#a855f7', marginBottom:6}}>● 기준봉 ({v.bar.date}, D+{v.dPlus})</div>
+                  <div style={{fontSize:11, fontWeight:800, color:'#a855f7', marginBottom:6}}>● 기준봉 (등급 {v.grade} 분류 근거 · {v.bar.date} · D+{v.dPlus})</div>
                   <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(105px, 1fr))', gap:6}}>
                     <Mini l="등락" v={`+${_fmt(v.baseChg,2)}%`} c={_T.up} _T={_T} />
                     <Mini l="거래대금" v={`${_fmt(v.baseVolBil,0)}억`} _T={_T} />
                     <Mini l="배율" v={`${_fmt(v.baseRatio,2)}배`} _T={_T} />
                     <Mini l="종가위치" v={`${_fmt(v.rngPos*100,0)}%`} _T={_T} />
                     <Mini l="조정깊이" v={`${_fmt(v.pbDepth,2)}%`} c={_T.down} _T={_T} />
-                    <Mini l="투입금" v={v.grade==='S'?'20만':'10만'} _T={_T} />
-                  </div>
-                  <div style={{marginTop:8, padding:'6px 10px', background:'rgba(16,185,129,0.10)', borderRadius:6, fontSize:11, color:_T.body}}>
-                    💡 매수: <b style={{color:_T.text}}>{_won(s.price||s.close)}원 (오늘 종가)</b> × {v.grade==='S'?'20':'10'}만원 / 추매: <b style={{color:_T.text}}>{_won((+s.price||+s.close||0)*0.85)}원 (-15%)</b>
                   </div>
                 </div>
               )}
