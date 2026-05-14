@@ -22,6 +22,7 @@ import { calcJudojuScore, judojuGradeColor, JudojuToday, JudojuDetailModal, anal
 import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, HaseunghoonDetailModal, analyzeHaseunghoon, HaseunghoonResultCard } from "./HaseunghoonHelpers.jsx";
 import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor, NeoAnalysisDetailModal } from "./NeoAnalysisHelpers.jsx";
 import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
+import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
@@ -1720,6 +1721,7 @@ const Empty=({msg})=>(<div style={{padding:"32px 20px",textAlign:"center",color:
 // 로딩 화면 (다크)
 if(loading)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{textAlign:"center",padding:"80px 20px",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:36,marginBottom:14}}>⏳</div><div style={{fontSize:16,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>KIS 조회 중...</div><div style={{fontSize:12,color:_T.hint,marginTop:8}}>등락률 상위 종목 분석 + 등급 산출</div></div></div>);
 // 첫 조회 화면 (다크)
+if(!data&&activeTab==='pullback')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><TodayPullbackTab theme={theme}/></div>);
 if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
@@ -1761,7 +1763,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
   })}
 </div>
 
-{activeTab==='pullback' ? (<NeoPullbackTab theme={theme}/>) : (<>
+{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : (<>
 {/* 활성 탭 진입조건/청산룰 카드 */}
 <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12,marginBottom:10}}>
   <div style={{display:"flex",gap:8,alignItems:"baseline",marginBottom:8}}>
