@@ -91,11 +91,13 @@ export function TodayPullbackTab({ theme = "dark" }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
-  const [verifying, setVerifying] = useState({}); // code -> bool
-  const [verified, setVerified] = useState({});   // code -> {basebar info}
+  const [verifying, setVerifying] = useState(false);
+  const [verified, setVerified] = useState({});   // code -> {matched, baseBar info}
+  const [verifyProgress, setVerifyProgress] = useState({done:0, total:0});
 
   const load = useCallback(async () => {
     setLoading(true); setErr(null);
+    setVerified({});
     try {
       const r = await fetch(SCREENING_URL);
       const d = await r.json();
@@ -108,8 +110,8 @@ export function TodayPullbackTab({ theme = "dark" }) {
 
   useEffect(() => { load(); }, [load]);
 
-  // 반등봉 후보 추출
-  const candidates = useMemo(() => {
+  // 반등봉 후보 (1차 필터) — 기준봉 검증 전
+  const reboundCandidates = useMemo(() => {
     if (!data || !data.all) return [];
     return data.all.map(s => {
       const m = _isReboundCandidate(s);
@@ -118,28 +120,32 @@ export function TodayPullbackTab({ theme = "dark" }) {
     }).filter(x => x).sort((a, b) => (+b.change||0) - (+a.change||0));
   }, [data]);
 
-  const verifyBase = async (s) => {
-    setVerifying(p => ({ ...p, [s.code]: true }));
+  // 기준봉 검증된 후보만 (매수 대상)
+  const matched = useMemo(() => {
+    return reboundCandidates.filter(s => verified[s.code] && verified[s.code].matched);
+  }, [reboundCandidates, verified]);
+
+  // 기준봉 없는 후보 (참고)
+  const unmatched = useMemo(() => {
+    return reboundCandidates.filter(s => verified[s.code] && verified[s.code].matched === false);
+  }, [reboundCandidates, verified]);
+
+  // 자동 일괄 검증 (screening 응답 받으면 즉시)
+  const verifyOne = useCallback(async (s) => {
+    const today = new Date(Date.now() + 9*3600000);
+    const fromD = new Date(today); fromD.setDate(fromD.getDate() - 100);
+    const ymd = (d) => d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    const url = `${DAILY_URL}?code=${s.code}&from=${ymd(fromD)}&to=${ymd(today)}`;
     try {
-      // 60일 이전 ~ 어제 일봉 조회 (오늘은 screening에서 가져온 정보만 사용)
-      const today = new Date(Date.now() + 9*3600000);
-      const fromD = new Date(today); fromD.setDate(fromD.getDate() - 100);
-      const ymd = (d) => d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
-      const url = `${DAILY_URL}?code=${s.code}&from=${ymd(fromD)}&to=${ymd(today)}`;
       const r = await fetch(url);
       const d = await r.json();
       let bars = d.all_rows || d.bars || [];
-      // 정렬 + 정규화
       bars = bars.map(b => ({
         date: b.date, open: +b.open, high: +b.high, low: +b.low, close: +b.close,
         volume: +b.volume, trade_value: +b.trade_value || (+b.close)*(+b.volume),
         change: +b.change_rate || +b.change || 0
       })).filter(b => b.close > 0).sort((a,b) => a.date.localeCompare(b.date));
-      if (!bars.length) {
-        setVerified(p => ({ ...p, [s.code]: { error: '일봉 데이터 없음' } }));
-        return;
-      }
-      // 오늘 봉이 마지막에 있는지 확인 — 없으면 추가 (screening 데이터 활용)
+      if (!bars.length) return { code: s.code, error: 'no bars' };
       const todayYMD = ymd(today);
       let todayIdx = bars.findIndex(b => b.date === todayYMD);
       if (todayIdx < 0) {
@@ -147,25 +153,44 @@ export function TodayPullbackTab({ theme = "dark" }) {
         todayIdx = bars.length - 1;
       }
       const base = _findBaseBar(bars, todayIdx);
-      if (!base) {
-        setVerified(p => ({ ...p, [s.code]: { matched: false } }));
-        return;
-      }
+      if (!base) return { code: s.code, matched: false };
       const g = _grade(base.baseChg, base.baseVolBil, base.dPlus);
-      setVerified(p => ({ ...p, [s.code]: { matched: true, ...base, grade: g } }));
+      return { code: s.code, matched: true, ...base, grade: g };
     } catch (e) {
-      setVerified(p => ({ ...p, [s.code]: { error: e.message } }));
-    } finally {
-      setVerifying(p => ({ ...p, [s.code]: false }));
+      return { code: s.code, error: e.message };
     }
-  };
+  }, []);
 
-  const verifyAll = async () => {
-    for (const s of candidates) {
-      if (verified[s.code]) continue;
-      await verifyBase(s);
-    }
-  };
+  // 후보가 잡히면 자동 일괄 검증
+  useEffect(() => {
+    if (!reboundCandidates.length) return;
+    const toVerify = reboundCandidates.filter(s => !verified[s.code]);
+    if (!toVerify.length) return;
+    setVerifying(true);
+    setVerifyProgress({done: 0, total: toVerify.length});
+    let cancelled = false;
+    (async () => {
+      // 동시 5개씩 병렬 처리 (API rate limit 고려)
+      const batchSize = 5;
+      for (let i = 0; i < toVerify.length; i += batchSize) {
+        if (cancelled) return;
+        const batch = toVerify.slice(i, i+batchSize);
+        const results = await Promise.all(batch.map(verifyOne));
+        if (cancelled) return;
+        setVerified(p => {
+          const next = {...p};
+          for (const r of results) {
+            next[r.code] = r.matched !== undefined ? r : { matched: false, error: r.error };
+          }
+          return next;
+        });
+        setVerifyProgress(p => ({ ...p, done: Math.min(p.done + batch.length, toVerify.length) }));
+      }
+      setVerifying(false);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reboundCandidates]);
 
   return (
     <div style={{padding:'4px 0', color:_T.text}}>
@@ -183,43 +208,49 @@ export function TodayPullbackTab({ theme = "dark" }) {
         </div>
       </div>
 
-      {/* 새로조회 / 일괄검증 */}
+      {/* 새로조회 + 진행상태 */}
       <div style={{display:'flex', gap:8, marginBottom:10, alignItems:'center', flexWrap:'wrap'}}>
         <button onClick={load} disabled={loading} style={{padding:'8px 14px', borderRadius:9, border:'1px solid '+_T.line, background:_T.bg, color:_T.body, fontSize:12, fontWeight:700, cursor:loading?'wait':'pointer'}}>🔄 {loading?'조회 중':'새로 조회'}</button>
         {data && <span style={{fontSize:12, color:_T.sub}}>{data.date} · {data.time}</span>}
-        {candidates.length > 0 && (
-          <button onClick={verifyAll} style={{padding:'8px 14px', borderRadius:9, border:'1px solid '+_T.accent, background:_T.accent, color:'#fff', fontSize:12, fontWeight:700, cursor:'pointer', marginLeft:'auto'}}>🔍 기준봉 일괄검증 ({candidates.length}건)</button>
+        {verifying && <span style={{fontSize:12, color:_T.accent, fontWeight:700, marginLeft:'auto'}}>⏳ 기준봉 검증 {verifyProgress.done}/{verifyProgress.total}</span>}
+        {!verifying && reboundCandidates.length > 0 && (
+          <span style={{fontSize:12, color:_T.sub, marginLeft:'auto'}}>
+            반등봉 {reboundCandidates.length}건 · <b style={{color:_T.green}}>매수대상 {matched.length}건</b> · 기준봉없음 {unmatched.length}건
+          </span>
         )}
       </div>
 
       {err && <div style={{padding:'10px 14px', borderRadius:9, background:'rgba(248,81,73,0.12)', border:'1px solid rgba(248,81,73,0.35)', color:_T.up, fontSize:12, marginBottom:10}}>⚠️ {err}</div>}
 
-      {!loading && candidates.length === 0 && (
+      {!loading && reboundCandidates.length === 0 && (
         <div style={{padding:'40px 20px', textAlign:'center', color:_T.mute, fontSize:13, background:_T.card, border:'1px solid '+_T.line, borderRadius:12}}>
           오늘 반등봉 조건 만족 종목 없음<br/>
           <span style={{fontSize:11}}>(+5~28% / 50억+ / 몸통 40%+ / 윗꼬리 30% 미만)</span>
         </div>
       )}
 
-      {/* 후보 카드 */}
+      {!verifying && reboundCandidates.length > 0 && matched.length === 0 && (
+        <div style={{padding:'40px 20px', textAlign:'center', color:_T.mute, fontSize:13, background:_T.card, border:'1px solid '+_T.line, borderRadius:12, marginBottom:10}}>
+          오늘 반등봉 {reboundCandidates.length}건 중 <b>기준봉 매칭된 매수 대상 0건</b><br/>
+          <span style={{fontSize:11}}>과거 60일 내 기준봉 (+15~30% / 1000억+ / 배율 3x+) 없음</span>
+        </div>
+      )}
+
+      {/* 매수 대상 카드 (기준봉 매칭된 것만) */}
       <div style={{display:'flex', flexDirection:'column', gap:8}}>
-        {candidates.map((s, i) => {
+        {matched.map((s, i) => {
           const v = verified[s.code];
-          const isVerifying = verifying[s.code];
-          const matched = v && v.matched;
           const ch = +s.change || 0;
           const amt = +s.amount || 0;
           return (
-            <div key={s.code+'_'+i} style={{background:_T.card, border:'1px solid '+(matched?'#10b981':_T.line), borderRadius:11, padding:'12px 14px'}}>
+            <div key={s.code+'_'+i} style={{background:_T.card, border:'2px solid #10b981', borderRadius:11, padding:'12px 14px'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap'}}>
                 <div style={{display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap'}}>
-                  {matched && <span style={{padding:'2px 8px', borderRadius:6, fontSize:11, fontWeight:800, background:v.grade==='S'?'rgba(220,38,38,0.12)':'rgba(37,99,235,0.12)', color:v.grade==='S'?'#dc2626':'#2563eb'}}>{v.grade==='S'?'🔴 S':'🔵 A'}</span>}
+                  <span style={{padding:'2px 8px', borderRadius:6, fontSize:11, fontWeight:800, background:v.grade==='S'?'rgba(220,38,38,0.12)':'rgba(37,99,235,0.12)', color:v.grade==='S'?'#dc2626':'#2563eb'}}>{v.grade==='S'?'🔴 S':'🔵 A'}</span>
                   <span style={{fontSize:14, fontWeight:800, color:_T.text}}>{s.name}</span>
                   <span style={{fontSize:11, color:_T.mute}}>{s.code}</span>
                   <span style={{fontSize:12, color:_T.sub}}>{s.market}</span>
-                  {matched && <span style={{padding:'1px 6px', borderRadius:4, fontSize:10, fontWeight:700, background:'rgba(16,185,129,0.18)', color:'#10b981'}}>✓ 기준봉 매칭</span>}
-                  {v && v.matched === false && <span style={{padding:'1px 6px', borderRadius:4, fontSize:10, fontWeight:700, background:'rgba(139,148,158,0.18)', color:_T.sub}}>기준봉 없음</span>}
-                  {v && v.error && <span style={{padding:'1px 6px', borderRadius:4, fontSize:10, fontWeight:700, background:'rgba(248,81,73,0.18)', color:_T.up}}>⚠️ {v.error}</span>}
+                  <span style={{padding:'1px 6px', borderRadius:4, fontSize:10, fontWeight:700, background:'rgba(16,185,129,0.18)', color:'#10b981'}}>✓ 매수대상</span>
                 </div>
                 <div style={{display:'flex', alignItems:'baseline', gap:8}}>
                   <span style={{fontSize:18, fontWeight:900, color:_T.up}}>+{ch.toFixed(2)}%</span>
@@ -237,37 +268,44 @@ export function TodayPullbackTab({ theme = "dark" }) {
                   <Mini l="종가위치" v={`${_fmt(s.rangePos*100,0)}%`} _T={_T} />
                   <Mini l="수급" v={s.investor||'-'} _T={_T} />
                 </div>
-                {matched && (
-                  <div style={{marginTop:8, padding:'8px 10px', background:'rgba(16,185,129,0.10)', borderRadius:7, fontSize:12, color:_T.body, lineHeight:1.6}}>
-                    💡 <b style={{color:_T.text}}>매수가 {_won(s.price||s.close)}원</b> (D0 종가) × {v.grade==='S'?'20':'10'}만원 ({v.grade}급)<br/>
-                    💡 <b style={{color:_T.text}}>추매 -15% {_won((+s.price||+s.close||0)*0.85)}원</b> 도달 시 +{v.grade==='S'?'20':'10'}만원<br/>
-                    💡 매도: <b style={{color:_T.text}}>TP1 +100% 50% / TP2 +200% 잔여 / 60일 만기</b>
-                  </div>
-                )}
+                <div style={{marginTop:8, padding:'8px 10px', background:'rgba(16,185,129,0.10)', borderRadius:7, fontSize:12, color:_T.body, lineHeight:1.6}}>
+                  💡 <b style={{color:_T.text}}>매수가 {_won(s.price||s.close)}원</b> (D0 종가) × {v.grade==='S'?'20':'10'}만원 ({v.grade}급)<br/>
+                  💡 <b style={{color:_T.text}}>추매 -15% {_won((+s.price||+s.close||0)*0.85)}원</b> 도달 시 +{v.grade==='S'?'20':'10'}만원<br/>
+                  💡 매도: <b style={{color:_T.text}}>TP1 +100% 50% / TP2 +200% 잔여 / 60일 만기</b>
+                </div>
               </div>
 
               {/* 기준봉 (등급 분류 근거) — SECONDARY */}
-              {matched && (
-                <div style={{marginTop:8, paddingTop:8, borderTop:'1px solid '+_T.linelt}}>
-                  <div style={{fontSize:11, fontWeight:800, color:'#a855f7', marginBottom:6}}>● 기준봉 (등급 {v.grade} 분류 근거 · {v.bar.date} · D+{v.dPlus})</div>
-                  <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(105px, 1fr))', gap:6}}>
-                    <Mini l="등락" v={`+${_fmt(v.baseChg,2)}%`} c={_T.up} _T={_T} />
-                    <Mini l="거래대금" v={`${_fmt(v.baseVolBil,0)}억`} _T={_T} />
-                    <Mini l="배율" v={`${_fmt(v.baseRatio,2)}배`} _T={_T} />
-                    <Mini l="종가위치" v={`${_fmt(v.rngPos*100,0)}%`} _T={_T} />
-                    <Mini l="조정깊이" v={`${_fmt(v.pbDepth,2)}%`} c={_T.down} _T={_T} />
-                  </div>
+              <div style={{marginTop:8, paddingTop:8, borderTop:'1px solid '+_T.linelt}}>
+                <div style={{fontSize:11, fontWeight:800, color:'#a855f7', marginBottom:6}}>● 기준봉 (등급 {v.grade} 분류 근거 · {v.bar.date} · D+{v.dPlus})</div>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(105px, 1fr))', gap:6}}>
+                  <Mini l="등락" v={`+${_fmt(v.baseChg,2)}%`} c={_T.up} _T={_T} />
+                  <Mini l="거래대금" v={`${_fmt(v.baseVolBil,0)}억`} _T={_T} />
+                  <Mini l="배율" v={`${_fmt(v.baseRatio,2)}배`} _T={_T} />
+                  <Mini l="종가위치" v={`${_fmt(v.rngPos*100,0)}%`} _T={_T} />
+                  <Mini l="조정깊이" v={`${_fmt(v.pbDepth,2)}%`} c={_T.down} _T={_T} />
                 </div>
-              )}
-
-              {/* 검증 버튼 */}
-              {!v && (
-                <button onClick={()=>verifyBase(s)} disabled={isVerifying} style={{marginTop:8, padding:'6px 12px', borderRadius:7, border:'1px solid '+_T.line, background:_T.bg, color:_T.body, fontSize:11, fontWeight:700, cursor:isVerifying?'wait':'pointer'}}>{isVerifying?'⏳ 검증 중':'🔍 기준봉 검증 (과거 60일 OHLC)'}</button>
-              )}
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* 기준봉 없는 후보 (참고용 — 접힘) */}
+      {unmatched.length > 0 && (
+        <details style={{marginTop:12, padding:'8px 12px', background:_T.linelt, borderRadius:9, fontSize:12}}>
+          <summary style={{color:_T.sub, cursor:'pointer', fontWeight:600}}>
+            ⚠️ 반등봉 조건만 만족 (기준봉 없음 / 매수 대상 아님) — {unmatched.length}건
+          </summary>
+          <div style={{marginTop:8, display:'flex', flexWrap:'wrap', gap:6}}>
+            {unmatched.map(s => (
+              <span key={s.code} style={{padding:'3px 8px', borderRadius:5, background:_T.bg, border:'1px solid '+_T.line, fontSize:11, color:_T.mute}}>
+                {s.name} <span style={{color:_T.sub, marginLeft:3}}>+{(+s.change||0).toFixed(1)}%</span>
+              </span>
+            ))}
+          </div>
+        </details>
+      )}
     </div>
   );
 }
