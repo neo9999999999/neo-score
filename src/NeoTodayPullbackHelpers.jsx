@@ -291,18 +291,37 @@ export function TodayPullbackTab({ theme = "dark" }) {
         })}
       </div>
 
-      {/* 기준봉 없는 후보 (참고용 — 접힘) */}
+      {/* 기준봉 없는 후보 (참고용 — 기본 열림) */}
       {unmatched.length > 0 && (
-        <details style={{marginTop:12, padding:'8px 12px', background:_T.linelt, borderRadius:9, fontSize:12}}>
-          <summary style={{color:_T.sub, cursor:'pointer', fontWeight:600}}>
-            ⚠️ 반등봉 조건만 만족 (기준봉 없음 / 매수 대상 아님) — {unmatched.length}건
+        <details open style={{marginTop:14, background:_T.card, border:'1px solid '+_T.line, borderRadius:11, padding:'12px 14px'}}>
+          <summary style={{color:_T.body, cursor:'pointer', fontWeight:700, fontSize:13, marginBottom:4, listStyle:'none', display:'flex', alignItems:'center', gap:8}}>
+            <span style={{fontSize:16}}>⚠️</span>
+            <span>반등봉 조건만 만족 (기준봉 없음 — 매수 대상 아님)</span>
+            <span style={{padding:'2px 9px', borderRadius:6, fontSize:12, fontWeight:800, background:'rgba(245,158,11,0.18)', color:'#f59e0b', marginLeft:'auto'}}>{unmatched.length}건</span>
           </summary>
-          <div style={{marginTop:8, display:'flex', flexWrap:'wrap', gap:6}}>
-            {unmatched.map(s => (
-              <span key={s.code} style={{padding:'3px 8px', borderRadius:5, background:_T.bg, border:'1px solid '+_T.line, fontSize:11, color:_T.mute}}>
-                {s.name} <span style={{color:_T.sub, marginLeft:3}}>+{(+s.change||0).toFixed(1)}%</span>
-              </span>
-            ))}
+          <div style={{marginTop:10, display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:8}}>
+            {unmatched.map(s => {
+              const ch = +s.change || 0;
+              const amt = +s.amount || 0;
+              return (
+                <div key={s.code} style={{padding:'10px 12px', background:_T.bg, border:'1px solid '+_T.line, borderRadius:8}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6, gap:8}}>
+                    <div style={{display:'flex', alignItems:'baseline', gap:6, flexWrap:'wrap', minWidth:0}}>
+                      <span style={{fontSize:13, fontWeight:800, color:_T.text}}>{s.name}</span>
+                      <span style={{fontSize:11, color:_T.mute}}>{s.code}</span>
+                      <span style={{fontSize:11, color:_T.sub}}>{s.market}</span>
+                    </div>
+                    <span style={{fontSize:14, fontWeight:800, color:_T.up, whiteSpace:'nowrap'}}>+{ch.toFixed(2)}%</span>
+                  </div>
+                  <div style={{display:'flex', gap:10, fontSize:12, color:_T.sub, flexWrap:'wrap'}}>
+                    <span>거래대금 <b style={{color:_T.body}}>{amt}억</b></span>
+                    <span>몸통 <b style={{color:_T.body}}>{_fmt(s.bodyPct,0)}%</b></span>
+                    <span>윗꼬리 <b style={{color:_T.body}}>{_fmt(s.upperPct,0)}%</b></span>
+                    <span>수급 <b style={{color:_T.body}}>{s.investor||'-'}</b></span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </details>
       )}
