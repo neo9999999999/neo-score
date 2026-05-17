@@ -24,6 +24,7 @@ import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAna
 import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
 import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
 import { HaseunghoonClosingBetTab } from "./HaseunghoonClosingBetHelpers.jsx";
+import { HaseunghoonBacktestTab } from "./HaseunghoonBacktestHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
@@ -1122,7 +1123,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     <div style={{fontSize:13,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
-{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : mode==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : (<>
+{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : mode==='haseunghoon' ? (<HaseunghoonBacktestTab theme={theme}/>) : (<>
 {/* 청산 방식 토글 (모든 모드 공통) */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
 {[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
