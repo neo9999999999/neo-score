@@ -9,11 +9,11 @@ const INTRADAY_URL = "https://sector-api-pink.vercel.app/api/intraday";
 
 // 평가 룰
 const MUST = {
-  vol_eok: 2000,       // ① 거래대금 ≥ 2000억
-  // ② 테마: 미지원 (수급 대체)
+  vol_eok: 500,        // ① 거래대금 ≥ 500억
+  // ② 테마: 네이버 themes 스크래핑
   // ③ 신고가: h60==1 OR h120==1
-  // ④ 장 막판 매수세: 분봉 미지원 → 종가위치 ≥ 80% 대체
-  // ⑤ 대장주: 시장(KS/KO) 1등
+  // ④ 장 막판 매수세: 분봉 14:30→15:00 + (분봉 없으면 종가위치 대체)
+  // ⑤ 대장주: 테마 1등 OR 시장 1등
   late_close_pos: 0.80, // 종가가 일중 상단 80% 이상
 };
 const SAFE = {
@@ -22,8 +22,8 @@ const SAFE = {
 };
 // 자동 제외 (강제)
 const EXCLUDE = {
-  vol_min_eok: 500,    // < 500억
-  ret_high: 29,        // 등락 ≥ 29%
+  vol_min_eok: 100,    // < 100억 (너무 작은 종목)
+  ret_high: 29,        // 등락 ≥ 29% (상한가)
   cum5_high: 30,       // 5일 누적 > 30%
 };
 
@@ -158,7 +158,7 @@ function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
 
   // 자동 제외 체크
   const excludeReasons = [];
-  if (amt < EXCLUDE.vol_min_eok) excludeReasons.push(`거래대금 ${amt}억 < 500억`);
+  if (amt < EXCLUDE.vol_min_eok) excludeReasons.push(`거래대금 ${amt}억 < ${EXCLUDE.vol_min_eok}억`);
   if (ch >= EXCLUDE.ret_high) excludeReasons.push(`D등락 ${ch.toFixed(2)}% ≥ 29%`);
   if (cum5 > EXCLUDE.cum5_high) excludeReasons.push(`5일누적 ${cum5.toFixed(1)}% > 30%`);
   // 시총 데이터 없음 (생략)
@@ -168,7 +168,7 @@ function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
 
   // 5대 필수 조건
   const must = {
-    vol_2000eok: { pass: amt >= MUST.vol_eok, label: `거래대금 ${amt}억 ${amt>=MUST.vol_eok?'≥':'<'} 2,000억` },
+    vol_2000eok: { pass: amt >= MUST.vol_eok, label: `거래대금 ${amt}억 ${amt>=MUST.vol_eok?'≥':'<'} ${MUST.vol_eok}억` },
     core_theme: {
       pass: !!sector && themeInfo && themeInfo.themeChange >= 1.0,
       label: themeInfo
@@ -231,7 +231,7 @@ function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
   // 패턴A (5점)
   let score = 0;
   if (must.vol_2000eok.pass) score += 20;
-  else if (amt >= 1000) score += 10; // 1000~2000 부분점
+  else if (amt >= 200) score += 10; // 200~500억 부분점
   if (must.new_high.pass) score += h60===1 && h120===1 ? 15 : 10;
   if (must.late_momentum.pass) score += 15;
   else if (rangePos >= 0.5) score += 7;
@@ -409,7 +409,7 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
             <b style={{color:_T.text}}>5대 필수 (75점)</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>거래대금 ≥ 2000억 (20)</li>
+              <li>거래대금 ≥ 500억 (20)</li>
               <li>신고가 60/120일 (15)</li>
               <li>종가위치 ≥ 80% (15)</li>
               <li>시장 1등 (15)</li>
@@ -435,7 +435,7 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
             <b style={{color:_T.text}}>자동 제외</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>거래대금 &lt; 500억</li>
+              <li>거래대금 &lt; 100억</li>
               <li>D등락 ≥ 29% (상한가)</li>
               <li>5일 누적 &gt; 30%</li>
             </ul>
