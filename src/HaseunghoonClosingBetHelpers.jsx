@@ -163,7 +163,7 @@ function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
   if (cum5 > EXCLUDE.cum5_high) excludeReasons.push(`5일누적 ${cum5.toFixed(1)}% > 30%`);
   // 시총 데이터 없음 (생략)
   if (excludeReasons.length > 0) {
-    return { verdict: 'EXCLUDE', score: 0, excludeReasons, checks: {}, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
+    return { verdict: 'EXCLUDE', mustPasses: 0, mustTotal: 5, safePasses: 0, safeTotal: 3, excludeReasons, checks: {}, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
   }
 
   // 5대 필수 조건
@@ -220,42 +220,31 @@ function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
     hasIntraday: false,
   };
 
-  // 점수 계산
-  // ① 거래대금 (20점)
-  // ③ 신고가 (15점)
-  // ④ 종가위치 (15점, 분봉 미지원 대체)
-  // ⑤ 대장주 (15점, 시장 1등)
-  // S1 등락범위 (10점)
-  // S2 5일누적 (10점)
-  // S3 MA정배열 (10점)
-  // 패턴A (5점)
-  let score = 0;
-  if (must.vol_2000eok.pass) score += 20;
-  else if (amt >= 200) score += 10; // 200~500억 부분점
-  if (must.new_high.pass) score += h60===1 && h120===1 ? 15 : 10;
-  if (must.late_momentum.pass) score += 15;
-  else if (rangePos >= 0.5) score += 7;
-  if (must.leader.pass) score += 15;
-  else if (leaderRank <= 3) score += 8;
-  if (safe.ret_range.pass) score += 10;
-  if (safe.cum5_ok.pass) score += 10;
-  if (safe.ma_aligned.pass) score += 10;
-  if (pattern.pattern_A) score += 5;
+  // 통과/비통과 카운트
+  const mustPasses = Object.values(must).filter(x => x.pass).length;
+  const mustTotal = Object.keys(must).length;
+  const safePasses = Object.values(safe).filter(x => x.pass).length;
+  const safeTotal = Object.keys(safe).length;
+  const patternPasses = (pattern.pattern_A ? 1 : 0) + (pattern.pattern_B ? 1 : 0) + (pattern.pattern_C ? 1 : 0);
 
-  // 판정
+  // 판정 — 점수 없이 통과/비통과 기준
+  // STRONG: 필수 5/5 + 안전 3/3 모두 통과
+  // BUY: 필수 4/5 + 안전 3/3
+  // HOLD: 그 외 (필수 ≥3, 안전 ≥2)
+  // EXCLUDE: 필수 ≤2 또는 안전 ≤1
   let verdict = 'HOLD';
-  if (score >= 90) verdict = 'STRONG';
-  else if (score >= 70) verdict = 'BUY';
-  else if (score >= 50) verdict = 'HOLD';
+  if (mustPasses === mustTotal && safePasses === safeTotal) verdict = 'STRONG';
+  else if (mustPasses >= 4 && safePasses === safeTotal) verdict = 'BUY';
+  else if (mustPasses >= 3 && safePasses >= 2) verdict = 'HOLD';
   else verdict = 'EXCLUDE';
 
-  // 추천 비중
+  // 추천 비중 — 대장주 여부 + 판정으로만 결정
   let weight = 0;
-  if (verdict === 'STRONG') weight = isLeader ? 100 : 60;
-  else if (verdict === 'BUY') weight = isLeader ? 60 : 40;
-  else if (verdict === 'HOLD') weight = 20;
+  if (verdict === 'STRONG') weight = isLeader ? 100 : 50;
+  else if (verdict === 'BUY') weight = isLeader ? 50 : 30;
+  else if (verdict === 'HOLD') weight = 0; // 보류는 매수 안함
 
-  return { verdict, score, excludeReasons:[], checks: { must, safe, pattern }, weight, isLeader, isThemeLeader, isMktLeader, leaderRank, themeRank, themeInfo, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
+  return { verdict, mustPasses, mustTotal, safePasses, safeTotal, patternPasses, excludeReasons:[], checks: { must, safe, pattern }, weight, isLeader, isThemeLeader, isMktLeader, leaderRank, themeRank, themeInfo, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
 }
 
 export function HaseunghoonClosingBetTab({ theme = "dark" }) {
@@ -364,7 +353,15 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
           : null;
         return { ...s, eval: evaluate(s, leaderMap, sectorMap, intradayAnalysis), intradayAnalysis };
       })
-      .sort((a, b) => b.eval.score - a.eval.score);
+      .sort((a, b) => {
+        // 1. verdict 우선순위 (STRONG > BUY > HOLD > EXCLUDE)
+        const order = { STRONG: 0, BUY: 1, HOLD: 2, EXCLUDE: 3 };
+        if (order[a.eval.verdict] !== order[b.eval.verdict]) return order[a.eval.verdict] - order[b.eval.verdict];
+        // 2. 필수 통과 수
+        if (b.eval.mustPasses !== a.eval.mustPasses) return b.eval.mustPasses - a.eval.mustPasses;
+        // 3. 등락률
+        return (+b.change||0) - (+a.change||0);
+      });
   }, [data, leaderMap, sectorMap, intradayMap]);
 
   // STRONG/BUY 후보 자동 분봉 fetch (1초 간격)
@@ -404,40 +401,41 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
       {/* 룰 카드 */}
       <div style={{background:_T.card, border:'1px solid '+_T.line, borderRadius:12, padding:'14px 16px', marginBottom:10, fontSize:12, lineHeight:1.7, color:_T.body}}>
         <div style={{fontSize:14, fontWeight:800, color:_T.text, marginBottom:8}}>🎯 하승훈 종가베팅 자동 평가</div>
-        <div style={{color:_T.sub}}>14:50~15:25 자동 스캔 — 거래대금 상위 종목 8개 조건 평가 후 100점 만점 점수화</div>
+        <div style={{color:_T.sub}}>14:50~15:25 자동 스캔 — 거래대금 상위 종목 5대 필수 + 3대 안전 통과 여부 평가</div>
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:8, marginTop:8}}>
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
-            <b style={{color:_T.text}}>5대 필수 (75점)</b>
+            <b style={{color:_T.text}}>5대 필수 조건</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>거래대금 ≥ 500억 (20)</li>
-              <li>신고가 60/120일 (15)</li>
-              <li>종가위치 ≥ 80% (15)</li>
-              <li>시장 1등 (15)</li>
-              <li>핵심 테마 <span style={{color:'#f59e0b'}}>(TBD)</span></li>
+              <li>거래대금 ≥ 500억</li>
+              <li>신고가 60/120일</li>
+              <li>장 막판 매수세 (분봉)</li>
+              <li>대장주 (테마/시장 1등)</li>
+              <li>핵심 테마 (등락률 ≥ 1%)</li>
             </ul>
           </div>
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
-            <b style={{color:_T.text}}>3대 안전 (30점)</b>
+            <b style={{color:_T.text}}>3대 안전 조건</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>D등락 10~28% (10)</li>
-              <li>5일 누적 ≤ 30% (10)</li>
-              <li>MA정배열 (10)</li>
+              <li>D등락 10~28%</li>
+              <li>5일 누적 ≤ 30%</li>
+              <li>MA정배열</li>
             </ul>
           </div>
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
-            <b style={{color:_T.text}}>패턴 (5점)</b>
+            <b style={{color:_T.text}}>매수 타점 패턴 (분봉)</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>A 매물소화 후 재돌파 (5)</li>
-              <li>B 5일선 눌림 <span style={{color:'#f59e0b'}}>(TBD)</span></li>
-              <li>C 박스권 돌파 <span style={{color:'#f59e0b'}}>(TBD)</span></li>
+              <li>A 매물소화 후 재돌파</li>
+              <li>B 5일선 눌림목 회복</li>
+              <li>C 장 막판 박스권 돌파</li>
             </ul>
           </div>
           <div style={{padding:'6px 9px', background:_T.linelt, borderRadius:6, fontSize:11}}>
-            <b style={{color:_T.text}}>자동 제외</b>
+            <b style={{color:_T.text}}>판정 기준</b>
             <ul style={{margin:'3px 0 0', paddingLeft:14, color:_T.sub}}>
-              <li>거래대금 &lt; 100억</li>
-              <li>D등락 ≥ 29% (상한가)</li>
-              <li>5일 누적 &gt; 30%</li>
+              <li>🟢 강력: 필수 5/5 + 안전 3/3</li>
+              <li>🟡 진입: 필수 4/5 + 안전 3/3</li>
+              <li>🟠 보류: 필수 ≥3 + 안전 ≥2</li>
+              <li>🔴 제외: 그 외 / 자동제외</li>
             </ul>
           </div>
         </div>
@@ -495,8 +493,8 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
                   <div style={{display:'flex', alignItems:'baseline', gap:10}}>
                     <span style={{fontSize:14, fontWeight:700, color:ch>=0?_T.up:_T.down}}>{ch>=0?'+':''}{ch.toFixed(2)}%</span>
                     <span style={{fontSize:11, color:_T.sub}}>{amt}억</span>
-                    <span style={{fontSize:22, fontWeight:900, color:_gradeColor(v), letterSpacing:'-0.5px'}}>{ev.score}</span>
-                    <span style={{fontSize:11, color:_T.mute}}>/100</span>
+                    <span style={{fontSize:14, fontWeight:800, color:_gradeColor(v), letterSpacing:'-0.3px'}}>필수 {ev.mustPasses}/{ev.mustTotal}</span>
+                    <span style={{fontSize:12, color:_T.sub, fontWeight:700}}>안전 {ev.safePasses}/{ev.safeTotal}</span>
                   </div>
                 </div>
                 {/* 요약 (접힘 상태) */}
