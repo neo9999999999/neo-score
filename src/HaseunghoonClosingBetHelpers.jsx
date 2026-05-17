@@ -44,8 +44,95 @@ function _verdictBg(v) {
   return { STRONG:'rgba(16,185,129,0.12)', BUY:'rgba(245,158,11,0.12)', HOLD:'rgba(249,115,22,0.12)', EXCLUDE:'rgba(139,148,158,0.12)' }[v] || 'rgba(139,148,158,0.12)';
 }
 
+// 분봉 분석 — 패턴 A/B/C + 장 막판 매수세
+// bars: [{t:'HH:MM', o,h,l,c,v}, ...] 09:00~15:30 1분봉
+function analyzeIntraday(bars, dayHigh, dayLow, dayClose, ma5) {
+  if (!bars || bars.length < 30) return null;
+  const sorted = [...bars].sort((a, b) => String(a.t).localeCompare(String(b.t)));
+  // 시간 인덱싱
+  const findIdx = (target) => {
+    for (let i = 0; i < sorted.length; i++) {
+      if (sorted[i].t >= target) return i;
+    }
+    return sorted.length - 1;
+  };
+  const i_1400 = findIdx('14:00');
+  const i_1430 = findIdx('14:30');
+  const i_1450 = findIdx('14:50');
+  const i_1500 = findIdx('15:00');
+  const i_last = sorted.length - 1;
+  // 가격 추출
+  const close_1430 = +sorted[i_1430].c || 0;
+  const close_1500 = +sorted[i_1500]?.c || 0;
+  const close_last = +sorted[i_last].c || 0;
+  const high_1450 = +sorted[i_1450].h || 0;
+  // 장 막판 매수세 ④: 14:30 → 15:00 +1% 이상
+  const late_pct = close_1430 > 0 ? (close_1500 / close_1430 - 1) * 100 : 0;
+  const late_momentum = late_pct >= -0.5;  // 보수적: -0.5% 이상
+  // 패턴 A: 당일 신고가 만든 후 5% 이상 조정 → 14:50 종가가 당일 고가 -1% 이내
+  let pattern_A = false;
+  let pattern_A_reason = '';
+  if (dayHigh > 0) {
+    // 일중 최고가 시각 찾기
+    let highIdx = 0, maxH = 0;
+    for (let i = 0; i < i_last; i++) {
+      if (sorted[i].h > maxH) { maxH = sorted[i].h; highIdx = i; }
+    }
+    // 최고가 이후 최저점
+    let pullback = 0;
+    for (let i = highIdx; i < i_last; i++) {
+      const pb = (maxH - sorted[i].l) / maxH * 100;
+      if (pb > pullback) pullback = pb;
+    }
+    // 14:50 종가가 dayHigh -1% 이내 = 재돌파
+    const near_high = close_last >= dayHigh * 0.99;
+    if (pullback >= 5 && near_high) {
+      pattern_A = true;
+      pattern_A_reason = `매물 조정 ${pullback.toFixed(1)}% 후 재돌파 (${close_last}/${dayHigh})`;
+    }
+  }
+  // 패턴 B: 당일 저가가 MA5 터치 → 15:00 종가가 MA5 위로 +1% 이상
+  let pattern_B = false;
+  let pattern_B_reason = '';
+  if (ma5 > 0 && dayLow > 0) {
+    const touched = dayLow <= ma5 * 1.005;
+    const recovered = close_last >= ma5 * 1.01;
+    if (touched && recovered) {
+      pattern_B = true;
+      pattern_B_reason = `MA5(${ma5}) 터치 후 회복 (${close_last})`;
+    }
+  }
+  // 패턴 C: 14:00~14:50 박스권 (range ≤ 1.5%) + 14:50 분봉 거래량 2배+
+  let pattern_C = false;
+  let pattern_C_reason = '';
+  if (i_1450 - i_1400 > 5) {
+    const boxRange = sorted.slice(i_1400, i_1450);
+    const hi = Math.max(...boxRange.map(b => +b.h || 0));
+    const lo = Math.min(...boxRange.map(b => +b.l || 0));
+    const rangePct = lo > 0 ? (hi - lo) / lo * 100 : 99;
+    if (rangePct <= 1.5) {
+      // 14:50 거래량 vs 직전 5개 분봉 평균
+      const lastVol = +sorted[i_last].v || 0;
+      const prevAvg = boxRange.slice(-5).reduce((a, b) => a + (+b.v || 0), 0) / 5;
+      if (prevAvg > 0 && lastVol >= prevAvg * 2) {
+        pattern_C = true;
+        pattern_C_reason = `박스권 ${rangePct.toFixed(2)}% + 거래량 ${(lastVol/prevAvg).toFixed(1)}x`;
+      }
+    }
+  }
+  return {
+    late_momentum, late_pct,
+    pattern_A, pattern_A_reason,
+    pattern_B, pattern_B_reason,
+    pattern_C, pattern_C_reason,
+    barCount: sorted.length,
+    last_close: close_last,
+    close_1430, close_1500
+  };
+}
+
 // 자동 평가 (screening signal → 점수/판정)
-function evaluate(s, leaderMap, sectorMap) {
+function evaluate(s, leaderMap, sectorMap, intradayAnalysis) {
   const ch = +s.change || +s.rate || 0;
   const amt = +s.amount || +s.vol || 0;
   const h60 = +s.h60 || 0;
@@ -90,7 +177,15 @@ function evaluate(s, leaderMap, sectorMap) {
       tbd: !themeInfo
     },
     new_high: { pass: h60===1 || h120===1, label: h60===1 && h120===1 ? '60일+120일 신고가 동시' : h60===1 ? '60일 신고가' : h120===1 ? '120일 신고가' : '신고가 미달성' },
-    late_momentum: { pass: rangePos >= MUST.late_close_pos, label: `종가위치 ${(rangePos*100).toFixed(0)}% ${rangePos>=MUST.late_close_pos?'≥':'<'} 80% (분봉 미지원 → 종가위치 대체)`, tbd: true },
+    late_momentum: intradayAnalysis ? {
+      pass: intradayAnalysis.late_momentum,
+      label: `장 막판 ${intradayAnalysis.late_pct>=0?'+':''}${intradayAnalysis.late_pct.toFixed(2)}% (14:30→15:00 분봉)`,
+      tbd: false
+    } : {
+      pass: rangePos >= MUST.late_close_pos,
+      label: `종가위치 ${(rangePos*100).toFixed(0)}% ${rangePos>=MUST.late_close_pos?'≥':'<'} 80% (분봉 로딩 중 → 종가위치 대체)`,
+      tbd: true
+    },
     leader: {
       pass: isLeader,
       label: isThemeLeader ? `🏆 테마 ${sector} 1등주`
@@ -109,12 +204,20 @@ function evaluate(s, leaderMap, sectorMap) {
     ma_aligned: { pass: maAlign === 1, label: maAlign===1 ? 'MA정배열 (MA5>MA20>MA60)' : 'MA역배열' },
   };
 
-  // 패턴 (분봉 미지원 → 종가위치 + 신고가로 추정 패턴)
-  const pattern = {
-    // 분봉 미지원 — 대체 로직: 종가 상단 + 신고가 = A 패턴 추정
+  // 패턴 — 분봉 분석 결과 우선, 없으면 추정
+  const pattern = intradayAnalysis ? {
+    pattern_A: intradayAnalysis.pattern_A,
+    pattern_A_reason: intradayAnalysis.pattern_A_reason,
+    pattern_B: intradayAnalysis.pattern_B,
+    pattern_B_reason: intradayAnalysis.pattern_B_reason,
+    pattern_C: intradayAnalysis.pattern_C,
+    pattern_C_reason: intradayAnalysis.pattern_C_reason,
+    hasIntraday: true,
+  } : {
     pattern_A: rangePos >= 0.85 && (h60===1 || h120===1),
-    pattern_B: false,  // MA5 분봉 데이터 필요 → 미지원
-    pattern_C: false,  // 14:00~14:50 분봉 필요 → 미지원
+    pattern_B: false,
+    pattern_C: false,
+    hasIntraday: false,
   };
 
   // 점수 계산
@@ -162,6 +265,8 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
 
   const [data, setData] = useState(null);
   const [themesData, setThemesData] = useState(null);
+  const [intradayMap, setIntradayMap] = useState({}); // code -> bars[]
+  const [intradayLoading, setIntradayLoading] = useState({}); // code -> bool
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
   const [expanded, setExpanded] = useState({});
@@ -188,6 +293,24 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // 분봉 fetch (개별 종목)
+  const fetchIntraday = useCallback(async (code) => {
+    const c = String(code).padStart(6, '0');
+    if (intradayMap[c] || intradayLoading[c]) return;
+    setIntradayLoading(p => ({ ...p, [c]: true }));
+    try {
+      const r = await fetch(`${INTRADAY_URL}?codes=${c}`);
+      const d = await r.json();
+      const bars = (d.bars_per_stock && d.bars_per_stock[c]) ? null : (d.bars && d.bars[c]) || null;
+      // 응답 형식 확인 후 저장 — 실제 데이터는 bars 또는 직접 bars_per_stock
+      setIntradayMap(p => ({ ...p, [c]: bars || d.minute_bars || d.intraday || [] }));
+    } catch (e) {
+      setIntradayMap(p => ({ ...p, [c]: [] }));
+    } finally {
+      setIntradayLoading(p => ({ ...p, [c]: false }));
+    }
+  }, [intradayMap, intradayLoading]);
 
   // 종목코드 → {theme, rank} 매핑 (테마 데이터에서 역인덱스)
   const sectorMap = useMemo(() => {
@@ -233,9 +356,35 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
   const evaluated = useMemo(() => {
     if (!data || !data.all) return [];
     return data.all
-      .map(s => ({ ...s, eval: evaluate(s, leaderMap, sectorMap) }))
+      .map(s => {
+        const c = String(s.code).padStart(6, '0');
+        const bars = intradayMap[c];
+        const intradayAnalysis = bars && bars.length > 0
+          ? analyzeIntraday(bars, +s.high||0, +s.low||0, +s.price||+s.close||0, +s.ma5||0)
+          : null;
+        return { ...s, eval: evaluate(s, leaderMap, sectorMap, intradayAnalysis), intradayAnalysis };
+      })
       .sort((a, b) => b.eval.score - a.eval.score);
-  }, [data, leaderMap, sectorMap]);
+  }, [data, leaderMap, sectorMap, intradayMap]);
+
+  // STRONG/BUY 후보 자동 분봉 fetch (1초 간격)
+  useEffect(() => {
+    const candidates = evaluated.filter(s =>
+      (s.eval.verdict === 'STRONG' || s.eval.verdict === 'BUY')
+      && !intradayMap[String(s.code).padStart(6, '0')]
+    ).slice(0, 5); // 상위 5개만
+    if (candidates.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      for (const s of candidates) {
+        if (cancelled) break;
+        await fetchIntraday(s.code);
+        await new Promise(r => setTimeout(r, 500));
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [evaluated.length > 0]);
 
   // 필터
   const filtered = useMemo(() => {
@@ -387,10 +536,10 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
                           <Check key={k} pass={c.pass} label={c.label} tbd={c.tbd} _T={_T} />
                         ))}
                       </Section>
-                      <Section title="매수 타점 패턴" col="#10b981" _T={_T}>
-                        <Check pass={ev.checks.pattern?.pattern_A} label="패턴 A: 매물 소화 후 재돌파 (종가 상단 85%+ AND 신고가)" _T={_T} />
-                        <Check pass={ev.checks.pattern?.pattern_B} label="패턴 B: 5일선 눌림목 회복 (분봉 미지원)" tbd _T={_T} />
-                        <Check pass={ev.checks.pattern?.pattern_C} label="패턴 C: 장 막판 박스권 돌파 (분봉 미지원)" tbd _T={_T} />
+                      <Section title={`매수 타점 패턴 (분봉 ${ev.checks.pattern?.hasIntraday ? '✓' : '로딩...'})`} col="#10b981" _T={_T}>
+                        <Check pass={ev.checks.pattern?.pattern_A} label={`패턴 A: 매물 조정 후 재돌파${ev.checks.pattern?.pattern_A_reason ? ' — '+ev.checks.pattern.pattern_A_reason : ''}`} tbd={!ev.checks.pattern?.hasIntraday} _T={_T} />
+                        <Check pass={ev.checks.pattern?.pattern_B} label={`패턴 B: 5일선 눌림목 회복${ev.checks.pattern?.pattern_B_reason ? ' — '+ev.checks.pattern.pattern_B_reason : ''}`} tbd={!ev.checks.pattern?.hasIntraday} _T={_T} />
+                        <Check pass={ev.checks.pattern?.pattern_C} label={`패턴 C: 장 막판 박스권 돌파${ev.checks.pattern?.pattern_C_reason ? ' — '+ev.checks.pattern.pattern_C_reason : ''}`} tbd={!ev.checks.pattern?.hasIntraday} _T={_T} />
                       </Section>
                       <Section title="자동 데이터" col="#a855f7" _T={_T}>
                         <DataRow l="현재가" v={_won(ev.data.c)} _T={_T} />
@@ -409,6 +558,22 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
                           <DataRow l="테마 등락률" v={`${ev.themeInfo.themeChange>=0?'+':''}${ev.themeInfo.themeChange.toFixed(2)}%`} c={ev.themeInfo.themeChange>=0?_T.up:_T.down} _T={_T} />
                           <DataRow l="테마내 순위" v={`${ev.themeInfo.themeRank}등주`} c={ev.themeInfo.themeRank===1?'#dc2626':_T.body} _T={_T} />
                         </Section>
+                      )}
+                      {/* 분봉 흐름 */}
+                      {s.intradayAnalysis && (
+                        <Section title={`분봉 흐름 (1분봉 ${s.intradayAnalysis.barCount}개)`} col="#0d9488" _T={_T}>
+                          <DataRow l="14:30 종가" v={_won(s.intradayAnalysis.close_1430)} _T={_T} />
+                          <DataRow l="15:00 종가" v={_won(s.intradayAnalysis.close_1500)} _T={_T} />
+                          <DataRow l="14:30→15:00 변동" v={`${s.intradayAnalysis.late_pct>=0?'+':''}${s.intradayAnalysis.late_pct.toFixed(2)}%`} c={s.intradayAnalysis.late_pct>=0?_T.up:_T.down} _T={_T} />
+                          <DataRow l="최종가" v={_won(s.intradayAnalysis.last_close)} _T={_T} />
+                          <DataRow l="장 막판 매수세" v={s.intradayAnalysis.late_momentum?'✅ 유지':'❌ 약화'} c={s.intradayAnalysis.late_momentum?_T.up:_T.mute} _T={_T} />
+                        </Section>
+                      )}
+                      {/* 분봉 미로딩 시 수동 fetch 버튼 */}
+                      {!s.intradayAnalysis && !intradayMap[String(s.code).padStart(6,'0')] && (
+                        <button onClick={(e)=>{e.stopPropagation();fetchIntraday(s.code);}} disabled={intradayLoading[String(s.code).padStart(6,'0')]} style={{marginTop:10,padding:'6px 14px',borderRadius:7,border:'1px solid '+_T.line,background:_T.bg,color:_T.body,fontSize:11,fontWeight:700,cursor:'pointer'}}>
+                          {intradayLoading[String(s.code).padStart(6,'0')] ? '⏳ 분봉 로딩...' : '📊 분봉 데이터 가져오기'}
+                        </button>
                       )}
 
                       {/* 추천 비중 + 매수 시점 */}
