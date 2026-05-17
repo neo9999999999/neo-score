@@ -23,6 +23,7 @@ import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, Haseungh
 import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor, NeoAnalysisDetailModal } from "./NeoAnalysisHelpers.jsx";
 import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
 import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
+import { HaseunghoonClosingBetTab } from "./HaseunghoonClosingBetHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
@@ -649,7 +650,7 @@ const [mode,setMode]=useState(()=>{try{
     return 'leader';
   }
   const v=localStorage.getItem('nbdb_mode_v3');
-  const valid=['leader','neo25','neo90','best01','pullback'];
+  const valid=['leader','neo25','neo90','best01','pullback','haseunghoon'];
   if(valid.includes(v))return v;
   return 'leader';
 }catch(e){return 'leader';}});
@@ -1113,14 +1114,15 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
   {id:'neo25',l:'네오 25%',sub:'5000억+',col:'#c81e1e'},
   {id:'neo90',l:'네오 90%',sub:'침S/하A+ 트레일',col:'#10b981'},
   {id:'best01',l:'최고조합01',sub:'시초가 매도 (A∪B∪C)',col:'#f59e0b'},
-  {id:'pullback',l:'네오눌림목반등',sub:'-15% 추매 / TP+100%',col:'#0ea5e9'}
+  {id:'pullback',l:'네오눌림목반등',sub:'-15% 추매 / TP+100%',col:'#0ea5e9'},
+  {id:'haseunghoon',l:'하승훈 종가베팅',sub:'14:50~15:25 자동 평가',col:'#0d9488'}
 ].map(m=>{const a=mode===m.id;return(
   <button key={m.id} onClick={()=>setMode(m.id)} style={{flex:'1 1 0',padding:'10px 6px',border:'none',background:a?m.col:'transparent',color:a?'#fff':_T.sub,borderRadius:10,cursor:'pointer',transition:'all .15s',letterSpacing:'-0.3px',fontWeight:a?800:600,minWidth:0}}>
     <div style={{fontSize:12,whiteSpace:'nowrap'}}>{m.l}</div>
     <div style={{fontSize:13,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
-{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : (<>
+{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : mode==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : (<>
 {/* 청산 방식 토글 (모든 모드 공통) */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
 {[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
@@ -1656,7 +1658,7 @@ const [activeTab,setActiveTab]=useState(()=>{try{
     return "leader";
   }
   const v=localStorage.getItem("today_tab_v1");
-  if(v==="neo25"||v==="leader"||v==="best01"||v==="pullback")return v;
+  if(v==="neo25"||v==="leader"||v==="best01"||v==="pullback"||v==="haseunghoon")return v;
   return "leader";
 }catch(e){return "leader";}});
 useEffect(()=>{try{localStorage.setItem("today_tab_v1",activeTab);}catch(e){}},[activeTab]);
@@ -1722,13 +1724,15 @@ const Empty=({msg})=>(<div style={{padding:"32px 20px",textAlign:"center",color:
 if(loading)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{textAlign:"center",padding:"80px 20px",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:36,marginBottom:14}}>⏳</div><div style={{fontSize:16,fontWeight:700,color:_T.text,letterSpacing:"-0.3px"}}>KIS 조회 중...</div><div style={{fontSize:12,color:_T.hint,marginTop:8}}>등락률 상위 종목 분석 + 등급 산출</div></div></div>);
 // 첫 조회 화면 (다크)
 if(!data&&activeTab==='pullback')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><TodayPullbackTab theme={theme}/></div>);
+if(!data&&activeTab==='haseunghoon')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><HaseunghoonClosingBetTab theme={theme}/></div>);
 if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
   neo25:{l:"네오 25%",emoji:"🐉",col:"#c81e1e",cnt:(data.summary&&data.summary.neo25)||0,winRate:"51.3%",avg:"+4.75%",amtRange:"5,000억 이상",tp:"+25%",strategy:"대장주, 큰 수익 추구"},
   leader:{l:"네오 대장주",emoji:"📈",col:"#a855f7",cnt:(data.summary&&data.summary.leader)||0,winRate:"—",avg:"+0.12%",amtRange:"500억 이상 / 시장별 ≥3건 발화",tp:"D+1 시초가",strategy:"테마 1,2,3등주 (베팅 50/33.5/16.5)"},
   best01:{l:"최고조합01",emoji:"🥇",col:"#f59e0b",cnt:(data.summary&&data.summary.best01)||0,winRate:"43.1%",avg:"+1.15%",amtRange:"A∪B∪C 합집합",tp:"D+1 시초가",strategy:"검증된 합집합 — 5년 모두 양수"},
-  pullback:{l:"네오눌림목반등",emoji:"📘",col:"#0ea5e9",cnt:1249,winRate:"51.4%",avg:"+12.74%",amtRange:"기준봉 1000억+ / 반등봉 50억+",tp:"+100% TP1",strategy:"기준봉 후 반등 매수, 60일 보유"}
+  pullback:{l:"네오눌림목반등",emoji:"📘",col:"#0ea5e9",cnt:1249,winRate:"51.4%",avg:"+12.74%",amtRange:"기준봉 1000억+ / 반등봉 50억+",tp:"+100% TP1",strategy:"기준봉 후 반등 매수, 60일 보유"},
+  haseunghoon:{l:"하승훈 종가베팅",emoji:"🎯",col:"#0d9488",cnt:0,winRate:"—",avg:"—",amtRange:"거래대금 2000억+",tp:"D+1 시초가",strategy:"14:50~15:25 자동 평가 + 100점 만점 점수화"}
 };
 const tab=_tabConf[activeTab];
 const list=data[activeTab]||[];
@@ -1749,7 +1753,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
 
 {/* 좌우 탭 — 최고조합01 / 네오 대장주 / 네오 25% / 네오눌림목반등 */}
 <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
-  {["best01","leader","neo25","pullback"].map(tk=>{
+  {["best01","leader","neo25","pullback","haseunghoon"].map(tk=>{
     const t=_tabConf[tk];const a=activeTab===tk;
     return(
       <button key={tk} onClick={()=>setActiveTab(tk)} style={{flex:"1 1 0",padding:"14px 12px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",transition:"all .12s",textAlign:"left"}}>
@@ -1763,7 +1767,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
   })}
 </div>
 
-{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : (<>
+{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : activeTab==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : (<>
 {/* 활성 탭 진입조건/청산룰 카드 */}
 <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12,marginBottom:10}}>
   <div style={{display:"flex",gap:8,alignItems:"baseline",marginBottom:8}}>
