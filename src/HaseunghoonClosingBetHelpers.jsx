@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 
 const SCREENING_URL = "https://sector-api-pink.vercel.app/api/screening";
 const DAILY_URL = "https://sector-api-pink.vercel.app/api/daily-price";
+const THEMES_URL = "https://sector-api-pink.vercel.app/api/themes?top=20&per=3";
+const INTRADAY_URL = "https://sector-api-pink.vercel.app/api/intraday";
 
 // 평가 룰
 const MUST = {
@@ -43,7 +45,7 @@ function _verdictBg(v) {
 }
 
 // 자동 평가 (screening signal → 점수/판정)
-function evaluate(s, leaderMap) {
+function evaluate(s, leaderMap, sectorMap) {
   const ch = +s.change || +s.rate || 0;
   const amt = +s.amount || +s.vol || 0;
   const h60 = +s.h60 || 0;
@@ -54,12 +56,18 @@ function evaluate(s, leaderMap) {
   const range = h - l;
   const rangePos = range > 0 ? (c - l) / range : 0.5;
   const score_s = +s.score || 0;
-  const sector = s.sector || s.theme || '';
+  const code = String(s.code).padStart(6, '0');
   const market = s.market || '';
-  const code = s.code;
+  // 테마 정보 (Naver 스크래핑 결과)
+  const themeInfo = (sectorMap||{})[code]; // {theme, themeChange, themeRank}
+  const sector = themeInfo ? themeInfo.theme : (s.sector || s.theme || '');
+  const themeRank = themeInfo ? themeInfo.themeRank : 99;
+  const isThemeLeader = themeRank === 1;
   // 시장별 등락률 1등 여부
-  const isLeader = leaderMap[code] === 1;
-  const leaderRank = leaderMap[code] || 99;
+  const isMktLeader = (leaderMap||{})[code] === 1;
+  const leaderRank = (leaderMap||{})[code] || 99;
+  // 대장주 판정 — 테마 1등 OR 시장 1등
+  const isLeader = isThemeLeader || isMktLeader;
 
   // 자동 제외 체크
   const excludeReasons = [];
@@ -74,10 +82,24 @@ function evaluate(s, leaderMap) {
   // 5대 필수 조건
   const must = {
     vol_2000eok: { pass: amt >= MUST.vol_eok, label: `거래대금 ${amt}억 ${amt>=MUST.vol_eok?'≥':'<'} 2,000억` },
-    core_theme: { pass: !!(sector || s.investor || s.supply), label: sector ? `테마: ${sector}` : `수급: ${s.investor||s.supply||'미지정'} (테마 데이터 미지원)`, tbd: !sector },
+    core_theme: {
+      pass: !!sector && themeInfo && themeInfo.themeChange >= 1.0,
+      label: themeInfo
+        ? `테마: ${sector} (${themeInfo.themeChange>=0?'+':''}${themeInfo.themeChange.toFixed(2)}%, 테마내 ${themeRank}등)`
+        : sector ? `테마: ${sector}` : `수급: ${s.investor||s.supply||'미지정'} (테마 미매칭)`,
+      tbd: !themeInfo
+    },
     new_high: { pass: h60===1 || h120===1, label: h60===1 && h120===1 ? '60일+120일 신고가 동시' : h60===1 ? '60일 신고가' : h120===1 ? '120일 신고가' : '신고가 미달성' },
     late_momentum: { pass: rangePos >= MUST.late_close_pos, label: `종가위치 ${(rangePos*100).toFixed(0)}% ${rangePos>=MUST.late_close_pos?'≥':'<'} 80% (분봉 미지원 → 종가위치 대체)`, tbd: true },
-    leader: { pass: isLeader, label: leaderRank===99 ? '시장 1등 아님' : `시장 ${leaderRank}등 (섹터 1등 데이터 미지원 → 시장 대체)`, tbd: true },
+    leader: {
+      pass: isLeader,
+      label: isThemeLeader ? `🏆 테마 ${sector} 1등주`
+        : isMktLeader ? `🏆 시장 ${market} 1등 (테마 매칭 X)`
+        : themeRank<=3 ? `테마내 ${themeRank}등`
+        : leaderRank<=3 ? `시장 ${leaderRank}등`
+        : '1등 아님',
+      tbd: false
+    },
   };
 
   // 3대 안전 조건
@@ -130,7 +152,7 @@ function evaluate(s, leaderMap) {
   else if (verdict === 'BUY') weight = isLeader ? 60 : 40;
   else if (verdict === 'HOLD') weight = 20;
 
-  return { verdict, score, excludeReasons:[], checks: { must, safe, pattern }, weight, isLeader, leaderRank, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
+  return { verdict, score, excludeReasons:[], checks: { must, safe, pattern }, weight, isLeader, isThemeLeader, isMktLeader, leaderRank, themeRank, themeInfo, data: { ch, amt, cum5, h60, h120, maAlign, rangePos, c, h, l, o } };
 }
 
 export function HaseunghoonClosingBetTab({ theme = "dark" }) {
@@ -139,6 +161,7 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
     : { text:'#191f28', body:'#333d4b', sub:'#4e5968', hint:'#6b7684', mute:'#8b95a1', line:'#e5e8eb', linelt:'#f2f4f6', bg:'#f9fafb', card:'#ffffff', up:'#f04452', down:'#1f6dee', accent:'#7c3aed', green:'#10b981' };
 
   const [data, setData] = useState(null);
+  const [themesData, setThemesData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
   const [expanded, setExpanded] = useState({});
@@ -147,16 +170,45 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
   const load = useCallback(async () => {
     setLoading(true); setErr(null);
     try {
-      const r = await fetch(SCREENING_URL);
-      const d = await r.json();
+      // 병렬: screening + themes
+      const [scrRes, thmRes] = await Promise.all([
+        fetch(SCREENING_URL),
+        fetch(THEMES_URL).catch(() => null)
+      ]);
+      const d = await scrRes.json();
       setData(d);
+      if (thmRes && thmRes.ok) {
+        const t = await thmRes.json();
+        setThemesData(t);
+      }
     } catch (e) {
-      setErr(e.message || 'screening fetch 실패');
+      setErr(e.message || 'fetch 실패');
     }
     setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // 종목코드 → {theme, rank} 매핑 (테마 데이터에서 역인덱스)
+  const sectorMap = useMemo(() => {
+    if (!themesData || !themesData.themes) return {};
+    const map = {};
+    for (const t of themesData.themes) {
+      if (!t.leaders) continue;
+      t.leaders.forEach((stock, idx) => {
+        const code = String(stock.code).padStart(6, '0');
+        // 같은 종목이 여러 테마에 있으면 등락률 높은 테마 우선
+        if (!map[code] || (t.change > map[code].themeChange)) {
+          map[code] = {
+            theme: t.name,
+            themeChange: t.change,
+            themeRank: idx + 1, // 테마 내 1,2,3등
+          };
+        }
+      });
+    }
+    return map;
+  }, [themesData]);
 
   // 시장별 등락률 leader map (KOSPI/KOSDAQ 각각 1,2,3등)
   const leaderMap = useMemo(() => {
@@ -181,9 +233,9 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
   const evaluated = useMemo(() => {
     if (!data || !data.all) return [];
     return data.all
-      .map(s => ({ ...s, eval: evaluate(s, leaderMap) }))
+      .map(s => ({ ...s, eval: evaluate(s, leaderMap, sectorMap) }))
       .sort((a, b) => b.eval.score - a.eval.score);
-  }, [data, leaderMap]);
+  }, [data, leaderMap, sectorMap]);
 
   // 필터
   const filtered = useMemo(() => {
@@ -350,6 +402,14 @@ export function HaseunghoonClosingBetTab({ theme = "dark" }) {
                         <DataRow l="종가위치" v={`${(ev.data.rangePos*100).toFixed(0)}%`} _T={_T} />
                         <DataRow l="MA정배열" v={ev.data.maAlign===1?'Y':'N'} c={ev.data.maAlign===1?_T.up:_T.mute} _T={_T} />
                       </Section>
+                      {/* 테마 정보 (sectorMap에서 매칭된 경우) */}
+                      {ev.themeInfo && (
+                        <Section title="테마 (네이버 분류)" col="#ec4899" _T={_T}>
+                          <DataRow l="테마명" v={ev.themeInfo.theme} _T={_T} />
+                          <DataRow l="테마 등락률" v={`${ev.themeInfo.themeChange>=0?'+':''}${ev.themeInfo.themeChange.toFixed(2)}%`} c={ev.themeInfo.themeChange>=0?_T.up:_T.down} _T={_T} />
+                          <DataRow l="테마내 순위" v={`${ev.themeInfo.themeRank}등주`} c={ev.themeInfo.themeRank===1?'#dc2626':_T.body} _T={_T} />
+                        </Section>
+                      )}
 
                       {/* 추천 비중 + 매수 시점 */}
                       {(v === 'STRONG' || v === 'BUY') && (
