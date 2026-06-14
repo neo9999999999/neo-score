@@ -729,7 +729,7 @@ function OosInvestment({ hist, perStock, T }) {
 }
 
 function OosSplitCard({ oos, T }) {
-  if (!oos || !oos.test) return null;
+  if (!oos || (!oos.test && !(oos.byYear && oos.byYear.length))) return null;
   const c = oos.chosen || {};
   const seg = (title, d, base) => (
     <div style={{ flex: "1 1 150px", background: T.cardAlt, borderRadius: 10, padding: "11px 12px" }}>
@@ -745,12 +745,33 @@ function OosSplitCard({ oos, T }) {
     <div style={{ marginTop: 14, background: T.card, border: "2px solid " + ACCENT, borderRadius: 14, padding: 15 }}>
       <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🔬 진짜 OOS (학습/검증 분리)</div>
       <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11, lineHeight: 1.5 }}>
-        학습({oos.trainRange?.start}~{oos.split})에서 최적 파라미터를 고르고, <b>한 번도 안 본 검증({oos.split}~{oos.testRange?.end})</b>에서만 측정. 선택: 점수≥{c.scoreMin} · 당일 +{c.chgMin}~29% · top{c.topN} · {c.exit}
+        모든 연도를 OOS로 검증: 각 구간은 그 구간을 빼고 고른 파라미터로만 평가합니다. 생존편향·체결비용 제외.
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {seg("학습구간 (파라미터 선택)", oos.train)}
-        {seg("✅ 검증구간 (정직한 성과)", oos.test, oos.test.baselineAvgNextRet)}
-      </div>
+      {oos.test && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {seg("학습 " + (oos.trainRange?.start) + "~" + oos.split, oos.train)}
+          {seg("✅ 검증 " + oos.split + "~ (미사용)", oos.test, oos.test.baselineAvgNextRet)}
+        </div>
+      )}
+      {oos.foldB && oos.foldB.test && (
+        <div style={{ marginTop: 8 }}>{seg("✅ 검증구간 2 (2018~2022, 반대로 분리)", oos.foldB.test, oos.foldB.test.baselineAvgNextRet)}</div>
+      )}
+      {oos.byYear && oos.byYear.length > 0 && (
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed " + T.border }}>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 7 }}>연도별 OOS (각 연도 = 그 해를 뺀 나머지로 파라미터 선택 후 검증)</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            {oos.byYear.slice().sort((a, b) => b.year.localeCompare(a.year)).map(y => (
+              <div key={y.year} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, background: T.cardAlt, borderRadius: 8, padding: "7px 10px" }}>
+                <span style={{ flex: "0 0 42px", fontWeight: 800, color: T.text }}>{y.year}</span>
+                <span style={{ flex: "0 0 auto", fontWeight: 800, color: (y.avg || 0) >= 0 ? UP_C : DN_C }}>평균 {(y.avg || 0) >= 0 ? "+" : ""}{y.avg}%</span>
+                <span style={{ color: T.sub }}>고가3%도달 {y.hit3HighRate}%</span>
+                <span style={{ color: T.hint }}>edge {(y.edge || 0) >= 0 ? "+" : ""}{y.edge}%</span>
+                <span style={{ marginLeft: "auto", color: T.hint, fontSize: 11 }}>{y.n}건</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>
         검증 평균이 학습보다 많이 낮으면 그만큼 과최적화였다는 뜻입니다. 생존편향·체결비용은 별도(실제는 더 보수적).
       </div>
