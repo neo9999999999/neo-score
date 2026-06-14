@@ -142,4 +142,35 @@ export function isLeader(m) {
   return m && m.score >= 78 && m.changePct >= 15 && m.changePct <= 29 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
 }
 
+// 수급(외국인/기관 순매수) 맵 — sector-api 당일 스캔에서 code → {supply,frgn,inst}
+export async function fetchSupplyMap() {
+  const urls = [
+    "https://raw.githubusercontent.com/neo9999999999/sector-api/main/data/signals.json?_=" + Date.now(),
+  ];
+  for (const u of urls) {
+    try {
+      const r = await fetchWithTimeout(u, { headers: { "User-Agent": "neo-score/1.0" } }, 15000);
+      if (!r.ok) continue;
+      const arr = await r.json();
+      const m = new Map();
+      for (const s of (arr || [])) {
+        if (!s.code) continue;
+        m.set(String(s.code), { supply: s.supply || null, frgn: s.frgn ?? null, inst: s.inst ?? null });
+      }
+      return m;
+    } catch { /* next */ }
+  }
+  return new Map();
+}
+
+// 수급 라벨/동반매수 판정
+export function supplyInfo(sup) {
+  if (!sup || (sup.frgn == null && sup.inst == null)) return { dongban: false, label: "수급 미확인", known: false };
+  const f = sup.frgn ?? 0, i = sup.inst ?? 0;
+  if (f > 0 && i > 0) return { dongban: true, label: "외+기 동반매수", known: true };
+  if (f > 0) return { dongban: false, label: "외국인 순매수", known: true };
+  if (i > 0) return { dongban: false, label: "기관 순매수", known: true };
+  return { dongban: false, label: "외+기 순매도", known: true };
+}
+
 
