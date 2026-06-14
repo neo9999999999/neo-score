@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit, simExitTPSL, simHold } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit, simExitTPSL, simHold, pullbackSignal } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -41,6 +41,7 @@ async function main() {
   // 스트리밍: 종목별로 받아 후보만 추출하고 시리즈는 버림(메모리 절약)
   const byDate = new Map();
   const poolByDate = new Map(); // OOS 그리드 탐색용 넓은 후보 풀
+  const pbByDate = new Map();   // 눌림목 스윙 후보
   let baseSum = 0, baseN = 0, fetched = 0;
   await pMap(universe, async (u) => {
     let s;
@@ -67,6 +68,13 @@ async function main() {
           fwdC.push(+((s[i + k].close - base) / base * 100).toFixed(2));
         }
         poolByDate.get(d).push({ score: m.score, chg: m.changePct, rangePos: m.rangePos, vol: m.volSurge, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2), fwdH, fwdC });
+      }
+      // 눌림목 스윙 후보(가격 기반)
+      const pb = pullbackSignal(s, i);
+      if (pb && pb.ok) {
+        const H = 10, fH = [], fC = [];
+        for (let k = 1; k <= H && i + k < s.length; k++) { fH.push(+((s[i + k].high - base) / base * 100).toFixed(2)); fC.push(+((s[i + k].close - base) / base * 100).toFixed(2)); }
+        if (fH.length) { if (!pbByDate.has(d)) pbByDate.set(d, []); pbByDate.get(d).push({ ret20: pb.ret20, fwdH: fH, fwdC: fC }); }
       }
       if (!isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
@@ -276,6 +284,30 @@ async function main() {
   };
   console.log("[afternoon-bf] 완전탐색 최고(in-sample):", gBest && `TP+${gBest.tp}/SL${gBest.sl ?? '무'} 평균 ${gBest.avg.toFixed(3)}% 승률 ${gBest.win.toFixed(1)}% n=${gBest.n}`);
   for (const y of advByYear) console.log(`  ${y.year} OOS: 순 ${y.avg}% 승률 ${y.winRate}% n=${y.n} [TP+${y.chosen.tp}/SL${y.chosen.sl ?? '무'}]`);
+
+  // ===== 눌림목 스윙: 상승추세 종목의 20일선 눌림 진입 → 완전탐색 TP/SL + 연도별 OOS =====
+  const pbPicks = [];
+  for (const d of [...pbByDate.keys()]) {
+    const yr = d.slice(0, 4);
+    const sel = pbByDate.get(d).sort((a, b) => b.ret20 - a.ret20).slice(0, 10); // 추세강도 상위 10
+    for (const p of sel) pbPicks.push({ year: yr, fwdH: p.fwdH, fwdC: p.fwdC });
+  }
+  const pbBest = bestOn(pbPicks);
+  const pbByYear = [];
+  for (const Y of [...new Set(pbPicks.map(p => p.year))].sort()) {
+    const train = pbPicks.filter(p => p.year !== Y), test = pbPicks.filter(p => p.year === Y);
+    const b = bestOn(train); if (!b) continue;
+    const t = evalGrid(test, b.tp, b.sl);
+    pbByYear.push({ year: Y, chosen: { tp: b.tp, sl: b.sl }, avg: t.avg == null ? null : +t.avg.toFixed(3), winRate: t.win == null ? null : +t.win.toFixed(1), n: t.n });
+  }
+  analysis.swing = {
+    cost: COST, holdDays: 10, count: pbPicks.length,
+    gridBest: pbBest ? { tp: pbBest.tp, sl: pbBest.sl, avg: +pbBest.avg.toFixed(3), winRate: +pbBest.win.toFixed(1), n: pbBest.n } : null,
+    note: "눌림목 스윙: 상승추세(20·60일선 정배열) 주도주가 20일선 부근까지 4~20% 조정한 날 종가 진입 · 익절=고가/손절=종가 · 최대 10일 · 비용 차감 · 익절1~200%·손절1~100% 완전탐색. gridBest=인샘플(과최적), byYear=연도별 OOS.",
+    byYear: pbByYear,
+  };
+  console.log("[afternoon-bf] 눌림목 스윙 best(in-sample):", pbBest && `TP+${pbBest.tp}/SL${pbBest.sl ?? '무'} 평균 ${pbBest.avg.toFixed(3)}% 승률 ${pbBest.win.toFixed(1)}% n=${pbBest.n}`);
+  for (const y of pbByYear) console.log(`  ${y.year} 스윙 OOS: 순 ${y.avg}% 승률 ${y.winRate}% n=${y.n} [TP+${y.chosen.tp}/SL${y.chosen.sl ?? '무'}]`);
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };
