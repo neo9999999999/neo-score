@@ -214,25 +214,36 @@ export function isLeader(m) {
 // TP/SL 청산 시뮬레이터 (현실적). nb={o,h,l,c}=당일 종가 대비 익일 시/고/저/종가(%).
 // 진입=당일 종가. tp=익절선, sl=손절선(음수), tp1Frac=익절선에서 파는 비중(1=전량).
 // 보수적: 익절·손절 동시 도달 시 손절 우선 가정. gapStop=시가 갭하락 청산선.
+// 다일 보유 시뮬: 익절=장중 고가가 +tp% 도달 시 tp 매도, 손절=종가가 −sl% 이탈 시 그 종가 매도.
+// fwdH/fwdC = 진입(당일 종가) 대비 이후 1..H일의 고가%/종가%. sl=null이면 무손절.
+export function simHold(fwdH, fwdC, tp, sl, cost = 0) {
+  const n = Math.min(fwdH.length, fwdC.length);
+  for (let k = 0; k < n; k++) {
+    if (fwdH[k] >= tp) return +(tp - cost).toFixed(3);          // 익절(고가)
+    if (sl != null && fwdC[k] <= -sl) return +(fwdC[k] - cost).toFixed(3); // 손절(종가)
+  }
+  return +((n ? fwdC[n - 1] : 0) - cost).toFixed(3);            // 만기 종가 청산
+}
 export function simExitTPSL(nb, opt = {}) {
-  const { tp = 5, sl = -5, tp1Frac = 1, gapStop = null, cost = 0 } = opt;
+  const { tp = 5, sl = null, tp1Frac = 1, gapStop = null, cost = 0, order = "sl" } = opt;
   const { o, h, l, c } = nb;
   let gross;
-  if (o != null && gapStop != null && o <= gapStop) gross = o;
-  else if (o != null && o <= sl) gross = o;                 // 갭하락이 손절 이하 → 시가 청산
+  if (o != null && gapStop != null && o <= gapStop) gross = o;        // 갭하락 시가 청산
+  else if (o != null && sl != null && o <= sl) gross = o;             // 갭이 손절 이하
   else {
     const hitTP = h != null && h >= tp;
-    const hitSL = l != null && l <= sl;
+    const hitSL = sl != null && l != null && l <= sl;
+    const both = hitTP && hitSL;
     if (tp1Frac >= 1) {
-      if (hitSL && hitTP) gross = sl;                       // 둘 다 → 보수적 손절 우선
+      if (both) gross = order === "tp" ? tp : sl;
       else if (hitTP) gross = tp;
       else if (hitSL) gross = sl;
       else gross = c;
     } else {
-      if (hitSL && hitTP) gross = tp1Frac * tp + (1 - tp1Frac) * sl; // 익절 후 잔량 손절
-      else if (hitTP) gross = tp1Frac * tp + (1 - tp1Frac) * c;      // 익절 후 잔량 종가
-      else if (hitSL) gross = sl;                                    // 전량 손절
-      else gross = c;
+      if (hitTP) {
+        const rest = both ? (order === "tp" ? c : sl) : c;            // 익절 후 잔량
+        gross = tp1Frac * tp + (1 - tp1Frac) * rest;
+      } else gross = hitSL ? sl : c;                                   // 익절 미도달 → 손절 or 종가
     }
   }
   return +(gross - cost).toFixed(3);

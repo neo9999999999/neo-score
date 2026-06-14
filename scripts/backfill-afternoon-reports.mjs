@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit, simExitTPSL } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit, simExitTPSL, simHold } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -61,7 +61,12 @@ async function main() {
       // 넓은 풀(그리드 탐색용) — 상한가(+27%↑) 제외: 매수 불가
       if (m.score >= 70 && m.changePct >= 8 && m.changePct < 27 && m.rangePos >= 0.5 && m.volSurge >= 1.2) {
         if (!poolByDate.has(d)) poolByDate.set(d, []);
-        poolByDate.get(d).push({ score: m.score, chg: m.changePct, rangePos: m.rangePos, vol: m.volSurge, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2) });
+        const H = 10, fwdH = [], fwdC = [];
+        for (let k = 1; k <= H && i + k < s.length; k++) {
+          fwdH.push(+((s[i + k].high - base) / base * 100).toFixed(2));
+          fwdC.push(+((s[i + k].close - base) / base * 100).toFixed(2));
+        }
+        poolByDate.get(d).push({ score: m.score, chg: m.changePct, rangePos: m.rangePos, vol: m.volSurge, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2), fwdH, fwdC });
       }
       if (!isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
@@ -233,39 +238,44 @@ async function main() {
   console.log("[afternoon-bf] 현실판 OOS 연도별:");
   for (const y of byYearReal) console.log(`  ${y.year}: 순수익 ${y.avg}% (비용 ${COST}% 차감) 고가3%도달 ${y.hit3HighRate}% n=${y.n} [score≥${y.chosen.scoreMin},+${y.chosen.chgMin}~20,top${y.chosen.topN}]`);
 
-  // ===== 고도화: 익절/손절(TP/SL) 그리드 최적화 (상한가 제외, 비용 차감) =====
-  function evalTPSL(sMin, cMin, cMax, topN, exitSpec, inSet) {
-    let sum = 0, h3 = 0, n = 0, wins = 0;
-    for (const d of poolDates) {
-      if (!inSet(d)) continue;
-      const sel = poolByDate.get(d).filter(p => p.score >= sMin && p.chg >= cMin && p.chg <= cMax && p.rangePos >= 0.55 && p.vol >= 1.3).sort((a, b) => b.chg - a.chg).slice(0, topN);
-      for (const p of sel) { const r = simExitTPSL(p, exitSpec); sum += r; if (r > 0) wins++; if (p.h >= 3) h3++; n++; }
-    }
-    return { n, avg: n ? +(sum / n).toFixed(3) : null, winRate: n ? +((wins / n) * 100).toFixed(1) : null, hit3HighRate: n ? +((h3 / n) * 100).toFixed(1) : null };
+  // ===== 완전탐색: 익절=고가 +TP%(1~200), 손절=종가 −SL%(1~100, 무손절 포함) · 다일 보유(최대 10일) =====
+  // 선정 고정(상한가 제외): 점수≥84 · 당일 +10~25% · 종가강도/거래량 강함 · 당일 급등폭 상위 5
+  const ADV = { scoreMin: 84, chgMin: 10, chgMax: 25, topN: 5 };
+  const advPicks = []; // {year, fwdH, fwdC}
+  for (const d of poolDates) {
+    const sel = poolByDate.get(d).filter(p => p.score >= ADV.scoreMin && p.chg >= ADV.chgMin && p.chg <= ADV.chgMax && p.rangePos >= 0.55 && p.vol >= 1.3 && p.fwdH && p.fwdH.length).sort((a, b) => b.chg - a.chg).slice(0, ADV.topN);
+    const yr = d.slice(0, 4);
+    for (const p of sel) advPicks.push({ year: yr, fwdH: p.fwdH, fwdC: p.fwdC });
   }
-  const TPS = [15], SLS = [-100], FRACS = [1]; // 익절 +15%, 무손절(미달 시 종가 청산)
-  function selectBestTPSL(trainSet) {
-    let best = null;
-    for (const sMin of [78, 84]) for (const cMin of [8, 12]) for (const topN of [3, 5])
-      for (const tp of TPS) for (const sl of SLS) for (const frac of FRACS) {
-        const ex = { tp, sl, tp1Frac: frac, gapStop: null, cost: COST };
-        const tr = evalTPSL(sMin, cMin, 25, topN, ex, trainSet);
-        if (tr.n < 80 || tr.avg == null) continue;
-        if (!best || tr.avg > best.train.avg) best = { params: { scoreMin: sMin, chgMin: cMin, topN, tp, sl, tp1Frac: frac }, train: tr };
-      }
-    return best;
+  const TPV = []; for (let v = 1; v <= 30; v++) TPV.push(v); for (let v = 32; v <= 60; v += 2) TPV.push(v); for (let v = 65; v <= 100; v += 5) TPV.push(v); for (let v = 110; v <= 200; v += 10) TPV.push(v);
+  const SLV = [null]; for (let v = 1; v <= 30; v++) SLV.push(v); for (let v = 32; v <= 60; v += 2) SLV.push(v); for (let v = 65; v <= 100; v += 5) SLV.push(v);
+  function evalGrid(picks, tp, sl) {
+    let s = 0, w = 0; const n = picks.length;
+    for (const p of picks) { const r = simHold(p.fwdH, p.fwdC, tp, sl, COST); s += r; if (r > 0) w++; }
+    return n ? { n, avg: s / n, win: 100 * w / n } : { n: 0, avg: null, win: null };
   }
+  function bestOn(picks) {
+    let b = null;
+    for (const tp of TPV) for (const sl of SLV) { const r = evalGrid(picks, tp, sl); if (r.n < 200 || r.avg == null) continue; if (!b || r.avg > b.avg) b = { tp, sl, avg: r.avg, win: r.win, n: r.n }; }
+    return b;
+  }
+  const gBest = bestOn(advPicks); // 전 구간 최고 (in-sample, 과최적)
   const advByYear = [];
-  for (const Y of years) {
-    const b = selectBestTPSL(d => d.slice(0, 4) !== Y);
-    if (!b) continue;
-    const ex = { tp: b.params.tp, sl: b.params.sl, tp1Frac: b.params.tp1Frac, gapStop: null, cost: COST };
-    const test = evalTPSL(b.params.scoreMin, b.params.chgMin, 25, b.params.topN, ex, d => d.slice(0, 4) === Y);
-    advByYear.push({ year: Y, chosen: b.params, ...test });
+  const advYears = [...new Set(advPicks.map(p => p.year))].sort();
+  for (const Y of advYears) {
+    const train = advPicks.filter(p => p.year !== Y), test = advPicks.filter(p => p.year === Y);
+    const b = bestOn(train); if (!b) continue;
+    const t = evalGrid(test, b.tp, b.sl);
+    advByYear.push({ year: Y, chosen: { tp: b.tp, sl: b.sl }, avg: t.avg == null ? null : +t.avg.toFixed(3), winRate: t.win == null ? null : +t.win.toFixed(1), n: t.n });
   }
-  analysis.oosAdv = { cost: COST, chgMax: 25, note: "상한가(+27%↑) 제외 · 익절 +15% / 무손절(미달 시 종가 청산) · 학습 최적화(진입조건) 후 검증 · 왕복비용 차감.", byYear: advByYear };
-  console.log("[afternoon-bf] 고도화 TP/SL OOS:");
-  for (const y of advByYear) console.log(`  ${y.year}: 순 ${y.avg}% 승률 ${y.winRate}% n=${y.n} [s≥${y.chosen.scoreMin},+${y.chosen.chgMin}~25,top${y.chosen.topN},TP+${y.chosen.tp}/SL${y.chosen.sl}/익절${y.chosen.tp1Frac}]`);
+  analysis.oosAdv = {
+    cost: COST, holdDays: 10, selection: ADV,
+    gridBest: gBest ? { tp: gBest.tp, sl: gBest.sl, avg: +gBest.avg.toFixed(3), winRate: +gBest.win.toFixed(1), n: gBest.n } : null,
+    note: "익절=장중 고가 +TP% 도달 시 매도 / 손절=종가 −SL% 이탈 시 매도 · 최대 10일 보유 · 왕복비용 차감 · 익절1~200%·손절1~100%(무손절 포함) 완전탐색. gridBest=전구간 최고(인샘플·과최적), byYear=연도별 OOS(그 해 빼고 최적화 후 검증).",
+    byYear: advByYear,
+  };
+  console.log("[afternoon-bf] 완전탐색 최고(in-sample):", gBest && `TP+${gBest.tp}/SL${gBest.sl ?? '무'} 평균 ${gBest.avg.toFixed(3)}% 승률 ${gBest.win.toFixed(1)}% n=${gBest.n}`);
+  for (const y of advByYear) console.log(`  ${y.year} OOS: 순 ${y.avg}% 승률 ${y.winRate}% n=${y.n} [TP+${y.chosen.tp}/SL${y.chosen.sl ?? '무'}]`);
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };
