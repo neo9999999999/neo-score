@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T22:53:53+09:00",
+    "updatedAt": "2026-06-14T23:03:45+09:00",
     "count": 1948,
     "backfilledFrom": "2018-01-01"
   },
@@ -1183,142 +1183,142 @@
     "oosAdv": {
       "cost": 0.5,
       "chgMax": 25,
-      "note": "상한가(+27%↑) 제외 · 익절(TP)/손절(SL) 학습 최적화 후 검증 · 왕복비용 차감 · 익절·손절 동시 도달 시 손절 우선(보수적).",
+      "note": "상한가(+27%↑) 제외 · 익절 +3~5% / 손절 −8% · 학습 최적화 후 검증 · 왕복비용 차감 · 익절·손절 동시 도달 시 손절 우선(보수적).",
       "byYear": [
         {
           "year": "2018",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 431,
-          "avg": -0.724,
-          "winRate": 35,
-          "hit3HighRate": 49.7
+          "n": 758,
+          "avg": -0.591,
+          "winRate": 43.3,
+          "hit3HighRate": 48.8
         },
         {
           "year": "2019",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 478,
-          "avg": -0.491,
-          "winRate": 39.3,
-          "hit3HighRate": 54.6
+          "n": 845,
+          "avg": -0.634,
+          "winRate": 43.1,
+          "hit3HighRate": 49.8
         },
         {
           "year": "2020",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 771,
-          "avg": -0.317,
-          "winRate": 42,
-          "hit3HighRate": 57.3
+          "n": 1027,
+          "avg": -0.319,
+          "winRate": 46,
+          "hit3HighRate": 56.6
         },
         {
           "year": "2021",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 653,
-          "avg": -0.222,
-          "winRate": 41.8,
-          "hit3HighRate": 55.6
+          "n": 1001,
+          "avg": -0.293,
+          "winRate": 47.4,
+          "hit3HighRate": 54.8
         },
         {
           "year": "2022",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 428,
-          "avg": -0.581,
-          "winRate": 37.1,
-          "hit3HighRate": 49.5
+          "n": 732,
+          "avg": -0.751,
+          "winRate": 41.7,
+          "hit3HighRate": 44.8
         },
         {
           "year": "2023",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 695,
-          "avg": -0.23,
-          "winRate": 41.6,
-          "hit3HighRate": 60.3
+          "n": 918,
+          "avg": -0.665,
+          "winRate": 44.6,
+          "hit3HighRate": 56
         },
         {
           "year": "2024",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 717,
-          "avg": -0.556,
-          "winRate": 39.5,
-          "hit3HighRate": 55.1
+          "n": 952,
+          "avg": -0.939,
+          "winRate": 42.5,
+          "hit3HighRate": 52
         },
         {
           "year": "2025",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 812,
-          "avg": -0.356,
-          "winRate": 38.8,
-          "hit3HighRate": 53.9
+          "n": 1029,
+          "avg": -0.413,
+          "winRate": 44.7,
+          "hit3HighRate": 53.2
         },
         {
           "year": "2026",
           "chosen": {
             "scoreMin": 84,
-            "chgMin": 12,
+            "chgMin": 8,
             "topN": 5,
-            "tp": 7,
-            "sl": -3,
+            "tp": 5,
+            "sl": -8,
             "tp1Frac": 0.5
           },
-          "n": 380,
-          "avg": -0.527,
-          "winRate": 38.2,
-          "hit3HighRate": 57.9
+          "n": 431,
+          "avg": -0.676,
+          "winRate": 43.9,
+          "hit3HighRate": 57.8
         }
       ]
     }
