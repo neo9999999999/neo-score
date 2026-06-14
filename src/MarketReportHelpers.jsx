@@ -444,6 +444,129 @@ function HistoryView({ T, onOpen }) {
   );
 }
 
+const AFT_SOURCES = [
+  () => "/afternoon-report.json?_=" + Date.now(),
+  () => "https://raw.githubusercontent.com/neo9999999999/neo-score/main/public/afternoon-report.json?_=" + Date.now(),
+];
+const AFT_HIST_SOURCES = [
+  () => "/afternoon-history.json?_=" + Date.now(),
+  () => "https://raw.githubusercontent.com/neo9999999999/neo-score/main/public/afternoon-history.json?_=" + Date.now(),
+];
+
+function CandidateRow({ c, T }) {
+  const up = c.changePct >= 0;
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+        <span style={{ flex: "0 0 26px", height: 26, borderRadius: 7, background: c.rank <= 3 ? "#7c3aed" : T.cardAlt, color: c.rank <= 3 ? "#fff" : T.sub, fontSize: 13, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{c.rank}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 14.5, fontWeight: 800, color: T.text }}>{c.name}</span>
+            <span style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{c.code} · {c.market}</span>
+          </div>
+        </div>
+        <div style={{ flex: "0 0 auto", textAlign: "right" }}>
+          <div style={{ fontSize: 14, fontWeight: 800, color: up ? "#16a34a" : "#ef4444" }}>{up ? "+" : ""}{c.changePct}%</div>
+          <div style={{ fontSize: 11, color: T.hint }}>점수 {c.score}</div>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+        <span style={chip(T)}>거래대금 {c.valueText}</span>
+        <span style={chip(T)}>거래량 {c.volSurge}배</span>
+        <span style={chip(T)}>종가강도 {Math.round((c.rangePos || 0) * 100)}%</span>
+        {c.aboveMA && <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>}
+      </div>
+      {c.reason && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 7, lineHeight: 1.55 }}>{c.reason}</div>}
+    </div>
+  );
+}
+const chip = (T) => ({ fontSize: 11, fontWeight: 700, color: T.sub, background: T.cardAlt, padding: "3px 8px", borderRadius: 7 });
+
+function AfternoonAnalysis({ a, T }) {
+  if (!a) return null;
+  const cell = (label, val, c) => (
+    <div style={{ background: T.cardAlt, borderRadius: 10, padding: "10px 12px", flex: "1 1 90px" }}>
+      <div style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 800, color: c || T.text, marginTop: 2 }}>{val}</div>
+    </div>
+  );
+  const pct = v => v == null ? "—" : (v >= 0 ? "+" : "") + v + "%";
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15, marginBottom: 14 }}>
+      <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🧪 익일예측 OOS 백테스트</div>
+      <div style={{ fontSize: 12, color: T.hint, marginBottom: 11 }}>{a.range?.start} ~ {a.range?.end} · {a.tradedDays}일 · 선정 {a.totalPicks}건</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {cell("익일 상승 적중률", a.hitRate == null ? "—" : a.hitRate + "%", a.hitRate >= 50 ? "#16a34a" : "#ef4444")}
+        {cell("후보 평균 익일", pct(a.avgNextRet), a.avgNextRet >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("시장 평균(baseline)", pct(a.baselineAvgNextRet))}
+        {cell("초과수익 edge", pct(a.edge), a.edge >= 0 ? "#16a34a" : "#ef4444")}
+      </div>
+      {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
+    </div>
+  );
+}
+
+function AfternoonView({ T }) {
+  const [rep, setRep] = useState(null);
+  const [hist, setHist] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { (async () => {
+    const [r, h] = await Promise.all([fetchFirst(AFT_SOURCES.map(f => f())), fetchFirst(AFT_HIST_SOURCES.map(f => f()))]);
+    setRep(r); setHist(h); setLoading(false);
+  })(); }, []);
+
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>익일예측 불러오는 중…</div>;
+  if (!rep || !rep.candidates) return (
+    <div style={{ padding: 24, textAlign: "center", color: T.sub, fontSize: 13.5, lineHeight: 1.7 }}>
+      아직 오후 리포트가 없습니다.<br />매일 오후 3시(KST) 자동 생성되며, Afternoon Report 워크플로로도 실행할 수 있습니다.
+      {hist && hist.analysis && <div style={{ marginTop: 16 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
+    </div>
+  );
+  const bias = SENT[rep.marketBias] || SENT.neutral;
+
+  return (
+    <div style={{ paddingBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600 }}>{rep.date} 15:00 KST · 익일 상승 예측</div>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px" }}>미 선물 · 당일 주가 기반 익일 후보</h2>
+        </div>
+        <span style={{ fontSize: 12.5, fontWeight: 800, color: bias.c, background: bias.bg, padding: "5px 11px", borderRadius: 20 }}>{bias.emoji} {bias.label}</span>
+      </div>
+
+      <div style={{ marginTop: 14, background: "linear-gradient(135deg," + bias.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: bias.c, marginBottom: 7 }}>📋 요약</div>
+        <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
+      </div>
+
+      <Section title="🇺🇸 미 선물 · 변동성" T={T}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8 }}>
+          {(rep.futures || []).map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+        </div>
+      </Section>
+      <Section title="금리 · 환율 · 유가 · 국내지수" T={T}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8 }}>
+          {[...(rep.macro || []), ...(rep.indices || [])].map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+        </div>
+      </Section>
+
+      <Section title={"🚀 익일 상승 후보 " + rep.candidates.length + "종목"} sub="거래대금 상위 종목 중 종가강도·거래량·모멘텀 정량 스코어 상위" T={T}>
+        {rep.candidates.length === 0 ? (
+          <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 후보가 없습니다.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {rep.candidates.map((c, i) => <CandidateRow key={i} c={c} T={T} />)}
+          </div>
+        )}
+      </Section>
+
+      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
+
+      <div style={{ marginTop: 16, textAlign: "center", fontSize: 11.5, color: T.hint }}>{rep.note}</div>
+    </div>
+  );
+}
+
 export function MarketReportTab({ theme }) {
   const T = useTheme(theme);
   const [mode, setMode] = useState("today");
@@ -481,8 +604,8 @@ export function MarketReportTab({ theme }) {
 
   const Toggle = () => (
     <div style={{ display: "flex", gap: 6, flex: 1, background: T.cardAlt, borderRadius: 10, padding: 4 }}>
-      {[["today", "오늘 리포트"], ["history", "일자별 히스토리"]].map(([k, label]) => (
-        <button key={k} onClick={() => { setMode(k); setDetail(null); }} style={{ flex: 1, border: "none", borderRadius: 8, padding: "9px 0", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", background: mode === k ? T.card : "transparent", color: mode === k ? T.text : T.hint, boxShadow: mode === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
+      {[["today", "오늘"], ["history", "히스토리"], ["afternoon", "익일예측"]].map(([k, label]) => (
+        <button key={k} onClick={() => { setMode(k); setDetail(null); }} style={{ flex: 1, border: "none", borderRadius: 8, padding: "9px 0", fontSize: 12.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", background: mode === k ? T.card : "transparent", color: mode === k ? T.text : T.hint, boxShadow: mode === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
       ))}
     </div>
   );
@@ -510,6 +633,7 @@ export function MarketReportTab({ theme }) {
           detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <HistoryView key={refreshKey} T={T} onOpen={openDate} />
         )
       )}
+      {mode === "afternoon" && <AfternoonView key={refreshKey} T={T} />}
     </div>
   );
 }

@@ -1,0 +1,108 @@
+// 종목 주가 수집 + 익일 상승 스코어링 공용 로직 (Yahoo Finance)
+import { readFile } from "node:fs/promises";
+import { fetchWithTimeout } from "./report-core.mjs";
+
+// stocks.json(시총 내림차순)에서 상위 N개 유니버스 로드
+export async function loadUniverse(stocksPath, limit = 500) {
+  const data = JSON.parse(await readFile(stocksPath, "utf8"));
+  const list = (data.stocks || []).slice(0, limit).map(s => ({
+    code: s.code, name: s.name, market: s.market,
+    symbol: s.code + (s.market === "KOSDAQ" ? ".KQ" : ".KS"),
+  }));
+  return list;
+}
+
+// Yahoo 차트 → [{date,open,high,low,close,volume}] (오름차순)
+export function parseYahooOHLCV(json) {
+  const res = json?.chart?.result?.[0];
+  if (!res || !Array.isArray(res.timestamp)) return [];
+  const ts = res.timestamp;
+  const q = res.indicators?.quote?.[0] || {};
+  const out = [];
+  for (let i = 0; i < ts.length; i++) {
+    const o = q.open?.[i], h = q.high?.[i], l = q.low?.[i], c = q.close?.[i], v = q.volume?.[i];
+    if (c == null || !isFinite(c)) continue;
+    out.push({
+      date: new Date(ts[i] * 1000).toISOString().slice(0, 10),
+      open: +o, high: +h, low: +l, close: +c, volume: +(v || 0),
+    });
+  }
+  const map = new Map(out.map(r => [r.date, r]));
+  return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export async function fetchYahooOHLCV(symbol, range = "3mo") {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
+  const r = await fetchWithTimeout(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; neo-score/1.0)" } }, 20000);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return parseYahooOHLCV(await r.json());
+}
+
+// 동시성 제한 실행
+export async function pMap(items, worker, concurrency = 8) {
+  const ret = new Array(items.length);
+  let idx = 0;
+  async function run() {
+    while (idx < items.length) {
+      const i = idx++;
+      try { ret[i] = await worker(items[i], i); } catch (e) { ret[i] = null; }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, run));
+  return ret;
+}
+
+const clamp01 = (x, lo, hi) => Math.max(0, Math.min(1, (x - lo) / (hi - lo)));
+
+// 시리즈의 index i(해당 거래일)에 대한 익일상승 스코어. macroBias: 시장 보정(-1~1)
+export function scoreAt(series, i, macroBias = 0) {
+  if (i < 20 || i >= series.length) return null;
+  const bar = series[i], prev = series[i - 1];
+  if (!bar || !prev || !isFinite(bar.close) || !isFinite(prev.close) || bar.close <= 0) return null;
+  const changePct = (bar.close - prev.close) / prev.close * 100;
+  const rng = (bar.high - bar.low);
+  const rangePos = rng > 0 ? (bar.close - bar.low) / rng : 0.5; // 종가 위치 (고가권=1)
+  const gapPct = prev.close > 0 ? (bar.open - prev.close) / prev.close * 100 : 0;
+  let vSum = 0; for (let k = i - 20; k < i; k++) vSum += series[k].volume || 0;
+  const vol20 = vSum / 20;
+  const volSurge = vol20 > 0 ? bar.volume / vol20 : 1;
+  let c5 = 0; for (let k = i - 4; k <= i; k++) c5 += series[k].close; const ma5 = c5 / 5;
+  let c20 = 0; for (let k = i - 19; k <= i; k++) c20 += series[k].close; const ma20 = c20 / 20;
+  const aboveMA = bar.close > ma5 && ma5 > ma20;
+  const value = bar.close * bar.volume; // 거래대금(원)
+
+  // 익일 연속성 스코어 (0~100)
+  let score =
+    34 * rangePos +
+    24 * clamp01(volSurge, 1, 3) +
+    18 * clamp01(changePct, 0, 10) +
+    12 * (aboveMA ? 1 : 0) +
+    8 * clamp01(gapPct, 0, 3);
+  // 과열(상한가 근처) 페널티 — 익일 갭 실패 위험
+  if (changePct >= 20) score -= (changePct - 20) * 1.2;
+  // 시장 보정
+  score += macroBias * 6;
+  score = Math.max(0, Math.round(score * 10) / 10);
+
+  return { changePct: +changePct.toFixed(2), rangePos: +rangePos.toFixed(2), gapPct: +gapPct.toFixed(2), volSurge: +volSurge.toFixed(2), aboveMA, value, ma5, ma20, score };
+}
+
+// 후보 채택 조건
+export function isCandidate(m) {
+  return m && m.changePct > 0.5 && m.rangePos >= 0.55 && m.volSurge >= 1.2;
+}
+
+export function pickReason(m, name) {
+  const parts = [];
+  parts.push(`종가 ${m.rangePos >= 0.8 ? "고가권" : "상단"} 마감(강도 ${Math.round(m.rangePos * 100)}%)`);
+  if (m.volSurge >= 1.5) parts.push(`거래량 평소 ${m.volSurge.toFixed(1)}배`);
+  parts.push(`${m.changePct >= 0 ? "+" : ""}${m.changePct}%`);
+  if (m.aboveMA) parts.push("5·20일선 정배열");
+  return parts.join(" · ") + " — 익일 연속 상승 기대.";
+}
+
+export function fmtEok(won) {
+  const eok = won / 1e8;
+  if (eok >= 10000) return (eok / 10000).toFixed(2) + "조";
+  return Math.round(eok).toLocaleString("ko-KR") + "억";
+}
