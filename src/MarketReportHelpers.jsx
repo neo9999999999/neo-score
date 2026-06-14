@@ -700,6 +700,19 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
   const onBtn = (active) => active
     ? { fontSize: 11.5, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "5px 10px", borderRadius: 8, cursor: "pointer", border: "1px solid " + ACCENT }
     : { fontSize: 11.5, fontWeight: 600, color: T.sub, background: T.cardAlt, padding: "5px 10px", borderRadius: 8, cursor: "pointer", border: "1px solid " + T.border };
+  // 익절 실현수익(익일 고가/종가 기반, 추천 청산)
+  const realized = (p) => simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt);
+  const statOf = (reps) => {
+    const ps = reps.flatMap(r => (r.picks || [])).filter(p => p.nextRet != null);
+    const n = ps.length; if (!n) return { n: 0 };
+    const rs = ps.map(realized);
+    const avg = rs.reduce((s, x) => s + x, 0) / n;
+    const win = rs.filter(x => x > 0).length / n * 100;
+    const profit = perStock ? rs.reduce((s, x) => s + perStock * x / 100, 0) : null;
+    return { n, avg, win, profit };
+  };
+  const yearStats = allYears.map(y => ({ y, ...statOf(reports.filter(r => r.date.slice(0, 4) === y)) }));
+  const fStat = statOf(filtered);
   return (
     <div>
       <div style={{ fontSize: 11, fontWeight: 700, color: T.hint, marginBottom: 5 }}>연도 (켜기/끄기)</div>
@@ -715,6 +728,28 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
         {(years.size > 0 || months.size > 0) && <button onClick={() => { setYears(new Set()); setMonths(new Set()); setLimit(60); }} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>전체 보기</button>}
         <span style={{ fontSize: 11.5, color: T.hint }}>{filtered.length}일 표시</span>
       </div>
+
+      {/* 연도별 요약 (종목수 · 익절 수익률 · 수익금) */}
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "10px 12px", marginBottom: 10 }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: T.text, marginBottom: 7 }}>연도별 요약 (연도를 누르면 필터)</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {yearStats.map(ys => (
+            <div key={ys.y} onClick={() => toggle(years, ys.y, setYears)} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, background: years.has(ys.y) ? "rgba(234,179,8,0.16)" : T.cardAlt, border: "1px solid " + (years.has(ys.y) ? ACCENT : "transparent"), borderRadius: 8, padding: "7px 10px", cursor: "pointer" }}>
+              <span style={{ flex: "0 0 44px", fontWeight: 800, color: T.text }}>{ys.y}</span>
+              <span style={{ flex: "0 0 auto", color: T.sub }}>{ys.n || 0}종목</span>
+              {ys.n ? <span style={{ flex: "0 0 auto", fontWeight: 800, color: ys.avg >= 0 ? UP_C : DN_C }}>익절 {ys.avg >= 0 ? "+" : ""}{ys.avg.toFixed(2)}%</span> : <span style={{ color: T.hint }}>—</span>}
+              {ys.n ? <span style={{ color: T.hint, fontSize: 11 }}>승률 {ys.win.toFixed(0)}%</span> : null}
+              {ys.profit != null && <span style={{ marginLeft: "auto", fontWeight: 700, color: ys.profit >= 0 ? UP_C : DN_C }}>{ys.profit >= 0 ? "+" : ""}{wonFmt(ys.profit)}</span>}
+            </div>
+          ))}
+        </div>
+        {fStat.n > 0 && (
+          <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px dashed " + T.border, fontSize: 12.5, color: T.sub }}>
+            선택 구간: <b style={{ color: T.text }}>{fStat.n}종목</b> · 평균 익절 <b style={{ color: fStat.avg >= 0 ? UP_C : DN_C }}>{fStat.avg >= 0 ? "+" : ""}{fStat.avg.toFixed(2)}%</b> · 승률 {fStat.win.toFixed(0)}%{fStat.profit != null ? <> · 수익금 <b style={{ color: fStat.profit >= 0 ? UP_C : DN_C }}>{fStat.profit >= 0 ? "+" : ""}{wonFmt(fStat.profit)}</b></> : null}
+          </div>
+        )}
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {shown.map(r => <AfternoonDayRow key={r.date} r={r} T={T} perStock={perStock} recOpt={recOpt} />)}
       </div>
