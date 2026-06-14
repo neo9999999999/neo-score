@@ -506,6 +506,48 @@ function AfternoonAnalysis({ a, T }) {
   );
 }
 
+function AfternoonDayRow({ r, T }) {
+  const [open, setOpen] = useState(false);
+  const hasOutcome = r.dayHitRate != null;
+  const picks = r.picks || [];
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, overflow: "hidden" }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: "100%", textAlign: "left", border: "none", background: "transparent", cursor: "pointer", padding: "11px 13px", display: "flex", alignItems: "center", gap: 10, fontFamily: "inherit" }}>
+        <div style={{ flex: "0 0 64px" }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{r.date.slice(5)}</div>
+          <div style={{ fontSize: 10.5, color: T.hint }}>{r.date.slice(0, 4)}</div>
+        </div>
+        <div style={{ flex: 1, fontSize: 12, color: T.sub }}>
+          {picks.slice(0, 3).map(p => p.name).join(" · ")}{picks.length > 3 ? " 외" : ""}
+        </div>
+        <div style={{ flex: "0 0 auto", textAlign: "right" }}>
+          {hasOutcome ? (
+            <>
+              <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 50 ? "#16a34a" : "#ef4444" }}>적중 {r.dayHitRate}%</div>
+              <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? "#16a34a" : "#ef4444" }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>
+            </>
+          ) : <div style={{ fontSize: 11, color: T.hint }}>결과 대기</div>}
+        </div>
+        <span style={{ flex: "0 0 auto", fontSize: 11, color: T.hint }}>{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div style={{ padding: "0 13px 12px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            {picks.map((p, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: T.cardAlt, borderRadius: 8, padding: "7px 10px" }}>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}</span></span>
+                <span style={{ fontSize: 12, color: T.hint }}>당일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>
+                {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? "#16a34a" : "#ef4444" }}>→ 익일 {p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
+                {p.hit != null && <span style={{ fontSize: 12 }}>{p.hit ? "✅" : "❌"}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AfternoonView({ T }) {
   const [rep, setRep] = useState(null);
   const [hist, setHist] = useState(null);
@@ -520,6 +562,15 @@ function AfternoonView({ T }) {
     <div style={{ padding: 24, textAlign: "center", color: T.sub, fontSize: 13.5, lineHeight: 1.7 }}>
       아직 오후 리포트가 없습니다.<br />매일 오후 3시(KST) 자동 생성되며, Afternoon Report 워크플로로도 실행할 수 있습니다.
       {hist && hist.analysis && <div style={{ marginTop: 16 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
+      {hist && hist.reports && hist.reports.length > 0 && (
+        <div style={{ marginTop: 16, textAlign: "left" }}>
+          <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} />)}
+            </div>
+          </Section>
+        </div>
+      )}
     </div>
   );
   const bias = SENT[rep.marketBias] || SENT.neutral;
@@ -561,6 +612,14 @@ function AfternoonView({ T }) {
       </Section>
 
       {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
+
+      {hist && hist.reports && hist.reports.length > 0 && (
+        <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+            {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} />)}
+          </div>
+        </Section>
+      )}
 
       <div style={{ marginTop: 16, textAlign: "center", fontSize: 11.5, color: T.hint }}>{rep.note}</div>
     </div>
