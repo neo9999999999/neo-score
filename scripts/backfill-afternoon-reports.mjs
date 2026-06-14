@@ -243,12 +243,12 @@ async function main() {
     }
     return { n, avg: n ? +(sum / n).toFixed(3) : null, winRate: n ? +((wins / n) * 100).toFixed(1) : null, hit3HighRate: n ? +((h3 / n) * 100).toFixed(1) : null };
   }
-  const TPS = [3, 5, 7], SLS = [-3, -5, -7], FRACS = [0.5, 1];
+  const TPS = [3, 4, 5], SLS = [-8], FRACS = [0.5, 1]; // 익절 3~5%, 손절 −8%
   function selectBestTPSL(trainSet) {
     let best = null;
     for (const sMin of [78, 84]) for (const cMin of [8, 12]) for (const topN of [3, 5])
       for (const tp of TPS) for (const sl of SLS) for (const frac of FRACS) {
-        const ex = { tp, sl, tp1Frac: frac, gapStop: -7, cost: COST };
+        const ex = { tp, sl, tp1Frac: frac, gapStop: null, cost: COST };
         const tr = evalTPSL(sMin, cMin, 25, topN, ex, trainSet);
         if (tr.n < 80 || tr.avg == null) continue;
         if (!best || tr.avg > best.train.avg) best = { params: { scoreMin: sMin, chgMin: cMin, topN, tp, sl, tp1Frac: frac }, train: tr };
@@ -259,11 +259,11 @@ async function main() {
   for (const Y of years) {
     const b = selectBestTPSL(d => d.slice(0, 4) !== Y);
     if (!b) continue;
-    const ex = { tp: b.params.tp, sl: b.params.sl, tp1Frac: b.params.tp1Frac, gapStop: -7, cost: COST };
+    const ex = { tp: b.params.tp, sl: b.params.sl, tp1Frac: b.params.tp1Frac, gapStop: null, cost: COST };
     const test = evalTPSL(b.params.scoreMin, b.params.chgMin, 25, b.params.topN, ex, d => d.slice(0, 4) === Y);
     advByYear.push({ year: Y, chosen: b.params, ...test });
   }
-  analysis.oosAdv = { cost: COST, chgMax: 25, note: "상한가(+27%↑) 제외 · 익절(TP)/손절(SL) 학습 최적화 후 검증 · 왕복비용 차감 · 익절·손절 동시 도달 시 손절 우선(보수적).", byYear: advByYear };
+  analysis.oosAdv = { cost: COST, chgMax: 25, note: "상한가(+27%↑) 제외 · 익절 +3~5% / 손절 −8% · 학습 최적화 후 검증 · 왕복비용 차감 · 익절·손절 동시 도달 시 손절 우선(보수적).", byYear: advByYear };
   console.log("[afternoon-bf] 고도화 TP/SL OOS:");
   for (const y of advByYear) console.log(`  ${y.year}: 순 ${y.avg}% 승률 ${y.winRate}% n=${y.n} [s≥${y.chosen.scoreMin},+${y.chosen.chgMin}~25,top${y.chosen.topN},TP+${y.chosen.tp}/SL${y.chosen.sl}/익절${y.chosen.tp1Frac}]`);
 
