@@ -206,9 +206,36 @@ export function estimate(cal, changePct) {
   return { expRet: src.expRet, p3: src.p3, p5: src.p5, p3High: src.p3High, p5High: src.p5High, hitRate: src.hitRate, n: src.n };
 }
 
-// 익일 대장주(3%↑ 연속 가능성) 후보 필터 — 강한 신호 + 당일 급등(과열 락 제외)
+// 익일 대장주 후보 필터 — 강한 신호 + 당일 급등(상한가 제외: +27% 미만만 매수 가능)
 export function isLeader(m) {
-  return m && m.score >= 78 && m.changePct >= 15 && m.changePct <= 29 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
+  return m && m.score >= 78 && m.changePct >= 15 && m.changePct < 27 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
+}
+
+// TP/SL 청산 시뮬레이터 (현실적). nb={o,h,l,c}=당일 종가 대비 익일 시/고/저/종가(%).
+// 진입=당일 종가. tp=익절선, sl=손절선(음수), tp1Frac=익절선에서 파는 비중(1=전량).
+// 보수적: 익절·손절 동시 도달 시 손절 우선 가정. gapStop=시가 갭하락 청산선.
+export function simExitTPSL(nb, opt = {}) {
+  const { tp = 5, sl = -5, tp1Frac = 1, gapStop = null, cost = 0 } = opt;
+  const { o, h, l, c } = nb;
+  let gross;
+  if (o != null && gapStop != null && o <= gapStop) gross = o;
+  else if (o != null && o <= sl) gross = o;                 // 갭하락이 손절 이하 → 시가 청산
+  else {
+    const hitTP = h != null && h >= tp;
+    const hitSL = l != null && l <= sl;
+    if (tp1Frac >= 1) {
+      if (hitSL && hitTP) gross = sl;                       // 둘 다 → 보수적 손절 우선
+      else if (hitTP) gross = tp;
+      else if (hitSL) gross = sl;
+      else gross = c;
+    } else {
+      if (hitSL && hitTP) gross = tp1Frac * tp + (1 - tp1Frac) * sl; // 익절 후 잔량 손절
+      else if (hitTP) gross = tp1Frac * tp + (1 - tp1Frac) * c;      // 익절 후 잔량 종가
+      else if (hitSL) gross = sl;                                    // 전량 손절
+      else gross = c;
+    }
+  }
+  return +(gross - cost).toFixed(3);
 }
 
 // 수급(외국인/기관 순매수) 맵 — sector-api 당일 스캔에서 code → {supply,frgn,inst}
