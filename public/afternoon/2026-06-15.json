@@ -1,10 +1,10 @@
 {
   "date": "2026-06-15",
-  "generatedAt": "2026-06-15T00:48:54+09:00",
+  "generatedAt": "2026-06-15T01:36:26+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+0.67%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 3개를 대장주 후보로 추렸습니다 (1순위 후성, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 상승(+0.67%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 후성, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
@@ -35,14 +35,14 @@
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "51,227",
-      "change": "+352",
-      "changePct": "+0.69%",
+      "value": "51,605",
+      "change": "+730",
+      "changePct": "+1.43%",
       "dir": "up",
       "_raw": {
-        "close": 51227,
+        "close": 51605,
         "prevClose": 50875,
-        "chgPct": 0.69
+        "chgPct": 1.43
       }
     },
     {
@@ -158,80 +158,53 @@
       "breakout": true,
       "value": 339273275950,
       "valueText": "3,393억",
-      "expRet": -0.44,
-      "p3": 24.5,
-      "p5": 17.9,
-      "p3High": 60,
-      "p5High": 48.6,
-      "hitRate": 42,
+      "sector": null,
+      "expRet": -0.46,
+      "p3": 23.9,
+      "p5": 18,
+      "p3High": 58.3,
+      "p5High": 47.2,
+      "hitRate": 41.4,
       "supplyLabel": "외+기 동반매수",
       "dongban": true,
       "target3": true,
       "reason": "종가 상단 마감(강도 70%) · 거래량 평소 6.7배 · +20.55% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열 · 외+기 동반매수"
-    },
-    {
-      "rank": 2,
-      "name": "케이씨텍",
-      "code": "281820",
-      "market": "KOSPI",
-      "price": 87100,
-      "score": 84.4,
-      "changePct": 14.01,
-      "rangePos": 0.8,
-      "volSurge": 2.34,
-      "gapPct": 8.25,
-      "aboveMA": true,
-      "nearHighPct": 5.58,
-      "breakout": true,
-      "value": 32973621200,
-      "valueText": "330억",
-      "expRet": 0.19,
-      "p3": 22.6,
-      "p5": 15.6,
-      "p3High": 55,
-      "p5High": 38,
-      "hitRate": 44.1,
-      "supplyLabel": "기관 순매수",
-      "dongban": false,
-      "target3": true,
-      "reason": "종가 고가권 마감(강도 80%) · 거래량 평소 2.3배 · +14.01% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열"
-    },
-    {
-      "rank": 3,
-      "name": "F&F",
-      "code": "383220",
-      "market": "KOSPI",
-      "price": 85900,
-      "score": 55.3,
-      "changePct": 3.25,
-      "rangePos": 0.75,
-      "volSurge": 1.76,
-      "gapPct": -0.96,
-      "aboveMA": true,
-      "nearHighPct": -3.48,
-      "breakout": false,
-      "value": 15660171300,
-      "valueText": "157억",
-      "expRet": -0.07,
-      "p3": 18.1,
-      "p5": 10.8,
-      "p3High": 41.4,
-      "p5High": 23.6,
-      "hitRate": 42.6,
-      "supplyLabel": "수급 미확인",
-      "dongban": false,
-      "target3": false,
-      "reason": "종가 상단 마감(강도 75%) · 거래량 평소 1.8배 · +3.25% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 근접 · 정배열"
     }
   ],
-  "calibration": {
-    "n": 9909,
-    "expRet": -0.16,
-    "p3": 21.8,
-    "p5": 14.9,
-    "p3High": 53.4,
-    "p5High": 38.3,
-    "hitRate": 42.8
+  "marketContext": {
+    "date": "2026-06-14",
+    "sentiment": "neutral",
+    "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+    "summary": "유가·달러·금리 등 핵심 거시지표를 한 흐름으로 연결해 간밤 나스닥 반응과 오늘 국내증시 방향성을 예측하는 리포트입니다. 첫 자동 생성 전까지 표시되는 예시 데이터이며, 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 갱신됩니다.",
+    "sectors": [
+      {
+        "name": "반도체",
+        "bias": "up"
+      }
+    ],
+    "issues": [
+      {
+        "category": "지정학",
+        "title": "전쟁·국제 정세 (예시)"
+      },
+      {
+        "category": "무역",
+        "title": "무역·관세 이슈 (예시)"
+      },
+      {
+        "category": "거시",
+        "title": "예시 데이터"
+      }
+    ]
   },
-  "note": "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어. 예상 익일등락·5%↑ 확률은 과거 OOS 통계 기반 추정으로 보장값이 아닙니다. 투자 책임은 본인에게 있습니다."
+  "calibration": {
+    "n": 7294,
+    "expRet": -0.18,
+    "p3": 22.2,
+    "p5": 15.2,
+    "p3High": 55.8,
+    "p5High": 40.7,
+    "hitRate": 43.5
+  },
+  "note": "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어 + 오늘 마켓리포트(섹터·이슈) 연동. 예상치는 과거 OOS 통계 기반 추정으로 보장값 아님. 투자 책임은 본인에게."
 }
