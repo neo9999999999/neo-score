@@ -454,10 +454,11 @@ const AFT_HIST_SOURCES = [
 ];
 
 const wonFmt = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
-function CandidateRow({ c, T, alloc }) {
+function CandidateRow({ c, T, alloc, stratAvg }) {
   const up = c.changePct >= 0;
   const qty = (alloc && c.price) ? Math.floor(alloc / c.price) : null;
   const invested = (qty && c.price) ? qty * c.price : null;
+  const expProfit = (invested && stratAvg != null) ? invested * stratAvg / 100 : null;
   return (
     <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 12px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -491,6 +492,7 @@ function CandidateRow({ c, T, alloc }) {
           <span style={{ color: T.sub }}>현재가 <b style={{ color: T.text }}>{c.price.toLocaleString("ko-KR")}원</b></span>
           <span style={{ color: T.sub }}>매수 <b style={{ color: "#7c3aed" }}>{qty.toLocaleString("ko-KR")}주</b></span>
           <span style={{ color: T.sub }}>투입 <b style={{ color: T.text }}>{wonFmt(invested)}</b></span>
+          {expProfit != null && <span style={{ color: T.sub }}>기대수익 <b style={{ color: expProfit >= 0 ? "#16a34a" : "#ef4444" }}>{expProfit >= 0 ? "+" : ""}{wonFmt(expProfit)}</b></span>}
         </div>
       )}
       {c.reason && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 7, lineHeight: 1.55 }}>{c.reason}</div>}
@@ -649,17 +651,18 @@ function AfternoonView({ T }) {
 
       {(() => {
         const cands = rep.candidates || [];
-        const alloc = cands.length && capNum ? capNum / cands.length : 0;
-        const deployed = cands.reduce((s, c) => s + (c.price && alloc ? Math.floor(alloc / c.price) * c.price : 0), 0);
+        const perStock = capNum; // 종목당 투자금
+        const buyable = cands.filter(c => c.price && perStock >= c.price);
+        const deployed = cands.reduce((s, c) => s + (c.price && perStock ? Math.floor(perStock / c.price) * c.price : 0), 0);
         const a = hist && hist.analysis;
         const stratRow = a && a.strategies ? a.strategies.find(s => s.name === a.recommendedStrategy) : null;
         const stratAvg = stratRow ? stratRow.avg : null;
         const expGain = (stratAvg != null && deployed) ? deployed * stratAvg / 100 : null;
-        const presets = [1000000, 3000000, 5000000, 10000000];
+        const presets = [100000, 300000, 500000, 1000000];
         return (
-          <Section title="💰 투자금 배분" sub="총 투자금을 입력하면 후보에 균등 배분해 매수 수량을 계산합니다" T={T}>
+          <Section title="💰 종목당 투자금" sub="종목당 투자금을 입력하면 각 후보 매수 수량·예상 수익금을 계산합니다" T={T}>
             <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
-              <input value={capital} onChange={e => setCapital(e.target.value)} inputMode="numeric" placeholder="총 투자금 (원)"
+              <input value={capital} onChange={e => setCapital(e.target.value)} inputMode="numeric" placeholder="종목당 투자금 (원)"
                 style={{ width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, fontWeight: 700, color: T.text, background: T.cardAlt, border: "1px solid " + T.border, borderRadius: 10, fontFamily: "inherit", outline: "none" }} />
               <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
                 {presets.map(p => (
@@ -669,8 +672,10 @@ function AfternoonView({ T }) {
               </div>
               {capNum > 0 && cands.length > 0 && (
                 <div style={{ marginTop: 11, fontSize: 13, lineHeight: 1.7, color: T.sub }}>
-                  종목당 <b style={{ color: T.text }}>{wonFmt(alloc)}</b> 균등배분 · 실투입 <b style={{ color: T.text }}>{wonFmt(deployed)}</b>
-                  {expGain != null && <><br />전략 평균({stratAvg}%) 기준 기대 익일 손익 <b style={{ color: expGain >= 0 ? "#16a34a" : "#ef4444" }}>{expGain >= 0 ? "+" : ""}{wonFmt(expGain)}</b></>}
+                  종목당 <b style={{ color: T.text }}>{wonFmt(perStock)}</b> × {buyable.length}종목 · 총 투입 <b style={{ color: T.text }}>{wonFmt(deployed)}</b>
+                  {expGain != null
+                    ? <><br />추천 전략 평균({stratAvg}%) 기준 기대 익일 수익금 <b style={{ color: expGain >= 0 ? "#16a34a" : "#ef4444" }}>{expGain >= 0 ? "+" : ""}{wonFmt(expGain)}</b></>
+                    : <><br /><span style={{ color: T.hint }}>전략 평균 데이터 로딩 중…</span></>}
                 </div>
               )}
             </div>
@@ -694,7 +699,7 @@ function AfternoonView({ T }) {
           <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 후보가 없습니다.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {rep.candidates.map((c, i) => <CandidateRow key={i} c={c} T={T} alloc={capNum && rep.candidates.length ? capNum / rep.candidates.length : 0} />)}
+            {rep.candidates.map((c, i) => <CandidateRow key={i} c={c} T={T} alloc={capNum} stratAvg={(hist && hist.analysis && hist.analysis.strategies && hist.analysis.recommendedStrategy) ? (hist.analysis.strategies.find(s => s.name === hist.analysis.recommendedStrategy) || {}).avg : null} />)}
           </div>
         )}
       </Section>
