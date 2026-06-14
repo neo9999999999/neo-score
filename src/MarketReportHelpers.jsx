@@ -488,6 +488,7 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
         {c.nearHighPct != null && <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: c.breakout ? UP_C : "#0d9488", padding: "3px 8px", borderRadius: 7 }}>{c.breakout ? "🚀 신고가 돌파" : "신고가 " + c.nearHighPct + "%"}</span>}
         <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>
+        {c.sector && <span style={{ fontSize: 11, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "3px 8px", borderRadius: 7 }}>📑 {c.sector}</span>}
         {c.supplyLabel && <span style={c.dongban ? { fontSize: 11, fontWeight: 800, color: "#fff", background: "#16a34a", padding: "3px 8px", borderRadius: 7 } : chip(T)}>{c.dongban ? "🟢 " : ""}{c.supplyLabel}</span>}
         <span style={chip(T)}>당일 {up ? "+" : ""}{c.changePct}%</span>
         <span style={chip(T)}>거래대금 {c.valueText}</span>
@@ -656,6 +657,13 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
       </button>
       {open && (
         <div style={{ padding: "0 11px 12px" }}>
+          {r.marketContext && (
+            <div style={{ fontSize: 11.5, color: T.hint, background: T.cardAlt, borderRadius: 8, padding: "7px 10px", marginBottom: 6, lineHeight: 1.55 }}>
+              🌏 마켓리포트: {r.marketContext.sentiment === "bullish" ? "강세" : r.marketContext.sentiment === "bearish" ? "약세" : "중립"}
+              {r.marketContext.topSectors && r.marketContext.topSectors.length ? " · 상승섹터 " + r.marketContext.topSectors.join("·") : ""}
+              {r.marketContext.issues && r.marketContext.issues.length ? " · 이슈 " + r.marketContext.issues.join("/") : ""}
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {picks.map((p, i) => {
               const done = (p.hit3High != null ? p.hit3High : (p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3));
@@ -664,6 +672,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
                   <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                     <span style={{ flex: "0 0 20px", fontSize: 11, fontWeight: 800, color: T.hint }}>{i + 1}</span>
                     <span style={{ flex: 1, fontSize: 13.5, fontWeight: 800, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}{p.market ? " · " + p.market : ""}</span></span>
+                    {p.sector && <span style={{ fontSize: 10.5, fontWeight: 700, color: ON_ACCENT, background: ACCENT, padding: "1px 6px", borderRadius: 5 }}>{p.sector}</span>}
                     {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 13 }} title="익일 고가 +3% 도달">{done ? "✅" : "❌"}</span>}
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5, marginLeft: 27, fontSize: 12 }}>
@@ -1018,6 +1027,25 @@ function AfternoonView({ T }) {
         <div style={{ fontSize: 13, fontWeight: 800, color: bias.c, marginBottom: 7 }}>📋 요약</div>
         <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
       </div>
+
+      {rep.marketContext && (() => {
+        const mc = rep.marketContext; const ms = SENT[mc.sentiment] || SENT.neutral;
+        return (
+          <div style={{ marginTop: 12, background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 13, fontWeight: 900, color: T.text }}>🌏 오늘 마켓리포트 연동</span>
+              <span style={{ fontSize: 11.5, fontWeight: 800, color: ms.c, background: ms.bg, padding: "3px 9px", borderRadius: 12 }}>{ms.emoji} {ms.label}</span>
+            </div>
+            {mc.sectors && mc.sectors.length > 0 && (
+              <div style={{ fontSize: 12.5, color: T.sub, marginBottom: 5 }}>상승 예상 섹터: {mc.sectors.slice(0, 5).map(s => s.name).join(" · ")}</div>
+            )}
+            {mc.issues && mc.issues.length > 0 && (
+              <div style={{ fontSize: 12, color: T.hint, lineHeight: 1.6 }}>주요 이슈: {mc.issues.map(i => i.title).join(" / ")}</div>
+            )}
+            <div style={{ fontSize: 11, color: T.hint, marginTop: 6 }}>※ 종목은 기술적 기준으로 선정되며, 이 리포트 맥락은 참고·연동 정보입니다.</div>
+          </div>
+        );
+      })()}
 
       {(() => {
         const opt = oosRecOpt || { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -7 };
