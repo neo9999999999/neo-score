@@ -654,20 +654,69 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
         <span style={{ flex: "0 0 auto", fontSize: 11, color: T.hint }}>{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div style={{ padding: "0 13px 12px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-            {picks.map((p, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: T.cardAlt, borderRadius: 8, padding: "7px 10px" }}>
-                <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}</span></span>
-                <span style={{ fontSize: 12, color: T.hint }}>당일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>
-                {p.nextHigh != null && <span style={{ fontSize: 12, fontWeight: 700, color: ACCENT }} title="익일 고가 도달폭">고{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</span>}
-                {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? UP_C : DN_C }} title="익일 종가 등락">종{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
-                {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 12 }} title="익일 고가 +3% 도달">{(p.hit3High != null ? p.hit3High : (p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3)) ? "✅" : "❌"}</span>}
-              </div>
-            ))}
+        <div style={{ padding: "0 11px 12px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {picks.map((p, i) => {
+              const done = (p.hit3High != null ? p.hit3High : (p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3));
+              return (
+                <div key={i} style={{ background: T.cardAlt, borderRadius: 9, padding: "9px 11px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ flex: "0 0 20px", fontSize: 11, fontWeight: 800, color: T.hint }}>{i + 1}</span>
+                    <span style={{ flex: 1, fontSize: 13.5, fontWeight: 800, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}{p.market ? " · " + p.market : ""}</span></span>
+                    {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 13 }} title="익일 고가 +3% 도달">{done ? "✅" : "❌"}</span>}
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5, marginLeft: 27, fontSize: 12 }}>
+                    {p.score != null && <span style={{ color: T.hint }}>점수 <b style={{ color: T.text }}>{p.score}</b></span>}
+                    <span style={{ color: T.hint }}>당일 <b style={{ color: p.changePct >= 0 ? UP_C : DN_C }}>{p.changePct >= 0 ? "+" : ""}{p.changePct}%</b></span>
+                    {p.nextHigh != null && <span style={{ color: T.hint }}>익일고가 <b style={{ color: ACCENT }}>{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</b></span>}
+                    {p.nextRet != null && <span style={{ color: T.hint }}>익일종가 <b style={{ color: p.nextRet >= 0 ? UP_C : DN_C }}>{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</b></span>}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function HistoryBrowser({ reports, T, perStock, recOpt }) {
+  const allYears = useMemo(() => [...new Set(reports.map(r => r.date.slice(0, 4)))].sort((a, b) => b.localeCompare(a)), [reports]);
+  const [years, setYears] = useState(() => new Set(allYears.slice(0, 1)));
+  const [months, setMonths] = useState(() => new Set());
+  const [sort, setSort] = useState("desc");
+  const [limit, setLimit] = useState(60);
+  const toggle = (set, v, setter) => { const n = new Set(set); n.has(v) ? n.delete(v) : n.add(v); setter(n); setLimit(60); };
+  const filtered = reports.filter(r => {
+    const y = r.date.slice(0, 4), m = r.date.slice(5, 7);
+    if (years.size && !years.has(y)) return false;
+    if (months.size && !months.has(m)) return false;
+    return true;
+  }).sort((a, b) => sort === "desc" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+  const shown = filtered.slice(0, limit);
+  const onBtn = (active) => active
+    ? { fontSize: 11.5, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "5px 10px", borderRadius: 8, cursor: "pointer", border: "1px solid " + ACCENT }
+    : { fontSize: 11.5, fontWeight: 600, color: T.sub, background: T.cardAlt, padding: "5px 10px", borderRadius: 8, cursor: "pointer", border: "1px solid " + T.border };
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.hint, marginBottom: 5 }}>연도 (켜기/끄기)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 9 }}>
+        {allYears.map(y => <button key={y} onClick={() => toggle(years, y, setYears)} style={onBtn(years.has(y))}>{y}</button>)}
+      </div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.hint, marginBottom: 5 }}>월 (켜기/끄기)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 9 }}>
+        {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map(m => <button key={m} onClick={() => toggle(months, m, setMonths)} style={onBtn(months.has(m))}>{(+m)}월</button>)}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+        <button onClick={() => setSort(s => s === "desc" ? "asc" : "desc")} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>{sort === "desc" ? "최신순 ↓" : "오래된순 ↑"}</button>
+        {(years.size > 0 || months.size > 0) && <button onClick={() => { setYears(new Set()); setMonths(new Set()); setLimit(60); }} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>전체 보기</button>}
+        <span style={{ fontSize: 11.5, color: T.hint }}>{filtered.length}일 표시</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {shown.map(r => <AfternoonDayRow key={r.date} r={r} T={T} perStock={perStock} recOpt={recOpt} />)}
+      </div>
+      {filtered.length > shown.length && <button onClick={() => setLimit(l => l + 60)} style={{ ...navBtn(T), marginTop: 10, width: "100%" }}>더보기 (+{filtered.length - shown.length}일)</button>}
     </div>
   );
 }
@@ -906,8 +955,8 @@ function AfternoonView({ T }) {
       {hist && hist.analysis && <div style={{ marginTop: 16 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
       {hist && hist.reports && hist.reports.length > 0 && (
         <div style={{ marginTop: 16, textAlign: "left" }}>
-          <Section title="📅 연도별 예측 · 결과" sub="연도 → 월 → 일 펼쳐보기" T={T}>
-            <YearHistory reports={hist.reports} T={T} perStock={0} recOpt={null} />
+          <Section title="📅 연도별 예측 · 결과" sub="연도/월 버튼 필터 · 일자별 종목 상세" T={T}>
+            <HistoryBrowser reports={hist.reports} T={T} perStock={0} recOpt={null} />
           </Section>
         </div>
       )}
@@ -1011,8 +1060,8 @@ function AfternoonView({ T }) {
       {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosSplitCard oos={hist.analysis.oos} oosReal={hist.analysis.oosReal} oosAdv={hist.analysis.oosAdv} T={T} /><SwingCard swing={hist.analysis.swing} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
-        <Section title="📅 연도별 예측 · 결과" sub="연도(1차) → 월(2차) → 일(3차) 순으로 펼쳐보기 · 최신/오래된순" T={T}>
-          <YearHistory reports={hist.reports} T={T} perStock={capNum} recOpt={oosRecOpt} />
+        <Section title="📅 연도별 예측 · 결과" sub="연도/월 버튼으로 켜고 끄기 · 일자를 누르면 당일 종목 상세 리스트" T={T}>
+          <HistoryBrowser reports={hist.reports} T={T} perStock={capNum} recOpt={oosRecOpt} />
         </Section>
       )}
 
