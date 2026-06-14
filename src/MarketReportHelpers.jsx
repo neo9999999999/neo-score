@@ -728,6 +728,36 @@ function OosInvestment({ hist, perStock, T }) {
   );
 }
 
+function OosSplitCard({ oos, T }) {
+  if (!oos || !oos.test) return null;
+  const c = oos.chosen || {};
+  const seg = (title, d, base) => (
+    <div style={{ flex: "1 1 150px", background: T.cardAlt, borderRadius: 10, padding: "11px 12px" }}>
+      <div style={{ fontSize: 12, fontWeight: 800, color: T.text, marginBottom: 5 }}>{title}</div>
+      <div style={{ fontSize: 12.5, color: T.sub, lineHeight: 1.7 }}>
+        평균 익일 <b style={{ color: (d.avg || 0) >= 0 ? UP_C : DN_C }}>{(d.avg || 0) >= 0 ? "+" : ""}{d.avg}%</b><br />
+        고가 3%도달 <b style={{ color: T.text }}>{d.hit3HighRate}%</b> · {d.n}건
+        {base != null && <><br />시장평균 {base >= 0 ? "+" : ""}{base}% · edge <b style={{ color: (d.edge || 0) >= 0 ? UP_C : DN_C }}>{(d.edge || 0) >= 0 ? "+" : ""}{d.edge}%</b></>}
+      </div>
+    </div>
+  );
+  return (
+    <div style={{ marginTop: 14, background: T.card, border: "2px solid " + ACCENT, borderRadius: 14, padding: 15 }}>
+      <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🔬 진짜 OOS (학습/검증 분리)</div>
+      <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11, lineHeight: 1.5 }}>
+        학습({oos.trainRange?.start}~{oos.split})에서 최적 파라미터를 고르고, <b>한 번도 안 본 검증({oos.split}~{oos.testRange?.end})</b>에서만 측정. 선택: 점수≥{c.scoreMin} · 당일 +{c.chgMin}~29% · top{c.topN} · {c.exit}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {seg("학습구간 (파라미터 선택)", oos.train)}
+        {seg("✅ 검증구간 (정직한 성과)", oos.test, oos.test.baselineAvgNextRet)}
+      </div>
+      <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>
+        검증 평균이 학습보다 많이 낮으면 그만큼 과최적화였다는 뜻입니다. 생존편향·체결비용은 별도(실제는 더 보수적).
+      </div>
+    </div>
+  );
+}
+
 function StrategyTable({ a, T }) {
   if (!a || !a.strategies || !a.strategies.length) return null;
   return (
@@ -878,7 +908,7 @@ function AfternoonView({ T }) {
         )}
       </Section>
 
-      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
+      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosSplitCard oos={hist.analysis.oos} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
         <Section title="📅 연도별 예측 · 결과" sub="연도(1차) → 월(2차) → 일(3차) 순으로 펼쳐보기 · 최신/오래된순" T={T}>

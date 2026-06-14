@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -40,6 +40,7 @@ async function main() {
 
   // 스트리밍: 종목별로 받아 후보만 추출하고 시리즈는 버림(메모리 절약)
   const byDate = new Map();
+  const poolByDate = new Map(); // OOS 그리드 탐색용 넓은 후보 풀
   let baseSum = 0, baseN = 0, fetched = 0;
   await pMap(universe, async (u) => {
     let s;
@@ -53,19 +54,25 @@ async function main() {
       if (!next || !isFinite(next.close) || s[i].close <= 0) continue;
       const base = s[i].close;
       const nextRet = (next.close - base) / base * 100;
+      const nh = (next.high - base) / base * 100, no = (next.open - base) / base * 100, nl = (next.low - base) / base * 100;
       baseSum += nextRet; baseN++;
       const m = scoreAt(s, i, 0);
-      if (!m || !isLeader(m)) continue;
+      if (!m) continue;
+      // 넓은 풀(그리드 탐색용)
+      if (m.score >= 70 && m.changePct >= 8 && m.changePct <= 29 && m.rangePos >= 0.5 && m.volSurge >= 1.2) {
+        if (!poolByDate.has(d)) poolByDate.set(d, []);
+        poolByDate.get(d).push({ score: m.score, chg: m.changePct, rangePos: m.rangePos, vol: m.volSurge, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2) });
+      }
+      if (!isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
       byDate.get(d).push({
         code: u.code, name: u.name, score: m.score, changePct: m.changePct,
-        nextRet: +nextRet.toFixed(2), nextHigh: +((next.high - base) / base * 100).toFixed(2),
-        nextOpen: +((next.open - base) / base * 100).toFixed(2), nextLow: +((next.low - base) / base * 100).toFixed(2),
+        nextRet: +nextRet.toFixed(2), nextHigh: +nh.toFixed(2), nextOpen: +no.toFixed(2), nextLow: +nl.toFixed(2),
       });
     }
     return null;
   }, 6);
-  console.log(`[afternoon-bf] 수집 완료: ${fetched}/${universe.length}종목, 후보일수 ${byDate.size}`);
+  console.log(`[afternoon-bf] 수집 완료: ${fetched}/${universe.length}종목, 후보일수 ${byDate.size}, 풀일수 ${poolByDate.size}`);
 
   // 일자별 당일 급등폭 상위 K 선정 + 평가 (익일 3%↑ 타겟: 고가 도달 / 종가 마감)
   const dates = [...byDate.keys()].sort();
@@ -135,6 +142,56 @@ async function main() {
   console.log("[afternoon-bf] 전략 비교:");
   for (const s of grid.strategies) console.log(`  ${s.name}: 평균 ${s.avg}% 승률 ${s.winRate}% 손실 ${s.lossRate}% 최저 ${s.worst}%`);
   console.log("  추천:", grid.recommended);
+
+  // ===== 진짜 OOS: train(학습)에서 파라미터 선택 → test(검증, 미사용)에서만 평가 =====
+  const SPLIT = process.env.OOS_SPLIT || "2023-01-01";
+  const EXITS = [
+    { name: "무손절(원안)", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: null } },
+    { name: "전량 트레일 + 갭−7%", opt: { tp1Lvl: 5, tp1Frac: 0, gapStop: -7 } },
+    { name: "원안 + 갭−7%", opt: { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -7 } },
+  ];
+  const SCOREMINS = [78, 84], CHGMINS = [10, 15, 20], TOPNS = [3, 5];
+  const poolDates = [...poolByDate.keys()].sort();
+  // 한 콤보를 한 구간(train/test)에서 평가
+  function evalCombo(sMin, cMin, topN, exitOpt, lo, hi) {
+    let rets = [], h3 = 0, h5 = 0, n = 0;
+    for (const d of poolDates) {
+      if (d < lo || d >= hi) continue;
+      const sel = poolByDate.get(d).filter(p => p.score >= sMin && p.chg >= cMin && p.chg <= 29 && p.rangePos >= 0.55 && p.vol >= 1.3)
+        .sort((a, b) => b.chg - a.chg).slice(0, topN);
+      for (const p of sel) { const r = simExit(p, exitOpt); rets.push(r); if (p.h >= 3) h3++; if (p.h >= 5) h5++; n++; }
+    }
+    const avg = n ? rets.reduce((a, b) => a + b, 0) / n : null;
+    return { n, avg: avg == null ? null : +avg.toFixed(3), hit3HighRate: n ? +((h3 / n) * 100).toFixed(1) : null, hit5HighRate: n ? +((h5 / n) * 100).toFixed(1) : null };
+  }
+  // 풀 전체 익일 평균(검증구간 베이스라인)
+  function poolBaseline(lo, hi) {
+    let s = 0, n = 0;
+    for (const d of poolDates) { if (d < lo || d >= hi) continue; for (const p of poolByDate.get(d)) { s += p.c; n++; } }
+    return n ? +(s / n).toFixed(3) : null;
+  }
+  // 학습구간에서 최고 평균(표본 충분) 콤보 선택
+  let best = null;
+  for (const sMin of SCOREMINS) for (const cMin of CHGMINS) for (const topN of TOPNS) for (const ex of EXITS) {
+    const tr = evalCombo(sMin, cMin, topN, ex.opt, START, SPLIT);
+    if (tr.n < 100 || tr.avg == null) continue;
+    if (!best || tr.avg > best.train.avg) best = { params: { scoreMin: sMin, chgMin: cMin, topN, exit: ex.name, exitOpt: ex.opt }, train: tr };
+  }
+  if (best) {
+    const test = evalCombo(best.params.scoreMin, best.params.chgMin, best.params.topN, best.params.exitOpt, SPLIT, "9999");
+    const testBase = poolBaseline(SPLIT, "9999");
+    analysis.oos = {
+      split: SPLIT,
+      trainRange: { start: START, end: SPLIT }, testRange: { start: SPLIT, end: analysis.range.end },
+      chosen: { scoreMin: best.params.scoreMin, chgMin: best.params.chgMin, topN: best.params.topN, exit: best.params.exit },
+      train: best.train,
+      test: { ...test, baselineAvgNextRet: testBase, edge: (test.avg != null && testBase != null) ? +(test.avg - testBase).toFixed(3) : null },
+    };
+    console.log(`[afternoon-bf] OOS 선택(학습 ${START}~${SPLIT}): score≥${best.params.scoreMin}, +${best.params.chgMin}~29%, top${best.params.topN}, ${best.params.exit}`);
+    console.log(`  학습 평균 ${best.train.avg}% (n=${best.train.n}) → 검증(${SPLIT}~) 평균 ${test.avg}% (n=${test.n}), 고가3%도달 ${test.hit3HighRate}%, baseline ${testBase}%`);
+  } else {
+    console.warn("[afternoon-bf] OOS: 학습 표본 부족");
+  }
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };
