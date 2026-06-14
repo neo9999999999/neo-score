@@ -1,43 +1,47 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T17:05:21+09:00",
-    "count": 98,
+    "updatedAt": "2026-06-14T17:11:46+09:00",
+    "count": 85,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
     "range": {
       "start": "2026-01-01",
-      "end": "2026-06-11"
+      "end": "2026-06-09"
     },
     "universe": 500,
     "topPicks": 5,
-    "tradedDays": 98,
-    "totalPicks": 323,
-    "hit3": 98,
-    "hit3Rate": 30.3,
-    "hit5Rate": 20.4,
-    "upRate": 48.9,
-    "avgNextRet": 0.548,
+    "tradedDays": 84,
+    "totalPicks": 194,
+    "hit3": 63,
+    "hit3Rate": 32.5,
+    "hit5Rate": 22.7,
+    "upRate": 48.5,
+    "avgNextRet": 0.646,
     "baselineAvgNextRet": 0.22,
-    "edge": 0.328,
+    "edge": 0.426,
     "note": "당일 급등폭 상위 선정 종목의 '익일 종가' 등락률. hit3Rate=익일 3%↑ 비율(주 지표). baseline=유니버스 전체 평균 익일 등락. edge=후보 평균−baseline."
   },
   "reports": [
     {
-      "date": "2026-06-11",
+      "date": "2026-06-14",
+      "marketBias": "bullish",
       "picks": [
         {
-          "code": "001800",
-          "name": "오리온홀딩스",
-          "score": 78,
-          "changePct": 10.47,
-          "nextRet": -7.33,
-          "hit": false,
-          "hit3": false
+          "name": "후성",
+          "code": "093370",
+          "score": 88.2,
+          "changePct": 20.55
+        },
+        {
+          "name": "에스원",
+          "code": "012750",
+          "score": 86.8,
+          "changePct": 15.65
         }
       ],
-      "dayHitRate": 0,
-      "avgNextRet": -7.33
+      "nq": 0.67,
+      "es": 0.53
     },
     {
       "date": "2026-06-09",
@@ -59,60 +63,10 @@
           "nextRet": -6.42,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "462870",
-          "name": "시프트업",
-          "score": 80,
-          "changePct": 10.26,
-          "nextRet": -6.31,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 33.3,
-      "avgNextRet": 2.46
-    },
-    {
-      "date": "2026-06-08",
-      "picks": [
-        {
-          "code": "085620",
-          "name": "미래에셋생명",
-          "score": 87.7,
-          "changePct": 12.96,
-          "nextRet": 15,
-          "hit": true,
-          "hit3": true
-        }
-      ],
-      "dayHitRate": 100,
-      "avgNextRet": 15
-    },
-    {
-      "date": "2026-06-04",
-      "picks": [
-        {
-          "code": "069960",
-          "name": "현대백화점",
-          "score": 86.2,
-          "changePct": 14.78,
-          "nextRet": 4.79,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "085620",
-          "name": "미래에셋생명",
-          "score": 95.6,
-          "changePct": 12.85,
-          "nextRet": -4.22,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 50,
-      "avgNextRet": 0.29
+      "avgNextRet": 6.85
     },
     {
       "date": "2026-06-02",
@@ -125,37 +79,10 @@
           "nextRet": -5.28,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "036570",
-          "name": "NC",
-          "score": 84.7,
-          "changePct": 14.38,
-          "nextRet": -14.35,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "085620",
-          "name": "미래에셋생명",
-          "score": 81,
-          "changePct": 14.29,
-          "nextRet": 12.85,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "092200",
-          "name": "디아이씨",
-          "score": 78.5,
-          "changePct": 10.47,
-          "nextRet": 6.88,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 0.03
+      "dayHitRate": 0,
+      "avgNextRet": -5.28
     },
     {
       "date": "2026-06-01",
@@ -177,19 +104,10 @@
           "nextRet": -10.57,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "017670",
-          "name": "SK텔레콤",
-          "score": 80.7,
-          "changePct": 11.53,
-          "nextRet": 11.59,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 33.3,
-      "avgNextRet": -5.32
+      "dayHitRate": 0,
+      "avgNextRet": -13.78
     },
     {
       "date": "2026-05-29",
@@ -279,35 +197,10 @@
           "nextRet": -11.6,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "064400",
-          "name": "LG씨엔에스",
-          "score": 78.2,
-          "changePct": 14.11,
-          "nextRet": -7.4,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -9.5
-    },
-    {
-      "date": "2026-05-22",
-      "picks": [
-        {
-          "code": "498270",
-          "name": "KIWOOM 미국양자컴퓨팅",
-          "score": 93,
-          "changePct": 10.78,
-          "nextRet": 5.22,
-          "hit": true,
-          "hit3": true
-        }
-      ],
-      "dayHitRate": 100,
-      "avgNextRet": 5.22
+      "avgNextRet": -11.6
     },
     {
       "date": "2026-05-21",
@@ -358,22 +251,6 @@
       "avgNextRet": -12.55
     },
     {
-      "date": "2026-05-18",
-      "picks": [
-        {
-          "code": "001450",
-          "name": "현대해상",
-          "score": 87.9,
-          "changePct": 14.99,
-          "nextRet": 1.3,
-          "hit": true,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": 1.3
-    },
-    {
       "date": "2026-05-15",
       "picks": [
         {
@@ -393,28 +270,10 @@
           "nextRet": -7.46,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "001800",
-          "name": "오리온홀딩스",
-          "score": 78.5,
-          "changePct": 14.11,
-          "nextRet": -8.48,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "092790",
-          "name": "넥스틸",
-          "score": 80.2,
-          "changePct": 12.07,
-          "nextRet": -8.55,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -8.97
+      "avgNextRet": -9.42
     },
     {
       "date": "2026-05-14",
@@ -427,46 +286,10 @@
           "nextRet": 0.58,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "066575",
-          "name": "LG전자우",
-          "score": 93.2,
-          "changePct": 14.42,
-          "nextRet": 0.96,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "139480",
-          "name": "이마트",
-          "score": 88.8,
-          "changePct": 11.98,
-          "nextRet": -13.65,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "009450",
-          "name": "경동나비엔",
-          "score": 88.7,
-          "changePct": 11.98,
-          "nextRet": -10.06,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "003230",
-          "name": "삼양식품",
-          "score": 84.8,
-          "changePct": 11.12,
-          "nextRet": 0.35,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -4.36
+      "avgNextRet": 0.58
     },
     {
       "date": "2026-05-13",
@@ -488,19 +311,10 @@
           "nextRet": 1.5,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "307950",
-          "name": "현대오토에버",
-          "score": 88.2,
-          "changePct": 13.66,
-          "nextRet": -1.43,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": 0.07
+      "avgNextRet": 0.82
     },
     {
       "date": "2026-05-12",
@@ -522,19 +336,10 @@
           "nextRet": 3.52,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "092200",
-          "name": "디아이씨",
-          "score": 80.3,
-          "changePct": 12.04,
-          "nextRet": 6.29,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 66.7,
-      "avgNextRet": -0.22
+      "dayHitRate": 50,
+      "avgNextRet": -3.47
     },
     {
       "date": "2026-05-11",
@@ -581,19 +386,10 @@
           "nextRet": 8.64,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "011780",
-          "name": "금호석유화학",
-          "score": 91.4,
-          "changePct": 14.42,
-          "nextRet": -0.99,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 8.51
+      "dayHitRate": 66.7,
+      "avgNextRet": 11.67
     },
     {
       "date": "2026-05-07",
@@ -606,19 +402,10 @@
           "nextRet": -3.11,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "008060",
-          "name": "대덕",
-          "score": 82.8,
-          "changePct": 13.02,
-          "nextRet": 2.72,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -0.19
+      "avgNextRet": -3.11
     },
     {
       "date": "2026-05-06",
@@ -649,28 +436,10 @@
           "nextRet": 6.77,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "006805",
-          "name": "미래에셋증권우",
-          "score": 89.5,
-          "changePct": 14.63,
-          "nextRet": -6.58,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "005930",
-          "name": "삼성전자",
-          "score": 79.6,
-          "changePct": 14.41,
-          "nextRet": 2.07,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 0.88
+      "dayHitRate": 66.7,
+      "avgNextRet": 2.97
     },
     {
       "date": "2026-05-04",
@@ -744,19 +513,10 @@
           "nextRet": 25.38,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "001390",
-          "name": "KG케미칼",
-          "score": 79,
-          "changePct": 11.16,
-          "nextRet": -7.36,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 33.3,
-      "avgNextRet": 5.64
+      "dayHitRate": 50,
+      "avgNextRet": 12.13
     },
     {
       "date": "2026-04-29",
@@ -787,28 +547,10 @@
           "nextRet": -3.67,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "002020",
-          "name": "코오롱",
-          "score": 88,
-          "changePct": 13.64,
-          "nextRet": -4,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "010950",
-          "name": "S-Oil",
-          "score": 93.7,
-          "changePct": 13.14,
-          "nextRet": 0.15,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -3.03
+      "avgNextRet": -3.77
     },
     {
       "date": "2026-04-28",
@@ -830,37 +572,10 @@
           "nextRet": 5.64,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "306200",
-          "name": "세아제강",
-          "score": 82.5,
-          "changePct": 12.55,
-          "nextRet": -0.98,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "005490",
-          "name": "POSCO홀딩스",
-          "score": 83.1,
-          "changePct": 11.74,
-          "nextRet": 0.54,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "009155",
-          "name": "삼성전기우",
-          "score": 81.7,
-          "changePct": 10.91,
-          "nextRet": 1.59,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": 0.25
+      "dayHitRate": 50,
+      "avgNextRet": 0.05
     },
     {
       "date": "2026-04-27",
@@ -943,28 +658,10 @@
           "nextRet": -1.76,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "077970",
-          "name": "STX엔진",
-          "score": 82,
-          "changePct": 11.26,
-          "nextRet": 4.54,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "443060",
-          "name": "HD현대마린솔루션",
-          "score": 82.7,
-          "changePct": 11.18,
-          "nextRet": 10.65,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 2.48
+      "dayHitRate": 0,
+      "avgNextRet": -0.93
     },
     {
       "date": "2026-04-23",
@@ -977,37 +674,10 @@
           "nextRet": 10.81,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "456040",
-          "name": "OCI",
-          "score": 86.8,
-          "changePct": 13.01,
-          "nextRet": 6.05,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "014830",
-          "name": "유니드",
-          "score": 94.8,
-          "changePct": 11.29,
-          "nextRet": -2.82,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "195870",
-          "name": "해성디에스",
-          "score": 84.7,
-          "changePct": 11.09,
-          "nextRet": 7.36,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 75,
-      "avgNextRet": 5.35
+      "dayHitRate": 100,
+      "avgNextRet": 10.81
     },
     {
       "date": "2026-04-22",
@@ -1142,28 +812,10 @@
           "nextRet": -0.74,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "003720",
-          "name": "삼영",
-          "score": 80.8,
-          "changePct": 13.53,
-          "nextRet": 7.05,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "181710",
-          "name": "NHN",
-          "score": 85.3,
-          "changePct": 10.91,
-          "nextRet": -5.26,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": -2.18
+      "dayHitRate": 0,
+      "avgNextRet": -4.22
     },
     {
       "date": "2026-04-17",
@@ -1194,28 +846,10 @@
           "nextRet": -3.21,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "010820",
-          "name": "퍼스텍",
-          "score": 79.6,
-          "changePct": 14.92,
-          "nextRet": 16.47,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "001340",
-          "name": "PKC",
-          "score": 85,
-          "changePct": 13.86,
-          "nextRet": -2.51,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": -0.92
+      "dayHitRate": 0,
+      "avgNextRet": -6.19
     },
     {
       "date": "2026-04-16",
@@ -1255,19 +889,10 @@
           "nextRet": -8.38,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "023530",
-          "name": "롯데쇼핑",
-          "score": 88.6,
-          "changePct": 13.31,
-          "nextRet": -0.33,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": -3.76
+      "dayHitRate": 25,
+      "avgNextRet": -4.62
     },
     {
       "date": "2026-04-15",
@@ -1332,19 +957,10 @@
           "nextRet": 4.2,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "006800",
-          "name": "미래에셋증권",
-          "score": 87.7,
-          "changePct": 10.87,
-          "nextRet": -3.73,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 0.24
+      "dayHitRate": 100,
+      "avgNextRet": 4.2
     },
     {
       "date": "2026-04-13",
@@ -1357,28 +973,10 @@
           "nextRet": 2.34,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "016590",
-          "name": "신대양제지",
-          "score": 81.1,
-          "changePct": 14.12,
-          "nextRet": -1.52,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "001780",
-          "name": "알루코",
-          "score": 81.7,
-          "changePct": 11.39,
-          "nextRet": -1.21,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -0.13
+      "avgNextRet": 2.34
     },
     {
       "date": "2026-04-10",
@@ -1400,37 +998,10 @@
           "nextRet": 5.36,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "011070",
-          "name": "LG이노텍",
-          "score": 80.5,
-          "changePct": 11.44,
-          "nextRet": -4.87,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "020150",
-          "name": "롯데에너지머티리얼즈",
-          "score": 89.3,
-          "changePct": 10.2,
-          "nextRet": -3.66,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "002710",
-          "name": "TCC스틸",
-          "score": 82.8,
-          "changePct": 10.11,
-          "nextRet": 1.92,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 0.49
+      "dayHitRate": 100,
+      "avgNextRet": 4.53
     },
     {
       "date": "2026-04-09",
@@ -1443,28 +1014,10 @@
           "nextRet": -5.78,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "092790",
-          "name": "넥스틸",
-          "score": 79.5,
-          "changePct": 14.8,
-          "nextRet": -1.96,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "298020",
-          "name": "효성티앤씨",
-          "score": 79.6,
-          "changePct": 11,
-          "nextRet": 2.2,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -1.85
+      "avgNextRet": -5.78
     },
     {
       "date": "2026-04-08",
@@ -1554,37 +1107,10 @@
           "nextRet": -6.78,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "001780",
-          "name": "알루코",
-          "score": 85.9,
-          "changePct": 13.93,
-          "nextRet": -6.65,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "028050",
-          "name": "삼성E&A",
-          "score": 82.5,
-          "changePct": 12.58,
-          "nextRet": 4.71,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "020150",
-          "name": "롯데에너지머티리얼즈",
-          "score": 84.3,
-          "changePct": 12.36,
-          "nextRet": 0.11,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": -1.25
+      "dayHitRate": 0,
+      "avgNextRet": -2.21
     },
     {
       "date": "2026-04-03",
@@ -1676,19 +1202,10 @@
           "nextRet": -3.95,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "001120",
-          "name": "LX인터내셔널",
-          "score": 86,
-          "changePct": 12.71,
-          "nextRet": 4.71,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": -1.67
+      "dayHitRate": 25,
+      "avgNextRet": -3.26
     },
     {
       "date": "2026-03-31",
@@ -1705,90 +1222,6 @@
       ],
       "dayHitRate": 0,
       "avgNextRet": -9.42
-    },
-    {
-      "date": "2026-03-30",
-      "picks": [
-        {
-          "code": "053690",
-          "name": "한미글로벌",
-          "score": 79.7,
-          "changePct": 14.23,
-          "nextRet": -11.8,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "018250",
-          "name": "애경산업",
-          "score": 80.8,
-          "changePct": 10.59,
-          "nextRet": -10.58,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": -11.19
-    },
-    {
-      "date": "2026-03-27",
-      "picks": [
-        {
-          "code": "008770",
-          "name": "호텔신라",
-          "score": 91.5,
-          "changePct": 13.11,
-          "nextRet": -5.06,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "181710",
-          "name": "NHN",
-          "score": 84.3,
-          "changePct": 13.11,
-          "nextRet": 0.12,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "002020",
-          "name": "코오롱",
-          "score": 83,
-          "changePct": 10.79,
-          "nextRet": -4.3,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": -3.08
-    },
-    {
-      "date": "2026-03-26",
-      "picks": [
-        {
-          "code": "100090",
-          "name": "SK오션플랜트",
-          "score": 84,
-          "changePct": 14.57,
-          "nextRet": 0,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "009420",
-          "name": "한올바이오파마",
-          "score": 82.2,
-          "changePct": 11.23,
-          "nextRet": 0,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": 0
     },
     {
       "date": "2026-03-25",
@@ -1810,28 +1243,10 @@
           "nextRet": -0.55,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "375500",
-          "name": "DL이앤씨",
-          "score": 83.7,
-          "changePct": 14.93,
-          "nextRet": -4.18,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "336370",
-          "name": "솔루스첨단소재",
-          "score": 83.7,
-          "changePct": 11.61,
-          "nextRet": -6.57,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -2.45
+      "avgNextRet": 0.48
     },
     {
       "date": "2026-03-24",
@@ -1844,19 +1259,10 @@
           "nextRet": 29.96,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "066970",
-          "name": "엘앤에프",
-          "score": 85.1,
-          "changePct": 11.51,
-          "nextRet": 16.24,
-          "hit": true,
-          "hit3": true
         }
       ],
       "dayHitRate": 100,
-      "avgNextRet": 23.1
+      "avgNextRet": 29.96
     },
     {
       "date": "2026-03-23",
@@ -1998,19 +1404,10 @@
           "nextRet": 1.17,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "353200",
-          "name": "대덕전자",
-          "score": 82,
-          "changePct": 11.31,
-          "nextRet": 3.34,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 3.91
+      "dayHitRate": 33.3,
+      "avgNextRet": 4.1
     },
     {
       "date": "2026-03-17",
@@ -2036,38 +1433,6 @@
       ],
       "dayHitRate": 0,
       "avgNextRet": -2.87
-    },
-    {
-      "date": "2026-03-13",
-      "picks": [
-        {
-          "code": "008350",
-          "name": "남선알미늄",
-          "score": 78.6,
-          "changePct": 14.35,
-          "nextRet": 13.88,
-          "hit": true,
-          "hit3": true
-        }
-      ],
-      "dayHitRate": 100,
-      "avgNextRet": 13.88
-    },
-    {
-      "date": "2026-03-12",
-      "picks": [
-        {
-          "code": "336260",
-          "name": "두산퓨얼셀",
-          "score": 81.4,
-          "changePct": 12.53,
-          "nextRet": -0.43,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": -0.43
     },
     {
       "date": "2026-03-09",
@@ -2171,19 +1536,10 @@
           "nextRet": -16.76,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "011200",
-          "name": "HMM",
-          "score": 86.7,
-          "changePct": 14.75,
-          "nextRet": -16.33,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -13.62
+      "avgNextRet": -12.95
     },
     {
       "date": "2026-02-27",
@@ -2221,37 +1577,10 @@
           "nextRet": -7.54,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "047040",
-          "name": "대우건설",
-          "score": 82.1,
-          "changePct": 14.86,
-          "nextRet": 0.9,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "489790",
-          "name": "한화비전",
-          "score": 81.2,
-          "changePct": 13.46,
-          "nextRet": -0.7,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "012330",
-          "name": "현대모비스",
-          "score": 87.2,
-          "changePct": 12.67,
-          "nextRet": -2.27,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": 1.56
+      "dayHitRate": 50,
+      "avgNextRet": 4.94
     },
     {
       "date": "2026-02-25",
@@ -2273,37 +1602,10 @@
           "nextRet": -1.94,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "307950",
-          "name": "현대오토에버",
-          "score": 80.8,
-          "changePct": 14.45,
-          "nextRet": 2.02,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "000270",
-          "name": "기아",
-          "score": 80,
-          "changePct": 12.7,
-          "nextRet": 5.05,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "051915",
-          "name": "LG화학우",
-          "score": 83.8,
-          "changePct": 10.02,
-          "nextRet": -0.32,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 1.87
+      "dayHitRate": 50,
+      "avgNextRet": 1.3
     },
     {
       "date": "2026-02-24",
@@ -2325,19 +1627,10 @@
           "nextRet": -4.92,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "057050",
-          "name": "현대홈쇼핑",
-          "score": 81.6,
-          "changePct": 10.6,
-          "nextRet": 1.4,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -2.08
+      "avgNextRet": -3.82
     },
     {
       "date": "2026-02-23",
@@ -2359,37 +1652,10 @@
           "nextRet": 2.17,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "103590",
-          "name": "일진전기",
-          "score": 82.7,
-          "changePct": 14.15,
-          "nextRet": -0.12,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "066575",
-          "name": "LG전자우",
-          "score": 84.9,
-          "changePct": 12.16,
-          "nextRet": 0.16,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "069620",
-          "name": "대웅제약",
-          "score": 79.8,
-          "changePct": 10.92,
-          "nextRet": 1.09,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -0.29
+      "avgNextRet": -1.29
     },
     {
       "date": "2026-02-20",
@@ -2411,28 +1677,10 @@
           "nextRet": -8.39,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "004020",
-          "name": "현대제철",
-          "score": 85.4,
-          "changePct": 11.76,
-          "nextRet": -4.88,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "000240",
-          "name": "한국앤컴퍼니",
-          "score": 79.7,
-          "changePct": 10,
-          "nextRet": -2.45,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 25,
-      "avgNextRet": -1.89
+      "dayHitRate": 50,
+      "avgNextRet": -0.11
     },
     {
       "date": "2026-02-19",
@@ -2524,19 +1772,10 @@
           "nextRet": 14.45,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "005090",
-          "name": "SGC에너지",
-          "score": 83.1,
-          "changePct": 13.45,
-          "nextRet": 16.14,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 80,
-      "avgNextRet": 9.68
+      "dayHitRate": 75,
+      "avgNextRet": 8.06
     },
     {
       "date": "2026-02-12",
@@ -2567,28 +1806,10 @@
           "nextRet": 3.52,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "010690",
-          "name": "화신",
-          "score": 82.6,
-          "changePct": 12.51,
-          "nextRet": -6.57,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "007340",
-          "name": "DN오토모티브",
-          "score": 78.9,
-          "changePct": 11.69,
-          "nextRet": 2.5,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": -2.33
+      "dayHitRate": 33.3,
+      "avgNextRet": -2.53
     },
     {
       "date": "2026-02-11",
@@ -2610,37 +1831,10 @@
           "nextRet": -1.46,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "005440",
-          "name": "현대지에프홀딩스",
-          "score": 81.9,
-          "changePct": 13.4,
-          "nextRet": 15.12,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "002380",
-          "name": "KCC",
-          "score": 80.9,
-          "changePct": 12.16,
-          "nextRet": 1.28,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "282330",
-          "name": "BGF리테일",
-          "score": 88.7,
-          "changePct": 11.49,
-          "nextRet": -1.99,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 20,
-      "avgNextRet": 1.57
+      "dayHitRate": 0,
+      "avgNextRet": -3.27
     },
     {
       "date": "2026-02-10",
@@ -2732,19 +1926,10 @@
           "nextRet": -4.32,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "002790",
-          "name": "아모레퍼시픽홀딩스",
-          "score": 88.4,
-          "changePct": 14.78,
-          "nextRet": 0.29,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -1.18
+      "avgNextRet": -1.55
     },
     {
       "date": "2026-02-05",
@@ -2757,28 +1942,10 @@
           "nextRet": 2.81,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "499790",
-          "name": "GS피앤엘",
-          "score": 88.9,
-          "changePct": 10.14,
-          "nextRet": 1.97,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "084010",
-          "name": "대한제강",
-          "score": 81.9,
-          "changePct": 10.08,
-          "nextRet": 4.58,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 33.3,
-      "avgNextRet": 3.12
+      "dayHitRate": 0,
+      "avgNextRet": 2.81
     },
     {
       "date": "2026-02-04",
@@ -2791,46 +1958,10 @@
           "nextRet": 9.04,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "020150",
-          "name": "롯데에너지머티리얼즈",
-          "score": 83.9,
-          "changePct": 13.83,
-          "nextRet": 2.3,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "178920",
-          "name": "PI첨단소재",
-          "score": 88,
-          "changePct": 13.59,
-          "nextRet": -1.75,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "029530",
-          "name": "신도리코",
-          "score": 78.1,
-          "changePct": 12.57,
-          "nextRet": 4.37,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "052690",
-          "name": "한전기술",
-          "score": 81.7,
-          "changePct": 12.19,
-          "nextRet": -2.77,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 2.24
+      "dayHitRate": 100,
+      "avgNextRet": 9.04
     },
     {
       "date": "2026-02-03",
@@ -2895,19 +2026,10 @@
           "nextRet": -4.4,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "128820",
-          "name": "대성산업",
-          "score": 80.5,
-          "changePct": 13.61,
-          "nextRet": 3.59,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": -0.41
+      "dayHitRate": 0,
+      "avgNextRet": -4.4
     },
     {
       "date": "2026-01-30",
@@ -2929,28 +2051,10 @@
           "nextRet": -9.82,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "489790",
-          "name": "한화비전",
-          "score": 82.6,
-          "changePct": 11.55,
-          "nextRet": -7.93,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "012030",
-          "name": "DB",
-          "score": 80.1,
-          "changePct": 10.83,
-          "nextRet": -5.08,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -6.73
+      "avgNextRet": -6.96
     },
     {
       "date": "2026-01-29",
@@ -2972,28 +2076,10 @@
           "nextRet": 5.83,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "042700",
-          "name": "한미반도체",
-          "score": 84.3,
-          "changePct": 11.81,
-          "nextRet": 3.69,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "120110",
-          "name": "코오롱인더",
-          "score": 80,
-          "changePct": 10.14,
-          "nextRet": 1.29,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 75,
-      "avgNextRet": 3.87
+      "dayHitRate": 100,
+      "avgNextRet": 5.24
     },
     {
       "date": "2026-01-28",
@@ -3006,44 +2092,10 @@
           "nextRet": -1.74,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "020000",
-          "name": "한섬",
-          "score": 86.5,
-          "changePct": 11.47,
-          "nextRet": 2.92,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "001390",
-          "name": "KG케미칼",
-          "score": 80,
-          "changePct": 10.15,
-          "nextRet": 2.39,
-          "hit": true,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": 1.19
-    },
-    {
-      "date": "2026-01-27",
-      "picks": [
-        {
-          "code": "017670",
-          "name": "SK텔레콤",
-          "score": 85.6,
-          "changePct": 12.3,
-          "nextRet": -0.58,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": -0.58
+      "avgNextRet": -1.74
     },
     {
       "date": "2026-01-26",
@@ -3056,19 +2108,10 @@
           "nextRet": -2.7,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "006110",
-          "name": "삼아알미늄",
-          "score": 90.5,
-          "changePct": 12.84,
-          "nextRet": -2.59,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -2.65
+      "avgNextRet": -2.7
     },
     {
       "date": "2026-01-23",
@@ -3081,28 +2124,10 @@
           "nextRet": -4.31,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "001720",
-          "name": "신영증권",
-          "score": 85.1,
-          "changePct": 13.02,
-          "nextRet": -0.3,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "003530",
-          "name": "한화투자증권",
-          "score": 85.5,
-          "changePct": 10.79,
-          "nextRet": 3.49,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 33.3,
-      "avgNextRet": -0.37
+      "dayHitRate": 0,
+      "avgNextRet": -4.31
     },
     {
       "date": "2026-01-22",
@@ -3133,44 +2158,10 @@
           "nextRet": -1.43,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "066970",
-          "name": "엘앤에프",
-          "score": 84.5,
-          "changePct": 12.81,
-          "nextRet": -4.53,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "278470",
-          "name": "에이피알",
-          "score": 81.7,
-          "changePct": 11.5,
-          "nextRet": -3.32,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -4.08
-    },
-    {
-      "date": "2026-01-21",
-      "picks": [
-        {
-          "code": "005380",
-          "name": "현대차",
-          "score": 86.2,
-          "changePct": 14.61,
-          "nextRet": -3.64,
-          "hit": false,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 0,
-      "avgNextRet": -3.64
+      "avgNextRet": -4.19
     },
     {
       "date": "2026-01-20",
@@ -3183,37 +2174,10 @@
           "nextRet": 3.82,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "105840",
-          "name": "우진",
-          "score": 82.2,
-          "changePct": 13.26,
-          "nextRet": 3.97,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "377300",
-          "name": "카카오페이",
-          "score": 79.1,
-          "changePct": 12.08,
-          "nextRet": -6.88,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "130660",
-          "name": "한전산업",
-          "score": 81.5,
-          "changePct": 10,
-          "nextRet": -0.78,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 0.03
+      "dayHitRate": 100,
+      "avgNextRet": 3.82
     },
     {
       "date": "2026-01-19",
@@ -3244,28 +2208,10 @@
           "nextRet": -4.39,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "010820",
-          "name": "퍼스텍",
-          "score": 80.5,
-          "changePct": 12.42,
-          "nextRet": 9.24,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "000270",
-          "name": "기아",
-          "score": 85.5,
-          "changePct": 12.18,
-          "nextRet": -3.3,
-          "hit": false,
-          "hit3": false
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 2.2
+      "dayHitRate": 33.3,
+      "avgNextRet": 1.69
     },
     {
       "date": "2026-01-16",
@@ -3278,28 +2224,10 @@
           "nextRet": 2.73,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "047040",
-          "name": "대우건설",
-          "score": 79.8,
-          "changePct": 13.35,
-          "nextRet": 0.22,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "052690",
-          "name": "한전기술",
-          "score": 85.9,
-          "changePct": 11.73,
-          "nextRet": 5.21,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 33.3,
-      "avgNextRet": 2.72
+      "dayHitRate": 0,
+      "avgNextRet": 2.73
     },
     {
       "date": "2026-01-15",
@@ -3312,19 +2240,10 @@
           "nextRet": 3.14,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "298020",
-          "name": "효성티앤씨",
-          "score": 86.3,
-          "changePct": 11.55,
-          "nextRet": 8.47,
-          "hit": true,
-          "hit3": true
         }
       ],
       "dayHitRate": 100,
-      "avgNextRet": 5.81
+      "avgNextRet": 3.14
     },
     {
       "date": "2026-01-14",
@@ -3337,71 +2256,10 @@
           "nextRet": 6.23,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "456040",
-          "name": "OCI",
-          "score": 84.8,
-          "changePct": 14.04,
-          "nextRet": 0.96,
-          "hit": true,
-          "hit3": false
         }
       ],
-      "dayHitRate": 50,
-      "avgNextRet": 3.6
-    },
-    {
-      "date": "2026-01-13",
-      "picks": [
-        {
-          "code": "012330",
-          "name": "현대모비스",
-          "score": 84.8,
-          "changePct": 14.47,
-          "nextRet": -0.22,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "272210",
-          "name": "한화시스템",
-          "score": 82.8,
-          "changePct": 14.16,
-          "nextRet": -0.56,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "005490",
-          "name": "POSCO홀딩스",
-          "score": 90.2,
-          "changePct": 13.89,
-          "nextRet": -2.13,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "456040",
-          "name": "OCI",
-          "score": 80.2,
-          "changePct": 11.48,
-          "nextRet": 14.04,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "005380",
-          "name": "현대차",
-          "score": 88.8,
-          "changePct": 10.63,
-          "nextRet": 1.35,
-          "hit": true,
-          "hit3": false
-        }
-      ],
-      "dayHitRate": 20,
-      "avgNextRet": 2.5
+      "dayHitRate": 100,
+      "avgNextRet": 6.23
     },
     {
       "date": "2026-01-12",
@@ -3423,37 +2281,10 @@
           "nextRet": -0.48,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "267250",
-          "name": "HD현대",
-          "score": 83.7,
-          "changePct": 11.22,
-          "nextRet": 0.66,
-          "hit": true,
-          "hit3": false
-        },
-        {
-          "code": "241560",
-          "name": "두산밥캣",
-          "score": 88.1,
-          "changePct": 10.93,
-          "nextRet": -2.54,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "082740",
-          "name": "한화엔진",
-          "score": 83.7,
-          "changePct": 10.26,
-          "nextRet": -1.09,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -0.49
+      "avgNextRet": 0.26
     },
     {
       "date": "2026-01-09",
@@ -3484,28 +2315,10 @@
           "nextRet": -2.44,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "092790",
-          "name": "넥스틸",
-          "score": 94,
-          "changePct": 12.64,
-          "nextRet": -2.93,
-          "hit": false,
-          "hit3": false
-        },
-        {
-          "code": "484870",
-          "name": "엠앤씨솔루션",
-          "score": 85.6,
-          "changePct": 12.4,
-          "nextRet": 9.81,
-          "hit": true,
-          "hit3": true
         }
       ],
-      "dayHitRate": 40,
-      "avgNextRet": 1.77
+      "dayHitRate": 33.3,
+      "avgNextRet": 0.66
     },
     {
       "date": "2026-01-07",
@@ -3527,19 +2340,10 @@
           "nextRet": 2.29,
           "hit": true,
           "hit3": false
-        },
-        {
-          "code": "005380",
-          "name": "현대차",
-          "score": 85.2,
-          "changePct": 13.8,
-          "nextRet": -2.85,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -0.14
+      "avgNextRet": 1.21
     },
     {
       "date": "2026-01-06",
@@ -3552,19 +2356,10 @@
           "nextRet": -8.46,
           "hit": false,
           "hit3": false
-        },
-        {
-          "code": "006800",
-          "name": "미래에셋증권",
-          "score": 85.7,
-          "changePct": 12.55,
-          "nextRet": -2.44,
-          "hit": false,
-          "hit3": false
         }
       ],
       "dayHitRate": 0,
-      "avgNextRet": -5.45
+      "avgNextRet": -8.46
     },
     {
       "date": "2026-01-05",
@@ -3577,44 +2372,10 @@
           "nextRet": 9.8,
           "hit": true,
           "hit3": true
-        },
-        {
-          "code": "034020",
-          "name": "두산에너빌리티",
-          "score": 80.5,
-          "changePct": 10.64,
-          "nextRet": 3.25,
-          "hit": true,
-          "hit3": true
         }
       ],
       "dayHitRate": 100,
-      "avgNextRet": 6.53
-    },
-    {
-      "date": "2026-01-02",
-      "picks": [
-        {
-          "code": "042700",
-          "name": "한미반도체",
-          "score": 86.1,
-          "changePct": 13.42,
-          "nextRet": 15.78,
-          "hit": true,
-          "hit3": true
-        },
-        {
-          "code": "068270",
-          "name": "셀트리온",
-          "score": 91.7,
-          "changePct": 11.88,
-          "nextRet": 3.46,
-          "hit": true,
-          "hit3": true
-        }
-      ],
-      "dayHitRate": 100,
-      "avgNextRet": 9.62
+      "avgNextRet": 9.8
     }
   ]
 }
