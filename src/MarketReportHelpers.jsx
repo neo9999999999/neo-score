@@ -453,8 +453,11 @@ const AFT_HIST_SOURCES = [
   () => "https://raw.githubusercontent.com/neo9999999999/neo-score/main/public/afternoon-history.json?_=" + Date.now(),
 ];
 
-function CandidateRow({ c, T }) {
+const wonFmt = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
+function CandidateRow({ c, T, alloc }) {
   const up = c.changePct >= 0;
+  const qty = (alloc && c.price) ? Math.floor(alloc / c.price) : null;
+  const invested = (qty && c.price) ? qty * c.price : null;
   return (
     <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 12px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -483,6 +486,13 @@ function CandidateRow({ c, T }) {
         <span style={chip(T)}>종가강도 {Math.round((c.rangePos || 0) * 100)}%</span>
         {c.aboveMA && <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>}
       </div>
+      {qty != null && (
+        <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(124,58,237,0.10)", border: "1px solid " + T.border, borderRadius: 9, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12.5 }}>
+          <span style={{ color: T.sub }}>현재가 <b style={{ color: T.text }}>{c.price.toLocaleString("ko-KR")}원</b></span>
+          <span style={{ color: T.sub }}>매수 <b style={{ color: "#7c3aed" }}>{qty.toLocaleString("ko-KR")}주</b></span>
+          <span style={{ color: T.sub }}>투입 <b style={{ color: T.text }}>{wonFmt(invested)}</b></span>
+        </div>
+      )}
       {c.reason && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 7, lineHeight: 1.55 }}>{c.reason}</div>}
     </div>
   );
@@ -596,10 +606,13 @@ function AfternoonView({ T }) {
   const [rep, setRep] = useState(null);
   const [hist, setHist] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [capital, setCapital] = useState(() => { try { return localStorage.getItem("neo_capital") || ""; } catch { return ""; } });
+  useEffect(() => { try { localStorage.setItem("neo_capital", capital); } catch {} }, [capital]);
   useEffect(() => { (async () => {
     const [r, h] = await Promise.all([fetchFirst(AFT_SOURCES.map(f => f())), fetchFirst(AFT_HIST_SOURCES.map(f => f()))]);
     setRep(r); setHist(h); setLoading(false);
   })(); }, []);
+  const capNum = Math.max(0, +(String(capital).replace(/[^0-9]/g, "")) || 0);
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>익일예측 불러오는 중…</div>;
   if (!rep || !rep.candidates) return (
@@ -634,6 +647,37 @@ function AfternoonView({ T }) {
         <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
       </div>
 
+      {(() => {
+        const cands = rep.candidates || [];
+        const alloc = cands.length && capNum ? capNum / cands.length : 0;
+        const deployed = cands.reduce((s, c) => s + (c.price && alloc ? Math.floor(alloc / c.price) * c.price : 0), 0);
+        const a = hist && hist.analysis;
+        const stratRow = a && a.strategies ? a.strategies.find(s => s.name === a.recommendedStrategy) : null;
+        const stratAvg = stratRow ? stratRow.avg : null;
+        const expGain = (stratAvg != null && deployed) ? deployed * stratAvg / 100 : null;
+        const presets = [1000000, 3000000, 5000000, 10000000];
+        return (
+          <Section title="💰 투자금 배분" sub="총 투자금을 입력하면 후보에 균등 배분해 매수 수량을 계산합니다" T={T}>
+            <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+              <input value={capital} onChange={e => setCapital(e.target.value)} inputMode="numeric" placeholder="총 투자금 (원)"
+                style={{ width: "100%", boxSizing: "border-box", padding: "11px 12px", fontSize: 15, fontWeight: 700, color: T.text, background: T.cardAlt, border: "1px solid " + T.border, borderRadius: 10, fontFamily: "inherit", outline: "none" }} />
+              <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                {presets.map(p => (
+                  <button key={p} onClick={() => setCapital(String(p))} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>{(p / 10000).toLocaleString("ko-KR")}만</button>
+                ))}
+                {capital && <button onClick={() => setCapital("")} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>초기화</button>}
+              </div>
+              {capNum > 0 && cands.length > 0 && (
+                <div style={{ marginTop: 11, fontSize: 13, lineHeight: 1.7, color: T.sub }}>
+                  종목당 <b style={{ color: T.text }}>{wonFmt(alloc)}</b> 균등배분 · 실투입 <b style={{ color: T.text }}>{wonFmt(deployed)}</b>
+                  {expGain != null && <><br />전략 평균({stratAvg}%) 기준 기대 익일 손익 <b style={{ color: expGain >= 0 ? "#16a34a" : "#ef4444" }}>{expGain >= 0 ? "+" : ""}{wonFmt(expGain)}</b></>}
+                </div>
+              )}
+            </div>
+          </Section>
+        );
+      })()}
+
       <Section title="🇺🇸 미 선물 · 변동성" T={T}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8 }}>
           {(rep.futures || []).map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
@@ -650,7 +694,7 @@ function AfternoonView({ T }) {
           <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 후보가 없습니다.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {rep.candidates.map((c, i) => <CandidateRow key={i} c={c} T={T} />)}
+            {rep.candidates.map((c, i) => <CandidateRow key={i} c={c} T={T} alloc={capNum && rep.candidates.length ? capNum / rep.candidates.length : 0} />)}
           </div>
         )}
       </Section>

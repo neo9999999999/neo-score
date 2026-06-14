@@ -81,7 +81,7 @@ async function main() {
     const i = series.length - 1;
     const m = scoreAt(series, i, macroBias);
     if (!m) return null;
-    return { ...u, ...m, date: series[i].date };
+    return { ...u, ...m, date: series[i].date, price: series[i].close };
   }, 8);
 
   const valid = scored.filter(Boolean).filter(x => isFinite(x.value) && x.value > 0);
@@ -106,6 +106,7 @@ async function main() {
 
   const candidates = pool.slice(0, TOP_PICKS).map((x, idx) => ({
     rank: idx + 1, name: x.name, code: x.code, market: x.market,
+    price: Math.round(x.price),
     score: x.score, changePct: x.changePct, rangePos: x.rangePos,
     volSurge: x.volSurge, gapPct: x.gapPct, aboveMA: x.aboveMA,
     value: x.value, valueText: fmtEok(x.value),
