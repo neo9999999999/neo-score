@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T18:32:10+09:00",
-    "count": 85,
+    "updatedAt": "2026-06-14T19:01:58+09:00",
+    "count": 84,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -38,7 +38,35 @@
         "retRisk": 0.214
       },
       {
-        "name": "원안 + 손절 −3%",
+        "name": "권장: 원안 + 갭하락 −7%만 손절",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.5,
+          "gapStop": -7
+        },
+        "avg": 1.304,
+        "winRate": 58.8,
+        "lossRate": 41.2,
+        "worst": -21.2,
+        "best": 17.5,
+        "retRisk": 0.172
+      },
+      {
+        "name": "원안 + 갭하락 −5%만 손절",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.5,
+          "gapStop": -5
+        },
+        "avg": 1.354,
+        "winRate": 58.8,
+        "lossRate": 41.2,
+        "worst": -21.2,
+        "best": 17.5,
+        "retRisk": 0.183
+      },
+      {
+        "name": "원안 + 손절 −3%(장중)",
         "opt": {
           "tp1Lvl": 5,
           "tp1Frac": 0.5,
@@ -52,7 +80,7 @@
         "retRisk": 0.049
       },
       {
-        "name": "원안 + 손절 −5%",
+        "name": "원안 + 손절 −5%(장중)",
         "opt": {
           "tp1Lvl": 5,
           "tp1Frac": 0.5,
@@ -66,85 +94,37 @@
         "retRisk": 0.067
       },
       {
-        "name": "익절 30%@+5% + 트레일 + 손절 −3%",
-        "opt": {
-          "tp1Lvl": 5,
-          "tp1Frac": 0.3,
-          "stop": -3
-        },
-        "avg": 0.616,
-        "winRate": 36.1,
-        "lossRate": 63.9,
-        "worst": -21.2,
-        "best": 22.5,
-        "retRisk": 0.133
-      },
-      {
-        "name": "익절가 +7%(50%) + 트레일 + 손절 −3%",
+        "name": "익절 30%@+7% + 트레일 + 갭하락 −7%",
         "opt": {
           "tp1Lvl": 7,
-          "tp1Frac": 0.5,
-          "stop": -3
+          "tp1Frac": 0.3,
+          "gapStop": -7
         },
-        "avg": 0.374,
-        "winRate": 36.1,
-        "lossRate": 63.9,
+        "avg": 1.791,
+        "winRate": 55.2,
+        "lossRate": 44.8,
         "worst": -21.2,
-        "best": 18.5,
-        "retRisk": 0.081
+        "best": 23.1,
+        "retRisk": 0.245
       },
       {
-        "name": "무익절 전량 고가−5% 트레일 + 손절 −3%",
+        "name": "무익절 전량 고가−5% 트레일 + 갭하락 −7%",
         "opt": {
           "tp1Lvl": 5,
           "tp1Frac": 0,
-          "stop": -3
+          "gapStop": -7
         },
-        "avg": 1.197,
-        "winRate": 35.6,
-        "lossRate": 64.4,
+        "avg": 2.34,
+        "winRate": 53.1,
+        "lossRate": 46.4,
         "worst": -21.2,
         "best": 30,
-        "retRisk": 0.259
-      },
-      {
-        "name": "익절 30%@+7% + 트레일 + 손절 −4%",
-        "opt": {
-          "tp1Lvl": 7,
-          "tp1Frac": 0.3,
-          "stop": -4
-        },
-        "avg": 0.904,
-        "winRate": 43.3,
-        "lossRate": 56.7,
-        "worst": -21.2,
-        "best": 23.1,
-        "retRisk": 0.172
+        "retRisk": 0.325
       }
     ],
-    "recommendedStrategy": "원안: 5%익절50%+트레일, 손절無"
+    "recommendedStrategy": "무익절 전량 고가−5% 트레일 + 갭하락 −7%"
   },
   "reports": [
-    {
-      "date": "2026-06-14",
-      "marketBias": "bullish",
-      "picks": [
-        {
-          "name": "후성",
-          "code": "093370",
-          "score": 88.2,
-          "changePct": 20.55
-        },
-        {
-          "name": "에스원",
-          "code": "012750",
-          "score": 86.8,
-          "changePct": 15.65
-        }
-      ],
-      "nq": 0.67,
-      "es": 0.53
-    },
     {
       "date": "2026-06-09",
       "picks": [
