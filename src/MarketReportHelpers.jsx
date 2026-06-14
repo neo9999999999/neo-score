@@ -462,15 +462,19 @@ function CandidateRow({ c, T }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 14.5, fontWeight: 800, color: T.text }}>{c.name}</span>
+            {c.target5 && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#dc2626", padding: "1px 6px", borderRadius: 6 }}>🔥 5%↑ 유력</span>}
             <span style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{c.code} · {c.market}</span>
           </div>
         </div>
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: up ? "#16a34a" : "#ef4444" }}>{up ? "+" : ""}{c.changePct}%</div>
-          <div style={{ fontSize: 11, color: T.hint }}>점수 {c.score}</div>
+          {c.expRet != null
+            ? <div style={{ fontSize: 15, fontWeight: 800, color: c.expRet >= 0 ? "#16a34a" : "#ef4444" }}>예상 {c.expRet >= 0 ? "+" : ""}{c.expRet}%</div>
+            : <div style={{ fontSize: 14, fontWeight: 800, color: up ? "#16a34a" : "#ef4444" }}>{up ? "+" : ""}{c.changePct}%</div>}
+          <div style={{ fontSize: 11, color: T.hint }}>{c.p5 != null ? "5%↑ 확률 " + c.p5 + "%" : "점수 " + c.score}</div>
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+        <span style={chip(T)}>당일 {up ? "+" : ""}{c.changePct}%</span>
         <span style={chip(T)}>거래대금 {c.valueText}</span>
         <span style={chip(T)}>거래량 {c.volSurge}배</span>
         <span style={chip(T)}>종가강도 {Math.round((c.rangePos || 0) * 100)}%</span>
@@ -601,7 +605,7 @@ function AfternoonView({ T }) {
         </div>
       </Section>
 
-      <Section title={"🚀 익일 상승 후보 " + rep.candidates.length + "종목"} sub="거래대금 상위 종목 중 종가강도·거래량·모멘텀 정량 스코어 상위" T={T}>
+      <Section title={"🚀 익일 대장주 후보 TOP " + rep.candidates.length} sub="거래대금 상위 중 강한 종가·거래량·모멘텀 + 과거 OOS 기반 예상 익일등락·5%↑ 확률 순" T={T}>
         {rep.candidates.length === 0 ? (
           <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 후보가 없습니다.</div>
         ) : (

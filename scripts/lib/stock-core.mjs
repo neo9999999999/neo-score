@@ -106,3 +106,33 @@ export function fmtEok(won) {
   if (eok >= 10000) return (eok / 10000).toFixed(2) + "조";
   return Math.round(eok).toLocaleString("ko-KR") + "억";
 }
+
+// OOS 히스토리(과거 선정 종목의 score+익일등락)로 점수대별 보정표 생성
+export function buildCalibration(reports) {
+  const samples = [];
+  for (const r of reports || []) for (const p of r.picks || []) {
+    if (p.nextRet != null && p.score != null) samples.push({ score: p.score, ret: p.nextRet });
+  }
+  const stat = (xs) => xs.length ? {
+    n: xs.length,
+    expRet: +(xs.reduce((a, b) => a + b.ret, 0) / xs.length).toFixed(2),
+    p5: +((xs.filter(s => s.ret >= 5).length / xs.length) * 100).toFixed(1),
+    hitRate: +((xs.filter(s => s.ret > 0).length / xs.length) * 100).toFixed(1),
+  } : { n: 0, expRet: null, p5: null, hitRate: null };
+  const edges = [0, 72, 78, 84, 200];
+  const buckets = [];
+  for (let i = 0; i < edges.length - 1; i++) {
+    const lo = edges[i], hi = edges[i + 1];
+    buckets.push({ lo, hi, ...stat(samples.filter(s => s.score >= lo && s.score < hi)) });
+  }
+  return { buckets, all: stat(samples) };
+}
+
+// 점수 → 예상 익일등락 추정 (표본 부족 시 전체 평균으로 폴백)
+export function estimate(cal, score) {
+  if (!cal) return null;
+  const b = cal.buckets.find(x => score >= x.lo && score < x.hi);
+  if (b && b.n >= 15) return { expRet: b.expRet, p5: b.p5, hitRate: b.hitRate, n: b.n };
+  return cal.all && cal.all.n ? { expRet: cal.all.expRet, p5: cal.all.p5, hitRate: cal.all.hitRate, n: cal.all.n } : null;
+}
+
