@@ -206,9 +206,24 @@ export function estimate(cal, changePct) {
   return { expRet: src.expRet, p3: src.p3, p5: src.p5, p3High: src.p3High, p5High: src.p5High, hitRate: src.hitRate, n: src.n };
 }
 
-// 익일 대장주 후보 필터 — 강한 신호 + 당일 급등(상한가 제외: +27% 미만만 매수 가능)
-export function isLeader(m) {
-  return m && m.score >= 78 && m.changePct >= 15 && m.changePct < 27 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
+// 신고가+정배열 후보: 5>20>60일선 정배열 + 종가가 120일 고가의 95% 이상(근접/돌파).
+// 스펙트럼 확대: 당일 급등폭 조건 완화(+chgMin~chgMax%, 상한가 제외) + 거래량 동반.
+export function newHighCandidate(series, i, opt = {}) {
+  const { chgMin = 2, chgMax = 27 } = opt;
+  if (i < 120) return null;
+  const m = scoreAt(series, i, 0);
+  if (!m) return null;
+  const c = series[i].close;
+  if (!(c > 0)) return null;
+  const ma = (n) => { let s = 0; for (let k = i - n + 1; k <= i; k++) s += series[k].close; return s / n; };
+  const ma5 = ma(5), ma20 = ma(20), ma60 = ma(60);
+  const aligned = c > ma5 && ma5 > ma20 && ma20 > ma60;          // 강한 정배열
+  let hiPrev = 0; for (let k = i - 119; k <= i - 1; k++) hiPrev = Math.max(hiPrev, series[k].high);
+  const nearHigh = hiPrev > 0 && c >= 0.95 * hiPrev;              // 신고가 95% 이상(근접/돌파)
+  if (!(aligned && nearHigh && m.changePct >= chgMin && m.changePct <= chgMax && m.rangePos >= 0.5 && m.volSurge >= 1.2)) return null;
+  const nearHighPct = +((c / hiPrev - 1) * 100).toFixed(2);       // >0=돌파, 0~-5=근접
+  const breakout = c > hiPrev;
+  return { score: m.score, changePct: m.changePct, rangePos: m.rangePos, volSurge: m.volSurge, aboveMA: m.aboveMA, nearHighPct, breakout };
 }
 
 // TP/SL 청산 시뮬레이터 (현실적). nb={o,h,l,c}=당일 종가 대비 익일 시/고/저/종가(%).

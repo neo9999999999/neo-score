@@ -18,7 +18,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstNow, kstDateStr, kstIso, fetchYahooSeries, closesAsOf, makeIndicator } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, pickReason, fmtEok, buildCalibration, estimate, fetchSupplyMap, supplyInfo } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, newHighCandidate, pickReason, fmtEok, buildCalibration, estimate, fetchSupplyMap, supplyInfo } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -76,12 +76,13 @@ async function main() {
   const universe = await loadUniverse(STOCKS_PATH, UNIVERSE_N);
   console.log("[afternoon] 유니버스:", universe.length, "종목 수집 중…");
   const scored = await pMap(universe, async (u) => {
-    const series = await fetchYahooOHLCV(u.symbol, "3mo");
-    if (!series.length) return null;
+    const series = await fetchYahooOHLCV(u.symbol, "1y"); // 120일 고가(신고가) 판정 위해 1년
+    if (series.length < 121) return null;
     const i = series.length - 1;
     const m = scoreAt(series, i, macroBias);
     if (!m) return null;
-    return { ...u, ...m, date: series[i].date, price: series[i].close };
+    const nhc = newHighCandidate(series, i, { chgMin: 2, chgMax: 27 });
+    return { ...u, ...m, date: series[i].date, price: series[i].close, nh: !!nhc, nearHighPct: nhc ? nhc.nearHighPct : null, breakout: nhc ? nhc.breakout : false };
   }, 8);
 
   const valid = scored.filter(Boolean).filter(x => isFinite(x.value) && x.value > 0);
@@ -96,31 +97,32 @@ async function main() {
   // 백테스트: 점수순 대비 당일등락순이 익일 3%↑ 적중률 우수 / 수급은 라이브 가점
   const supplyMap = await fetchSupplyMap();
   console.log("[afternoon] 수급 데이터:", supplyMap.size, "종목");
-  const pool = universeByValue.filter(isLeader).map(x => {
+  const pool = universeByValue.filter(x => x.nh).map(x => {
     const e = estimate(calibration, x.changePct) || {};
     const si = supplyInfo(supplyMap.get(x.code));
     return { ...x, expRet: e.expRet ?? null, p3: e.p3 ?? null, p5: e.p5 ?? null, p3High: e.p3High ?? null, p5High: e.p5High ?? null, calHit: e.hitRate ?? null, supplyLabel: si.label, dongban: si.dongban, supplyKnown: si.known };
   });
-  // 외+기 동반매수 종목을 최우선, 그다음 당일 급등폭 순
-  pool.sort((a, b) => (b.dongban ? 1 : 0) - (a.dongban ? 1 : 0) || b.changePct - a.changePct);
+  // 외+기 동반매수 우선 → 신고가 돌파 우선 → 당일 등락폭 순
+  pool.sort((a, b) => (b.dongban ? 1 : 0) - (a.dongban ? 1 : 0) || (b.nearHighPct ?? -99) - (a.nearHighPct ?? -99) || b.changePct - a.changePct);
 
   const candidates = pool.slice(0, TOP_PICKS).map((x, idx) => ({
     rank: idx + 1, name: x.name, code: x.code, market: x.market,
     price: Math.round(x.price),
     score: x.score, changePct: x.changePct, rangePos: x.rangePos,
     volSurge: x.volSurge, gapPct: x.gapPct, aboveMA: x.aboveMA,
+    nearHighPct: x.nearHighPct, breakout: x.breakout,
     value: x.value, valueText: fmtEok(x.value),
     expRet: x.expRet, p3: x.p3, p5: x.p5, p3High: x.p3High, p5High: x.p5High, hitRate: x.calHit,
     supplyLabel: x.supplyLabel, dongban: x.dongban,
     target3: x.p3High != null && x.p3High >= 45,
-    reason: pickReason(x, x.name) + (x.dongban ? " · 외국인+기관 동반매수" : "") + (x.p3High != null ? ` (유사 급등주 익일 고가 3%도달 ${x.p3High}%·종가 3%마감 ${x.p3}%)` : ""),
+    reason: pickReason(x, x.name) + (x.breakout ? " · 신고가 돌파" : " · 신고가 근접") + " · 정배열" + (x.dongban ? " · 외+기 동반매수" : ""),
   }));
 
-  console.log(`[afternoon] 분석 ${valid.length}종목 → 대장주 후보 ${candidates.length}종목 (동반매수 ${candidates.filter(c => c.dongban).length})`);
+  console.log(`[afternoon] 신고가+정배열 후보 ${candidates.length}종목 (돌파 ${candidates.filter(c => c.breakout).length}, 동반매수 ${candidates.filter(c => c.dongban).length})`);
 
   const dir = v => v == null ? "혼조" : v > 0.1 ? "상승" : v < -0.1 ? "하락" : "보합";
   const top = candidates[0];
-  const summary = `미 선물은 나스닥 ${dir(nq)}(${nq >= 0 ? "+" : ""}${nq}%)·S&P ${dir(es)} 흐름으로, 익일 한국 증시는 ${marketBias === "bullish" ? "강세 우호" : marketBias === "bearish" ? "약세 경계" : "혼조"} 출발이 예상됩니다. 강한 신호 + 당일 급등 + 수급 종목 중 익일 상승 연속 가능성이 높은 ${candidates.length}개를 대장주 후보로 압축했습니다${top && top.p3High != null ? ` (1순위 ${top.name}, 유사 급등주 익일 고가 3% 도달 ${top.p3High}%·종가 3%마감 ${top.p3}%).` : "."}`;
+  const summary = `미 선물은 나스닥 ${dir(nq)}(${nq >= 0 ? "+" : ""}${nq}%)·S&P ${dir(es)} 흐름으로, 익일 한국 증시는 ${marketBias === "bullish" ? "강세 우호" : marketBias === "bearish" ? "약세 경계" : "혼조"} 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 ${candidates.length}개를 대장주 후보로 추렸습니다${top ? ` (1순위 ${top.name}, ${top.breakout ? "신고가 돌파" : "신고가 근접"}).` : "."}`;
 
   const report = {
     date: dateStr, generatedAt: kstIso(), source: "quant", type: "afternoon",
