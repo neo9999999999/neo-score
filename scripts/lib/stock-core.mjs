@@ -209,7 +209,7 @@ export function estimate(cal, changePct) {
 // 신고가+정배열 후보: 5>20>60일선 정배열 + 종가가 120일 고가의 95% 이상(근접/돌파).
 // 스펙트럼 확대: 당일 급등폭 조건 완화(+chgMin~chgMax%, 상한가 제외) + 거래량 동반.
 export function newHighCandidate(series, i, opt = {}) {
-  const { chgMin = 2, chgMax = 27 } = opt;
+  const { chgMin = 7, chgMax = 27, volMin = 3, valueMin = 5e9 } = opt;
   if (i < 120) return null;
   const m = scoreAt(series, i, 0);
   if (!m) return null;
@@ -220,10 +220,11 @@ export function newHighCandidate(series, i, opt = {}) {
   const aligned = c > ma5 && ma5 > ma20 && ma20 > ma60;          // 강한 정배열
   let hiPrev = 0; for (let k = i - 119; k <= i - 1; k++) hiPrev = Math.max(hiPrev, series[k].high);
   const nearHigh = hiPrev > 0 && c >= 0.95 * hiPrev;              // 신고가 95% 이상(근접/돌파)
-  if (!(aligned && nearHigh && m.changePct >= chgMin && m.changePct <= chgMax && m.rangePos >= 0.5 && m.volSurge >= 1.2)) return null;
+  // 정배열 + 신고가 + 당일 +7~27% + 종가강도 + 거래량 3배↑ + 거래대금 50억↑
+  if (!(aligned && nearHigh && m.changePct >= chgMin && m.changePct <= chgMax && m.rangePos >= 0.5 && m.volSurge >= volMin && m.value >= valueMin)) return null;
   const nearHighPct = +((c / hiPrev - 1) * 100).toFixed(2);       // >0=돌파, 0~-5=근접
   const breakout = c > hiPrev;
-  return { score: m.score, changePct: m.changePct, rangePos: m.rangePos, volSurge: m.volSurge, aboveMA: m.aboveMA, nearHighPct, breakout };
+  return { score: m.score, changePct: m.changePct, rangePos: m.rangePos, volSurge: m.volSurge, value: m.value, aboveMA: m.aboveMA, nearHighPct, breakout };
 }
 
 // TP/SL 청산 시뮬레이터 (현실적). nb={o,h,l,c}=당일 종가 대비 익일 시/고/저/종가(%).

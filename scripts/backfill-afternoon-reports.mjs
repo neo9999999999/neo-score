@@ -58,7 +58,7 @@ async function main() {
       const nh = (next.high - base) / base * 100, no = (next.open - base) / base * 100, nl = (next.low - base) / base * 100;
       baseSum += nextRet; baseN++;
       // 신고가+정배열 후보 (스펙트럼 확대: +2~27%)
-      const nhc = newHighCandidate(s, i, { chgMin: 2, chgMax: 27 });
+      const nhc = newHighCandidate(s, i, { chgMin: 7, chgMax: 27 });
       if (nhc) {
         const H = 10, fwdH = [], fwdC = [];
         for (let k = 1; k <= H && i + k < s.length; k++) {
