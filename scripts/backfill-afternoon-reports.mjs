@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -52,13 +52,16 @@ async function main() {
       if (d < START) continue;
       const next = s[i + 1];
       if (!next || !isFinite(next.close) || s[i].close <= 0) continue;
-      const nextRet = (next.close - s[i].close) / s[i].close * 100;
-      const nextHigh = (next.high - s[i].close) / s[i].close * 100; // 익일 고가 도달폭(당일 종가 기준)
+      const base = s[i].close;
+      const nextRet = (next.close - base) / base * 100;
+      const nextHigh = (next.high - base) / base * 100; // 익일 고가 도달폭(당일 종가 기준)
+      const nextOpen = (next.open - base) / base * 100;
+      const nextLow = (next.low - base) / base * 100;
       baseSum += nextRet; baseN++;
       const m = scoreAt(s, i, 0);
       if (!m || !isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
-      byDate.get(d).push({ code: st.code, name: st.name, score: m.score, changePct: m.changePct, nextRet: +nextRet.toFixed(2), nextHigh: +nextHigh.toFixed(2) });
+      byDate.get(d).push({ code: st.code, name: st.name, score: m.score, changePct: m.changePct, nextRet: +nextRet.toFixed(2), nextHigh: +nextHigh.toFixed(2), nextOpen: +nextOpen.toFixed(2), nextLow: +nextLow.toFixed(2) });
     }
   }
 
@@ -99,6 +102,20 @@ async function main() {
     edge: (pickAvg != null && baseAvg != null) ? +(pickAvg - baseAvg).toFixed(3) : null,
     note: "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락.",
   };
+
+  // 매도 전략 비교 (손절 포함) — 익일 시/고/저/종가로 시뮬레이션
+  const simPicks = [];
+  for (const r of reports) for (const p of r.picks) {
+    if (p.nextOpen != null && p.nextHigh != null && p.nextLow != null && p.nextRet != null) {
+      simPicks.push({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet });
+    }
+  }
+  const grid = runStrategyGrid(simPicks);
+  analysis.strategies = grid.strategies;
+  analysis.recommendedStrategy = grid.recommended;
+  console.log("[afternoon-bf] 전략 비교:");
+  for (const s of grid.strategies) console.log(`  ${s.name}: 평균 ${s.avg}% 승률 ${s.winRate}% 손실 ${s.lossRate}% 최저 ${s.worst}%`);
+  console.log("  추천:", grid.recommended);
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };

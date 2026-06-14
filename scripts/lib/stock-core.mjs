@@ -107,6 +107,56 @@ export function fmtEok(won) {
   return Math.round(eok).toLocaleString("ko-KR") + "억";
 }
 
+// 익일 청산 시뮬레이터. nb={o,h,l,c} = 당일 종가 대비 익일 시/고/저/종가(%).
+// 보수적 가정: 손절가가 장중에 닿으면 익절보다 먼저 체결됐다고 본다(하한 추정).
+// 룰: tp1Frac 만큼 +tp1Lvl%에서 익절, 잔량은 +floorLvl% 도달 후 그 아래로 빠지면 청산,
+//     +15%↑에서는 고가−trailGap% 트레일링. +tp1Lvl% 미도달이면 잔여 전량 종가 청산.
+export function simExit(nb, opt = {}) {
+  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null } = opt;
+  const { o, h, l, c } = nb;
+  if (stop != null) {
+    if (o <= stop) return o;      // 갭하락 → 시가 청산
+    if (l <= stop) return stop;   // 장중 손절(보수적: 익절보다 우선)
+  }
+  if (h < tp1Lvl) return c;       // 1차 목표 미도달 → 전량 종가
+  let runner;
+  if (h < floorLvl) runner = c;
+  else if (h < trailFrom) runner = (c < floorLvl ? floorLvl : c);
+  else runner = (c < h - trailGap ? h - trailGap : c);
+  return +(tp1Frac * tp1Lvl + (1 - tp1Frac) * runner).toFixed(3);
+}
+
+// 여러 전략 성과 비교 (picks: [{o,h,l,c}])
+export function runStrategyGrid(picks) {
+  const strategies = [
+    { name: "원안: 5%익절50%+트레일, 손절無", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: null } },
+    { name: "원안 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -3 } },
+    { name: "원안 + 손절 −5%", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -5 } },
+    { name: "익절 30%@+5% + 트레일 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.3, stop: -3 } },
+    { name: "익절가 +7%(50%) + 트레일 + 손절 −3%", opt: { tp1Lvl: 7, tp1Frac: 0.5, stop: -3 } },
+    { name: "무익절 전량 고가−5% 트레일 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.0, stop: -3 } },
+    { name: "익절 30%@+7% + 트레일 + 손절 −4%", opt: { tp1Lvl: 7, tp1Frac: 0.3, stop: -4 } },
+  ];
+  const out = strategies.map(s => {
+    const rets = picks.map(p => simExit(p, s.opt));
+    const n = rets.length;
+    const avg = +(rets.reduce((a, b) => a + b, 0) / n).toFixed(3);
+    const win = +(100 * rets.filter(x => x > 0).length / n).toFixed(1);
+    const loss = +(100 * rets.filter(x => x < 0).length / n).toFixed(1);
+    const worst = +Math.min(...rets).toFixed(1);
+    const best = +Math.max(...rets).toFixed(1);
+    // 위험조정(평균/손실변동성 근사)
+    const downs = rets.filter(x => x < 0);
+    const dd = downs.length ? Math.sqrt(downs.reduce((a, b) => a + b * b, 0) / downs.length) : 0;
+    const ret_risk = dd ? +(avg / dd).toFixed(3) : null;
+    return { name: s.name, opt: s.opt, avg, winRate: win, lossRate: loss, worst, best, retRisk: ret_risk };
+  });
+  // 추천: 평균 최고 (손실비중 50% 이하 조건)
+  const eligible = out.filter(s => s.lossRate <= 50);
+  const recommended = (eligible.length ? eligible : out).reduce((a, b) => b.avg > a.avg ? b : a);
+  return { strategies: out, recommended: recommended.name };
+}
+
 // OOS 히스토리(과거 선정 종목의 당일등락+익일등락)로 당일등락대별 보정표 생성
 export function buildCalibration(reports) {
   const samples = [];
