@@ -25,6 +25,7 @@ import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
 import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
 import { HaseunghoonClosingBetTab } from "./HaseunghoonClosingBetHelpers.jsx";
 import { HaseunghoonBacktestTab } from "./HaseunghoonBacktestHelpers.jsx";
+import { MarketReportTab } from "./MarketReportHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
@@ -2870,13 +2871,14 @@ export default function App(){
         {page==="hsdb"&&<HaseunghoonDB onRowClick={showFromD}/>}
         {(page==="filterdb"||page==="neobaedb")&&<NeoBaeFilterDB theme={theme} onRowClick={showFromD}/>}
         {page==="ai"&&<AIAnalysis onSave={saveHistory}/>}
+        {page==="report"&&<MarketReportTab theme={theme}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
         {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:_isDark?"#161b22":"#fff",borderTop:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
-          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"neobaedb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
+          {[{id:"ai",label:"네오 Ai분석",icon:"🤖"},{id:"report",label:"마켓리포트",icon:"🌏"},{id:"neobaedb",label:"네오스코어",icon:"🎯"},{id:"today",label:"네오 종배",icon:"🔥"},{id:"history",label:"히스토리",icon:"📋"}].map(t=>{
             const _act=t.id==="neobaedb"?(page==="filterdb"||page==="neobaedb"):page===t.id;
             const _activeColor=_isDark?"#e6edf3":"#191f28";const _inactiveColor=_isDark?"#6e7681":"#8b95a1";
             return(<button key={t.id} onClick={()=>setPage(t.id)} style={{flex:"1 0 auto",minWidth:65,padding:"10px 0 8px",border:"none",background:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,position:"relative"}}>
