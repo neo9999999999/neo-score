@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T22:03:57+09:00",
+    "updatedAt": "2026-06-14T22:26:50+09:00",
     "count": 1958,
     "backfilledFrom": "2018-01-01"
   },
@@ -1036,6 +1036,147 @@
           "hit5HighRate": 53.9,
           "baselineAvgNextRet": 0.017,
           "edge": 2.234
+        }
+      ]
+    },
+    "oosReal": {
+      "cost": 0.5,
+      "note": "현실 반영: 왕복 비용 0.5% 차감 · 1차 +5% 절반 익절, 나머지 종가 청산(고점 트레일 가정 제거) · 갭하락 −7% 손절 · 매수 가능 +10~20%만(상한가 락 제외).",
+      "byYear": [
+        {
+          "year": "2018",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 10,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 570,
+          "avg": -0.487,
+          "hit3HighRate": 48.4,
+          "hit5HighRate": 34.9,
+          "baselineAvgNextRet": 0.155,
+          "edge": -0.142
+        },
+        {
+          "year": "2019",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 12,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 404,
+          "avg": -0.293,
+          "hit3HighRate": 54,
+          "hit5HighRate": 39.1,
+          "baselineAvgNextRet": -0.064,
+          "edge": 0.271
+        },
+        {
+          "year": "2020",
+          "chosen": {
+            "scoreMin": 78,
+            "chgMin": 10,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 1117,
+          "avg": -0.363,
+          "hit3HighRate": 60.7,
+          "hit5HighRate": 46.4,
+          "baselineAvgNextRet": 0.108,
+          "edge": 0.029
+        },
+        {
+          "year": "2021",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 12,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 546,
+          "avg": -0.377,
+          "hit3HighRate": 55.3,
+          "hit5HighRate": 40.1,
+          "baselineAvgNextRet": 0.073,
+          "edge": 0.05
+        },
+        {
+          "year": "2022",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 12,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 365,
+          "avg": -0.917,
+          "hit3HighRate": 47.1,
+          "hit5HighRate": 33.7,
+          "baselineAvgNextRet": -0.532,
+          "edge": 0.115
+        },
+        {
+          "year": "2023",
+          "chosen": {
+            "scoreMin": 78,
+            "chgMin": 10,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 1028,
+          "avg": -0.727,
+          "hit3HighRate": 56.9,
+          "hit5HighRate": 43.9,
+          "baselineAvgNextRet": -0.32,
+          "edge": 0.093
+        },
+        {
+          "year": "2024",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 10,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 773,
+          "avg": -0.938,
+          "hit3HighRate": 52.4,
+          "hit5HighRate": 37.1,
+          "baselineAvgNextRet": -0.333,
+          "edge": -0.105
+        },
+        {
+          "year": "2025",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 12,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 727,
+          "avg": -0.368,
+          "hit3HighRate": 53.5,
+          "hit5HighRate": 37.4,
+          "baselineAvgNextRet": 0.064,
+          "edge": 0.068
+        },
+        {
+          "year": "2026",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 12,
+            "topN": 5,
+            "chgMax": 20
+          },
+          "n": 330,
+          "avg": -0.965,
+          "hit3HighRate": 53.9,
+          "hit5HighRate": 42.4,
+          "baselineAvgNextRet": 0.017,
+          "edge": -0.482
         }
       ]
     }
