@@ -136,15 +136,20 @@ function buildPrompt(indicators, dateStr) {
   "nasdaq": {"verdict":"간밤 나스닥 한 줄 평","detail":"등락 원인을 유가·금리·달러와 연결해 2~3문장"},
   "domestic": {"kospiBias":"강세/약세/관망/갭상승 등","kosdaqBias":"...","fxNote":"환율→외국인 수급 한 줄","detail":"오늘 국내증시 시나리오 2~3문장"},
   "sectors": [ {"name":"섹터명","bias":"up|down|neutral","reason":"왜 오늘 주목하는지","stocks":[{"name":"정확한 한국 상장 종목명","reason":"수혜 이유 한 줄"}]} ],
-  "issues": [ {"category":"무역/전쟁/통화정책/원자재 등","title":"이슈 제목","detail":"한 줄 해설"} ],
+  "globalIssues": [ {"category":"전쟁/지정학/무역/통화정책 등","title":"국제 핫이슈 제목","detail":"내용과 시장 영향 1~2문장"} ],
+  "weeklyCalendar": [ {"date":"6/16","day":"월","title":"이벤트명(예: 미 FOMC, 한국 수출입동향)","detail":"무엇을 보는지·시장 영향 한 줄","importance":"high|mid|low"} ],
+  "todayIssues": [ {"category":"국내/글로벌/원자재 등","title":"오늘 주목할 이슈 제목","detail":"한 줄 해설"} ],
   "cards": [ {"emoji":"📊","title":"카드 제목","body":"카드 본문 1~2문장"} ],
-  "detail": "상세 분석 본문. 단락은 \\n\\n 으로 구분. 거시 연결고리 → 나스닥 → 국내증시 → 섹터 순으로 5~7단락."
+  "detail": "상세 분석 본문. 단락은 \\n\\n 으로 구분. 거시 연결고리 → 나스닥 → 국내증시 → 섹터 → 글로벌/전쟁 이슈 순으로 6~8단락."
 }
 
 규칙:
 - 종목명은 실제 한국 상장사 정식 명칭만 사용(예: 삼성전자, SK하이닉스, 한화에어로스페이스). 코드는 적지 마세요.
 - 섹터는 3~5개, 각 섹터당 수혜 종목 2~3개.
 - chain은 4~6단계로 유가/달러/금리 → 나스닥 → 국내증시까지 이어지게.
+- globalIssues는 전쟁·지정학·무역분쟁 등 국제 핫이슈 2~4개, 한국 증시 영향까지 연결.
+- weeklyCalendar는 오늘 날짜가 속한 주(월~금)의 주요 경제 이벤트를 일자별로 3~6개. 미국·한국 지표 발표, 중앙은행 회의, 실적·옵션만기 등. date는 'M/D' 형식, day는 한글 요일 한 글자.
+- todayIssues는 오늘 장중 주목할 이슈 2~4개.
 - cards는 4~6장, 카드뉴스용으로 직관적이고 짧게.
 - 데이터가 '—'(수집 실패)인 지표는 일반적 거시 시나리오로 합리적으로 추론.`;
 
@@ -185,6 +190,26 @@ async function callLLM(system, user) {
   return JSON.parse(m[0]);
 }
 
+// 이번 주(월~금) 일자 목록 — 룰 기반 일정 골격
+function weekCalendar() {
+  const now = kstNow();
+  const dow = now.getUTCDay(); // 0=일
+  const monOffset = (dow === 0 ? -6 : 1 - dow);
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  const out = [];
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(now.getTime() + (monOffset + i) * 86400000);
+    out.push({
+      date: (d.getUTCMonth() + 1) + "/" + d.getUTCDate(),
+      day: days[d.getUTCDay()],
+      title: "주요 경제 일정",
+      detail: "미국·한국 지표 발표 및 이벤트는 LLM 분석 활성화 시 일자별로 채워집니다.",
+      importance: "mid",
+    });
+  }
+  return out;
+}
+
 // ---- 4) 룰 기반 폴백 ----
 function ruleBasedReport(indicators, dateStr) {
   const get = k => indicators.find(i => i.key === k)?._raw;
@@ -217,7 +242,12 @@ function ruleBasedReport(indicators, dateStr) {
       { name: "방어주·통신", bias: "up", reason: "위험회피 국면에서 상대적 강세 기대.", stocks: [{ name: "KT", reason: "고배당·경기방어 특성." }, { name: "SK텔레콤", reason: "안정적 현금흐름, 방어주." }] },
       { name: "정유·에너지", bias: oil?.chgPct > 0 ? "up" : "neutral", reason: "유가 흐름에 직접 연동.", stocks: [{ name: "S-Oil", reason: "정제마진·유가 민감주." }, { name: "GS", reason: "에너지 사업 비중 큼." }] },
     ],
-    issues: [{ category: "거시", title: "지표 자동 요약", detail: `유가 ${dirWord(oil?.chgPct)}, 달러 ${dirWord(dxy?.chgPct)}, 금리 ${dirWord(y10?.chgPct)} — 연결고리 섹션 참고.` }],
+    globalIssues: [
+      { category: "지정학", title: "국제 정세 모니터링", detail: "전쟁·지정학 리스크는 유가와 안전자산(달러·금) 선호를 통해 증시에 영향을 줍니다. LLM 분석 활성화 시 당일 핫이슈가 구체적으로 정리됩니다." },
+      { category: "무역", title: "무역·관세 이슈", detail: "관세·수출규제 등 무역 이슈는 반도체·자동차 등 수출주에 직접 영향을 줍니다." },
+    ],
+    weeklyCalendar: weekCalendar(),
+    todayIssues: [{ category: "거시", title: "지표 자동 요약", detail: `유가 ${dirWord(oil?.chgPct)}, 달러 ${dirWord(dxy?.chgPct)}, 금리 ${dirWord(y10?.chgPct)} — 연결고리 섹션 참고.` }],
     cards: [
       { emoji: sentiment === "bullish" ? "📈" : sentiment === "bearish" ? "📉" : "⚖️", title: "오늘의 한 줄", body: summary.split(". ")[0] + "." },
       { emoji: "🛢️", title: "유가 → 금리", body: `유가 ${dirWord(oil?.chgPct)} → 금리 ${oil?.chgPct > 0 ? "상승 압력, 기술주 부담" : "하락 압력, 기술주 우호"}.` },
@@ -267,7 +297,9 @@ async function main() {
     nasdaq: body.nasdaq || null,
     domestic: body.domestic || null,
     sectors: body.sectors || [],
-    issues: body.issues || [],
+    globalIssues: body.globalIssues || [],
+    weeklyCalendar: body.weeklyCalendar || [],
+    todayIssues: body.todayIssues || body.issues || [],
     cards: body.cards || [],
     detail: body.detail || "",
   };

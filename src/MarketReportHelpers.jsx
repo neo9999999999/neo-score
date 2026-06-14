@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 
 // 마켓 리포트 데이터 소스 (우선순위: 같은 오리진 → GitHub raw main)
 const REPORT_SOURCES = [
@@ -21,9 +21,9 @@ function useTheme(theme) {
 }
 
 const DIR = {
-  up: { c: "#16a34a", arrow: "▲", bg: "rgba(22,163,74,0.12)" },
-  down: { c: "#ef4444", arrow: "▼", bg: "rgba(239,68,68,0.12)" },
-  flat: { c: "#8b95a1", arrow: "—", bg: "rgba(139,149,161,0.12)" },
+  up: { c: "#16a34a", arrow: "▲" },
+  down: { c: "#ef4444", arrow: "▼" },
+  flat: { c: "#8b95a1", arrow: "—" },
 };
 const TONE = {
   pos: { c: "#16a34a", label: "긍정" },
@@ -40,6 +40,13 @@ const BIAS = {
   down: { c: "#ef4444", label: "약세", emoji: "🔻" },
   neutral: { c: "#d97706", label: "중립", emoji: "▪️" },
 };
+const IMP = {
+  high: { c: "#ef4444", label: "★★★" },
+  mid: { c: "#d97706", label: "★★" },
+  low: { c: "#8b95a1", label: "★" },
+};
+
+const navBtn = (T) => ({ border: "1px solid " + T.border, background: T.card, color: T.text, borderRadius: 9, padding: "8px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" });
 
 function Indicator({ ind, T }) {
   const d = DIR[ind.dir] || DIR.flat;
@@ -57,20 +64,18 @@ function Indicator({ ind, T }) {
 function ChainStep({ step, T, last }) {
   const tone = TONE[step.tone] || TONE.neutral;
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <span style={{ width: 10, height: 10, borderRadius: 5, background: tone.c, marginTop: 5 }} />
-          {!last && <span style={{ width: 2, flex: 1, minHeight: 26, background: T.border, marginTop: 2 }} />}
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+      <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <span style={{ width: 10, height: 10, borderRadius: 5, background: tone.c, marginTop: 5 }} />
+        {!last && <span style={{ width: 2, flex: 1, minHeight: 26, background: T.border, marginTop: 2 }} />}
+      </div>
+      <div style={{ flex: 1, paddingBottom: last ? 0 : 14 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: T.text }}>
+          {step.from} <span style={{ color: T.hint }}>→</span> {step.to}
+          <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, color: tone.c, background: tone.c + "22", padding: "1px 7px", borderRadius: 6 }}>{tone.label}</span>
         </div>
-        <div style={{ flex: 1, paddingBottom: last ? 0 : 14 }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: T.text }}>
-            {step.from} <span style={{ color: T.hint }}>→</span> {step.to}
-            <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 700, color: tone.c, background: tone.c + "22", padding: "1px 7px", borderRadius: 6 }}>{tone.label}</span>
-          </div>
-          {step.via && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 3 }}>{step.via}</div>}
-          {step.note && <div style={{ fontSize: 12.5, color: T.hint, marginTop: 3, lineHeight: 1.55 }}>{step.note}</div>}
-        </div>
+        {step.via && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 3 }}>{step.via}</div>}
+        {step.note && <div style={{ fontSize: 12.5, color: T.hint, marginTop: 3, lineHeight: 1.55 }}>{step.note}</div>}
       </div>
     </div>
   );
@@ -109,42 +114,88 @@ function SectorCard({ s, T }) {
   );
 }
 
+// 카드뉴스 — 손가락 스와이프 슬라이드 캐러셀
 function CardNews({ cards, T }) {
   const [idx, setIdx] = useState(0);
-  if (!cards || !cards.length) return null;
-  const n = cards.length;
-  const card = cards[idx];
+  const [drag, setDrag] = useState(0);
+  const startX = useRef(0);
+  const dx = useRef(0);
+  const dragging = useRef(false);
+  const n = (cards && cards.length) || 0;
   const palette = ["#7c3aed", "#2563eb", "#0d9488", "#d97706", "#db2777", "#dc2626"];
-  const accent = palette[idx % palette.length];
+  if (!n) return null;
+
+  const go = (i) => setIdx(Math.max(0, Math.min(n - 1, i)));
+  const onStart = (x) => { startX.current = x; dx.current = 0; dragging.current = true; };
+  const onMove = (x) => { if (!dragging.current) return; dx.current = x - startX.current; setDrag(dx.current); };
+  const onEnd = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    if (dx.current < -45 && idx < n - 1) go(idx + 1);
+    else if (dx.current > 45 && idx > 0) go(idx - 1);
+    setDrag(0); dx.current = 0;
+  };
+
   return (
     <div>
-      <div style={{ position: "relative", borderRadius: 18, overflow: "hidden", background: "linear-gradient(135deg," + accent + "ee," + accent + "99)", padding: "26px 22px", minHeight: 150, color: "#fff", boxShadow: "0 6px 20px " + accent + "33" }}>
-        <div style={{ fontSize: 40, marginBottom: 8 }}>{card.emoji || "📰"}</div>
-        <div style={{ fontSize: 19, fontWeight: 900, letterSpacing: "-0.4px", marginBottom: 8, lineHeight: 1.3 }}>{card.title}</div>
-        <div style={{ fontSize: 14, lineHeight: 1.65, opacity: 0.96, fontWeight: 500 }}>{card.body}</div>
-        <div style={{ position: "absolute", top: 14, right: 16, fontSize: 12, fontWeight: 700, opacity: 0.85 }}>{idx + 1} / {n}</div>
+      <div
+        style={{ overflow: "hidden", borderRadius: 18, touchAction: "pan-y" }}
+        onTouchStart={(e) => onStart(e.touches[0].clientX)}
+        onTouchMove={(e) => onMove(e.touches[0].clientX)}
+        onTouchEnd={onEnd}
+        onMouseDown={(e) => onStart(e.clientX)}
+        onMouseMove={(e) => dragging.current && onMove(e.clientX)}
+        onMouseUp={onEnd}
+        onMouseLeave={onEnd}
+      >
+        <div style={{ display: "flex", transform: `translateX(calc(${-idx * 100}% + ${drag}px))`, transition: drag ? "none" : "transform .3s cubic-bezier(.22,.61,.36,1)" }}>
+          {cards.map((card, i) => {
+            const accent = palette[i % palette.length];
+            return (
+              <div key={i} style={{ flex: "0 0 100%", minWidth: "100%", boxSizing: "border-box", padding: 1 }}>
+                <div style={{ position: "relative", borderRadius: 18, background: "linear-gradient(140deg," + accent + "f2," + accent + "b0)", padding: "26px 22px 24px", minHeight: 200, color: "#fff", boxShadow: "0 8px 24px " + accent + "40", userSelect: "none" }}>
+                  <div style={{ fontSize: 46, marginBottom: 10, lineHeight: 1 }}>{card.emoji || "📰"}</div>
+                  <div style={{ fontSize: 21, fontWeight: 900, letterSpacing: "-0.4px", marginBottom: 10, lineHeight: 1.3, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>{card.title}</div>
+                  <div style={{ fontSize: 15, lineHeight: 1.7, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>{card.body}</div>
+                  <div style={{ position: "absolute", top: 16, right: 18, fontSize: 13, fontWeight: 800, background: "rgba(255,255,255,0.22)", padding: "3px 10px", borderRadius: 20 }}>{i + 1} / {n}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-        <button onClick={() => setIdx(i => (i - 1 + n) % n)} style={navBtn(T)}>‹ 이전</button>
+        <button onClick={() => go(idx - 1)} disabled={idx === 0} style={{ ...navBtn(T), opacity: idx === 0 ? 0.4 : 1 }}>‹</button>
         <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 6 }}>
           {cards.map((_, i) => (
-            <span key={i} onClick={() => setIdx(i)} style={{ cursor: "pointer", width: i === idx ? 22 : 8, height: 8, borderRadius: 4, background: i === idx ? accent : T.border, transition: "all .2s" }} />
+            <span key={i} onClick={() => go(i)} style={{ cursor: "pointer", width: i === idx ? 24 : 8, height: 8, borderRadius: 4, background: i === idx ? palette[idx % palette.length] : T.border, transition: "all .2s" }} />
           ))}
         </div>
-        <button onClick={() => setIdx(i => (i + 1) % n)} style={navBtn(T)}>다음 ›</button>
+        <button onClick={() => go(idx + 1)} disabled={idx === n - 1} style={{ ...navBtn(T), opacity: idx === n - 1 ? 0.4 : 1 }}>›</button>
       </div>
+      <div style={{ textAlign: "center", fontSize: 11.5, color: T.hint, marginTop: 6 }}>← 좌우로 밀어서 넘기기 →</div>
     </div>
   );
 }
-const navBtn = (T) => ({ border: "1px solid " + T.border, background: T.card, color: T.text, borderRadius: 9, padding: "7px 13px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" });
 
 function Section({ title, sub, children, T }) {
   return (
     <div style={{ marginTop: 22 }}>
       <div style={{ fontSize: 15, fontWeight: 900, color: T.text, letterSpacing: "-0.3px" }}>{title}</div>
-      {sub && <div style={{ fontSize: 12, color: T.hint, marginTop: 2, marginBottom: 10 }}>{sub}</div>}
-      {!sub && <div style={{ height: 10 }} />}
+      {sub ? <div style={{ fontSize: 12, color: T.hint, marginTop: 2, marginBottom: 10 }}>{sub}</div> : <div style={{ height: 10 }} />}
       {children}
+    </div>
+  );
+}
+
+function IssueRow({ it, T }) {
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 13px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3, flexWrap: "wrap" }}>
+        {it.category && <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: T.hint, padding: "2px 7px", borderRadius: 6 }}>{it.category}</span>}
+        <span style={{ fontSize: 14, fontWeight: 800, color: T.text }}>{it.title}</span>
+      </div>
+      {it.detail && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.sub }}>{it.detail}</div>}
     </div>
   );
 }
@@ -183,6 +234,7 @@ export function MarketReportTab({ theme }) {
   );
 
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
+  const todayIssues = report.todayIssues || report.issues || [];
 
   return (
     <div style={{ paddingBottom: 20 }}>
@@ -196,12 +248,19 @@ export function MarketReportTab({ theme }) {
       </div>
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
-          ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실데이터로 자동 갱신됩니다.
+          ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
+        </div>
+      )}
+
+      {/* 카드뉴스 — 맨 위 */}
+      {report.cards && report.cards.length > 0 && (
+        <div style={{ marginTop: 14 }}>
+          <CardNews cards={report.cards} T={T} />
         </div>
       )}
 
       {/* 요약본 (터치 시 상세) */}
-      <div style={{ marginTop: 14, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
+      <div style={{ marginTop: 18, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
         <div style={{ fontSize: 13, fontWeight: 800, color: sent.c, marginBottom: 7 }}>📋 오늘의 요약</div>
         <div style={{ fontSize: 14.5, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{report.summary}</div>
         <button onClick={() => setShowDetail(s => !s)} style={{ marginTop: 12, width: "100%", border: "none", background: sent.c, color: "#fff", borderRadius: 10, padding: "10px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
@@ -210,7 +269,7 @@ export function MarketReportTab({ theme }) {
         {showDetail && (
           <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid " + T.border }}>
             {detailParas.map((p, i) => (
-              <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: i === 0 ? "0 0 10px" : "0 0 10px" }}>{p}</p>
+              <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: "0 0 10px" }}>{p}</p>
             ))}
           </div>
         )}
@@ -267,27 +326,47 @@ export function MarketReportTab({ theme }) {
         </Section>
       )}
 
-      {/* 주요 이슈 */}
-      {report.issues && report.issues.length > 0 && (
-        <Section title="📰 주요 이슈" T={T}>
+      {/* 글로벌·전쟁 핫이슈 */}
+      {report.globalIssues && report.globalIssues.length > 0 && (
+        <Section title="🌍 글로벌·전쟁 핫이슈" sub="국제 정세 · 무역 · 지정학 리스크" T={T}>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {report.issues.map((it, i) => (
-              <div key={i} style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 13px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: T.hint, padding: "2px 7px", borderRadius: 6 }}>{it.category}</span>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: T.text }}>{it.title}</span>
-                </div>
-                {it.detail && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.sub }}>{it.detail}</div>}
-              </div>
-            ))}
+            {report.globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
           </div>
         </Section>
       )}
 
-      {/* 카드뉴스 */}
-      {report.cards && report.cards.length > 0 && (
-        <Section title="🃏 카드뉴스" sub="좌우로 넘겨보세요" T={T}>
-          <CardNews cards={report.cards} T={T} />
+      {/* 이번주 경제 일정 */}
+      {report.weeklyCalendar && report.weeklyCalendar.length > 0 && (
+        <Section title="🗓️ 이번주 경제 일정" sub="일자별 주요 이벤트" T={T}>
+          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+            {report.weeklyCalendar.map((d, i) => {
+              const imp = IMP[d.importance] || IMP.mid;
+              return (
+                <div key={i} style={{ display: "flex", gap: 11, padding: "11px 13px", borderTop: i ? "1px solid " + T.border : "none" }}>
+                  <div style={{ flex: "0 0 58px", textAlign: "center" }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{d.date}</div>
+                    {d.day && <div style={{ fontSize: 11, color: T.hint, marginTop: 1 }}>{d.day}</div>}
+                  </div>
+                  <div style={{ flex: 1, borderLeft: "1px solid " + T.border, paddingLeft: 11 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{d.title}</span>
+                      <span style={{ fontSize: 10.5, color: imp.c, fontWeight: 800 }}>{imp.label}</span>
+                    </div>
+                    {d.detail && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 2, lineHeight: 1.55 }}>{d.detail}</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
+      {/* 당일 주요 이슈 */}
+      {todayIssues.length > 0 && (
+        <Section title="📌 당일 주요 이슈" T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+          </div>
         </Section>
       )}
 
