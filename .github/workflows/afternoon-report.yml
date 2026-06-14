@@ -24,7 +24,7 @@ jobs:
       - name: Generate afternoon report
         env:
           UNIVERSE_N: "500"
-          TOP_PICKS: "15"
+          TOP_PICKS: "5"
         run: node scripts/generate-afternoon-report.mjs
       - name: Commit & push if changed
         run: |
