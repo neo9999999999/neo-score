@@ -139,7 +139,7 @@ export function estimate(cal, changePct) {
 
 // 익일 대장주(3%↑ 연속 가능성) 후보 필터 — 강한 신호 + 당일 급등(과열 락 제외)
 export function isLeader(m) {
-  return m && m.score >= 78 && m.changePct >= 10 && m.changePct <= 29 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
+  return m && m.score >= 78 && m.changePct >= 15 && m.changePct <= 29 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
 }
 
 
