@@ -36,11 +36,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- public/market-report.json; then
+          git add public/market-report.json public/market-report-history.json public/reports
+          if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 생략"
           else
             DATE=$(date -u -d '+9 hours' +%Y-%m-%d)
-            git add public/market-report.json
             git commit -m "Daily market report ${DATE}"
             git push
           fi

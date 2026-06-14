@@ -200,39 +200,10 @@ function IssueRow({ it, T }) {
   );
 }
 
-export function MarketReportTab({ theme }) {
-  const T = useTheme(theme);
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// 리포트 본문 (오늘/히스토리 상세 공용)
+function ReportBody({ report, T }) {
   const [showDetail, setShowDetail] = useState(false);
-
-  const load = useCallback(async () => {
-    setLoading(true); setError(null);
-    for (const src of REPORT_SOURCES) {
-      try {
-        const r = await fetch(src());
-        if (!r.ok) continue;
-        const data = await r.json();
-        if (data && data.date) { setReport(data); setLoading(false); return; }
-      } catch (e) { /* try next */ }
-    }
-    setError("리포트를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const sent = useMemo(() => (report && SENT[report.sentiment]) || SENT.neutral, [report]);
-
-  if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint, fontSize: 14 }}>리포트 불러오는 중…</div>;
-  if (error || !report) return (
-    <div style={{ padding: 30, textAlign: "center", color: T.sub }}>
-      <div style={{ fontSize: 14, marginBottom: 12 }}>{error || "리포트가 없습니다."}</div>
-      <button onClick={load} style={navBtn(T)}>다시 시도</button>
-    </div>
-  );
-
+  const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
   const todayIssues = report.todayIssues || report.issues || [];
 
@@ -249,6 +220,14 @@ export function MarketReportTab({ theme }) {
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
           ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
+        </div>
+      )}
+      {report.source === "oos" && (
+        <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px solid " + T.border, borderRadius: 10, padding: "8px 11px" }}>
+          🧪 OOS(과거 시점 재현) 리포트 — 그날 시점의 거시지표만으로 작성된 룰 기반 분석입니다.
+          {report.oos && report.oos.kospiRet != null && (
+            <span> · 실제 코스피 {report.oos.kospiRet >= 0 ? "+" : ""}{report.oos.kospiRet}% · 방향 {report.oos.hit === true ? "✅ 적중" : report.oos.hit === false ? "❌ 빗나감" : "—"}</span>
+          )}
         </div>
       )}
 
@@ -373,6 +352,149 @@ export function MarketReportTab({ theme }) {
       <div style={{ marginTop: 24, textAlign: "center", fontSize: 11.5, color: T.hint }}>
         생성 시각: {report.generatedAt || report.date} · 본 리포트는 투자 참고용이며 투자 책임은 본인에게 있습니다.
       </div>
+    </div>
+  );
+}
+
+// 히스토리 인덱스 / 개별 리포트 소스
+const HIST_SOURCES = [
+  () => "/market-report-history.json?_=" + Date.now(),
+  () => "https://raw.githubusercontent.com/neo9999999999/neo-score/main/public/market-report-history.json?_=" + Date.now(),
+];
+const reportByDate = (d) => [
+  "/reports/" + d + ".json?_=" + Date.now(),
+  "https://raw.githubusercontent.com/neo9999999999/neo-score/main/public/reports/" + d + ".json?_=" + Date.now(),
+];
+
+async function fetchFirst(urls) {
+  for (const u of urls) {
+    try { const r = await fetch(u); if (r.ok) { const j = await r.json(); if (j) return j; } } catch (e) { /* next */ }
+  }
+  return null;
+}
+
+function AnalysisCard({ a, T }) {
+  if (!a) return null;
+  const cell = (label, val, c) => (
+    <div style={{ background: T.cardAlt, borderRadius: 10, padding: "10px 12px", flex: "1 1 90px" }}>
+      <div style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 17, fontWeight: 800, color: c || T.text, marginTop: 2 }}>{val}</div>
+    </div>
+  );
+  const pct = v => v == null ? "—" : (v >= 0 ? "+" : "") + v + "%";
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15, marginBottom: 14 }}>
+      <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>📊 OOS 백테스트 분석</div>
+      <div style={{ fontSize: 12, color: T.hint, marginBottom: 11 }}>{a.range?.start} ~ {a.range?.end} · 거래일 {a.totalDays}일</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {cell("방향 적중률", a.hitRate == null ? "—" : a.hitRate + "%", a.hitRate >= 50 ? "#16a34a" : "#ef4444")}
+        {cell("평가일수", (a.directionHits ?? 0) + "/" + (a.evaluated ?? 0))}
+        {cell("강세 예측", a.bullishDays + "일")}
+        {cell("약세 예측", a.bearishDays + "일")}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("중립일 코스피 평균", pct(a.avgKospiOnNeutral))}
+      </div>
+      {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
+    </div>
+  );
+}
+
+function HistoryView({ T, onOpen }) {
+  const [hist, setHist] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { (async () => { setHist(await fetchFirst(HIST_SOURCES.map(f => f()))); setLoading(false); })(); }, []);
+
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>히스토리 불러오는 중…</div>;
+  if (!hist || !hist.reports || !hist.reports.length) return (
+    <div style={{ padding: 24, textAlign: "center", color: T.sub, fontSize: 13.5, lineHeight: 1.7 }}>
+      아직 누적된 히스토리가 없습니다.<br />백필 워크플로(Daily Market Report Backfill)를 실행하면 과거 일자별 OOS 리포트가 채워집니다.
+    </div>
+  );
+
+  return (
+    <div style={{ paddingBottom: 20 }}>
+      <AnalysisCard a={hist.analysis} T={T} />
+      <div style={{ fontSize: 13, fontWeight: 800, color: T.text, marginBottom: 8 }}>일자별 리포트 ({hist.reports.length}건)</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {hist.reports.map((r) => {
+          const s = SENT[r.sentiment] || SENT.neutral;
+          const oos = r.oos || {};
+          return (
+            <button key={r.date} onClick={() => onOpen(r.date)} style={{ textAlign: "left", border: "1px solid " + T.border, background: T.card, borderRadius: 12, padding: "11px 13px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ flex: "0 0 66px" }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{r.date.slice(5)}</div>
+                <div style={{ fontSize: 10.5, color: T.hint }}>{r.date.slice(0, 4)}</div>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: 11.5, fontWeight: 800, color: s.c, background: s.bg, padding: "2px 8px", borderRadius: 12 }}>{s.emoji} {s.label}</span>
+                <div style={{ fontSize: 12, color: T.sub, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
+              </div>
+              <div style={{ flex: "0 0 auto", textAlign: "right" }}>
+                {oos.kospiRet != null && <div style={{ fontSize: 13, fontWeight: 800, color: oos.kospiRet >= 0 ? "#16a34a" : "#ef4444" }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
+                {oos.hit != null && <div style={{ fontSize: 12 }}>{oos.hit ? "✅" : "❌"}</div>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function MarketReportTab({ theme }) {
+  const T = useTheme(theme);
+  const [mode, setMode] = useState("today");
+  const [today, setToday] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [detail, setDetail] = useState(null); // 히스토리에서 연 개별 리포트
+  const [detailLoading, setDetailLoading] = useState(false);
+
+  const loadToday = useCallback(async () => {
+    setLoading(true); setError(null);
+    const data = await fetchFirst(REPORT_SOURCES.map(f => f()));
+    if (data && data.date) setToday(data); else setError("리포트를 불러오지 못했습니다.");
+    setLoading(false);
+  }, []);
+  useEffect(() => { loadToday(); }, [loadToday]);
+
+  const openDate = useCallback(async (d) => {
+    setDetailLoading(true);
+    const rep = await fetchFirst(reportByDate(d));
+    setDetail(rep || { date: d, summary: "해당 일자 리포트를 찾을 수 없습니다.", sentiment: "neutral", source: "oos" });
+    setDetailLoading(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const Toggle = () => (
+    <div style={{ display: "flex", gap: 6, background: T.cardAlt, borderRadius: 10, padding: 4, marginBottom: 14 }}>
+      {[["today", "오늘 리포트"], ["history", "일자별 히스토리"]].map(([k, label]) => (
+        <button key={k} onClick={() => { setMode(k); setDetail(null); }} style={{ flex: 1, border: "none", borderRadius: 8, padding: "9px 0", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", background: mode === k ? T.card : "transparent", color: mode === k ? T.text : T.hint, boxShadow: mode === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
+      ))}
+    </div>
+  );
+
+  return (
+    <div>
+      <Toggle />
+      {mode === "today" && (
+        loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
+          : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
+            : today ? <ReportBody report={today} T={T} /> : null
+      )}
+      {mode === "history" && (
+        detail ? (
+          <div>
+            <button onClick={() => setDetail(null)} style={{ ...navBtn(T), marginBottom: 12 }}>‹ 목록으로</button>
+            {detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <ReportBody report={detail} T={T} />}
+          </div>
+        ) : (
+          detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <HistoryView T={T} onOpen={openDate} />
+        )
+      )}
     </div>
   );
 }

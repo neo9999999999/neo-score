@@ -1,0 +1,45 @@
+name: Market Report Backfill (OOS)
+
+# 과거 일자별 OOS 리포트 백필 + 분석.
+# 수동 실행 전용. 시작일을 입력해 그 시점부터 어제까지 누적 생성한다.
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "백필 시작일 (YYYY-MM-DD)"
+        required: true
+        default: "2026-01-01"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-report-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run backfill
+        run: node scripts/backfill-market-reports.mjs "${{ inputs.start }}"
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/market-report-history.json public/reports
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "Backfill OOS market reports from ${{ inputs.start }}"
+            git push
+          fi
