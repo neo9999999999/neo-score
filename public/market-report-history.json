@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T14:08:56+09:00",
-    "count": 108,
+    "updatedAt": "2026-06-15T06:53:37+09:00",
+    "count": 109,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,75 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-06-15",
+      "sentiment": "neutral",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +0.31%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 상승, 원/달러 보합 흐름을 종합하면 오늘 국내증시는 혼조·관망 출발이 예상됩니다.",
+      "kospiBias": "관망",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,888.84",
+          "change": "+79.18",
+          "changePct": "+0.31%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,431.46",
+          "change": "+37.16",
+          "changePct": "+0.50%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.88",
+          "change": "-2.83",
+          "changePct": "-3.23%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.75",
+          "change": "-0.11",
+          "changePct": "-0.11%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,518.6원",
+          "change": "+1.19",
+          "changePct": "+0.08%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.49%",
+          "change": "+0.02%p",
+          "changePct": "+0.54%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "rule",
+      "oos": null
+    },
     {
       "date": "2026-06-12",
       "sentiment": "neutral",
