@@ -474,6 +474,7 @@ function CandidateRow({ c, T }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+        {c.supplyLabel && <span style={c.dongban ? { fontSize: 11, fontWeight: 800, color: "#fff", background: "#16a34a", padding: "3px 8px", borderRadius: 7 } : chip(T)}>{c.dongban ? "🟢 " : ""}{c.supplyLabel}</span>}
         <span style={chip(T)}>당일 {up ? "+" : ""}{c.changePct}%</span>
         <span style={chip(T)}>거래대금 {c.valueText}</span>
         <span style={chip(T)}>거래량 {c.volSurge}배</span>

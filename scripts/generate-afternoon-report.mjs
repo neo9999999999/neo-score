@@ -18,7 +18,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstNow, kstDateStr, kstIso, fetchYahooSeries, closesAsOf, makeIndicator } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, pickReason, fmtEok, buildCalibration, estimate } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, pickReason, fmtEok, buildCalibration, estimate, fetchSupplyMap, supplyInfo } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -92,13 +92,17 @@ async function main() {
   let calibration = null;
   try { const h = JSON.parse(await readFile(HIST, "utf8")); calibration = buildCalibration(h.reports); } catch {}
 
-  // 익일 대장주 후보(3%↑ 연속 가능성): 강한 신호 + 당일 급등 → 당일 급등폭 순(대장주)
-  // 백테스트: 점수순 대비 당일등락순이 익일 3%↑ 적중률 훨씬 우수
+  // 익일 대장주 후보(3%↑ 연속 가능성): 강한 신호 + 당일 급등 + 수급(외+기 동반매수) 우선
+  // 백테스트: 점수순 대비 당일등락순이 익일 3%↑ 적중률 우수 / 수급은 라이브 가점
+  const supplyMap = await fetchSupplyMap();
+  console.log("[afternoon] 수급 데이터:", supplyMap.size, "종목");
   const pool = universeByValue.filter(isLeader).map(x => {
     const e = estimate(calibration, x.changePct) || {};
-    return { ...x, expRet: e.expRet ?? null, p3: e.p3 ?? null, p5: e.p5 ?? null, calHit: e.hitRate ?? null };
+    const si = supplyInfo(supplyMap.get(x.code));
+    return { ...x, expRet: e.expRet ?? null, p3: e.p3 ?? null, p5: e.p5 ?? null, calHit: e.hitRate ?? null, supplyLabel: si.label, dongban: si.dongban, supplyKnown: si.known };
   });
-  pool.sort((a, b) => b.changePct - a.changePct);
+  // 외+기 동반매수 종목을 최우선, 그다음 당일 급등폭 순
+  pool.sort((a, b) => (b.dongban ? 1 : 0) - (a.dongban ? 1 : 0) || b.changePct - a.changePct);
 
   const candidates = pool.slice(0, TOP_PICKS).map((x, idx) => ({
     rank: idx + 1, name: x.name, code: x.code, market: x.market,
@@ -106,11 +110,12 @@ async function main() {
     volSurge: x.volSurge, gapPct: x.gapPct, aboveMA: x.aboveMA,
     value: x.value, valueText: fmtEok(x.value),
     expRet: x.expRet, p3: x.p3, p5: x.p5, hitRate: x.calHit,
+    supplyLabel: x.supplyLabel, dongban: x.dongban,
     target3: x.p3 != null && x.p3 >= 30,
-    reason: pickReason(x, x.name) + (x.p3 != null ? ` (유사 급등주 과거 익일 3%↑ ${x.p3}%, 예상 ${x.expRet >= 0 ? "+" : ""}${x.expRet}%)` : ""),
+    reason: pickReason(x, x.name) + (x.dongban ? " · 외국인+기관 동반매수" : "") + (x.p3 != null ? ` (유사 급등주 과거 익일 3%↑ ${x.p3}%, 예상 ${x.expRet >= 0 ? "+" : ""}${x.expRet}%)` : ""),
   }));
 
-  console.log(`[afternoon] 분석 ${valid.length}종목 → 대장주 후보 ${candidates.length}종목`);
+  console.log(`[afternoon] 분석 ${valid.length}종목 → 대장주 후보 ${candidates.length}종목 (동반매수 ${candidates.filter(c => c.dongban).length})`);
 
   const dir = v => v == null ? "혼조" : v > 0.1 ? "상승" : v < -0.1 ? "하락" : "보합";
   const top = candidates[0];
