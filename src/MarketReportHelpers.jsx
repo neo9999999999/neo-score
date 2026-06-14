@@ -788,17 +788,28 @@ function OosSplitCard({ oos, oosReal, oosAdv, T }) {
           </div>
         </div>
       )}
-      {oosAdv && oosAdv.byYear && oosAdv.byYear.length > 0 && (
+      {oosAdv && (oosAdv.gridBest || (oosAdv.byYear && oosAdv.byYear.length)) && (
         <div style={{ marginTop: 12, paddingTop: 12, borderTop: "2px solid " + ACCENT }}>
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 3 }}>🛠️ 고도화: 익절/손절 최적화 OOS (상한가 제외 · 비용 {oosAdv.cost}% 차감)</div>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 3 }}>🛠️ 완전탐색: 익절(고가)/손절(종가) 최적 조합 (상한가 제외 · 비용 {oosAdv.cost}% 차감 · 최대 {oosAdv.holdDays}일)</div>
           <div style={{ fontSize: 11, color: T.hint, marginBottom: 8, lineHeight: 1.5 }}>{oosAdv.note}</div>
+          {oosAdv.gridBest && (
+            <div style={{ background: "rgba(234,179,8,0.16)", border: "1px solid " + ACCENT, borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: T.text }}>전 구간 최고 조합 (인샘플·과최적)</div>
+              <div style={{ fontSize: 13, marginTop: 3 }}>
+                <b style={{ color: T.text }}>익절 +{oosAdv.gridBest.tp}% / 손절 {oosAdv.gridBest.sl == null ? "무손절" : "−" + oosAdv.gridBest.sl + "%"}</b>
+                <span style={{ color: (oosAdv.gridBest.avg || 0) >= 0 ? UP_C : DN_C, fontWeight: 800, marginLeft: 8 }}>평균 {(oosAdv.gridBest.avg) >= 0 ? "+" : ""}{oosAdv.gridBest.avg}%/건</span>
+                <span style={{ color: T.sub, marginLeft: 8 }}>승률 {oosAdv.gridBest.winRate}% · {oosAdv.gridBest.n}건</span>
+              </div>
+            </div>
+          )}
+          <div style={{ fontSize: 11.5, fontWeight: 700, color: T.text, margin: "6px 0 4px" }}>연도별 OOS (그 해 빼고 최적화 → 그 해 검증)</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {oosAdv.byYear.slice().sort((a, b) => b.year.localeCompare(a.year)).map(y => (
+            {(oosAdv.byYear || []).slice().sort((a, b) => b.year.localeCompare(a.year)).map(y => (
               <div key={y.year} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, background: T.cardAlt, borderRadius: 8, padding: "7px 10px", flexWrap: "wrap" }}>
                 <span style={{ flex: "0 0 42px", fontWeight: 800, color: T.text }}>{y.year}</span>
                 <span style={{ flex: "0 0 auto", fontWeight: 800, color: (y.avg || 0) >= 0 ? UP_C : DN_C }}>순 {(y.avg || 0) >= 0 ? "+" : ""}{y.avg}%</span>
                 <span style={{ color: T.sub }}>승률 {y.winRate}%</span>
-                <span style={{ color: T.hint, fontSize: 11 }}>TP+{y.chosen.tp}/SL{y.chosen.sl}/익절{Math.round(y.chosen.tp1Frac * 100)}%</span>
+                <span style={{ color: T.hint, fontSize: 11 }}>익절+{y.chosen.tp}/손절{y.chosen.sl == null ? "무" : "−" + y.chosen.sl}</span>
                 <span style={{ marginLeft: "auto", color: T.hint, fontSize: 11 }}>{y.n}건</span>
               </div>
             ))}
