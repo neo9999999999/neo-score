@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T18:01:33+09:00",
-    "count": 85,
+    "updatedAt": "2026-06-14T18:26:01+09:00",
+    "count": 84,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -21,29 +21,110 @@
     "avgNextRet": 0.646,
     "baselineAvgNextRet": 0.22,
     "edge": 0.426,
-    "note": "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락."
+    "note": "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락.",
+    "strategies": [
+      {
+        "name": "원안: 5%익절50%+트레일, 손절無",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.5,
+          "stop": null
+        },
+        "avg": 1.546,
+        "winRate": 59.8,
+        "lossRate": 40.2,
+        "worst": -17,
+        "best": 17.5,
+        "retRisk": 0.214
+      },
+      {
+        "name": "원안 + 손절 −3%",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.5,
+          "stop": -3
+        },
+        "avg": 0.229,
+        "winRate": 36.1,
+        "lossRate": 63.9,
+        "worst": -21.2,
+        "best": 17.5,
+        "retRisk": 0.049
+      },
+      {
+        "name": "원안 + 손절 −5%",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.5,
+          "stop": -5
+        },
+        "avg": 0.393,
+        "winRate": 46.9,
+        "lossRate": 53.1,
+        "worst": -21.2,
+        "best": 17.5,
+        "retRisk": 0.067
+      },
+      {
+        "name": "익절 30%@+5% + 트레일 + 손절 −3%",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0.3,
+          "stop": -3
+        },
+        "avg": 0.616,
+        "winRate": 36.1,
+        "lossRate": 63.9,
+        "worst": -21.2,
+        "best": 22.5,
+        "retRisk": 0.133
+      },
+      {
+        "name": "익절가 +7%(50%) + 트레일 + 손절 −3%",
+        "opt": {
+          "tp1Lvl": 7,
+          "tp1Frac": 0.5,
+          "stop": -3
+        },
+        "avg": 0.374,
+        "winRate": 36.1,
+        "lossRate": 63.9,
+        "worst": -21.2,
+        "best": 18.5,
+        "retRisk": 0.081
+      },
+      {
+        "name": "무익절 전량 고가−5% 트레일 + 손절 −3%",
+        "opt": {
+          "tp1Lvl": 5,
+          "tp1Frac": 0,
+          "stop": -3
+        },
+        "avg": 1.197,
+        "winRate": 35.6,
+        "lossRate": 64.4,
+        "worst": -21.2,
+        "best": 30,
+        "retRisk": 0.259
+      },
+      {
+        "name": "익절 30%@+7% + 트레일 + 손절 −4%",
+        "opt": {
+          "tp1Lvl": 7,
+          "tp1Frac": 0.3,
+          "stop": -4
+        },
+        "avg": 0.904,
+        "winRate": 43.3,
+        "lossRate": 56.7,
+        "worst": -21.2,
+        "best": 23.1,
+        "retRisk": 0.172
+      }
+    ],
+    "recommendedStrategy": "원안: 5%익절50%+트레일, 손절無"
   },
   "reports": [
-    {
-      "date": "2026-06-14",
-      "marketBias": "bullish",
-      "picks": [
-        {
-          "name": "후성",
-          "code": "093370",
-          "score": 88.2,
-          "changePct": 20.55
-        },
-        {
-          "name": "에스원",
-          "code": "012750",
-          "score": 86.8,
-          "changePct": 15.65
-        }
-      ],
-      "nq": 0.67,
-      "es": 0.53
-    },
     {
       "date": "2026-06-09",
       "picks": [
@@ -54,6 +135,8 @@
           "changePct": 20.18,
           "nextRet": 20.12,
           "nextHigh": 23.3,
+          "nextOpen": 5.7,
+          "nextLow": 2.14,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -65,6 +148,8 @@
           "changePct": 15,
           "nextRet": -6.42,
           "nextHigh": -4.35,
+          "nextOpen": -4.76,
+          "nextLow": -14.08,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -83,6 +168,8 @@
           "changePct": 20.45,
           "nextRet": -5.28,
           "nextHigh": -0.72,
+          "nextOpen": -6.6,
+          "nextLow": -12.96,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -101,6 +188,8 @@
           "changePct": 21.07,
           "nextRet": -16.99,
           "nextHigh": -10.91,
+          "nextOpen": -14.23,
+          "nextLow": -21.41,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -112,6 +201,8 @@
           "changePct": 17.09,
           "nextRet": -10.57,
           "nextHigh": -3.52,
+          "nextOpen": -3.52,
+          "nextLow": -21.81,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -130,6 +221,8 @@
           "changePct": 28.57,
           "nextRet": 4.94,
           "nextHigh": 22.63,
+          "nextOpen": 9.81,
+          "nextLow": 2.19,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -141,6 +234,8 @@
           "changePct": 26.6,
           "nextRet": 13.1,
           "nextHigh": 26.81,
+          "nextOpen": 8.39,
+          "nextLow": 7.57,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -152,6 +247,8 @@
           "changePct": 24.8,
           "nextRet": 0.75,
           "nextHigh": 14.5,
+          "nextOpen": 0,
+          "nextLow": -2.79,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -163,6 +260,8 @@
           "changePct": 22.5,
           "nextRet": 17.09,
           "nextHigh": 27.5,
+          "nextOpen": 13.75,
+          "nextLow": 4.13,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -174,6 +273,8 @@
           "changePct": 21.91,
           "nextRet": 29.99,
           "nextHigh": 29.99,
+          "nextOpen": 9.2,
+          "nextLow": 7.63,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -192,6 +293,8 @@
           "changePct": 24.07,
           "nextRet": -4.55,
           "nextHigh": 10.63,
+          "nextOpen": 2.82,
+          "nextLow": -10.63,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -203,6 +306,8 @@
           "changePct": 15.25,
           "nextRet": 3.62,
           "nextHigh": 5.2,
+          "nextOpen": 0.57,
+          "nextLow": -2.26,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -221,6 +326,8 @@
           "changePct": 19.63,
           "nextRet": -11.6,
           "nextHigh": -3.82,
+          "nextOpen": -4.24,
+          "nextLow": -15.84,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -239,6 +346,8 @@
           "changePct": 19.3,
           "nextRet": -3.66,
           "nextHigh": -2.11,
+          "nextOpen": -3.01,
+          "nextLow": -5.69,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -257,6 +366,8 @@
           "changePct": 23,
           "nextRet": -0.13,
           "nextHigh": 6.49,
+          "nextOpen": -4.33,
+          "nextLow": -5.34,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -275,6 +386,8 @@
           "changePct": 23.87,
           "nextRet": -12.55,
           "nextHigh": -3.44,
+          "nextOpen": -4.66,
+          "nextLow": -14.17,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -293,6 +406,8 @@
           "changePct": 20.08,
           "nextRet": -11.38,
           "nextHigh": -5.52,
+          "nextOpen": -7.76,
+          "nextLow": -11.9,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -304,6 +419,8 @@
           "changePct": 19.29,
           "nextRet": -7.46,
           "nextHigh": 3.69,
+          "nextOpen": 3.69,
+          "nextLow": -11.7,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -322,6 +439,8 @@
           "changePct": 17.14,
           "nextRet": 0.58,
           "nextHigh": 15.45,
+          "nextOpen": 8.83,
+          "nextLow": -3.02,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -340,6 +459,8 @@
           "changePct": 18.43,
           "nextRet": 0.15,
           "nextHigh": 5.86,
+          "nextOpen": 4.78,
+          "nextLow": -0.77,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -351,6 +472,8 @@
           "changePct": 15.79,
           "nextRet": 1.5,
           "nextHigh": 2.1,
+          "nextOpen": 1.62,
+          "nextLow": -2.1,
           "hit": true,
           "hit3": false,
           "hit3High": false
@@ -369,6 +492,8 @@
           "changePct": 18.24,
           "nextRet": -10.46,
           "nextHigh": 12.59,
+          "nextOpen": 0,
+          "nextLow": -15.07,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -380,6 +505,8 @@
           "changePct": 18,
           "nextRet": 3.52,
           "nextHigh": 5.46,
+          "nextOpen": 4.27,
+          "nextLow": -0.54,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -398,6 +525,8 @@
           "changePct": 20.13,
           "nextRet": -9.95,
           "nextHigh": 0.17,
+          "nextOpen": 0,
+          "nextLow": -14.22,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -416,6 +545,8 @@
           "changePct": 18.91,
           "nextRet": 29.96,
           "nextHigh": 29.96,
+          "nextOpen": 4.14,
+          "nextLow": 3.03,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -427,6 +558,8 @@
           "changePct": 16.11,
           "nextRet": -3.59,
           "nextHigh": 0.72,
+          "nextOpen": -1.56,
+          "nextLow": -4.78,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -438,6 +571,8 @@
           "changePct": 15.29,
           "nextRet": 8.64,
           "nextHigh": 15.52,
+          "nextOpen": 5.11,
+          "nextLow": 2.16,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -456,6 +591,8 @@
           "changePct": 21.51,
           "nextRet": -3.11,
           "nextHigh": -2.33,
+          "nextOpen": -3.73,
+          "nextLow": -8.39,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -474,6 +611,8 @@
           "changePct": 19.2,
           "nextRet": -5.73,
           "nextHigh": -1.19,
+          "nextOpen": -1.19,
+          "nextLow": -9.67,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -485,6 +624,8 @@
           "changePct": 17.34,
           "nextRet": 7.86,
           "nextHigh": 7.99,
+          "nextOpen": 4.39,
+          "nextLow": -2.26,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -496,6 +637,8 @@
           "changePct": 16.97,
           "nextRet": 6.77,
           "nextHigh": 23.02,
+          "nextOpen": 17.99,
+          "nextLow": 2.13,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -514,6 +657,8 @@
           "changePct": 28.28,
           "nextRet": 8.41,
           "nextHigh": 18.2,
+          "nextOpen": 16.82,
+          "nextLow": 3.05,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -525,6 +670,8 @@
           "changePct": 25.38,
           "nextRet": -4.2,
           "nextHigh": -1.05,
+          "nextOpen": -1.35,
+          "nextLow": -8.55,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -536,6 +683,8 @@
           "changePct": 18.45,
           "nextRet": 2.46,
           "nextHigh": 5.41,
+          "nextOpen": 5.25,
+          "nextLow": -0.33,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -547,6 +696,8 @@
           "changePct": 17.84,
           "nextRet": 9.89,
           "nextHigh": 15.94,
+          "nextOpen": 11,
+          "nextLow": 4.94,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -558,6 +709,8 @@
           "changePct": 17.73,
           "nextRet": -2.94,
           "nextHigh": -0.12,
+          "nextOpen": -3.53,
+          "nextLow": -4.94,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -576,6 +729,8 @@
           "changePct": 24.36,
           "nextRet": -1.11,
           "nextHigh": 9.2,
+          "nextOpen": 0.17,
+          "nextLow": -3.58,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -587,6 +742,8 @@
           "changePct": 20.36,
           "nextRet": 25.38,
           "nextHigh": 28.2,
+          "nextOpen": 4.89,
+          "nextLow": 4.14,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -605,6 +762,8 @@
           "changePct": 25.03,
           "nextRet": -4.18,
           "nextHigh": -0.77,
+          "nextOpen": -3.52,
+          "nextLow": -6.49,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -616,6 +775,8 @@
           "changePct": 24.87,
           "nextRet": -3.47,
           "nextHigh": 0.76,
+          "nextOpen": -3.05,
+          "nextLow": -6.27,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -627,6 +788,8 @@
           "changePct": 19.14,
           "nextRet": -3.67,
           "nextHigh": 0.16,
+          "nextOpen": -2.13,
+          "nextLow": -6.12,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -645,6 +808,8 @@
           "changePct": 19.7,
           "nextRet": -5.53,
           "nextHigh": 1.55,
+          "nextOpen": 1.55,
+          "nextLow": -7.96,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -656,6 +821,8 @@
           "changePct": 17.22,
           "nextRet": 5.64,
           "nextHigh": 8.31,
+          "nextOpen": -3.86,
+          "nextLow": -9.2,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -674,6 +841,8 @@
           "changePct": 26.4,
           "nextRet": -1.74,
           "nextHigh": 1.07,
+          "nextOpen": -1.74,
+          "nextLow": -5.62,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -685,6 +854,8 @@
           "changePct": 22.69,
           "nextRet": 4.49,
           "nextHigh": 6.76,
+          "nextOpen": 0.97,
+          "nextLow": -0.62,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -696,6 +867,8 @@
           "changePct": 22.5,
           "nextRet": -7.96,
           "nextHigh": -4.08,
+          "nextOpen": -4.83,
+          "nextLow": -8.98,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -707,6 +880,8 @@
           "changePct": 19.59,
           "nextRet": 11,
           "nextHigh": 29.83,
+          "nextOpen": 29.83,
+          "nextLow": 5.87,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -718,6 +893,8 @@
           "changePct": 16.96,
           "nextRet": -6.56,
           "nextHigh": 2.88,
+          "nextOpen": 0.35,
+          "nextLow": -7.94,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -736,6 +913,8 @@
           "changePct": 19.25,
           "nextRet": -1.82,
           "nextHigh": 1.3,
+          "nextOpen": 1.3,
+          "nextLow": -6.12,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -747,6 +926,8 @@
           "changePct": 18.88,
           "nextRet": 0.79,
           "nextHigh": 3.14,
+          "nextOpen": 0.7,
+          "nextLow": -4.71,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -758,6 +939,8 @@
           "changePct": 16.86,
           "nextRet": -1.76,
           "nextHigh": 9.57,
+          "nextOpen": 0.05,
+          "nextLow": -3.58,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -776,6 +959,8 @@
           "changePct": 26.4,
           "nextRet": 10.81,
           "nextHigh": 21.01,
+          "nextOpen": 0.37,
+          "nextLow": -4.3,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -794,6 +979,8 @@
           "changePct": 23.63,
           "nextRet": 13.01,
           "nextHigh": 18.62,
+          "nextOpen": 6.51,
+          "nextLow": -2.14,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -805,6 +992,8 @@
           "changePct": 21.17,
           "nextRet": -6.94,
           "nextHigh": -2.42,
+          "nextOpen": -3.53,
+          "nextLow": -9.23,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -816,6 +1005,8 @@
           "changePct": 20.27,
           "nextRet": 8.03,
           "nextHigh": 9.13,
+          "nextOpen": 3.94,
+          "nextLow": -3.78,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -827,6 +1018,8 @@
           "changePct": 17.65,
           "nextRet": 0,
           "nextHigh": 7,
+          "nextOpen": 6.8,
+          "nextLow": -3.1,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -838,6 +1031,8 @@
           "changePct": 16.63,
           "nextRet": -0.33,
           "nextHigh": 0.16,
+          "nextOpen": -1.64,
+          "nextLow": -7.21,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -856,6 +1051,8 @@
           "changePct": 26.07,
           "nextRet": -2.74,
           "nextHigh": 5.33,
+          "nextOpen": 5.26,
+          "nextLow": -9.15,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -867,6 +1064,8 @@
           "changePct": 19.89,
           "nextRet": 2.17,
           "nextHigh": 6.36,
+          "nextOpen": 6.36,
+          "nextLow": 0.31,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -878,6 +1077,8 @@
           "changePct": 17.53,
           "nextRet": 1.09,
           "nextHigh": 4.78,
+          "nextOpen": -2.17,
+          "nextLow": -8.7,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -889,6 +1090,8 @@
           "changePct": 17.16,
           "nextRet": 3.34,
           "nextHigh": 3.74,
+          "nextOpen": 2.55,
+          "nextLow": -1.27,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -900,6 +1103,8 @@
           "changePct": 15.41,
           "nextRet": 4.23,
           "nextHigh": 7.49,
+          "nextOpen": 3.91,
+          "nextLow": 0.98,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -918,6 +1123,8 @@
           "changePct": 18.52,
           "nextRet": -3.71,
           "nextHigh": -1.58,
+          "nextOpen": -2.37,
+          "nextLow": -7.1,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -929,6 +1136,8 @@
           "changePct": 16.47,
           "nextRet": -8.22,
           "nextHigh": -0.51,
+          "nextOpen": -2.87,
+          "nextLow": -9.62,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -940,6 +1149,8 @@
           "changePct": 15.45,
           "nextRet": -0.74,
           "nextHigh": 1.23,
+          "nextOpen": -1.73,
+          "nextLow": -4.3,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -958,6 +1169,8 @@
           "changePct": 26.48,
           "nextRet": -9.72,
           "nextHigh": -3.48,
+          "nextOpen": -7.81,
+          "nextLow": -12.14,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -969,6 +1182,8 @@
           "changePct": 22.3,
           "nextRet": -5.64,
           "nextHigh": -3.84,
+          "nextOpen": -3.84,
+          "nextLow": -6.01,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -980,6 +1195,8 @@
           "changePct": 16.39,
           "nextRet": -3.21,
           "nextHigh": -0.36,
+          "nextOpen": -0.89,
+          "nextLow": -3.57,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -998,6 +1215,8 @@
           "changePct": 27.66,
           "nextRet": -10.83,
           "nextHigh": -4.17,
+          "nextOpen": -4.33,
+          "nextLow": -11.67,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1009,6 +1228,8 @@
           "changePct": 22.24,
           "nextRet": -6.8,
           "nextHigh": -4.1,
+          "nextOpen": -4.1,
+          "nextLow": -7.87,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1020,6 +1241,8 @@
           "changePct": 21.92,
           "nextRet": 7.53,
           "nextHigh": 10.1,
+          "nextOpen": -3.25,
+          "nextLow": -6.68,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1031,6 +1254,8 @@
           "changePct": 15.01,
           "nextRet": -8.38,
           "nextHigh": 4.12,
+          "nextOpen": 3.45,
+          "nextLow": -8.45,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1049,6 +1274,8 @@
           "changePct": 28.3,
           "nextRet": 2.06,
           "nextHigh": 3.52,
+          "nextOpen": 1.33,
+          "nextLow": -1.82,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1060,6 +1287,8 @@
           "changePct": 24.93,
           "nextRet": 27.66,
           "nextHigh": 29.57,
+          "nextOpen": 11.7,
+          "nextLow": 1.7,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1071,6 +1300,8 @@
           "changePct": 20.75,
           "nextRet": 11.33,
           "nextHigh": 17.89,
+          "nextOpen": 12.11,
+          "nextLow": 2.42,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1082,6 +1313,8 @@
           "changePct": 18.69,
           "nextRet": 0.92,
           "nextHigh": 5.66,
+          "nextOpen": 5.35,
+          "nextLow": -2.91,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1093,6 +1326,8 @@
           "changePct": 17.89,
           "nextRet": 6.94,
           "nextHigh": 8.62,
+          "nextOpen": 8.62,
+          "nextLow": 1.9,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1111,6 +1346,8 @@
           "changePct": 21.72,
           "nextRet": 4.2,
           "nextHigh": 6.15,
+          "nextOpen": 6.15,
+          "nextLow": -1.5,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1129,6 +1366,8 @@
           "changePct": 18.26,
           "nextRet": 2.34,
           "nextHigh": 8.2,
+          "nextOpen": 0.43,
+          "nextLow": -2.66,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1147,6 +1386,8 @@
           "changePct": 19.78,
           "nextRet": 3.7,
           "nextHigh": 8.19,
+          "nextOpen": 0.53,
+          "nextLow": -3.83,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1158,6 +1399,8 @@
           "changePct": 16.58,
           "nextRet": 5.36,
           "nextHigh": 7.37,
+          "nextOpen": 3.6,
+          "nextLow": -5.09,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1176,6 +1419,8 @@
           "changePct": 15.76,
           "nextRet": -5.78,
           "nextHigh": -2.31,
+          "nextOpen": -2.67,
+          "nextLow": -8.01,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1194,6 +1439,8 @@
           "changePct": 25.93,
           "nextRet": -0.95,
           "nextHigh": 1.89,
+          "nextOpen": -4.62,
+          "nextLow": -6.2,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1205,6 +1452,8 @@
           "changePct": 25.86,
           "nextRet": -6.85,
           "nextHigh": -3.56,
+          "nextOpen": -6.3,
+          "nextLow": -8.77,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1216,6 +1465,8 @@
           "changePct": 22.92,
           "nextRet": 0.18,
           "nextHigh": 5.23,
+          "nextOpen": 0,
+          "nextLow": -3.96,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1227,6 +1478,8 @@
           "changePct": 21.04,
           "nextRet": -2.81,
           "nextHigh": -1.54,
+          "nextOpen": -3.29,
+          "nextLow": -6.09,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1238,6 +1491,8 @@
           "changePct": 16.74,
           "nextRet": 16.11,
           "nextHigh": 23.22,
+          "nextOpen": 9.6,
+          "nextLow": 4.5,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1256,6 +1511,8 @@
           "changePct": 15.98,
           "nextRet": -1.28,
           "nextHigh": 6.93,
+          "nextOpen": 1.28,
+          "nextLow": -6.57,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1274,6 +1531,8 @@
           "changePct": 18.01,
           "nextRet": 2.35,
           "nextHigh": 16.67,
+          "nextOpen": -3.99,
+          "nextLow": -6.1,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1285,6 +1544,8 @@
           "changePct": 16.4,
           "nextRet": -6.78,
           "nextHigh": 0,
+          "nextOpen": -2.17,
+          "nextLow": -9.08,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1303,6 +1564,8 @@
           "changePct": 28.53,
           "nextRet": 10.99,
           "nextHigh": 18.72,
+          "nextOpen": 16.37,
+          "nextLow": 5.83,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1314,6 +1577,8 @@
           "changePct": 25.27,
           "nextRet": 3.77,
           "nextHigh": 9.29,
+          "nextOpen": 0.87,
+          "nextLow": -2.47,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1325,6 +1590,8 @@
           "changePct": 22.16,
           "nextRet": 16.4,
           "nextHigh": 22.08,
+          "nextOpen": 4.42,
+          "nextLow": 1.1,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1336,6 +1603,8 @@
           "changePct": 21.4,
           "nextRet": 0.47,
           "nextHigh": 8.58,
+          "nextOpen": -4.42,
+          "nextLow": -7.71,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1347,6 +1616,8 @@
           "changePct": 18.49,
           "nextRet": -4.68,
           "nextHigh": 1.43,
+          "nextOpen": -1.82,
+          "nextLow": -5.85,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1365,6 +1636,8 @@
           "changePct": 21.02,
           "nextRet": 3.63,
           "nextHigh": 23.26,
+          "nextOpen": 8.76,
+          "nextLow": -3.32,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1376,6 +1649,8 @@
           "changePct": 18.59,
           "nextRet": -9.09,
           "nextHigh": 0.31,
+          "nextOpen": -0.94,
+          "nextLow": -11.13,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1387,6 +1662,8 @@
           "changePct": 16.55,
           "nextRet": -3.64,
           "nextHigh": 2.81,
+          "nextOpen": 0.27,
+          "nextLow": -5.01,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1398,6 +1675,8 @@
           "changePct": 16.52,
           "nextRet": -3.95,
           "nextHigh": 0.88,
+          "nextOpen": -1.46,
+          "nextLow": -6.43,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1416,6 +1695,8 @@
           "changePct": 23.78,
           "nextRet": -9.42,
           "nextHigh": -8.1,
+          "nextOpen": -10.73,
+          "nextLow": -19.59,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1434,6 +1715,8 @@
           "changePct": 21.93,
           "nextRet": 1.51,
           "nextHigh": 6.29,
+          "nextOpen": -2.77,
+          "nextLow": -4.65,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1445,6 +1728,8 @@
           "changePct": 16.24,
           "nextRet": -0.55,
           "nextHigh": 2.2,
+          "nextOpen": -0.76,
+          "nextLow": -3.17,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1463,6 +1748,8 @@
           "changePct": 17.72,
           "nextRet": 29.96,
           "nextHigh": 29.96,
+          "nextOpen": 4.08,
+          "nextLow": 2.67,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1481,6 +1768,8 @@
           "changePct": 21.18,
           "nextRet": 4.93,
           "nextHigh": 19.06,
+          "nextOpen": 4.05,
+          "nextLow": -1.94,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1492,6 +1781,8 @@
           "changePct": 19.64,
           "nextRet": -4.69,
           "nextHigh": 19.86,
+          "nextOpen": -14.48,
+          "nextLow": -15.86,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1503,6 +1794,8 @@
           "changePct": 18.43,
           "nextRet": -13.42,
           "nextHigh": 1.25,
+          "nextOpen": -1.61,
+          "nextLow": -16.1,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1521,6 +1814,8 @@
           "changePct": 28.28,
           "nextRet": 1.69,
           "nextHigh": 9.76,
+          "nextOpen": 2.44,
+          "nextLow": -7.41,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1532,6 +1827,8 @@
           "changePct": 26.51,
           "nextRet": -0.31,
           "nextHigh": 3.54,
+          "nextOpen": -1.69,
+          "nextLow": -6.63,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1543,6 +1840,8 @@
           "changePct": 22.54,
           "nextRet": 0.16,
           "nextHigh": 6.29,
+          "nextOpen": 6.13,
+          "nextLow": -3.14,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1554,6 +1853,8 @@
           "changePct": 20.53,
           "nextRet": 18.43,
           "nextHigh": 22.67,
+          "nextOpen": 1.48,
+          "nextLow": 0.21,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1565,6 +1866,8 @@
           "changePct": 19.31,
           "nextRet": -12.18,
           "nextHigh": 1.12,
+          "nextOpen": -1.92,
+          "nextLow": -12.66,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1583,6 +1886,8 @@
           "changePct": 26.06,
           "nextRet": 11.55,
           "nextHigh": 24.77,
+          "nextOpen": 15.27,
+          "nextLow": 5.21,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1594,6 +1899,8 @@
           "changePct": 15.96,
           "nextRet": 18.58,
           "nextHigh": 28.21,
+          "nextOpen": 2.52,
+          "nextLow": -2.52,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1612,6 +1919,8 @@
           "changePct": 22.79,
           "nextRet": 8.74,
           "nextHigh": 16.01,
+          "nextOpen": -2.08,
+          "nextLow": -2.89,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1623,6 +1932,8 @@
           "changePct": 17.33,
           "nextRet": 2.38,
           "nextHigh": 6.4,
+          "nextOpen": 1.7,
+          "nextLow": -0.77,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1634,6 +1945,8 @@
           "changePct": 16.59,
           "nextRet": 1.17,
           "nextHigh": 6.63,
+          "nextOpen": -0.19,
+          "nextLow": -1.56,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -1652,6 +1965,8 @@
           "changePct": 25.78,
           "nextRet": -5.19,
           "nextHigh": 1.45,
+          "nextOpen": 0.21,
+          "nextLow": -7.05,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1663,6 +1978,8 @@
           "changePct": 18.79,
           "nextRet": -0.55,
           "nextHigh": 7.18,
+          "nextOpen": 2.64,
+          "nextLow": -2.18,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1681,6 +1998,8 @@
           "changePct": 21.23,
           "nextRet": -14.87,
           "nextHigh": -4.86,
+          "nextOpen": -15.77,
+          "nextLow": -17.23,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1699,6 +2018,8 @@
           "changePct": 16.84,
           "nextRet": -3.99,
           "nextHigh": 10.2,
+          "nextOpen": 4.77,
+          "nextLow": -4.66,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1717,6 +2038,8 @@
           "changePct": 23.26,
           "nextRet": 9.31,
           "nextHigh": 17.82,
+          "nextOpen": 10.48,
+          "nextLow": 4.33,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1735,6 +2058,8 @@
           "changePct": 24.68,
           "nextRet": -3.1,
           "nextHigh": 13.25,
+          "nextOpen": -21.17,
+          "nextLow": -26.51,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1753,6 +2078,8 @@
           "changePct": 28.45,
           "nextRet": -10.47,
           "nextHigh": 25.34,
+          "nextOpen": 18.9,
+          "nextLow": -15.07,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1764,6 +2091,8 @@
           "changePct": 19.83,
           "nextRet": -7.61,
           "nextHigh": 15.57,
+          "nextOpen": 6.56,
+          "nextLow": -13.2,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1775,6 +2104,8 @@
           "changePct": 17.42,
           "nextRet": -16.94,
           "nextHigh": -1.29,
+          "nextOpen": -2.42,
+          "nextLow": -20.89,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1786,6 +2117,8 @@
           "changePct": 16.91,
           "nextRet": -16.76,
           "nextHigh": -4.43,
+          "nextOpen": -5.14,
+          "nextLow": -24.51,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1804,6 +2137,8 @@
           "changePct": 17.42,
           "nextRet": -12.83,
           "nextHigh": -1.24,
+          "nextOpen": -2.94,
+          "nextLow": -13.45,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1822,6 +2157,8 @@
           "changePct": 28.44,
           "nextRet": 17.42,
           "nextHigh": 20.69,
+          "nextOpen": -4.36,
+          "nextLow": -5.08,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1833,6 +2170,8 @@
           "changePct": 20,
           "nextRet": -7.54,
           "nextHigh": -3.48,
+          "nextOpen": -3.48,
+          "nextLow": -9.57,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1851,6 +2190,8 @@
           "changePct": 18.92,
           "nextRet": 4.55,
           "nextHigh": 10.73,
+          "nextOpen": 9.45,
+          "nextLow": 1.27,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1862,6 +2203,8 @@
           "changePct": 17.97,
           "nextRet": -1.94,
           "nextHigh": 0.97,
+          "nextOpen": 0.97,
+          "nextLow": -4.99,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1880,6 +2223,8 @@
           "changePct": 20.19,
           "nextRet": -2.72,
           "nextHigh": 5.55,
+          "nextOpen": -1.81,
+          "nextLow": -6.03,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1891,6 +2236,8 @@
           "changePct": 19.67,
           "nextRet": -4.92,
           "nextHigh": 10.14,
+          "nextOpen": 7.83,
+          "nextLow": -5.99,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1909,6 +2256,8 @@
           "changePct": 16.46,
           "nextRet": -4.74,
           "nextHigh": -3.78,
+          "nextOpen": -5.91,
+          "nextLow": -11.81,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -1920,6 +2269,8 @@
           "changePct": 15.46,
           "nextRet": 2.17,
           "nextHigh": 2.56,
+          "nextOpen": 0,
+          "nextLow": -3.13,
           "hit": true,
           "hit3": false,
           "hit3High": false
@@ -1938,6 +2289,8 @@
           "changePct": 26.08,
           "nextRet": 8.18,
           "nextHigh": 18.9,
+          "nextOpen": -0.3,
+          "nextLow": -6.99,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -1949,6 +2302,8 @@
           "changePct": 25.17,
           "nextRet": -8.39,
           "nextHigh": 16.13,
+          "nextOpen": 5.59,
+          "nextLow": -9.68,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1967,6 +2322,8 @@
           "changePct": 25.31,
           "nextRet": -0.83,
           "nextHigh": 12.85,
+          "nextOpen": 8.35,
+          "nextLow": -3.17,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1978,6 +2335,8 @@
           "changePct": 20.95,
           "nextRet": -5.4,
           "nextHigh": 6.89,
+          "nextOpen": 6.15,
+          "nextLow": -8.75,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -1989,6 +2348,8 @@
           "changePct": 18.93,
           "nextRet": 6.67,
           "nextHigh": 15.92,
+          "nextOpen": 15.51,
+          "nextLow": 3.67,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2000,6 +2361,8 @@
           "changePct": 18.82,
           "nextRet": -6.41,
           "nextHigh": 0.18,
+          "nextOpen": -1.6,
+          "nextLow": -8.19,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2011,6 +2374,8 @@
           "changePct": 18.31,
           "nextRet": -5.16,
           "nextHigh": -2.78,
+          "nextOpen": -2.78,
+          "nextLow": -6.65,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2029,6 +2394,8 @@
           "changePct": 28.5,
           "nextRet": 12.95,
           "nextHigh": 18.32,
+          "nextOpen": 3.31,
+          "nextLow": 0.14,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2040,6 +2407,8 @@
           "changePct": 23.76,
           "nextRet": -0.87,
           "nextHigh": 2.62,
+          "nextOpen": 1.75,
+          "nextLow": -4.19,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2051,6 +2420,8 @@
           "changePct": 17.21,
           "nextRet": 5.71,
           "nextHigh": 9.45,
+          "nextOpen": 9.01,
+          "nextLow": 2.2,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2062,6 +2433,8 @@
           "changePct": 15.36,
           "nextRet": 14.45,
           "nextHigh": 18.02,
+          "nextOpen": 11.69,
+          "nextLow": 9.58,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2080,6 +2453,8 @@
           "changePct": 25.21,
           "nextRet": -7.33,
           "nextHigh": -2.19,
+          "nextOpen": -2.19,
+          "nextLow": -9.35,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2091,6 +2466,8 @@
           "changePct": 16.13,
           "nextRet": -3.77,
           "nextHigh": 7.47,
+          "nextOpen": 6,
+          "nextLow": -3.77,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2102,6 +2479,8 @@
           "changePct": 15.12,
           "nextRet": 3.52,
           "nextHigh": 7.68,
+          "nextOpen": -3.8,
+          "nextLow": -7.82,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2120,6 +2499,8 @@
           "changePct": 22.98,
           "nextRet": -5.08,
           "nextHigh": -0.08,
+          "nextOpen": -0.08,
+          "nextLow": -6.96,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2131,6 +2512,8 @@
           "changePct": 21.93,
           "nextRet": -1.46,
           "nextHigh": 2.31,
+          "nextOpen": -0.73,
+          "nextLow": -3.28,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2149,6 +2532,8 @@
           "changePct": 26.98,
           "nextRet": -8,
           "nextHigh": 13.44,
+          "nextOpen": 13.44,
+          "nextLow": -8,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2160,6 +2545,8 @@
           "changePct": 22.36,
           "nextRet": 5.95,
           "nextHigh": 7.93,
+          "nextOpen": 5.95,
+          "nextLow": 1.13,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2171,6 +2558,8 @@
           "changePct": 17.94,
           "nextRet": 2.74,
           "nextHigh": 6.56,
+          "nextOpen": 6.24,
+          "nextLow": -2.52,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2182,6 +2571,8 @@
           "changePct": 16.74,
           "nextRet": 6.58,
           "nextHigh": 12.66,
+          "nextOpen": 12.66,
+          "nextLow": 5.56,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2193,6 +2584,8 @@
           "changePct": 16.16,
           "nextRet": 4.48,
           "nextHigh": 4.95,
+          "nextOpen": -1.89,
+          "nextLow": -1.89,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2211,6 +2604,8 @@
           "changePct": 25.46,
           "nextRet": -1.61,
           "nextHigh": 3.23,
+          "nextOpen": 0.54,
+          "nextLow": -2.02,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2222,6 +2617,8 @@
           "changePct": 20.25,
           "nextRet": -0.55,
           "nextHigh": 0.55,
+          "nextOpen": -1.21,
+          "nextLow": -2.97,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2233,6 +2630,8 @@
           "changePct": 17,
           "nextRet": 0.3,
           "nextHigh": 6.08,
+          "nextOpen": -0.85,
+          "nextLow": -0.85,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2244,6 +2643,8 @@
           "changePct": 15.56,
           "nextRet": -4.32,
           "nextHigh": 0.42,
+          "nextOpen": -1.35,
+          "nextLow": -5.17,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2262,6 +2663,8 @@
           "changePct": 16.17,
           "nextRet": 2.81,
           "nextHigh": 17.95,
+          "nextOpen": -4.4,
+          "nextLow": -5.74,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2280,6 +2683,8 @@
           "changePct": 17.65,
           "nextRet": 9.04,
           "nextHigh": 12.5,
+          "nextOpen": -1.92,
+          "nextLow": -1.92,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2298,6 +2703,8 @@
           "changePct": 28.63,
           "nextRet": 2.93,
           "nextHigh": 4.6,
+          "nextOpen": 4.44,
+          "nextLow": -0.84,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2309,6 +2716,8 @@
           "changePct": 24.72,
           "nextRet": 2.5,
           "nextHigh": 4,
+          "nextOpen": 3.1,
+          "nextLow": -1.9,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2320,6 +2729,8 @@
           "changePct": 22.82,
           "nextRet": 2.72,
           "nextHigh": 5.36,
+          "nextOpen": 0.15,
+          "nextLow": -3.7,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2331,6 +2742,8 @@
           "changePct": 16.35,
           "nextRet": 4.41,
           "nextHigh": 7.52,
+          "nextOpen": -0.16,
+          "nextLow": -1.14,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2342,6 +2755,8 @@
           "changePct": 15.57,
           "nextRet": 8.77,
           "nextHigh": 11.85,
+          "nextOpen": -1.14,
+          "nextLow": -2.44,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2360,6 +2775,8 @@
           "changePct": 20.32,
           "nextRet": -4.4,
           "nextHigh": -3.23,
+          "nextOpen": -4.34,
+          "nextLow": -7.39,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2378,6 +2795,8 @@
           "changePct": 20.57,
           "nextRet": -4.11,
           "nextHigh": 1.11,
+          "nextOpen": -1.42,
+          "nextLow": -6.79,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2389,6 +2808,8 @@
           "changePct": 15.82,
           "nextRet": -9.82,
           "nextHigh": 1.79,
+          "nextOpen": -1.07,
+          "nextLow": -10.71,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2407,6 +2828,8 @@
           "changePct": 17.39,
           "nextRet": 4.65,
           "nextHigh": 9.18,
+          "nextOpen": -2.33,
+          "nextLow": -3.06,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2418,6 +2841,8 @@
           "changePct": 16.91,
           "nextRet": 5.83,
           "nextHigh": 13.59,
+          "nextOpen": 3.3,
+          "nextLow": -0.39,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2436,6 +2861,8 @@
           "changePct": 15.3,
           "nextRet": -1.74,
           "nextHigh": 5.76,
+          "nextOpen": 3.89,
+          "nextLow": -6.03,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2454,6 +2881,8 @@
           "changePct": 23.33,
           "nextRet": -2.7,
           "nextHigh": 0,
+          "nextOpen": -2.51,
+          "nextLow": -4.63,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2472,6 +2901,8 @@
           "changePct": 16.58,
           "nextRet": -4.31,
           "nextHigh": -3.02,
+          "nextOpen": -3.16,
+          "nextLow": -7.47,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2490,6 +2921,8 @@
           "changePct": 26.61,
           "nextRet": -8.15,
           "nextHigh": 0.24,
+          "nextOpen": 0.12,
+          "nextLow": -9.8,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2501,6 +2934,8 @@
           "changePct": 18.67,
           "nextRet": -2.99,
           "nextHigh": 4.55,
+          "nextOpen": 4.55,
+          "nextLow": -5.72,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2512,6 +2947,8 @@
           "changePct": 16.69,
           "nextRet": -1.43,
           "nextHigh": 6.89,
+          "nextOpen": 6.89,
+          "nextLow": -4.75,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2530,6 +2967,8 @@
           "changePct": 16.16,
           "nextRet": 3.82,
           "nextHigh": 6.27,
+          "nextOpen": -0.15,
+          "nextLow": -0.76,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2548,6 +2987,8 @@
           "changePct": 19.14,
           "nextRet": 9.66,
           "nextHigh": 15.13,
+          "nextOpen": 14.3,
+          "nextLow": 1.39,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2559,6 +3000,8 @@
           "changePct": 16.22,
           "nextRet": -0.21,
           "nextHigh": 3.44,
+          "nextOpen": 2.92,
+          "nextLow": -4.06,
           "hit": false,
           "hit3": false,
           "hit3High": true
@@ -2570,6 +3013,8 @@
           "changePct": 15.32,
           "nextRet": -4.39,
           "nextHigh": 0.56,
+          "nextOpen": -2.56,
+          "nextLow": -5.95,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2588,6 +3033,8 @@
           "changePct": 24.91,
           "nextRet": 2.73,
           "nextHigh": 11.45,
+          "nextOpen": 3.03,
+          "nextLow": 0,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2606,6 +3053,8 @@
           "changePct": 16.8,
           "nextRet": 3.14,
           "nextHigh": 6.61,
+          "nextOpen": -1.98,
+          "nextLow": -2.48,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2624,6 +3073,8 @@
           "changePct": 25.37,
           "nextRet": 6.23,
           "nextHigh": 8.09,
+          "nextOpen": 1.87,
+          "nextLow": -0.86,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2642,6 +3093,8 @@
           "changePct": 20.18,
           "nextRet": 0.99,
           "nextHigh": 0.99,
+          "nextOpen": -2.52,
+          "nextLow": -4.06,
           "hit": true,
           "hit3": false,
           "hit3High": false
@@ -2653,6 +3106,8 @@
           "changePct": 15.01,
           "nextRet": -0.48,
           "nextHigh": -0.24,
+          "nextOpen": -2.86,
+          "nextLow": -5.71,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2671,6 +3126,8 @@
           "changePct": 27.53,
           "nextRet": 1.04,
           "nextHigh": 3.64,
+          "nextOpen": 1.82,
+          "nextLow": -2.6,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2682,6 +3139,8 @@
           "changePct": 22.29,
           "nextRet": 3.39,
           "nextHigh": 6.64,
+          "nextOpen": -1.82,
+          "nextLow": -3.52,
           "hit": true,
           "hit3": true,
           "hit3High": true
@@ -2693,6 +3152,8 @@
           "changePct": 19.37,
           "nextRet": -2.44,
           "nextHigh": 2.12,
+          "nextOpen": 0.85,
+          "nextLow": -4.98,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2711,6 +3172,8 @@
           "changePct": 26.44,
           "nextRet": 0.13,
           "nextHigh": 5.7,
+          "nextOpen": 5.58,
+          "nextLow": -1.01,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2722,6 +3185,8 @@
           "changePct": 16.78,
           "nextRet": 2.29,
           "nextHigh": 7.09,
+          "nextOpen": 6.86,
+          "nextLow": -0.69,
           "hit": true,
           "hit3": false,
           "hit3High": true
@@ -2740,6 +3205,8 @@
           "changePct": 18.44,
           "nextRet": -8.46,
           "nextHigh": -1.35,
+          "nextOpen": -1.86,
+          "nextLow": -11.68,
           "hit": false,
           "hit3": false,
           "hit3High": false
@@ -2758,6 +3225,8 @@
           "changePct": 15.78,
           "nextRet": 9.8,
           "nextHigh": 9.8,
+          "nextOpen": 1.02,
+          "nextLow": 0,
           "hit": true,
           "hit3": true,
           "hit3High": true
