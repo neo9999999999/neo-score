@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T17:31:12+09:00",
-    "count": 85,
+    "updatedAt": "2026-06-14T17:58:51+09:00",
+    "count": 84,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -13,36 +13,17 @@
     "topPicks": 5,
     "tradedDays": 84,
     "totalPicks": 194,
-    "hit3": 63,
+    "hit3HighRate": 61.9,
+    "hit5HighRate": 54.6,
     "hit3Rate": 32.5,
     "hit5Rate": 22.7,
     "upRate": 48.5,
     "avgNextRet": 0.646,
     "baselineAvgNextRet": 0.22,
     "edge": 0.426,
-    "note": "당일 급등폭 상위 선정 종목의 '익일 종가' 등락률. hit3Rate=익일 3%↑ 비율(주 지표). baseline=유니버스 전체 평균 익일 등락. edge=후보 평균−baseline."
+    "note": "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락."
   },
   "reports": [
-    {
-      "date": "2026-06-14",
-      "marketBias": "bullish",
-      "picks": [
-        {
-          "name": "후성",
-          "code": "093370",
-          "score": 88.2,
-          "changePct": 20.55
-        },
-        {
-          "name": "에스원",
-          "code": "012750",
-          "score": 86.8,
-          "changePct": 15.65
-        }
-      ],
-      "nq": 0.67,
-      "es": 0.53
-    },
     {
       "date": "2026-06-09",
       "picks": [
@@ -52,8 +33,10 @@
           "score": 81.3,
           "changePct": 20.18,
           "nextRet": 20.12,
+          "nextHigh": 23.3,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "085620",
@@ -61,8 +44,10 @@
           "score": 78.9,
           "changePct": 15,
           "nextRet": -6.42,
+          "nextHigh": -4.35,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 50,
@@ -77,8 +62,10 @@
           "score": 91.9,
           "changePct": 20.45,
           "nextRet": -5.28,
+          "nextHigh": -0.72,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -93,8 +80,10 @@
           "score": 82.6,
           "changePct": 21.07,
           "nextRet": -16.99,
+          "nextHigh": -10.91,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "181710",
@@ -102,8 +91,10 @@
           "score": 80.9,
           "changePct": 17.09,
           "nextRet": -10.57,
+          "nextHigh": -3.52,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -118,8 +109,10 @@
           "score": 84.1,
           "changePct": 28.57,
           "nextRet": 4.94,
+          "nextHigh": 22.63,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "003550",
@@ -127,8 +120,10 @@
           "score": 84.4,
           "changePct": 26.6,
           "nextRet": 13.1,
+          "nextHigh": 26.81,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "307950",
@@ -136,8 +131,10 @@
           "score": 81.4,
           "changePct": 24.8,
           "nextRet": 0.75,
+          "nextHigh": 14.5,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "181710",
@@ -145,8 +142,10 @@
           "score": 79.2,
           "changePct": 22.5,
           "nextRet": 17.09,
+          "nextHigh": 27.5,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "066575",
@@ -154,11 +153,13 @@
           "score": 86.5,
           "changePct": 21.91,
           "nextRet": 29.99,
+          "nextHigh": 29.99,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 80,
+      "dayHitRate": 100,
       "avgNextRet": 13.17
     },
     {
@@ -170,8 +171,10 @@
           "score": 80.6,
           "changePct": 24.07,
           "nextRet": -4.55,
+          "nextHigh": 10.63,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "373220",
@@ -179,11 +182,13 @@
           "score": 79,
           "changePct": 15.25,
           "nextRet": 3.62,
+          "nextHigh": 5.2,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 50,
+      "dayHitRate": 100,
       "avgNextRet": -0.46
     },
     {
@@ -195,8 +200,10 @@
           "score": 82.5,
           "changePct": 19.63,
           "nextRet": -11.6,
+          "nextHigh": -3.82,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -211,8 +218,10 @@
           "score": 84.6,
           "changePct": 19.3,
           "nextRet": -3.66,
+          "nextHigh": -2.11,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -227,11 +236,13 @@
           "score": 80.9,
           "changePct": 23,
           "nextRet": -0.13,
+          "nextHigh": 6.49,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -0.13
     },
     {
@@ -243,8 +254,10 @@
           "score": 83.6,
           "changePct": 23.87,
           "nextRet": -12.55,
+          "nextHigh": -3.44,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -259,8 +272,10 @@
           "score": 78.6,
           "changePct": 20.08,
           "nextRet": -11.38,
+          "nextHigh": -5.52,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "454910",
@@ -268,11 +283,13 @@
           "score": 82.8,
           "changePct": 19.29,
           "nextRet": -7.46,
+          "nextHigh": 3.69,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": -9.42
     },
     {
@@ -284,11 +301,13 @@
           "score": 88.2,
           "changePct": 17.14,
           "nextRet": 0.58,
+          "nextHigh": 15.45,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": 0.58
     },
     {
@@ -300,8 +319,10 @@
           "score": 88,
           "changePct": 18.43,
           "nextRet": 0.15,
+          "nextHigh": 5.86,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "031430",
@@ -309,11 +330,13 @@
           "score": 91.2,
           "changePct": 15.79,
           "nextRet": 1.5,
+          "nextHigh": 2.1,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": 0.82
     },
     {
@@ -325,8 +348,10 @@
           "score": 87.9,
           "changePct": 18.24,
           "nextRet": -10.46,
+          "nextHigh": 12.59,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "066570",
@@ -334,11 +359,13 @@
           "score": 86.1,
           "changePct": 18,
           "nextRet": 3.52,
+          "nextHigh": 5.46,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 50,
+      "dayHitRate": 100,
       "avgNextRet": -3.47
     },
     {
@@ -350,8 +377,10 @@
           "score": 87.9,
           "changePct": 20.13,
           "nextRet": -9.95,
+          "nextHigh": 0.17,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -366,8 +395,10 @@
           "score": 80.3,
           "changePct": 18.91,
           "nextRet": 29.96,
+          "nextHigh": 29.96,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "002020",
@@ -375,8 +406,10 @@
           "score": 86.1,
           "changePct": 16.11,
           "nextRet": -3.59,
+          "nextHigh": 0.72,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "012330",
@@ -384,8 +417,10 @@
           "score": 83.1,
           "changePct": 15.29,
           "nextRet": 8.64,
+          "nextHigh": 15.52,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 66.7,
@@ -400,8 +435,10 @@
           "score": 81,
           "changePct": 21.51,
           "nextRet": -3.11,
+          "nextHigh": -2.33,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -416,8 +453,10 @@
           "score": 86.7,
           "changePct": 19.2,
           "nextRet": -5.73,
+          "nextHigh": -1.19,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "028260",
@@ -425,8 +464,10 @@
           "score": 88.2,
           "changePct": 17.34,
           "nextRet": 7.86,
+          "nextHigh": 7.99,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "004800",
@@ -434,8 +475,10 @@
           "score": 89.9,
           "changePct": 16.97,
           "nextRet": 6.77,
+          "nextHigh": 23.02,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 66.7,
@@ -450,8 +493,10 @@
           "score": 83.2,
           "changePct": 28.28,
           "nextRet": 8.41,
+          "nextHigh": 18.2,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "062040",
@@ -459,8 +504,10 @@
           "score": 85.6,
           "changePct": 25.38,
           "nextRet": -4.2,
+          "nextHigh": -1.05,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "178920",
@@ -468,8 +515,10 @@
           "score": 86.2,
           "changePct": 18.45,
           "nextRet": 2.46,
+          "nextHigh": 5.41,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "402340",
@@ -477,8 +526,10 @@
           "score": 91.7,
           "changePct": 17.84,
           "nextRet": 9.89,
+          "nextHigh": 15.94,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "108670",
@@ -486,11 +537,13 @@
           "score": 89.5,
           "changePct": 17.73,
           "nextRet": -2.94,
+          "nextHigh": -0.12,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 40,
+      "dayHitRate": 60,
       "avgNextRet": 2.72
     },
     {
@@ -502,8 +555,10 @@
           "score": 80.4,
           "changePct": 24.36,
           "nextRet": -1.11,
+          "nextHigh": 9.2,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "062040",
@@ -511,11 +566,13 @@
           "score": 81,
           "changePct": 20.36,
           "nextRet": 25.38,
+          "nextHigh": 28.2,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 50,
+      "dayHitRate": 100,
       "avgNextRet": 12.13
     },
     {
@@ -527,8 +584,10 @@
           "score": 85.5,
           "changePct": 25.03,
           "nextRet": -4.18,
+          "nextHigh": -0.77,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "011170",
@@ -536,8 +595,10 @@
           "score": 87.9,
           "changePct": 24.87,
           "nextRet": -3.47,
+          "nextHigh": 0.76,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "006650",
@@ -545,8 +606,10 @@
           "score": 87,
           "changePct": 19.14,
           "nextRet": -3.67,
+          "nextHigh": 0.16,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -561,8 +624,10 @@
           "score": 89.9,
           "changePct": 19.7,
           "nextRet": -5.53,
+          "nextHigh": 1.55,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "005010",
@@ -570,8 +635,10 @@
           "score": 78.4,
           "changePct": 17.22,
           "nextRet": 5.64,
+          "nextHigh": 8.31,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 50,
@@ -586,8 +653,10 @@
           "score": 85.7,
           "changePct": 26.4,
           "nextRet": -1.74,
+          "nextHigh": 1.07,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "460860",
@@ -595,8 +664,10 @@
           "score": 83,
           "changePct": 22.69,
           "nextRet": 4.49,
+          "nextHigh": 6.76,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "009900",
@@ -604,8 +675,10 @@
           "score": 89.9,
           "changePct": 22.5,
           "nextRet": -7.96,
+          "nextHigh": -4.08,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "004800",
@@ -613,8 +686,10 @@
           "score": 95.4,
           "changePct": 19.59,
           "nextRet": 11,
+          "nextHigh": 29.83,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "004710",
@@ -622,8 +697,10 @@
           "score": 89.4,
           "changePct": 16.96,
           "nextRet": -6.56,
+          "nextHigh": 2.88,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 40,
@@ -638,8 +715,10 @@
           "score": 80.9,
           "changePct": 19.25,
           "nextRet": -1.82,
+          "nextHigh": 1.3,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "071970",
@@ -647,8 +726,10 @@
           "score": 91.2,
           "changePct": 18.88,
           "nextRet": 0.79,
+          "nextHigh": 3.14,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "092220",
@@ -656,11 +737,13 @@
           "score": 87.3,
           "changePct": 16.86,
           "nextRet": -1.76,
+          "nextHigh": 9.57,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 66.7,
       "avgNextRet": -0.93
     },
     {
@@ -672,8 +755,10 @@
           "score": 83.6,
           "changePct": 26.4,
           "nextRet": 10.81,
+          "nextHigh": 21.01,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -688,8 +773,10 @@
           "score": 83.6,
           "changePct": 23.63,
           "nextRet": 13.01,
+          "nextHigh": 18.62,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "007660",
@@ -697,8 +784,10 @@
           "score": 86.7,
           "changePct": 21.17,
           "nextRet": -6.94,
+          "nextHigh": -2.42,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "005090",
@@ -706,8 +795,10 @@
           "score": 80,
           "changePct": 20.27,
           "nextRet": 8.03,
+          "nextHigh": 9.13,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "011070",
@@ -715,8 +806,10 @@
           "score": 83.4,
           "changePct": 17.65,
           "nextRet": 0,
+          "nextHigh": 7,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "001530",
@@ -724,11 +817,13 @@
           "score": 83.8,
           "changePct": 16.63,
           "nextRet": -0.33,
+          "nextHigh": 0.16,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 40,
+      "dayHitRate": 60,
       "avgNextRet": 2.75
     },
     {
@@ -740,8 +835,10 @@
           "score": 84,
           "changePct": 26.07,
           "nextRet": -2.74,
+          "nextHigh": 5.33,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006400",
@@ -749,8 +846,10 @@
           "score": 94.9,
           "changePct": 19.89,
           "nextRet": 2.17,
+          "nextHigh": 6.36,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "443060",
@@ -758,8 +857,10 @@
           "score": 88.2,
           "changePct": 17.53,
           "nextRet": 1.09,
+          "nextHigh": 4.78,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "009155",
@@ -767,8 +868,10 @@
           "score": 89.5,
           "changePct": 17.16,
           "nextRet": 3.34,
+          "nextHigh": 3.74,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "006405",
@@ -776,11 +879,13 @@
           "score": 92.4,
           "changePct": 15.41,
           "nextRet": 4.23,
+          "nextHigh": 7.49,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 40,
+      "dayHitRate": 100,
       "avgNextRet": 1.62
     },
     {
@@ -792,8 +897,10 @@
           "score": 85.5,
           "changePct": 18.52,
           "nextRet": -3.71,
+          "nextHigh": -1.58,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "010820",
@@ -801,8 +908,10 @@
           "score": 86.9,
           "changePct": 16.47,
           "nextRet": -8.22,
+          "nextHigh": -0.51,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "012030",
@@ -810,8 +919,10 @@
           "score": 83.4,
           "changePct": 15.45,
           "nextRet": -0.74,
+          "nextHigh": 1.23,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -826,8 +937,10 @@
           "score": 81.3,
           "changePct": 26.48,
           "nextRet": -9.72,
+          "nextHigh": -3.48,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "093370",
@@ -835,8 +948,10 @@
           "score": 84.5,
           "changePct": 22.3,
           "nextRet": -5.64,
+          "nextHigh": -3.84,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "082740",
@@ -844,8 +959,10 @@
           "score": 80.6,
           "changePct": 16.39,
           "nextRet": -3.21,
+          "nextHigh": -0.36,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -860,8 +977,10 @@
           "score": 84.5,
           "changePct": 27.66,
           "nextRet": -10.83,
+          "nextHigh": -4.17,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "011790",
@@ -869,8 +988,10 @@
           "score": 86.9,
           "changePct": 22.24,
           "nextRet": -6.8,
+          "nextHigh": -4.1,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "090460",
@@ -878,8 +999,10 @@
           "score": 90.4,
           "changePct": 21.92,
           "nextRet": 7.53,
+          "nextHigh": 10.1,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "134380",
@@ -887,11 +1010,13 @@
           "score": 82.4,
           "changePct": 15.01,
           "nextRet": -8.38,
+          "nextHigh": 4.12,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 25,
+      "dayHitRate": 50,
       "avgNextRet": -4.62
     },
     {
@@ -903,8 +1028,10 @@
           "score": 79.9,
           "changePct": 28.3,
           "nextRet": 2.06,
+          "nextHigh": 3.52,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "010060",
@@ -912,8 +1039,10 @@
           "score": 79.5,
           "changePct": 24.93,
           "nextRet": 27.66,
+          "nextHigh": 29.57,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "000500",
@@ -921,8 +1050,10 @@
           "score": 85,
           "changePct": 20.75,
           "nextRet": 11.33,
+          "nextHigh": 17.89,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "006340",
@@ -930,8 +1061,10 @@
           "score": 80.1,
           "changePct": 18.69,
           "nextRet": 0.92,
+          "nextHigh": 5.66,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "018260",
@@ -939,11 +1072,13 @@
           "score": 86,
           "changePct": 17.89,
           "nextRet": 6.94,
+          "nextHigh": 8.62,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 60,
+      "dayHitRate": 100,
       "avgNextRet": 9.78
     },
     {
@@ -955,8 +1090,10 @@
           "score": 79.4,
           "changePct": 21.72,
           "nextRet": 4.2,
+          "nextHigh": 6.15,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -971,11 +1108,13 @@
           "score": 87.7,
           "changePct": 18.26,
           "nextRet": 2.34,
+          "nextHigh": 8.2,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": 2.34
     },
     {
@@ -987,8 +1126,10 @@
           "score": 80.3,
           "changePct": 19.78,
           "nextRet": 3.7,
+          "nextHigh": 8.19,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "010820",
@@ -996,8 +1137,10 @@
           "score": 87.1,
           "changePct": 16.58,
           "nextRet": 5.36,
+          "nextHigh": 7.37,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -1012,8 +1155,10 @@
           "score": 84.4,
           "changePct": 15.76,
           "nextRet": -5.78,
+          "nextHigh": -2.31,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1028,8 +1173,10 @@
           "score": 85,
           "changePct": 25.93,
           "nextRet": -0.95,
+          "nextHigh": 1.89,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "079900",
@@ -1037,8 +1184,10 @@
           "score": 85.4,
           "changePct": 25.86,
           "nextRet": -6.85,
+          "nextHigh": -3.56,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "000155",
@@ -1046,8 +1195,10 @@
           "score": 80.5,
           "changePct": 22.92,
           "nextRet": 0.18,
+          "nextHigh": 5.23,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "000720",
@@ -1055,8 +1206,10 @@
           "score": 84.9,
           "changePct": 21.04,
           "nextRet": -2.81,
+          "nextHigh": -1.54,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "006110",
@@ -1064,11 +1217,13 @@
           "score": 78.4,
           "changePct": 16.74,
           "nextRet": 16.11,
+          "nextHigh": 23.22,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 20,
+      "dayHitRate": 40,
       "avgNextRet": 1.14
     },
     {
@@ -1080,11 +1235,13 @@
           "score": 80.8,
           "changePct": 15.98,
           "nextRet": -1.28,
+          "nextHigh": 6.93,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -1.28
     },
     {
@@ -1096,8 +1253,10 @@
           "score": 79.5,
           "changePct": 18.01,
           "nextRet": 2.35,
+          "nextHigh": 16.67,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "001250",
@@ -1105,11 +1264,13 @@
           "score": 86.8,
           "changePct": 16.4,
           "nextRet": -6.78,
+          "nextHigh": 0,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": -2.21
     },
     {
@@ -1121,8 +1282,10 @@
           "score": 84.7,
           "changePct": 28.53,
           "nextRet": 10.99,
+          "nextHigh": 18.72,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "011930",
@@ -1130,8 +1293,10 @@
           "score": 83.5,
           "changePct": 25.27,
           "nextRet": 3.77,
+          "nextHigh": 9.29,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "001250",
@@ -1139,8 +1304,10 @@
           "score": 78.6,
           "changePct": 22.16,
           "nextRet": 16.4,
+          "nextHigh": 22.08,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "092790",
@@ -1148,8 +1315,10 @@
           "score": 85.6,
           "changePct": 21.4,
           "nextRet": 0.47,
+          "nextHigh": 8.58,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "112610",
@@ -1157,11 +1326,13 @@
           "score": 87.5,
           "changePct": 18.49,
           "nextRet": -4.68,
+          "nextHigh": 1.43,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 60,
+      "dayHitRate": 80,
       "avgNextRet": 5.39
     },
     {
@@ -1173,8 +1344,10 @@
           "score": 81.5,
           "changePct": 21.02,
           "nextRet": 3.63,
+          "nextHigh": 23.26,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "053690",
@@ -1182,8 +1355,10 @@
           "score": 87,
           "changePct": 18.59,
           "nextRet": -9.09,
+          "nextHigh": 0.31,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "267270",
@@ -1191,8 +1366,10 @@
           "score": 84.9,
           "changePct": 16.55,
           "nextRet": -3.64,
+          "nextHigh": 2.81,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "011070",
@@ -1200,8 +1377,10 @@
           "score": 82.2,
           "changePct": 16.52,
           "nextRet": -3.95,
+          "nextHigh": 0.88,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 25,
@@ -1216,8 +1395,10 @@
           "score": 85.9,
           "changePct": 23.78,
           "nextRet": -9.42,
+          "nextHigh": -8.1,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1232,8 +1413,10 @@
           "score": 88.2,
           "changePct": 21.93,
           "nextRet": 1.51,
+          "nextHigh": 6.29,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "066970",
@@ -1241,11 +1424,13 @@
           "score": 90,
           "changePct": 16.24,
           "nextRet": -0.55,
+          "nextHigh": 2.2,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": 0.48
     },
     {
@@ -1257,8 +1442,10 @@
           "score": 93.4,
           "changePct": 17.72,
           "nextRet": 29.96,
+          "nextHigh": 29.96,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -1273,8 +1460,10 @@
           "score": 79,
           "changePct": 21.18,
           "nextRet": 4.93,
+          "nextHigh": 19.06,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "003280",
@@ -1282,8 +1471,10 @@
           "score": 78.7,
           "changePct": 19.64,
           "nextRet": -4.69,
+          "nextHigh": 19.86,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "217590",
@@ -1291,11 +1482,13 @@
           "score": 85.5,
           "changePct": 18.43,
           "nextRet": -13.42,
+          "nextHigh": 1.25,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 33.3,
+      "dayHitRate": 66.7,
       "avgNextRet": -4.39
     },
     {
@@ -1307,8 +1500,10 @@
           "score": 83.7,
           "changePct": 28.28,
           "nextRet": 1.69,
+          "nextHigh": 9.76,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "000210",
@@ -1316,8 +1511,10 @@
           "score": 85.6,
           "changePct": 26.51,
           "nextRet": -0.31,
+          "nextHigh": 3.54,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006360",
@@ -1325,8 +1522,10 @@
           "score": 86.7,
           "changePct": 22.54,
           "nextRet": 0.16,
+          "nextHigh": 6.29,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "217590",
@@ -1334,8 +1533,10 @@
           "score": 86.7,
           "changePct": 20.53,
           "nextRet": 18.43,
+          "nextHigh": 22.67,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "105840",
@@ -1343,11 +1544,13 @@
           "score": 89.4,
           "changePct": 19.31,
           "nextRet": -12.18,
+          "nextHigh": 1.12,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 20,
+      "dayHitRate": 80,
       "avgNextRet": 1.56
     },
     {
@@ -1359,8 +1562,10 @@
           "score": 83.4,
           "changePct": 26.06,
           "nextRet": 11.55,
+          "nextHigh": 24.77,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "001510",
@@ -1368,8 +1573,10 @@
           "score": 80,
           "changePct": 15.96,
           "nextRet": 18.58,
+          "nextHigh": 28.21,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -1384,8 +1591,10 @@
           "score": 83.9,
           "changePct": 22.79,
           "nextRet": 8.74,
+          "nextHigh": 16.01,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "010060",
@@ -1393,8 +1602,10 @@
           "score": 80.2,
           "changePct": 17.33,
           "nextRet": 2.38,
+          "nextHigh": 6.4,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006360",
@@ -1402,11 +1613,13 @@
           "score": 82.9,
           "changePct": 16.59,
           "nextRet": 1.17,
+          "nextHigh": 6.63,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 33.3,
+      "dayHitRate": 100,
       "avgNextRet": 4.1
     },
     {
@@ -1418,8 +1631,10 @@
           "score": 86,
           "changePct": 25.78,
           "nextRet": -5.19,
+          "nextHigh": 1.45,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "000390",
@@ -1427,11 +1642,13 @@
           "score": 78.9,
           "changePct": 18.79,
           "nextRet": -0.55,
+          "nextHigh": 7.18,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": -2.87
     },
     {
@@ -1443,8 +1660,10 @@
           "score": 79.2,
           "changePct": 21.23,
           "nextRet": -14.87,
+          "nextHigh": -4.86,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1459,11 +1678,13 @@
           "score": 81,
           "changePct": 16.84,
           "nextRet": -3.99,
+          "nextHigh": 10.2,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -3.99
     },
     {
@@ -1475,8 +1696,10 @@
           "score": 86.4,
           "changePct": 23.26,
           "nextRet": 9.31,
+          "nextHigh": 17.82,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -1491,11 +1714,13 @@
           "score": 85,
           "changePct": 24.68,
           "nextRet": -3.1,
+          "nextHigh": 13.25,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -3.1
     },
     {
@@ -1507,8 +1732,10 @@
           "score": 83,
           "changePct": 28.45,
           "nextRet": -10.47,
+          "nextHigh": 25.34,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "012450",
@@ -1516,8 +1743,10 @@
           "score": 85.1,
           "changePct": 19.83,
           "nextRet": -7.61,
+          "nextHigh": 15.57,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "028670",
@@ -1525,8 +1754,10 @@
           "score": 82.4,
           "changePct": 17.42,
           "nextRet": -16.94,
+          "nextHigh": -1.29,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "044450",
@@ -1534,11 +1765,13 @@
           "score": 82.3,
           "changePct": 16.91,
           "nextRet": -16.76,
+          "nextHigh": -4.43,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": -12.95
     },
     {
@@ -1550,8 +1783,10 @@
           "score": 83.2,
           "changePct": 17.42,
           "nextRet": -12.83,
+          "nextHigh": -1.24,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1566,8 +1801,10 @@
           "score": 84.5,
           "changePct": 28.44,
           "nextRet": 17.42,
+          "nextHigh": 20.69,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "011070",
@@ -1575,8 +1812,10 @@
           "score": 89.3,
           "changePct": 20,
           "nextRet": -7.54,
+          "nextHigh": -3.48,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 50,
@@ -1591,8 +1830,10 @@
           "score": 81,
           "changePct": 18.92,
           "nextRet": 4.55,
+          "nextHigh": 10.73,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "005850",
@@ -1600,8 +1841,10 @@
           "score": 94.2,
           "changePct": 17.97,
           "nextRet": -1.94,
+          "nextHigh": 0.97,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 50,
@@ -1616,8 +1859,10 @@
           "score": 83.4,
           "changePct": 20.19,
           "nextRet": -2.72,
+          "nextHigh": 5.55,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006340",
@@ -1625,11 +1870,13 @@
           "score": 88.7,
           "changePct": 19.67,
           "nextRet": -4.92,
+          "nextHigh": 10.14,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -3.82
     },
     {
@@ -1641,8 +1888,10 @@
           "score": 92.8,
           "changePct": 16.46,
           "nextRet": -4.74,
+          "nextHigh": -3.78,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "009155",
@@ -1650,8 +1899,10 @@
           "score": 86.8,
           "changePct": 15.46,
           "nextRet": 2.17,
+          "nextHigh": 2.56,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1666,8 +1917,10 @@
           "score": 78.8,
           "changePct": 26.08,
           "nextRet": 8.18,
+          "nextHigh": 18.9,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "000370",
@@ -1675,11 +1928,13 @@
           "score": 83,
           "changePct": 25.17,
           "nextRet": -8.39,
+          "nextHigh": 16.13,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 50,
+      "dayHitRate": 100,
       "avgNextRet": -0.11
     },
     {
@@ -1691,8 +1946,10 @@
           "score": 85.8,
           "changePct": 25.31,
           "nextRet": -0.83,
+          "nextHigh": 12.85,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "030210",
@@ -1700,8 +1957,10 @@
           "score": 92.5,
           "changePct": 20.95,
           "nextRet": -5.4,
+          "nextHigh": 6.89,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "005940",
@@ -1709,8 +1968,10 @@
           "score": 87.2,
           "changePct": 18.93,
           "nextRet": 6.67,
+          "nextHigh": 15.92,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "002310",
@@ -1718,8 +1979,10 @@
           "score": 92.9,
           "changePct": 18.82,
           "nextRet": -6.41,
+          "nextHigh": 0.18,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "112610",
@@ -1727,11 +1990,13 @@
           "score": 89.5,
           "changePct": 18.31,
           "nextRet": -5.16,
+          "nextHigh": -2.78,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 20,
+      "dayHitRate": 60,
       "avgNextRet": -2.23
     },
     {
@@ -1743,8 +2008,10 @@
           "score": 83.8,
           "changePct": 28.5,
           "nextRet": 12.95,
+          "nextHigh": 18.32,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "475150",
@@ -1752,8 +2019,10 @@
           "score": 79.3,
           "changePct": 23.76,
           "nextRet": -0.87,
+          "nextHigh": 2.62,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "001720",
@@ -1761,8 +2030,10 @@
           "score": 81.8,
           "changePct": 17.21,
           "nextRet": 5.71,
+          "nextHigh": 9.45,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "006800",
@@ -1770,8 +2041,10 @@
           "score": 81.6,
           "changePct": 15.36,
           "nextRet": 14.45,
+          "nextHigh": 18.02,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 75,
@@ -1786,8 +2059,10 @@
           "score": 81.9,
           "changePct": 25.21,
           "nextRet": -7.33,
+          "nextHigh": -2.19,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "005690",
@@ -1795,8 +2070,10 @@
           "score": 82.5,
           "changePct": 16.13,
           "nextRet": -3.77,
+          "nextHigh": 7.47,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "005440",
@@ -1804,11 +2081,13 @@
           "score": 85.7,
           "changePct": 15.12,
           "nextRet": 3.52,
+          "nextHigh": 7.68,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 33.3,
+      "dayHitRate": 66.7,
       "avgNextRet": -2.53
     },
     {
@@ -1820,8 +2099,10 @@
           "score": 89.6,
           "changePct": 22.98,
           "nextRet": -5.08,
+          "nextHigh": -0.08,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "003720",
@@ -1829,8 +2110,10 @@
           "score": 78.5,
           "changePct": 21.93,
           "nextRet": -1.46,
+          "nextHigh": 2.31,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -1845,8 +2128,10 @@
           "score": 83.9,
           "changePct": 26.98,
           "nextRet": -8,
+          "nextHigh": 13.44,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "047040",
@@ -1854,8 +2139,10 @@
           "score": 82.9,
           "changePct": 22.36,
           "nextRet": 5.95,
+          "nextHigh": 7.93,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "018880",
@@ -1863,8 +2150,10 @@
           "score": 87.6,
           "changePct": 17.94,
           "nextRet": 2.74,
+          "nextHigh": 6.56,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "000120",
@@ -1872,8 +2161,10 @@
           "score": 86.3,
           "changePct": 16.74,
           "nextRet": 6.58,
+          "nextHigh": 12.66,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "020000",
@@ -1881,11 +2172,13 @@
           "score": 92.6,
           "changePct": 16.16,
           "nextRet": 4.48,
+          "nextHigh": 4.95,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 60,
+      "dayHitRate": 100,
       "avgNextRet": 2.35
     },
     {
@@ -1897,8 +2190,10 @@
           "score": 86,
           "changePct": 25.46,
           "nextRet": -1.61,
+          "nextHigh": 3.23,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "090430",
@@ -1906,8 +2201,10 @@
           "score": 90.1,
           "changePct": 20.25,
           "nextRet": -0.55,
+          "nextHigh": 0.55,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "090460",
@@ -1915,8 +2212,10 @@
           "score": 90.2,
           "changePct": 17,
           "nextRet": 0.3,
+          "nextHigh": 6.08,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "078520",
@@ -1924,11 +2223,13 @@
           "score": 88.2,
           "changePct": 15.56,
           "nextRet": -4.32,
+          "nextHigh": 0.42,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 50,
       "avgNextRet": -1.55
     },
     {
@@ -1940,11 +2241,13 @@
           "score": 83.7,
           "changePct": 16.17,
           "nextRet": 2.81,
+          "nextHigh": 17.95,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": 2.81
     },
     {
@@ -1956,8 +2259,10 @@
           "score": 91.5,
           "changePct": 17.65,
           "nextRet": 9.04,
+          "nextHigh": 12.5,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -1972,8 +2277,10 @@
           "score": 84.6,
           "changePct": 28.63,
           "nextRet": 2.93,
+          "nextHigh": 4.6,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006800",
@@ -1981,8 +2288,10 @@
           "score": 79.6,
           "changePct": 24.72,
           "nextRet": 2.5,
+          "nextHigh": 4,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "136490",
@@ -1990,8 +2299,10 @@
           "score": 84.8,
           "changePct": 22.82,
           "nextRet": 2.72,
+          "nextHigh": 5.36,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "010120",
@@ -1999,8 +2310,10 @@
           "score": 78.5,
           "changePct": 16.35,
           "nextRet": 4.41,
+          "nextHigh": 7.52,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "001440",
@@ -2008,11 +2321,13 @@
           "score": 90.4,
           "changePct": 15.57,
           "nextRet": 8.77,
+          "nextHigh": 11.85,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 40,
+      "dayHitRate": 100,
       "avgNextRet": 4.27
     },
     {
@@ -2024,8 +2339,10 @@
           "score": 89.2,
           "changePct": 20.32,
           "nextRet": -4.4,
+          "nextHigh": -3.23,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2040,8 +2357,10 @@
           "score": 83.1,
           "changePct": 20.57,
           "nextRet": -4.11,
+          "nextHigh": 1.11,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "001740",
@@ -2049,8 +2368,10 @@
           "score": 81.1,
           "changePct": 15.82,
           "nextRet": -9.82,
+          "nextHigh": 1.79,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2065,8 +2386,10 @@
           "score": 89.3,
           "changePct": 17.39,
           "nextRet": 4.65,
+          "nextHigh": 9.18,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "009470",
@@ -2074,8 +2397,10 @@
           "score": 81.4,
           "changePct": 16.91,
           "nextRet": 5.83,
+          "nextHigh": 13.59,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -2090,11 +2415,13 @@
           "score": 82.3,
           "changePct": 15.3,
           "nextRet": -1.74,
+          "nextHigh": 5.76,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": -1.74
     },
     {
@@ -2106,8 +2433,10 @@
           "score": 83,
           "changePct": 23.33,
           "nextRet": -2.7,
+          "nextHigh": 0,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2122,8 +2451,10 @@
           "score": 90.7,
           "changePct": 16.58,
           "nextRet": -4.31,
+          "nextHigh": -3.02,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2138,8 +2469,10 @@
           "score": 84.3,
           "changePct": 26.61,
           "nextRet": -8.15,
+          "nextHigh": 0.24,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "006400",
@@ -2147,8 +2480,10 @@
           "score": 94.8,
           "changePct": 18.67,
           "nextRet": -2.99,
+          "nextHigh": 4.55,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "006405",
@@ -2156,11 +2491,13 @@
           "score": 87.4,
           "changePct": 16.69,
           "nextRet": -1.43,
+          "nextHigh": 6.89,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 66.7,
       "avgNextRet": -4.19
     },
     {
@@ -2172,8 +2509,10 @@
           "score": 82.4,
           "changePct": 16.16,
           "nextRet": 3.82,
+          "nextHigh": 6.27,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -2188,8 +2527,10 @@
           "score": 89.7,
           "changePct": 19.14,
           "nextRet": 9.66,
+          "nextHigh": 15.13,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "005380",
@@ -2197,8 +2538,10 @@
           "score": 85.8,
           "changePct": 16.22,
           "nextRet": -0.21,
+          "nextHigh": 3.44,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "011500",
@@ -2206,11 +2549,13 @@
           "score": 79.5,
           "changePct": 15.32,
           "nextRet": -4.39,
+          "nextHigh": 0.56,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 33.3,
+      "dayHitRate": 66.7,
       "avgNextRet": 1.69
     },
     {
@@ -2222,11 +2567,13 @@
           "score": 82.7,
           "changePct": 24.91,
           "nextRet": 2.73,
+          "nextHigh": 11.45,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": 2.73
     },
     {
@@ -2238,8 +2585,10 @@
           "score": 78.3,
           "changePct": 16.8,
           "nextRet": 3.14,
+          "nextHigh": 6.61,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -2254,8 +2603,10 @@
           "score": 79.3,
           "changePct": 25.37,
           "nextRet": 6.23,
+          "nextHigh": 8.09,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
@@ -2270,8 +2621,10 @@
           "score": 91.8,
           "changePct": 20.18,
           "nextRet": 0.99,
+          "nextHigh": 0.99,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         },
         {
           "code": "105840",
@@ -2279,8 +2632,10 @@
           "score": 86.4,
           "changePct": 15.01,
           "nextRet": -0.48,
+          "nextHigh": -0.24,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2295,8 +2650,10 @@
           "score": 86.1,
           "changePct": 27.53,
           "nextRet": 1.04,
+          "nextHigh": 3.64,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "017960",
@@ -2304,8 +2661,10 @@
           "score": 86.2,
           "changePct": 22.29,
           "nextRet": 3.39,
+          "nextHigh": 6.64,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         },
         {
           "code": "307950",
@@ -2313,11 +2672,13 @@
           "score": 88.6,
           "changePct": 19.37,
           "nextRet": -2.44,
+          "nextHigh": 2.12,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
-      "dayHitRate": 33.3,
+      "dayHitRate": 66.7,
       "avgNextRet": 0.66
     },
     {
@@ -2329,8 +2690,10 @@
           "score": 82.6,
           "changePct": 26.44,
           "nextRet": 0.13,
+          "nextHigh": 5.7,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         },
         {
           "code": "086280",
@@ -2338,11 +2701,13 @@
           "score": 87.1,
           "changePct": 16.78,
           "nextRet": 2.29,
+          "nextHigh": 7.09,
           "hit": true,
-          "hit3": false
+          "hit3": false,
+          "hit3High": true
         }
       ],
-      "dayHitRate": 0,
+      "dayHitRate": 100,
       "avgNextRet": 1.21
     },
     {
@@ -2354,8 +2719,10 @@
           "score": 88,
           "changePct": 18.44,
           "nextRet": -8.46,
+          "nextHigh": -1.35,
           "hit": false,
-          "hit3": false
+          "hit3": false,
+          "hit3High": false
         }
       ],
       "dayHitRate": 0,
@@ -2370,8 +2737,10 @@
           "score": 93.5,
           "changePct": 15.78,
           "nextRet": 9.8,
+          "nextHigh": 9.8,
           "hit": true,
-          "hit3": true
+          "hit3": true,
+          "hit3High": true
         }
       ],
       "dayHitRate": 100,
