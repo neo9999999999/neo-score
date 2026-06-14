@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, runStrategyGrid, simExit, simExitTPSL, simHold, pullbackSignal } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, newHighCandidate, runStrategyGrid, simExit, simExitTPSL, simHold, pullbackSignal } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -57,17 +57,21 @@ async function main() {
       const nextRet = (next.close - base) / base * 100;
       const nh = (next.high - base) / base * 100, no = (next.open - base) / base * 100, nl = (next.low - base) / base * 100;
       baseSum += nextRet; baseN++;
-      const m = scoreAt(s, i, 0);
-      if (!m) continue;
-      // 넓은 풀(그리드 탐색용) — 상한가(+27%↑) 제외: 매수 불가
-      if (m.score >= 70 && m.changePct >= 8 && m.changePct < 27 && m.rangePos >= 0.5 && m.volSurge >= 1.2) {
-        if (!poolByDate.has(d)) poolByDate.set(d, []);
+      // 신고가+정배열 후보 (스펙트럼 확대: +2~27%)
+      const nhc = newHighCandidate(s, i, { chgMin: 2, chgMax: 27 });
+      if (nhc) {
         const H = 10, fwdH = [], fwdC = [];
         for (let k = 1; k <= H && i + k < s.length; k++) {
           fwdH.push(+((s[i + k].high - base) / base * 100).toFixed(2));
           fwdC.push(+((s[i + k].close - base) / base * 100).toFixed(2));
         }
-        poolByDate.get(d).push({ score: m.score, chg: m.changePct, rangePos: m.rangePos, vol: m.volSurge, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2), fwdH, fwdC });
+        if (!poolByDate.has(d)) poolByDate.set(d, []);
+        poolByDate.get(d).push({ score: nhc.score, chg: nhc.changePct, rangePos: nhc.rangePos, vol: nhc.volSurge, nearHigh: nhc.nearHighPct, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2), fwdH, fwdC });
+        if (!byDate.has(d)) byDate.set(d, []);
+        byDate.get(d).push({
+          code: u.code, name: u.name, score: nhc.score, changePct: nhc.changePct, nearHigh: nhc.nearHighPct, breakout: nhc.breakout,
+          nextRet: +nextRet.toFixed(2), nextHigh: +nh.toFixed(2), nextOpen: +no.toFixed(2), nextLow: +nl.toFixed(2),
+        });
       }
       // 눌림목 스윙 후보(가격 기반)
       const pb = pullbackSignal(s, i);
@@ -76,12 +80,6 @@ async function main() {
         for (let k = 1; k <= H && i + k < s.length; k++) { fH.push(+((s[i + k].high - base) / base * 100).toFixed(2)); fC.push(+((s[i + k].close - base) / base * 100).toFixed(2)); }
         if (fH.length) { if (!pbByDate.has(d)) pbByDate.set(d, []); pbByDate.get(d).push({ ret20: pb.ret20, fwdH: fH, fwdC: fC }); }
       }
-      if (!isLeader(m)) continue;
-      if (!byDate.has(d)) byDate.set(d, []);
-      byDate.get(d).push({
-        code: u.code, name: u.name, score: m.score, changePct: m.changePct,
-        nextRet: +nextRet.toFixed(2), nextHigh: +nh.toFixed(2), nextOpen: +no.toFixed(2), nextLow: +nl.toFixed(2),
-      });
     }
     return null;
   }, 6);
@@ -247,11 +245,11 @@ async function main() {
   for (const y of byYearReal) console.log(`  ${y.year}: 순수익 ${y.avg}% (비용 ${COST}% 차감) 고가3%도달 ${y.hit3HighRate}% n=${y.n} [score≥${y.chosen.scoreMin},+${y.chosen.chgMin}~20,top${y.chosen.topN}]`);
 
   // ===== 완전탐색: 익절=고가 +TP%(1~200), 손절=종가 −SL%(1~100, 무손절 포함) · 다일 보유(최대 10일) =====
-  // 선정 고정(상한가 제외): 점수≥84 · 당일 +10~25% · 종가강도/거래량 강함 · 당일 급등폭 상위 5
-  const ADV = { scoreMin: 84, chgMin: 10, chgMax: 25, topN: 5 };
+  // 선정 = 신고가+정배열 후보(풀 그대로) · 당일 급등폭 상위 5
+  const ADV = { topN: 5 };
   const advPicks = []; // {year, fwdH, fwdC}
   for (const d of poolDates) {
-    const sel = poolByDate.get(d).filter(p => p.score >= ADV.scoreMin && p.chg >= ADV.chgMin && p.chg <= ADV.chgMax && p.rangePos >= 0.55 && p.vol >= 1.3 && p.fwdH && p.fwdH.length).sort((a, b) => b.chg - a.chg).slice(0, ADV.topN);
+    const sel = poolByDate.get(d).filter(p => p.fwdH && p.fwdH.length).sort((a, b) => b.chg - a.chg).slice(0, ADV.topN);
     const yr = d.slice(0, 4);
     for (const p of sel) advPicks.push({ year: yr, fwdH: p.fwdH, fwdC: p.fwdC });
   }

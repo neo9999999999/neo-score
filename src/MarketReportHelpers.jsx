@@ -486,12 +486,13 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+        {c.nearHighPct != null && <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: c.breakout ? UP_C : "#0d9488", padding: "3px 8px", borderRadius: 7 }}>{c.breakout ? "🚀 신고가 돌파" : "신고가 " + c.nearHighPct + "%"}</span>}
+        <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>
         {c.supplyLabel && <span style={c.dongban ? { fontSize: 11, fontWeight: 800, color: "#fff", background: "#16a34a", padding: "3px 8px", borderRadius: 7 } : chip(T)}>{c.dongban ? "🟢 " : ""}{c.supplyLabel}</span>}
         <span style={chip(T)}>당일 {up ? "+" : ""}{c.changePct}%</span>
         <span style={chip(T)}>거래대금 {c.valueText}</span>
         <span style={chip(T)}>거래량 {c.volSurge}배</span>
         <span style={chip(T)}>종가강도 {Math.round((c.rangePos || 0) * 100)}%</span>
-        {c.aboveMA && <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>}
       </div>
       {qty != null && (
         <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(234,179,8,0.16)", border: "1px solid " + T.border, borderRadius: 9, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12.5 }}>
@@ -666,6 +667,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
                     {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 13 }} title="익일 고가 +3% 도달">{done ? "✅" : "❌"}</span>}
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5, marginLeft: 27, fontSize: 12 }}>
+                    {p.nearHigh != null && <span style={{ color: T.hint }}>신고가 <b style={{ color: p.breakout ? UP_C : T.text }}>{p.breakout ? "돌파" : p.nearHigh + "%"}</b></span>}
                     {p.score != null && <span style={{ color: T.hint }}>점수 <b style={{ color: T.text }}>{p.score}</b></span>}
                     <span style={{ color: T.hint }}>당일 <b style={{ color: p.changePct >= 0 ? UP_C : DN_C }}>{p.changePct >= 0 ? "+" : ""}{p.changePct}%</b></span>
                     {p.nextHigh != null && <span style={{ color: T.hint }}>익일고가 <b style={{ color: ACCENT }}>{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</b></span>}
