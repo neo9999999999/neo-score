@@ -214,6 +214,27 @@ export function isLeader(m) {
 // TP/SL 청산 시뮬레이터 (현실적). nb={o,h,l,c}=당일 종가 대비 익일 시/고/저/종가(%).
 // 진입=당일 종가. tp=익절선, sl=손절선(음수), tp1Frac=익절선에서 파는 비중(1=전량).
 // 보수적: 익절·손절 동시 도달 시 손절 우선 가정. gapStop=시가 갭하락 청산선.
+// 눌림목 신호(가격 기반, 미래참조 없음): 상승추세 종목이 단기 조정으로 20일선 부근까지 눌렸을 때.
+// series[i] 종가 진입 가정. 반환: {ok, ret20} (ret20=최근 20일 수익률, 추세 강도)
+export function pullbackSignal(series, i) {
+  if (i < 60) return null;
+  const c = series[i].close;
+  if (!(c > 0)) return null;
+  const ma = (n) => { let s = 0; for (let k = i - n + 1; k <= i; k++) s += series[k].close; return s / n; };
+  const ma5 = ma(5), ma20 = ma(20), ma60 = ma(60);
+  const prevC = series[i - 1].close;
+  const chg = (c - prevC) / prevC * 100;
+  const ret20 = (c / series[i - 20].close - 1) * 100;
+  let hi20 = 0; for (let k = i - 19; k <= i; k++) hi20 = Math.max(hi20, series[k].high);
+  const pbFromHi = hi20 > 0 ? (hi20 - c) / hi20 * 100 : 0;
+  const uptrend = ma20 > ma60 && c > ma60;        // 중기 상승추세 유지
+  const wasStrong = ret20 >= 10;                   // 최근 강세(주도주)
+  const dip = c <= ma5 && c >= ma20 * 0.96 && pbFromHi >= 4 && pbFromHi <= 20; // 5일선 아래로 눌림, 20일선 지지, 고점 대비 4~20% 조정
+  const notBreakout = chg <= 3;                    // 당일 급등(돌파)일은 제외
+  if (uptrend && wasStrong && dip && notBreakout) return { ok: true, ret20: +ret20.toFixed(2) };
+  return null;
+}
+
 // 다일 보유 시뮬: 익절=장중 고가가 +tp% 도달 시 tp 매도, 손절=종가가 −sl% 이탈 시 그 종가 매도.
 // fwdH/fwdC = 진입(당일 종가) 대비 이후 1..H일의 고가%/종가%. sl=null이면 무손절.
 export function simHold(fwdH, fwdC, tp, sl, cost = 0) {

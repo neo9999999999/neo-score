@@ -823,6 +823,41 @@ function OosSplitCard({ oos, oosReal, oosAdv, T }) {
   );
 }
 
+function SwingCard({ swing, T }) {
+  if (!swing || (!swing.gridBest && !(swing.byYear && swing.byYear.length))) return null;
+  const g = swing.gridBest;
+  const yrs = (swing.byYear || []);
+  const pos = yrs.filter(y => (y.avg || 0) > 0).length;
+  return (
+    <div style={{ marginTop: 14, background: T.card, border: "2px solid " + UP_C, borderRadius: 14, padding: 15 }}>
+      <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🪂 눌림목 스윙 OOS (다른 진입 · 완전탐색)</div>
+      <div style={{ fontSize: 11, color: T.hint, marginBottom: 9, lineHeight: 1.5 }}>{swing.note}</div>
+      {g && (
+        <div style={{ background: T.cardAlt, borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: T.text }}>전 구간 최고 (인샘플·과최적)</div>
+          <div style={{ fontSize: 13, marginTop: 3 }}>
+            <b style={{ color: T.text }}>익절 +{g.tp}% / 손절 {g.sl == null ? "무손절" : "−" + g.sl + "%"}</b>
+            <span style={{ color: (g.avg || 0) >= 0 ? UP_C : DN_C, fontWeight: 800, marginLeft: 8 }}>평균 {(g.avg) >= 0 ? "+" : ""}{g.avg}%/건</span>
+            <span style={{ color: T.sub, marginLeft: 8 }}>승률 {g.winRate}% · {g.n}건</span>
+          </div>
+        </div>
+      )}
+      <div style={{ fontSize: 11.5, fontWeight: 700, color: T.text, margin: "6px 0 4px" }}>연도별 OOS · 수익 {pos}/{yrs.length}년</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {yrs.slice().sort((a, b) => b.year.localeCompare(a.year)).map(y => (
+          <div key={y.year} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, background: T.cardAlt, borderRadius: 8, padding: "7px 10px", flexWrap: "wrap" }}>
+            <span style={{ flex: "0 0 42px", fontWeight: 800, color: T.text }}>{y.year}</span>
+            <span style={{ flex: "0 0 auto", fontWeight: 800, color: (y.avg || 0) >= 0 ? UP_C : DN_C }}>순 {(y.avg || 0) >= 0 ? "+" : ""}{y.avg}%</span>
+            <span style={{ color: T.sub }}>승률 {y.winRate}%</span>
+            <span style={{ color: T.hint, fontSize: 11 }}>익절+{y.chosen.tp}/손절{y.chosen.sl == null ? "무" : "−" + y.chosen.sl}</span>
+            <span style={{ marginLeft: "auto", color: T.hint, fontSize: 11 }}>{y.n}건</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function StrategyTable({ a, T }) {
   if (!a || !a.strategies || !a.strategies.length) return null;
   return (
@@ -973,7 +1008,7 @@ function AfternoonView({ T }) {
         )}
       </Section>
 
-      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosSplitCard oos={hist.analysis.oos} oosReal={hist.analysis.oosReal} oosAdv={hist.analysis.oosAdv} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
+      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosSplitCard oos={hist.analysis.oos} oosReal={hist.analysis.oosReal} oosAdv={hist.analysis.oosAdv} T={T} /><SwingCard swing={hist.analysis.swing} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
         <Section title="📅 연도별 예측 · 결과" sub="연도(1차) → 월(2차) → 일(3차) 순으로 펼쳐보기 · 최신/오래된순" T={T}>
