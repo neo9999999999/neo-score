@@ -1,0 +1,13 @@
+{
+  "date": "2026-06-14",
+  "generatedAt": "2026-06-14T15:00:00+09:00",
+  "source": "seed",
+  "type": "afternoon",
+  "marketBias": "neutral",
+  "summary": "매일 오후 3시(KST) 미 선물지수와 당일 종목 주가·거래량을 분석해 익일 상승 후보를 선정합니다. 첫 자동 생성 전까지 표시되는 예시이며, Afternoon Report 워크플로 또는 매일 15:00 자동 실행으로 채워집니다.",
+  "futures": [],
+  "macro": [],
+  "indices": [],
+  "candidates": [],
+  "note": "미 선물·매크로 + 당일 종목 주가/거래량 기반 정량 스코어. 투자 참고용이며 책임은 본인에게 있습니다."
+}

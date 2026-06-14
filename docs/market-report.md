@@ -40,6 +40,23 @@ node scripts/generate-market-report.mjs
 # GitHub 에서 수동 실행: Actions → Daily Market Report → Run workflow
 ```
 
+## 오후 리포트 (익일 상승 예측)
+
+매일 **15:00 KST**(장 마감 직전)에 미 선물지수(NQ/ES/YM·VIX)와 금리·환율·유가,
+당일 코스피/코스닥 흐름 + **거래대금 상위 ~500종목**의 당일 주가/거래량을 분석해
+**익일 연속 상승 가능성이 높은 종목**을 정량 스코어링·선정한다.
+
+| 요소 | 경로 |
+| --- | --- |
+| 생성 | `scripts/generate-afternoon-report.mjs` (워크플로 `afternoon-report.yml`, cron 06:00 UTC) |
+| OOS 백필 | `scripts/backfill-afternoon-reports.mjs` (워크플로 `afternoon-backfill.yml`, 수동) |
+| 공용 로직 | `scripts/lib/stock-core.mjs` (Yahoo OHLCV, 스코어링) |
+| 데이터 | `public/afternoon-report.json`, `public/afternoon-history.json`, `public/afternoon/*.json` |
+| 화면 | 마켓리포트 탭 → "익일예측" |
+
+스코어: 종가 위치(고가권) + 거래량 급증 + 당일 등락 + 5·20일선 정배열 + 갭, 미 선물
+방향 보정. OOS 백필은 각 거래일 선정 종목의 **실제 익일 등락**으로 적중률·초과수익(edge)을 검증한다.
+
 ## 향후 확장 (푸시 알림)
 
 현재는 앱 내에서 리포트를 **확인**하는 방식이다. 매일 아침 휴대폰으로 **푸시/이메일

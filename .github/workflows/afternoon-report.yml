@@ -1,0 +1,40 @@
+name: Afternoon Report (Next-day picks)
+
+# 매일 15:00 KST(06:00 UTC) — 장 마감 직전, 익일 상승 종목 예측
+on:
+  schedule:
+    - cron: "0 6 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: afternoon-report
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Generate afternoon report
+        env:
+          UNIVERSE_N: "500"
+          TOP_PICKS: "15"
+        run: node scripts/generate-afternoon-report.mjs
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/afternoon-report.json public/afternoon-history.json public/afternoon
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            DATE=$(date -u -d '+9 hours' +%Y-%m-%d)
+            git commit -m "Afternoon next-day picks ${DATE}"
+            git push
+          fi

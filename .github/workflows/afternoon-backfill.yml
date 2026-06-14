@@ -1,0 +1,41 @@
+name: Afternoon Backfill (OOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "백필 시작일 (YYYY-MM-DD)"
+        required: true
+        default: "2026-01-01"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: afternoon-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run afternoon backfill
+        env:
+          UNIVERSE_N: "500"
+          TOP_PICKS: "15"
+        run: node scripts/backfill-afternoon-reports.mjs "${{ inputs.start }}"
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/afternoon-history.json public/afternoon
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            git commit -m "Backfill afternoon OOS picks from ${{ inputs.start }}"
+            git push
+          fi
