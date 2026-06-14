@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-15T00:46:35+09:00",
-    "count": 2053,
+    "updatedAt": "2026-06-15T00:48:54+09:00",
+    "count": 2054,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1394,6 +1394,32 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-15",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "후성",
+          "code": "093370",
+          "score": 88.2,
+          "changePct": 20.55
+        },
+        {
+          "name": "케이씨텍",
+          "code": "281820",
+          "score": 84.4,
+          "changePct": 14.01
+        },
+        {
+          "name": "F&F",
+          "code": "383220",
+          "score": 55.3,
+          "changePct": 3.25
+        }
+      ],
+      "nq": 0.67,
+      "es": 0.53
+    },
     {
       "date": "2026-06-11",
       "picks": [
