@@ -18,7 +18,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstNow, kstDateStr, kstIso, fetchYahooSeries, closesAsOf, makeIndicator } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, newHighCandidate, pickReason, fmtEok, buildCalibration, estimate, fetchSupplyMap, supplyInfo } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, newHighCandidate, pickReason, fmtEok, buildCalibration, estimate, fetchSupplyMap, supplyInfo } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");

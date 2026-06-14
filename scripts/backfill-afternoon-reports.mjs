@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader, newHighCandidate, runStrategyGrid, simExit, simExitTPSL, simHold, pullbackSignal } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, newHighCandidate, runStrategyGrid, simExit, simExitTPSL, simHold, pullbackSignal } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
