@@ -23,6 +23,9 @@ function useTheme(theme) {
 // 한국식 색상: 상승/＋ 빨강, 하락/− 파랑
 const UP_C = "#e02424";
 const DN_C = "#1f6feb";
+// 포인트 색: 노랑(보라 대체)
+const ACCENT = "#eab308";
+const ON_ACCENT = "#1a1500";
 const DIR = {
   up: { c: UP_C, arrow: "▲" },
   down: { c: DN_C, arrow: "▼" },
@@ -125,7 +128,7 @@ function CardNews({ cards, T }) {
   const dx = useRef(0);
   const dragging = useRef(false);
   const n = (cards && cards.length) || 0;
-  const palette = ["#7c3aed", "#2563eb", "#0d9488", "#d97706", "#db2777", "#dc2626"];
+  const palette = [ACCENT, "#2563eb", "#0d9488", "#d97706", "#db2777", "#dc2626"];
   if (!n) return null;
 
   const go = (i) => setIdx(Math.max(0, Math.min(n - 1, i)));
@@ -465,7 +468,7 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
   return (
     <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 12px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-        <span style={{ flex: "0 0 26px", height: 26, borderRadius: 7, background: c.rank <= 3 ? "#7c3aed" : T.cardAlt, color: c.rank <= 3 ? "#fff" : T.sub, fontSize: 13, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{c.rank}</span>
+        <span style={{ flex: "0 0 26px", height: 26, borderRadius: 7, background: c.rank <= 3 ? ACCENT : T.cardAlt, color: c.rank <= 3 ? ON_ACCENT : T.sub, fontSize: 13, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{c.rank}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 14.5, fontWeight: 800, color: T.text }}>{c.name}</span>
@@ -475,9 +478,9 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
         </div>
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
           {c.p3High != null
-            ? <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>고가 3%도달 {c.p3High}%</div>
+            ? <div style={{ fontSize: 15, fontWeight: 800, color: ACCENT }}>고가 3%도달 {c.p3High}%</div>
             : c.p3 != null
-              ? <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>3%↑ {c.p3}%</div>
+              ? <div style={{ fontSize: 15, fontWeight: 800, color: ACCENT }}>3%↑ {c.p3}%</div>
               : <div style={{ fontSize: 14, fontWeight: 800, color: up ? UP_C : DN_C }}>{up ? "+" : ""}{c.changePct}%</div>}
           <div style={{ fontSize: 11, color: T.hint }}>{c.p3 != null ? "종가 3%마감 " + c.p3 + "%" : "점수 " + c.score}</div>
         </div>
@@ -491,9 +494,9 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
         {c.aboveMA && <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>}
       </div>
       {qty != null && (
-        <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(124,58,237,0.10)", border: "1px solid " + T.border, borderRadius: 9, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12.5 }}>
+        <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(234,179,8,0.16)", border: "1px solid " + T.border, borderRadius: 9, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12.5 }}>
           <span style={{ color: T.sub }}>현재가 <b style={{ color: T.text }}>{c.price.toLocaleString("ko-KR")}원</b></span>
-          <span style={{ color: T.sub }}>매수 <b style={{ color: "#7c3aed" }}>{qty.toLocaleString("ko-KR")}주</b></span>
+          <span style={{ color: T.sub }}>매수 <b style={{ color: ACCENT }}>{qty.toLocaleString("ko-KR")}주</b></span>
           <span style={{ color: T.sub }}>투입 <b style={{ color: T.text }}>{wonFmt(invested)}</b></span>
           {expProfit != null && <span style={{ color: T.sub }}>기대수익 <b style={{ color: expProfit >= 0 ? UP_C : DN_C }}>{expProfit >= 0 ? "+" : ""}{wonFmt(expProfit)}</b></span>}
         </div>
@@ -581,7 +584,7 @@ function MonthlyHistory({ reports, T, perStock, recOpt }) {
   for (const ym of yms) groups[ym].sort((a, b) => sort === "desc" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
 
   const selChip = (active) => active
-    ? { fontSize: 11.5, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "4px 9px", borderRadius: 7, cursor: "pointer", border: "1px solid #7c3aed" }
+    ? { fontSize: 11.5, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "4px 9px", borderRadius: 7, cursor: "pointer", border: "1px solid " + ACCENT }
     : { ...chip(T), cursor: "pointer", border: "1px solid " + T.border };
 
   return (
@@ -644,7 +647,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: T.cardAlt, borderRadius: 8, padding: "7px 10px" }}>
                 <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}</span></span>
                 <span style={{ fontSize: 12, color: T.hint }}>당일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>
-                {p.nextHigh != null && <span style={{ fontSize: 12, fontWeight: 700, color: "#7c3aed" }} title="익일 고가 도달폭">고{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</span>}
+                {p.nextHigh != null && <span style={{ fontSize: 12, fontWeight: 700, color: ACCENT }} title="익일 고가 도달폭">고{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</span>}
                 {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? UP_C : DN_C }} title="익일 종가 등락">종{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
                 {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 12 }} title="익일 고가 +3% 도달">{(p.hit3High != null ? p.hit3High : (p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3)) ? "✅" : "❌"}</span>}
               </div>
@@ -722,9 +725,9 @@ function StrategyTable({ a, T }) {
         {a.strategies.slice().sort((x, y) => y.avg - x.avg).map((s, i) => {
           const rec = s.name === a.recommendedStrategy;
           return (
-            <div key={i} style={{ background: rec ? "rgba(124,58,237,0.12)" : T.cardAlt, border: rec ? "1px solid #7c3aed" : "1px solid transparent", borderRadius: 10, padding: "9px 11px" }}>
+            <div key={i} style={{ background: rec ? "rgba(234,179,8,0.16)" : T.cardAlt, border: rec ? "1px solid " + ACCENT : "1px solid transparent", borderRadius: 10, padding: "9px 11px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                {rec && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 5 }}>추천</span>}
+                {rec && <span style={{ fontSize: 10.5, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "1px 6px", borderRadius: 5 }}>추천</span>}
                 <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text }}>{s.name}</span>
               </div>
               <div style={{ display: "flex", gap: 12, marginTop: 5, fontSize: 12 }}>
