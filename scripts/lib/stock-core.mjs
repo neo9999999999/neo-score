@@ -119,19 +119,22 @@ export function fmtEok(won) {
 // 룰: tp1Frac 만큼 +tp1Lvl%에서 익절, 잔량은 +floorLvl% 도달 후 그 아래로 빠지면 청산,
 //     +15%↑에서는 고가−trailGap% 트레일링. +tp1Lvl% 미도달이면 잔여 전량 종가 청산.
 export function simExit(nb, opt = {}) {
-  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null, gapStop = null } = opt;
+  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null, gapStop = null, runnerAtClose = false, cost = 0 } = opt;
   const { o, h, l, c } = nb;
-  if (gapStop != null && o != null && o <= gapStop) return o; // 갭하락 전용: 시가만 청산
-  if (stop != null) {
-    if (o <= stop) return o;      // 갭하락 → 시가 청산
-    if (l <= stop) return stop;   // 장중 손절(보수적: 익절보다 우선)
+  let gross;
+  if (gapStop != null && o != null && o <= gapStop) gross = o;
+  else if (stop != null && o <= stop) gross = o;
+  else if (stop != null && l <= stop) gross = stop;
+  else if (h < tp1Lvl) gross = c;
+  else {
+    let runner;
+    if (runnerAtClose) runner = c;                 // 현실: 고점 트레일 가정 없이 종가 청산
+    else if (h < floorLvl) runner = c;
+    else if (h < trailFrom) runner = (c < floorLvl ? floorLvl : c);
+    else runner = (c < h - trailGap ? h - trailGap : c);
+    gross = tp1Frac * tp1Lvl + (1 - tp1Frac) * runner;
   }
-  if (h < tp1Lvl) return c;       // 1차 목표 미도달 → 전량 종가
-  let runner;
-  if (h < floorLvl) runner = c;
-  else if (h < trailFrom) runner = (c < floorLvl ? floorLvl : c);
-  else runner = (c < h - trailGap ? h - trailGap : c);
-  return +(tp1Frac * tp1Lvl + (1 - tp1Frac) * runner).toFixed(3);
+  return +(gross - cost).toFixed(3);                // 왕복 거래비용 차감
 }
 
 // 여러 전략 성과 비교 (picks: [{o,h,l,c}])

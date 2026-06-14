@@ -153,11 +153,11 @@ async function main() {
   const SCOREMINS = [78, 84], CHGMINS = [10, 15, 20], TOPNS = [3, 5];
   const poolDates = [...poolByDate.keys()].sort();
   // 콤보를 임의의 날짜집합(inSet)에서 평가
-  function evalCombo(sMin, cMin, topN, exitOpt, inSet) {
+  function evalCombo(sMin, cMin, topN, exitOpt, inSet, cMax = 29) {
     let sum = 0, h3 = 0, h5 = 0, n = 0;
     for (const d of poolDates) {
       if (!inSet(d)) continue;
-      const sel = poolByDate.get(d).filter(p => p.score >= sMin && p.chg >= cMin && p.chg <= 29 && p.rangePos >= 0.55 && p.vol >= 1.3)
+      const sel = poolByDate.get(d).filter(p => p.score >= sMin && p.chg >= cMin && p.chg <= cMax && p.rangePos >= 0.55 && p.vol >= 1.3)
         .sort((a, b) => b.chg - a.chg).slice(0, topN);
       for (const p of sel) { sum += simExit(p, exitOpt); if (p.h >= 3) h3++; if (p.h >= 5) h5++; n++; }
     }
@@ -204,6 +204,34 @@ async function main() {
   analysis.oos = foldA ? { split: SPLIT, ...foldA, foldB, byYear } : { split: SPLIT, byYear };
   console.log("[afternoon-bf] OOS 연도별(leave-one-out):");
   for (const y of byYear) console.log(`  ${y.year}: 평균 ${y.avg}% 고가3%도달 ${y.hit3HighRate}% edge ${y.edge} (n=${y.n}) [score≥${y.chosen.scoreMin},+${y.chosen.chgMin}~29,top${y.chosen.topN},${y.chosen.exit}]`);
+
+  // ===== 현실판 OOS: 비용 차감 + 종가청산(고점 가정 제거) + 체결가능 등락대(+10~20%) =====
+  const COST = +(process.env.COST_PCT || 0.5); // 왕복 수수료+거래세+슬리피지(%)
+  const REAL_EXIT = { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -7, runnerAtClose: true, cost: COST };
+  function selectBestReal(trainSet) {
+    let best = null;
+    for (const sMin of [78, 84]) for (const cMin of [10, 12, 15]) for (const topN of [3, 5]) {
+      const tr = evalCombo(sMin, cMin, topN, REAL_EXIT, trainSet, 20); // +20% 초과(상한가 락) 제외
+      if (tr.n < 80 || tr.avg == null) continue;
+      if (!best || tr.avg > best.train.avg) best = { params: { scoreMin: sMin, chgMin: cMin, topN }, train: tr };
+    }
+    return best;
+  }
+  const byYearReal = [];
+  for (const Y of years) {
+    const b = selectBestReal(d => d.slice(0, 4) !== Y);
+    if (!b) continue;
+    const test = evalCombo(b.params.scoreMin, b.params.chgMin, b.params.topN, REAL_EXIT, d => d.slice(0, 4) === Y, 20);
+    const base = poolBaseline(d => d.slice(0, 4) === Y);
+    byYearReal.push({ year: Y, chosen: { ...b.params, chgMax: 20 }, ...test, baselineAvgNextRet: base, edge: (test.avg != null && base != null) ? +(test.avg - (base - COST)).toFixed(3) : null });
+  }
+  analysis.oosReal = {
+    cost: COST,
+    note: `현실 반영: 왕복 비용 ${COST}% 차감 · 1차 +5% 절반 익절, 나머지 종가 청산(고점 트레일 가정 제거) · 갭하락 −7% 손절 · 매수 가능 +10~20%만(상한가 락 제외).`,
+    byYear: byYearReal,
+  };
+  console.log("[afternoon-bf] 현실판 OOS 연도별:");
+  for (const y of byYearReal) console.log(`  ${y.year}: 순수익 ${y.avg}% (비용 ${COST}% 차감) 고가3%도달 ${y.hit3HighRate}% n=${y.n} [score≥${y.chosen.scoreMin},+${y.chosen.chgMin}~20,top${y.chosen.topN}]`);
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };
