@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T23:12:58+09:00",
+    "updatedAt": "2026-06-14T23:39:16+09:00",
     "count": 1948,
     "backfilledFrom": "2018-01-01"
   },
@@ -1182,143 +1182,111 @@
     },
     "oosAdv": {
       "cost": 0.5,
-      "chgMax": 25,
-      "note": "상한가(+27%↑) 제외 · 익절 +15% / 무손절(미달 시 종가 청산) · 학습 최적화(진입조건) 후 검증 · 왕복비용 차감.",
+      "holdDays": 10,
+      "selection": {
+        "scoreMin": 84,
+        "chgMin": 10,
+        "chgMax": 25,
+        "topN": 5
+      },
+      "gridBest": {
+        "tp": 14,
+        "sl": 34,
+        "avg": -0.013,
+        "winRate": 51.2,
+        "n": 6662
+      },
+      "note": "익절=장중 고가 +TP% 도달 시 매도 / 손절=종가 −SL% 이탈 시 매도 · 최대 10일 보유 · 왕복비용 차감 · 익절1~200%·손절1~100%(무손절 포함) 완전탐색. gridBest=전구간 최고(인샘플·과최적), byYear=연도별 OOS(그 해 빼고 최적화 후 검증).",
       "byYear": [
         {
           "year": "2018",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 431,
-          "avg": -0.302,
-          "winRate": 38.3,
-          "hit3HighRate": 49.7
+          "avg": -1.041,
+          "winRate": 47.3,
+          "n": 611
         },
         {
           "year": "2019",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 478,
-          "avg": -0.389,
-          "winRate": 39.3,
-          "hit3HighRate": 54.6
+          "avg": -0.025,
+          "winRate": 50.5,
+          "n": 679
         },
         {
           "year": "2020",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 1
           },
-          "n": 771,
-          "avg": -0.056,
-          "winRate": 41.6,
-          "hit3HighRate": 57.3
+          "avg": 0.47,
+          "winRate": 33.1,
+          "n": 927
         },
         {
           "year": "2021",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 13,
+            "sl": 9
           },
-          "n": 653,
-          "avg": -0.167,
-          "winRate": 41.7,
-          "hit3HighRate": 55.6
+          "avg": 0.4,
+          "winRate": 49.3,
+          "n": 846
         },
         {
           "year": "2022",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 428,
-          "avg": -0.657,
-          "winRate": 37.4,
-          "hit3HighRate": 49.5
+          "avg": -2.44,
+          "winRate": 42.9,
+          "n": 576
         },
         {
           "year": "2023",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 695,
-          "avg": -0.216,
-          "winRate": 41,
-          "hit3HighRate": 60.3
+          "avg": -0.208,
+          "winRate": 50.3,
+          "n": 819
         },
         {
           "year": "2024",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 717,
-          "avg": -0.749,
-          "winRate": 39.7,
-          "hit3HighRate": 55.1
+          "avg": -1.387,
+          "winRate": 47.6,
+          "n": 843
         },
         {
           "year": "2025",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 812,
-          "avg": 0.033,
-          "winRate": 40.5,
-          "hit3HighRate": 53.9
+          "avg": 0.347,
+          "winRate": 52,
+          "n": 956
         },
         {
           "year": "2026",
           "chosen": {
-            "scoreMin": 84,
-            "chgMin": 12,
-            "topN": 5,
-            "tp": 15,
-            "sl": -100,
-            "tp1Frac": 1
+            "tp": 14,
+            "sl": 34
           },
-          "n": 380,
-          "avg": 0.365,
-          "winRate": 41.8,
-          "hit3HighRate": 57.9
+          "avg": 0.747,
+          "winRate": 57,
+          "n": 405
         }
       ]
     }
