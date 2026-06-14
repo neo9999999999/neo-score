@@ -563,6 +563,35 @@ function AfternoonDayRow({ r, T }) {
   );
 }
 
+function StrategyTable({ a, T }) {
+  if (!a || !a.strategies || !a.strategies.length) return null;
+  return (
+    <div style={{ marginTop: 14, background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+      <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🎯 매도 전략 백테스트 (손절 포함)</div>
+      <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>진입=당일 종가, 익일 청산 · {a.totalPicks}건 · 추천 전략 강조 (보수적: 손절 우선 가정)</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {a.strategies.slice().sort((x, y) => y.avg - x.avg).map((s, i) => {
+          const rec = s.name === a.recommendedStrategy;
+          return (
+            <div key={i} style={{ background: rec ? "rgba(124,58,237,0.12)" : T.cardAlt, border: rec ? "1px solid #7c3aed" : "1px solid transparent", borderRadius: 10, padding: "9px 11px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                {rec && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 5 }}>추천</span>}
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text }}>{s.name}</span>
+              </div>
+              <div style={{ display: "flex", gap: 12, marginTop: 5, fontSize: 12 }}>
+                <span style={{ color: s.avg >= 0 ? "#16a34a" : "#ef4444", fontWeight: 800 }}>평균 {s.avg >= 0 ? "+" : ""}{s.avg}%</span>
+                <span style={{ color: T.sub }}>승률 {s.winRate}%</span>
+                <span style={{ color: T.sub }}>손실 {s.lossRate}%</span>
+                <span style={{ color: "#ef4444" }}>최저 {s.worst}%</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function AfternoonView({ T }) {
   const [rep, setRep] = useState(null);
   const [hist, setHist] = useState(null);
@@ -626,7 +655,7 @@ function AfternoonView({ T }) {
         )}
       </Section>
 
-      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
+      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
         <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
