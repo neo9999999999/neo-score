@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T19:24:24+09:00",
+    "updatedAt": "2026-06-14T21:56:50+09:00",
     "count": 1958,
     "backfilledFrom": "2018-01-01"
   },
@@ -840,7 +840,38 @@
         "retRisk": 0.188
       }
     ],
-    "recommendedStrategy": "무익절 전량 고가−5% 트레일 + 갭하락 −7%"
+    "recommendedStrategy": "무익절 전량 고가−5% 트레일 + 갭하락 −7%",
+    "oos": {
+      "split": "2023-01-01",
+      "trainRange": {
+        "start": "2018-01-01",
+        "end": "2023-01-01"
+      },
+      "testRange": {
+        "start": "2023-01-01",
+        "end": "2026-06-11"
+      },
+      "chosen": {
+        "scoreMin": 84,
+        "chgMin": 20,
+        "topN": 5,
+        "exit": "전량 트레일 + 갭−7%"
+      },
+      "train": {
+        "n": 652,
+        "avg": 1.531,
+        "hit3HighRate": 56.9,
+        "hit5HighRate": 46.3
+      },
+      "test": {
+        "n": 741,
+        "avg": 1.839,
+        "hit3HighRate": 60.2,
+        "hit5HighRate": 50.5,
+        "baselineAvgNextRet": -0.141,
+        "edge": 1.98
+      }
+    }
   },
   "reports": [
     {
