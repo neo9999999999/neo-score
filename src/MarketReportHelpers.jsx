@@ -20,24 +20,27 @@ function useTheme(theme) {
   };
 }
 
+// 한국식 색상: 상승/＋ 빨강, 하락/− 파랑
+const UP_C = "#e02424";
+const DN_C = "#1f6feb";
 const DIR = {
-  up: { c: "#16a34a", arrow: "▲" },
-  down: { c: "#ef4444", arrow: "▼" },
+  up: { c: UP_C, arrow: "▲" },
+  down: { c: DN_C, arrow: "▼" },
   flat: { c: "#8b95a1", arrow: "—" },
 };
 const TONE = {
-  pos: { c: "#16a34a", label: "긍정" },
-  neg: { c: "#ef4444", label: "부담" },
+  pos: { c: UP_C, label: "긍정" },
+  neg: { c: DN_C, label: "부담" },
   neutral: { c: "#d97706", label: "중립" },
 };
 const SENT = {
-  bullish: { c: "#16a34a", bg: "rgba(22,163,74,0.14)", label: "강세 우호", emoji: "📈" },
+  bullish: { c: UP_C, bg: "rgba(224,36,36,0.14)", label: "강세 우호", emoji: "📈" },
   neutral: { c: "#d97706", bg: "rgba(217,119,6,0.14)", label: "중립·혼조", emoji: "⚖️" },
-  bearish: { c: "#ef4444", bg: "rgba(239,68,68,0.14)", label: "약세 경계", emoji: "📉" },
+  bearish: { c: DN_C, bg: "rgba(31,111,235,0.14)", label: "약세 경계", emoji: "📉" },
 };
 const BIAS = {
-  up: { c: "#16a34a", label: "상승 기대", emoji: "🔺" },
-  down: { c: "#ef4444", label: "약세", emoji: "🔻" },
+  up: { c: UP_C, label: "상승 기대", emoji: "🔺" },
+  down: { c: DN_C, label: "약세", emoji: "🔻" },
   neutral: { c: "#d97706", label: "중립", emoji: "▪️" },
 };
 const IMP = {
@@ -387,14 +390,14 @@ function AnalysisCard({ a, T }) {
       <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>📊 OOS 백테스트 분석</div>
       <div style={{ fontSize: 12, color: T.hint, marginBottom: 11 }}>{a.range?.start} ~ {a.range?.end} · 거래일 {a.totalDays}일</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {cell("방향 적중률", a.hitRate == null ? "—" : a.hitRate + "%", a.hitRate >= 50 ? "#16a34a" : "#ef4444")}
+        {cell("방향 적중률", a.hitRate == null ? "—" : a.hitRate + "%", a.hitRate >= 50 ? UP_C : DN_C)}
         {cell("평가일수", (a.directionHits ?? 0) + "/" + (a.evaluated ?? 0))}
         {cell("강세 예측", a.bullishDays + "일")}
         {cell("약세 예측", a.bearishDays + "일")}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish >= 0 ? "#16a34a" : "#ef4444")}
-        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish >= 0 ? UP_C : DN_C)}
+        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish >= 0 ? UP_C : DN_C)}
         {cell("중립일 코스피 평균", pct(a.avgKospiOnNeutral))}
       </div>
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
@@ -433,7 +436,7 @@ function HistoryView({ T, onOpen }) {
                 <div style={{ fontSize: 12, color: T.sub, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
               </div>
               <div style={{ flex: "0 0 auto", textAlign: "right" }}>
-                {oos.kospiRet != null && <div style={{ fontSize: 13, fontWeight: 800, color: oos.kospiRet >= 0 ? "#16a34a" : "#ef4444" }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
+                {oos.kospiRet != null && <div style={{ fontSize: 13, fontWeight: 800, color: oos.kospiRet >= 0 ? UP_C : DN_C }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
                 {oos.hit != null && <div style={{ fontSize: 12 }}>{oos.hit ? "✅" : "❌"}</div>}
               </div>
             </button>
@@ -475,7 +478,7 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
             ? <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>고가 3%도달 {c.p3High}%</div>
             : c.p3 != null
               ? <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>3%↑ {c.p3}%</div>
-              : <div style={{ fontSize: 14, fontWeight: 800, color: up ? "#16a34a" : "#ef4444" }}>{up ? "+" : ""}{c.changePct}%</div>}
+              : <div style={{ fontSize: 14, fontWeight: 800, color: up ? UP_C : DN_C }}>{up ? "+" : ""}{c.changePct}%</div>}
           <div style={{ fontSize: 11, color: T.hint }}>{c.p3 != null ? "종가 3%마감 " + c.p3 + "%" : "점수 " + c.score}</div>
         </div>
       </div>
@@ -492,7 +495,7 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
           <span style={{ color: T.sub }}>현재가 <b style={{ color: T.text }}>{c.price.toLocaleString("ko-KR")}원</b></span>
           <span style={{ color: T.sub }}>매수 <b style={{ color: "#7c3aed" }}>{qty.toLocaleString("ko-KR")}주</b></span>
           <span style={{ color: T.sub }}>투입 <b style={{ color: T.text }}>{wonFmt(invested)}</b></span>
-          {expProfit != null && <span style={{ color: T.sub }}>기대수익 <b style={{ color: expProfit >= 0 ? "#16a34a" : "#ef4444" }}>{expProfit >= 0 ? "+" : ""}{wonFmt(expProfit)}</b></span>}
+          {expProfit != null && <span style={{ color: T.sub }}>기대수익 <b style={{ color: expProfit >= 0 ? UP_C : DN_C }}>{expProfit >= 0 ? "+" : ""}{wonFmt(expProfit)}</b></span>}
         </div>
       )}
       {c.reason && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 7, lineHeight: 1.55 }}>{c.reason}</div>}
@@ -515,16 +518,16 @@ function AfternoonAnalysis({ a, T }) {
       <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🧪 익일예측 OOS 백테스트</div>
       <div style={{ fontSize: 12, color: T.hint, marginBottom: 11 }}>{a.range?.start} ~ {a.range?.end} · {a.tradedDays}일 · 선정 {a.totalPicks}건</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {cell("익일 고가 3% 도달", a.hit3HighRate == null ? "—" : a.hit3HighRate + "%", (a.hit3HighRate || 0) >= 45 ? "#16a34a" : "#d97706")}
-        {cell("익일 종가 3% 마감", a.hit3Rate == null ? "—" : a.hit3Rate + "%", (a.hit3Rate || 0) >= 30 ? "#16a34a" : "#d97706")}
-        {cell("후보 평균 익일종가", pct(a.avgNextRet), (a.avgNextRet || 0) >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("익일 고가 3% 도달", a.hit3HighRate == null ? "—" : a.hit3HighRate + "%", (a.hit3HighRate || 0) >= 45 ? UP_C : "#d97706")}
+        {cell("익일 종가 3% 마감", a.hit3Rate == null ? "—" : a.hit3Rate + "%", (a.hit3Rate || 0) >= 30 ? UP_C : "#d97706")}
+        {cell("후보 평균 익일종가", pct(a.avgNextRet), (a.avgNextRet || 0) >= 0 ? UP_C : DN_C)}
         {cell("시장 평균(baseline)", pct(a.baselineAvgNextRet))}
       </div>
       {(a.hit5HighRate != null || a.upRate != null) && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
           {cell("익일 고가 5% 도달", a.hit5HighRate == null ? "—" : a.hit5HighRate + "%")}
           {cell("익일 상승(종가>0%)", a.upRate == null ? "—" : a.upRate + "%")}
-          {cell("초과수익 edge", pct(a.edge), (a.edge || 0) >= 0 ? "#16a34a" : "#ef4444")}
+          {cell("초과수익 edge", pct(a.edge), (a.edge || 0) >= 0 ? UP_C : DN_C)}
         </div>
       )}
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
@@ -546,8 +549,8 @@ function MonthCard({ ym, days, T, perStock, recOpt, defaultOpen }) {
         <div style={{ flex: 1, fontSize: 12, color: T.sub }}>{days.length}일 · {nP}건 · 3%↑ {nP ? (100 * hit3H / nP).toFixed(0) : 0}%</div>
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
           {profit != null
-            ? <div style={{ fontSize: 13, fontWeight: 800, color: profit >= 0 ? "#16a34a" : "#ef4444" }}>{profit >= 0 ? "+" : ""}{wonFmt(profit)}</div>
-            : <div style={{ fontSize: 13, fontWeight: 800, color: avg >= 0 ? "#16a34a" : "#ef4444" }}>평균 {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%</div>}
+            ? <div style={{ fontSize: 13, fontWeight: 800, color: profit >= 0 ? UP_C : DN_C }}>{profit >= 0 ? "+" : ""}{wonFmt(profit)}</div>
+            : <div style={{ fontSize: 13, fontWeight: 800, color: avg >= 0 ? UP_C : DN_C }}>평균 {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%</div>}
         </div>
         <span style={{ flex: "0 0 auto", fontSize: 11, color: T.hint }}>{open ? "▲" : "▼"}</span>
       </button>
@@ -625,10 +628,10 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
           {hasOutcome ? (
             <>
-              <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? "#16a34a" : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? UP_C : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
               {dayProfit != null
-                ? <div style={{ fontSize: 11.5, fontWeight: 700, color: dayProfit >= 0 ? "#16a34a" : "#ef4444" }}>{dayProfit >= 0 ? "+" : ""}{wonFmt(dayProfit)}</div>
-                : <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? "#16a34a" : "#ef4444" }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>}
+                ? <div style={{ fontSize: 11.5, fontWeight: 700, color: dayProfit >= 0 ? UP_C : DN_C }}>{dayProfit >= 0 ? "+" : ""}{wonFmt(dayProfit)}</div>
+                : <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? UP_C : DN_C }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>}
             </>
           ) : <div style={{ fontSize: 11, color: T.hint }}>결과 대기</div>}
         </div>
@@ -642,7 +645,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
                 <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}</span></span>
                 <span style={{ fontSize: 12, color: T.hint }}>당일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>
                 {p.nextHigh != null && <span style={{ fontSize: 12, fontWeight: 700, color: "#7c3aed" }} title="익일 고가 도달폭">고{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</span>}
-                {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? "#16a34a" : "#ef4444" }} title="익일 종가 등락">종{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
+                {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? UP_C : DN_C }} title="익일 종가 등락">종{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
                 {(p.nextHigh != null || p.nextRet != null) && <span style={{ fontSize: 12 }} title="익일 고가 +3% 도달">{(p.hit3High != null ? p.hit3High : (p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3)) ? "✅" : "❌"}</span>}
               </div>
             ))}
@@ -700,8 +703,8 @@ function OosInvestment({ hist, perStock, T }) {
       <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 8 }}>💰 종목당 {wonFmt(perStock)} 투자 시 (추천 전략, {n}건)</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {cell("총 투입(누적)", wonFmt(totalInvested))}
-        {cell("총 수익금", (totalProfit >= 0 ? "+" : "") + wonFmt(totalProfit), totalProfit >= 0 ? "#16a34a" : "#ef4444")}
-        {cell("평균 수익률/건", (avgRet >= 0 ? "+" : "") + avgRet.toFixed(2) + "%", avgRet >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("총 수익금", (totalProfit >= 0 ? "+" : "") + wonFmt(totalProfit), totalProfit >= 0 ? UP_C : DN_C)}
+        {cell("평균 수익률/건", (avgRet >= 0 ? "+" : "") + avgRet.toFixed(2) + "%", avgRet >= 0 ? UP_C : DN_C)}
         {cell("승률", (100 * wins / n).toFixed(1) + "%")}
       </div>
       <div style={{ fontSize: 11, color: T.hint, marginTop: 8, lineHeight: 1.5 }}>※ 거래마다 종목당 동일 금액 투자 가정(중복기간 무시). 백테스트 추정치이며 실제 체결·세금·슬리피지 제외.</div>
@@ -725,10 +728,10 @@ function StrategyTable({ a, T }) {
                 <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text }}>{s.name}</span>
               </div>
               <div style={{ display: "flex", gap: 12, marginTop: 5, fontSize: 12 }}>
-                <span style={{ color: s.avg >= 0 ? "#16a34a" : "#ef4444", fontWeight: 800 }}>평균 {s.avg >= 0 ? "+" : ""}{s.avg}%</span>
+                <span style={{ color: s.avg >= 0 ? UP_C : DN_C, fontWeight: 800 }}>평균 {s.avg >= 0 ? "+" : ""}{s.avg}%</span>
                 <span style={{ color: T.sub }}>승률 {s.winRate}%</span>
                 <span style={{ color: T.sub }}>손실 {s.lossRate}%</span>
-                <span style={{ color: "#ef4444" }}>최저 {s.worst}%</span>
+                <span style={{ color: DN_C }}>최저 {s.worst}%</span>
               </div>
             </div>
           );
@@ -829,7 +832,7 @@ function AfternoonView({ T }) {
                 <div style={{ marginTop: 11, fontSize: 13, lineHeight: 1.7, color: T.sub }}>
                   종목당 <b style={{ color: T.text }}>{wonFmt(perStock)}</b> × {buyable.length}종목 · 총 투입 <b style={{ color: T.text }}>{wonFmt(deployed)}</b>
                   {expGain != null
-                    ? <><br />추천 전략 평균({stratAvg}%) 기준 기대 익일 수익금 <b style={{ color: expGain >= 0 ? "#16a34a" : "#ef4444" }}>{expGain >= 0 ? "+" : ""}{wonFmt(expGain)}</b></>
+                    ? <><br />추천 전략 평균({stratAvg}%) 기준 기대 익일 수익금 <b style={{ color: expGain >= 0 ? UP_C : DN_C }}>{expGain >= 0 ? "+" : ""}{wonFmt(expGain)}</b></>
                     : <><br /><span style={{ color: T.hint }}>전략 평균 데이터 로딩 중…</span></>}
                 </div>
               )}
