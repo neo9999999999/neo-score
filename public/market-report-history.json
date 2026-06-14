@@ -1,5 +1,683 @@
 {
-  "meta": { "updatedAt": "2026-06-14T05:30:00+09:00", "count": 0, "note": "백필 워크플로 실행 또는 매일 자동 생성으로 채워집니다." },
-  "analysis": null,
-  "reports": []
+  "meta": {
+    "updatedAt": "2026-06-14T14:07:56+09:00",
+    "count": 9,
+    "backfilledFrom": "2026-06-01"
+  },
+  "analysis": {
+    "range": {
+      "start": "2026-06-01",
+      "end": "2026-06-12"
+    },
+    "totalDays": 9,
+    "evaluated": 6,
+    "directionHits": 4,
+    "hitRate": 66.7,
+    "bullishDays": 3,
+    "bearishDays": 3,
+    "neutralDays": 3,
+    "avgKospiOnBullish": -1.39,
+    "avgKospiOnBearish": -0.63,
+    "avgKospiOnNeutral": 0.98,
+    "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
+  },
+  "reports": [
+    {
+      "date": "2026-06-12",
+      "sentiment": "neutral",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +0.31%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 상승, 원/달러 보합 흐름을 종합하면 오늘 국내증시는 혼조·관망 출발이 예상됩니다.",
+      "kospiBias": "관망",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,888.84",
+          "change": "+79.18",
+          "changePct": "+0.31%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,431.46",
+          "change": "+37.16",
+          "changePct": "+0.50%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.88",
+          "change": "-2.83",
+          "changePct": "-3.23%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.75",
+          "change": "-0.11",
+          "changePct": "-0.11%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,517.9원",
+          "change": "+0.51",
+          "changePct": "+0.03%",
+          "dir": "flat"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.49%",
+          "change": "+0.02%p",
+          "changePct": "+0.54%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": 4.63,
+        "predicted": "neutral",
+        "hit": null
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "sentiment": "bullish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +2.54%로 마감했습니다. 유가 하락, 달러인덱스 보합, 미 10년물 금리 하락, 원/달러 하락 흐름을 종합하면 오늘 국내증시는 강세 우호적 출발이 예상됩니다.",
+      "kospiBias": "강세 출발 기대",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,809.66",
+          "change": "+640.16",
+          "changePct": "+2.54%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,394.3",
+          "change": "+127.31",
+          "changePct": "+1.75%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$87.71",
+          "change": "-2.32",
+          "changePct": "-2.58%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.86",
+          "change": "-0.09",
+          "changePct": "-0.09%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,517.4원",
+          "change": "-7.67",
+          "changePct": "-0.50%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.46%",
+          "change": "-0.08%p",
+          "changePct": "-1.74%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": 0.43,
+        "predicted": "bullish",
+        "hit": true
+      }
+    },
+    {
+      "date": "2026-06-10",
+      "sentiment": "bearish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 -1.98%로 마감했습니다. 유가 상승, 달러인덱스 보합, 미 10년물 금리 상승, 원/달러 보합 흐름을 종합하면 오늘 국내증시는 약세 경계 출발이 예상됩니다.",
+      "kospiBias": "약세 경계",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,169.5",
+          "change": "-509.32",
+          "changePct": "-1.98%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,266.99",
+          "change": "-119.66",
+          "changePct": "-1.62%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$90.03",
+          "change": "+1.83",
+          "changePct": "+2.07%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.95",
+          "change": "+0.04",
+          "changePct": "+0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,525.1원",
+          "change": "-0.76",
+          "changePct": "-0.05%",
+          "dir": "flat"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.54%",
+          "change": "+0.01%p",
+          "changePct": "+0.31%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "방어주·통신",
+          "bias": "up"
+        },
+        {
+          "name": "정유·에너지",
+          "bias": "up"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": -4.52,
+        "predicted": "bearish",
+        "hit": true
+      }
+    },
+    {
+      "date": "2026-06-09",
+      "sentiment": "bearish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 -0.97%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 하락, 원/달러 하락 흐름을 종합하면 오늘 국내증시는 약세 경계 출발이 예상됩니다.",
+      "kospiBias": "약세 경계",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,678.82",
+          "change": "-250.84",
+          "changePct": "-0.97%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,386.65",
+          "change": "-19.08",
+          "changePct": "-0.26%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$88.20",
+          "change": "-3.1",
+          "changePct": "-3.40%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.91",
+          "change": "-0.14",
+          "changePct": "-0.14%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,525.8원",
+          "change": "-3.07",
+          "changePct": "-0.20%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.53%",
+          "change": "-0.02%p",
+          "changePct": "-0.53%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "방어주·통신",
+          "bias": "up"
+        },
+        {
+          "name": "정유·에너지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": 8.18,
+        "predicted": "bearish",
+        "hit": false
+      }
+    },
+    {
+      "date": "2026-06-08",
+      "sentiment": "bullish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +0.86%로 마감했습니다. 유가 상승, 달러인덱스 보합, 미 10년물 금리 상승, 원/달러 하락 흐름을 종합하면 오늘 국내증시는 강세 우호적 출발이 예상됩니다.",
+      "kospiBias": "강세 출발 기대",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,929.66",
+          "change": "+220.23",
+          "changePct": "+0.86%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,405.73",
+          "change": "+21.99",
+          "changePct": "+0.30%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$91.30",
+          "change": "+0.76",
+          "changePct": "+0.84%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "100.05",
+          "change": "-0.02",
+          "changePct": "-0.02%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,528.9원",
+          "change": "-25.6",
+          "changePct": "-1.65%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.55%",
+          "change": "+0.02%p",
+          "changePct": "+0.35%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": -8.29,
+        "predicted": "bullish",
+        "hit": false
+      }
+    },
+    {
+      "date": "2026-06-05",
+      "sentiment": "bearish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 -4.18%로 마감했습니다. 유가 하락, 달러인덱스 상승, 미 10년물 금리 상승, 원/달러 상승 흐름을 종합하면 오늘 국내증시는 약세 경계 출발이 예상됩니다.",
+      "kospiBias": "약세 경계",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,709.43",
+          "change": "-1,121.53",
+          "changePct": "-4.18%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,383.74",
+          "change": "-200.57",
+          "changePct": "-2.64%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$90.54",
+          "change": "-2.5",
+          "changePct": "-2.69%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "100.07",
+          "change": "+0.66",
+          "changePct": "+0.66%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,533.1원",
+          "change": "+2.96",
+          "changePct": "+0.19%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.54%",
+          "change": "+0.06%p",
+          "changePct": "+1.32%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "방어주·통신",
+          "bias": "up"
+        },
+        {
+          "name": "정유·에너지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": -5.54,
+        "predicted": "bearish",
+        "hit": true
+      }
+    },
+    {
+      "date": "2026-06-04",
+      "sentiment": "neutral",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 -0.09%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 하락, 원/달러 상승 흐름을 종합하면 오늘 국내증시는 혼조·관망 출발이 예상됩니다.",
+      "kospiBias": "관망",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,830.96",
+          "change": "-23.02",
+          "changePct": "-0.09%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,584.31",
+          "change": "+30.63",
+          "changePct": "+0.41%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$93.04",
+          "change": "-2.98",
+          "changePct": "-3.10%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.41",
+          "change": "-0.12",
+          "changePct": "-0.12%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,533.1원",
+          "change": "+2.96",
+          "changePct": "+0.19%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.48%",
+          "change": "-0.01%p",
+          "changePct": "-0.31%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "방어주·통신",
+          "bias": "up"
+        },
+        {
+          "name": "정유·에너지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": -1.84,
+        "predicted": "neutral",
+        "hit": null
+      }
+    },
+    {
+      "date": "2026-06-02",
+      "sentiment": "neutral",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +0.03%로 마감했습니다. 유가 상승, 달러인덱스 보합, 미 10년물 금리 하락, 원/달러 상승 흐름을 종합하면 오늘 국내증시는 혼조·관망 출발이 예상됩니다.",
+      "kospiBias": "관망",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "27,093.9",
+          "change": "+7.09",
+          "changePct": "+0.03%",
+          "dir": "flat"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,609.78",
+          "change": "+9.82",
+          "changePct": "+0.13%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$93.76",
+          "change": "+1.6",
+          "changePct": "+1.74%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.22",
+          "change": "+0.02",
+          "changePct": "+0.02%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,516.6원",
+          "change": "+5.33",
+          "changePct": "+0.35%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.45%",
+          "change": "-0.02%p",
+          "changePct": "-0.45%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": 0.15,
+        "predicted": "neutral",
+        "hit": null
+      }
+    },
+    {
+      "date": "2026-06-01",
+      "sentiment": "bullish",
+      "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
+      "summary": "간밤 나스닥은 +0.42%로 마감했습니다. 유가 상승, 달러인덱스 상승, 미 10년물 금리 상승, 원/달러 상승 흐름을 종합하면 오늘 국내증시는 강세 우호적 출발이 예상됩니다.",
+      "kospiBias": "강세 출발 기대",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "27,086.81",
+          "change": "+114.19",
+          "changePct": "+0.42%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,599.96",
+          "change": "+19.9",
+          "changePct": "+0.26%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$92.16",
+          "change": "+4.8",
+          "changePct": "+5.49%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.2",
+          "change": "+0.29",
+          "changePct": "+0.29%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,511.3원",
+          "change": "+4.43",
+          "changePct": "+0.29%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.47%",
+          "change": "+0.02%p",
+          "changePct": "+0.49%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "neutral"
+        }
+      ],
+      "source": "oos",
+      "oos": {
+        "kospiRet": 3.68,
+        "predicted": "bullish",
+        "hit": true
+      }
+    }
+  ]
 }
