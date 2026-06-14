@@ -582,8 +582,9 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
 
 // 청산 시뮬레이터 (백엔드 simExit와 동일 로직) — 익일 %수익 반환
 function simExitJS(nb, opt) {
-  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null } = opt || {};
+  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null, gapStop = null } = opt || {};
   const { o, h, l, c } = nb;
+  if (gapStop != null && o != null && o <= gapStop) return o;
   if (stop != null) { if (o != null && o <= stop) return o; if (l != null && l <= stop) return stop; }
   if (h == null || c == null) return c ?? 0;
   if (h < tp1Lvl) return c;
@@ -711,6 +712,26 @@ function AfternoonView({ T }) {
         <div style={{ fontSize: 13, fontWeight: 800, color: bias.c, marginBottom: 7 }}>📋 요약</div>
         <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
       </div>
+
+      {(() => {
+        const opt = oosRecOpt || { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -7 };
+        const stopText = opt.gapStop != null
+          ? `익일 시가 ${opt.gapStop}% 이탈 시 시가 전량 청산 (장중 흔들기엔 손절 안 함 — 백테스트상 타이트 손절은 불리)`
+          : opt.stop != null
+            ? `${opt.stop}% 도달 시 전량 손절`
+            : `별도 손절 없음 (갭하락 −7% 이탈만 청산 권장)`;
+        return (
+          <div style={{ marginTop: 12, background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+            <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 9 }}>📋 매도 플랜 (손절 포함 · 백테스트 권장)</div>
+            <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13, lineHeight: 1.75, color: T.sub }}>
+              {opt.tp1Frac > 0 && <li><b style={{ color: T.text }}>1차 익절</b>: +{opt.tp1Lvl}% 도달 시 <b>{Math.round(opt.tp1Frac * 100)}%</b> 매도</li>}
+              <li><b style={{ color: T.text }}>잔량 관리</b>: +10% 도달 후 10% 아래로 빠지면 전량 매도 · +15%↑면 <b>고가−5% 트레일링</b></li>
+              <li><b style={{ color: "#ef4444" }}>손절</b>: {stopText}</li>
+              <li><b style={{ color: T.text }}>목표 미달</b>: 익일 +{opt.tp1Lvl}% 못 가면 종가 청산</li>
+            </ol>
+          </div>
+        );
+      })()}
 
       {(() => {
         const cands = rep.candidates || [];

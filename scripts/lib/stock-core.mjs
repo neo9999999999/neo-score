@@ -112,8 +112,9 @@ export function fmtEok(won) {
 // 룰: tp1Frac 만큼 +tp1Lvl%에서 익절, 잔량은 +floorLvl% 도달 후 그 아래로 빠지면 청산,
 //     +15%↑에서는 고가−trailGap% 트레일링. +tp1Lvl% 미도달이면 잔여 전량 종가 청산.
 export function simExit(nb, opt = {}) {
-  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null } = opt;
+  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null, gapStop = null } = opt;
   const { o, h, l, c } = nb;
+  if (gapStop != null && o != null && o <= gapStop) return o; // 갭하락 전용: 시가만 청산
   if (stop != null) {
     if (o <= stop) return o;      // 갭하락 → 시가 청산
     if (l <= stop) return stop;   // 장중 손절(보수적: 익절보다 우선)
@@ -130,12 +131,12 @@ export function simExit(nb, opt = {}) {
 export function runStrategyGrid(picks) {
   const strategies = [
     { name: "원안: 5%익절50%+트레일, 손절無", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: null } },
-    { name: "원안 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -3 } },
-    { name: "원안 + 손절 −5%", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -5 } },
-    { name: "익절 30%@+5% + 트레일 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.3, stop: -3 } },
-    { name: "익절가 +7%(50%) + 트레일 + 손절 −3%", opt: { tp1Lvl: 7, tp1Frac: 0.5, stop: -3 } },
-    { name: "무익절 전량 고가−5% 트레일 + 손절 −3%", opt: { tp1Lvl: 5, tp1Frac: 0.0, stop: -3 } },
-    { name: "익절 30%@+7% + 트레일 + 손절 −4%", opt: { tp1Lvl: 7, tp1Frac: 0.3, stop: -4 } },
+    { name: "권장: 원안 + 갭하락 −7%만 손절", opt: { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -7 } },
+    { name: "원안 + 갭하락 −5%만 손절", opt: { tp1Lvl: 5, tp1Frac: 0.5, gapStop: -5 } },
+    { name: "원안 + 손절 −3%(장중)", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -3 } },
+    { name: "원안 + 손절 −5%(장중)", opt: { tp1Lvl: 5, tp1Frac: 0.5, stop: -5 } },
+    { name: "익절 30%@+7% + 트레일 + 갭하락 −7%", opt: { tp1Lvl: 7, tp1Frac: 0.3, gapStop: -7 } },
+    { name: "무익절 전량 고가−5% 트레일 + 갭하락 −7%", opt: { tp1Lvl: 5, tp1Frac: 0.0, gapStop: -7 } },
   ];
   const out = strategies.map(s => {
     const rets = picks.map(p => simExit(p, s.opt));
@@ -151,9 +152,10 @@ export function runStrategyGrid(picks) {
     const ret_risk = dd ? +(avg / dd).toFixed(3) : null;
     return { name: s.name, opt: s.opt, avg, winRate: win, lossRate: loss, worst, best, retRisk: ret_risk };
   });
-  // 추천: 평균 최고 (손실비중 50% 이하 조건)
-  const eligible = out.filter(s => s.lossRate <= 50);
-  const recommended = (eligible.length ? eligible : out).reduce((a, b) => b.avg > a.avg ? b : a);
+  // 추천: 하방보호(손절/갭손절) 있는 전략 중 평균 최고 — 무손절은 꼬리위험(−17%↑) 때문에 제외
+  const protectedS = out.filter(s => s.opt.stop != null || s.opt.gapStop != null);
+  const pool = protectedS.length ? protectedS : out;
+  const recommended = pool.reduce((a, b) => b.avg > a.avg ? b : a);
   return { strategies: out, recommended: recommended.name };
 }
 
