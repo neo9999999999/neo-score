@@ -74,7 +74,7 @@ async function main() {
     const refDate = new Date(d + "T00:00:00Z");
 
     // 그 시점까지의 거시지표(<= d) — 전일 미국 마감 반영
-    const indicators = STOOQ.map(item => {
+    const indicators = MARKETS.map(item => {
       const { close, prevClose } = closesAsOf(series[item.key] || [], d);
       return makeIndicator(item, close, prevClose);
     });
