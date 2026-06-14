@@ -1,6 +1,6 @@
 {
   "date": "2026-06-14",
-  "generatedAt": "2026-06-14T18:01:33+09:00",
+  "generatedAt": "2026-06-14T18:32:10+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
@@ -147,6 +147,7 @@
       "name": "후성",
       "code": "093370",
       "market": "KOSPI",
+      "price": 19010,
       "score": 88.2,
       "changePct": 20.55,
       "rangePos": 0.7,
@@ -171,6 +172,7 @@
       "name": "에스원",
       "code": "012750",
       "market": "KOSPI",
+      "price": 88700,
       "score": 86.8,
       "changePct": 15.65,
       "rangePos": 0.88,
