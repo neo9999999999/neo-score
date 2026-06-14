@@ -105,6 +105,18 @@ async function main() {
   // 외+기 동반매수 우선 → 신고가 돌파 우선 → 당일 등락폭 순
   pool.sort((a, b) => (b.dongban ? 1 : 0) - (a.dongban ? 1 : 0) || (b.nearHighPct ?? -99) - (a.nearHighPct ?? -99) || b.changePct - a.changePct);
 
+  // 마켓리포트(오늘) 연동: 센티먼트·상승예상 섹터·이슈 + 종목별 섹터 매칭
+  let mkt = null;
+  try { mkt = JSON.parse(await readFile(join(ROOT, "public", "market-report.json"), "utf8")); } catch {}
+  const sectorMap = new Map();
+  if (mkt && Array.isArray(mkt.sectors)) for (const sec of mkt.sectors) for (const st of (sec.stocks || [])) if (st.name) sectorMap.set(st.name, sec.name);
+  const marketContext = mkt ? {
+    date: mkt.date, sentiment: mkt.sentiment || "neutral", title: mkt.title || "",
+    summary: mkt.summary || "",
+    sectors: (mkt.sectors || []).map(s => ({ name: s.name, bias: s.bias })),
+    issues: [...(mkt.globalIssues || []), ...(mkt.todayIssues || mkt.issues || [])].slice(0, 5).map(x => ({ category: x.category, title: x.title })),
+  } : null;
+
   const candidates = pool.slice(0, TOP_PICKS).map((x, idx) => ({
     rank: idx + 1, name: x.name, code: x.code, market: x.market,
     price: Math.round(x.price),
@@ -112,10 +124,11 @@ async function main() {
     volSurge: x.volSurge, gapPct: x.gapPct, aboveMA: x.aboveMA,
     nearHighPct: x.nearHighPct, breakout: x.breakout,
     value: x.value, valueText: fmtEok(x.value),
+    sector: sectorMap.get(x.name) || null,
     expRet: x.expRet, p3: x.p3, p5: x.p5, p3High: x.p3High, p5High: x.p5High, hitRate: x.calHit,
     supplyLabel: x.supplyLabel, dongban: x.dongban,
     target3: x.p3High != null && x.p3High >= 45,
-    reason: pickReason(x, x.name) + (x.breakout ? " · 신고가 돌파" : " · 신고가 근접") + " · 정배열" + (x.dongban ? " · 외+기 동반매수" : ""),
+    reason: pickReason(x, x.name) + (x.breakout ? " · 신고가 돌파" : " · 신고가 근접") + " · 정배열" + (sectorMap.get(x.name) ? " · " + sectorMap.get(x.name) + "(리포트 상승섹터)" : "") + (x.dongban ? " · 외+기 동반매수" : ""),
   }));
 
   console.log(`[afternoon] 신고가+정배열 후보 ${candidates.length}종목 (돌파 ${candidates.filter(c => c.breakout).length}, 동반매수 ${candidates.filter(c => c.dongban).length})`);
@@ -129,8 +142,9 @@ async function main() {
     marketBias, summary,
     futures, macro, indices,
     candidates,
+    marketContext,
     calibration: calibration ? calibration.all : null,
-    note: "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어. 예상 익일등락·5%↑ 확률은 과거 OOS 통계 기반 추정으로 보장값이 아닙니다. 투자 책임은 본인에게 있습니다.",
+    note: "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어 + 오늘 마켓리포트(섹터·이슈) 연동. 예상치는 과거 OOS 통계 기반 추정으로 보장값 아님. 투자 책임은 본인에게.",
   };
 
   await mkdir(DIR, { recursive: true });
@@ -143,7 +157,8 @@ async function main() {
   if (!Array.isArray(hist.reports)) hist.reports = [];
   const entry = {
     date: dateStr, marketBias,
-    picks: candidates.map(c => ({ name: c.name, code: c.code, score: c.score, changePct: c.changePct })),
+    picks: candidates.map(c => ({ name: c.name, code: c.code, score: c.score, changePct: c.changePct, sector: c.sector })),
+    marketContext: marketContext ? { sentiment: marketContext.sentiment, topSectors: marketContext.sectors.slice(0, 3).map(s => s.name), issues: marketContext.issues.slice(0, 3).map(i => i.title) } : null,
     nq, es,
   };
   hist.reports = hist.reports.filter(r => r.date !== dateStr);
