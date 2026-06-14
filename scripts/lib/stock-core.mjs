@@ -107,32 +107,39 @@ export function fmtEok(won) {
   return Math.round(eok).toLocaleString("ko-KR") + "억";
 }
 
-// OOS 히스토리(과거 선정 종목의 score+익일등락)로 점수대별 보정표 생성
+// OOS 히스토리(과거 선정 종목의 당일등락+익일등락)로 당일등락대별 보정표 생성
 export function buildCalibration(reports) {
   const samples = [];
   for (const r of reports || []) for (const p of r.picks || []) {
-    if (p.nextRet != null && p.score != null) samples.push({ score: p.score, ret: p.nextRet });
+    if (p.nextRet != null && p.changePct != null) samples.push({ chg: p.changePct, ret: p.nextRet });
   }
   const stat = (xs) => xs.length ? {
     n: xs.length,
     expRet: +(xs.reduce((a, b) => a + b.ret, 0) / xs.length).toFixed(2),
+    p3: +((xs.filter(s => s.ret >= 3).length / xs.length) * 100).toFixed(1),
     p5: +((xs.filter(s => s.ret >= 5).length / xs.length) * 100).toFixed(1),
     hitRate: +((xs.filter(s => s.ret > 0).length / xs.length) * 100).toFixed(1),
-  } : { n: 0, expRet: null, p5: null, hitRate: null };
-  const edges = [0, 72, 78, 84, 200];
+  } : { n: 0, expRet: null, p3: null, p5: null, hitRate: null };
+  const edges = [0, 10, 15, 20, 100]; // 당일 등락률(%) 구간
   const buckets = [];
   for (let i = 0; i < edges.length - 1; i++) {
     const lo = edges[i], hi = edges[i + 1];
-    buckets.push({ lo, hi, ...stat(samples.filter(s => s.score >= lo && s.score < hi)) });
+    buckets.push({ lo, hi, ...stat(samples.filter(s => s.chg >= lo && s.chg < hi)) });
   }
   return { buckets, all: stat(samples) };
 }
 
-// 점수 → 예상 익일등락 추정 (표본 부족 시 전체 평균으로 폴백)
-export function estimate(cal, score) {
+// 당일 등락률 → 예상 익일등락/3%↑·5%↑ 확률 추정 (표본 부족 시 전체 평균 폴백)
+export function estimate(cal, changePct) {
   if (!cal) return null;
-  const b = cal.buckets.find(x => score >= x.lo && score < x.hi);
-  if (b && b.n >= 15) return { expRet: b.expRet, p5: b.p5, hitRate: b.hitRate, n: b.n };
-  return cal.all && cal.all.n ? { expRet: cal.all.expRet, p5: cal.all.p5, hitRate: cal.all.hitRate, n: cal.all.n } : null;
+  const b = cal.buckets.find(x => changePct >= x.lo && changePct < x.hi);
+  if (b && b.n >= 15) return { expRet: b.expRet, p3: b.p3, p5: b.p5, hitRate: b.hitRate, n: b.n };
+  return cal.all && cal.all.n ? { expRet: cal.all.expRet, p3: cal.all.p3, p5: cal.all.p5, hitRate: cal.all.hitRate, n: cal.all.n } : null;
 }
+
+// 익일 대장주(3%↑ 연속 가능성) 후보 필터 — 강한 신호 + 당일 급등(과열 락 제외)
+export function isLeader(m) {
+  return m && m.score >= 78 && m.changePct >= 10 && m.changePct <= 29 && m.rangePos >= 0.55 && m.volSurge >= 1.3;
+}
+
 

@@ -15,7 +15,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { kstIso } from "./lib/report-core.mjs";
-import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isCandidate } from "./lib/stock-core.mjs";
+import { loadUniverse, fetchYahooOHLCV, pMap, scoreAt, isLeader } from "./lib/stock-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -55,24 +55,28 @@ async function main() {
       const nextRet = (next.close - s[i].close) / s[i].close * 100;
       baseSum += nextRet; baseN++;
       const m = scoreAt(s, i, 0);
-      if (!m || !isCandidate(m)) continue;
+      if (!m || !isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
       byDate.get(d).push({ code: st.code, name: st.name, score: m.score, changePct: m.changePct, nextRet: +nextRet.toFixed(2) });
     }
   }
 
-  // 일자별 상위 K 선정 + 평가
+  // 일자별 당일 급등폭 상위 K 선정 + 평가 (익일 3%↑ 타겟)
   const dates = [...byDate.keys()].sort();
   const reports = [];
-  let totPicks = 0, hits = 0, pickSum = 0;
+  let totPicks = 0, hits = 0, hits3 = 0, hits5 = 0, pickSum = 0;
   for (const d of dates) {
-    const picks = byDate.get(d).sort((a, b) => b.score - a.score).slice(0, TOP_PICKS)
-      .map(p => ({ ...p, hit: p.nextRet > 0 }));
+    const picks = byDate.get(d).sort((a, b) => b.changePct - a.changePct).slice(0, TOP_PICKS)
+      .map(p => ({ ...p, hit: p.nextRet > 0, hit3: p.nextRet >= 3 }));
     if (!picks.length) continue;
-    const dayHits = picks.filter(p => p.hit).length;
+    const dayHit3 = picks.filter(p => p.hit3).length;
     const dayAvg = +(picks.reduce((s, p) => s + p.nextRet, 0) / picks.length).toFixed(2);
-    totPicks += picks.length; hits += dayHits; pickSum += picks.reduce((s, p) => s + p.nextRet, 0);
-    reports.push({ date: d, picks, dayHitRate: +((dayHits / picks.length) * 100).toFixed(1), avgNextRet: dayAvg });
+    totPicks += picks.length;
+    hits += picks.filter(p => p.hit).length;
+    hits3 += dayHit3;
+    hits5 += picks.filter(p => p.nextRet >= 5).length;
+    pickSum += picks.reduce((s, p) => s + p.nextRet, 0);
+    reports.push({ date: d, picks, dayHitRate: +((dayHit3 / picks.length) * 100).toFixed(1), avgNextRet: dayAvg });
   }
 
   const baseAvg = baseN ? +(baseSum / baseN).toFixed(3) : null;
@@ -82,19 +86,21 @@ async function main() {
     universe: UNIVERSE_N, topPicks: TOP_PICKS,
     tradedDays: reports.length,
     totalPicks: totPicks,
-    hits,
-    hitRate: totPicks ? +((hits / totPicks) * 100).toFixed(1) : null,
+    hit3: hits3,
+    hit3Rate: totPicks ? +((hits3 / totPicks) * 100).toFixed(1) : null,
+    hit5Rate: totPicks ? +((hits5 / totPicks) * 100).toFixed(1) : null,
+    upRate: totPicks ? +((hits / totPicks) * 100).toFixed(1) : null,
     avgNextRet: pickAvg,
     baselineAvgNextRet: baseAvg,
     edge: (pickAvg != null && baseAvg != null) ? +(pickAvg - baseAvg).toFixed(3) : null,
-    note: "각 거래일 종가 기준 선정 종목의 '익일 종가' 등락률. baseline=유니버스 전체 평균 익일 등락. edge=후보 평균−baseline.",
+    note: "당일 급등폭 상위 선정 종목의 '익일 종가' 등락률. hit3Rate=익일 3%↑ 비율(주 지표). baseline=유니버스 전체 평균 익일 등락. edge=후보 평균−baseline.",
   };
 
   reports.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: reports.length, backfilledFrom: START }, analysis, reports };
   await writeFile(HIST, JSON.stringify(hist, null, 2) + "\n", "utf8");
 
-  console.log(`[afternoon-bf] 완료: ${reports.length}일, 선정 ${totPicks}건, 적중률 ${analysis.hitRate}%, 평균익일 ${pickAvg}% (baseline ${baseAvg}%, edge ${analysis.edge})`);
+  console.log(`[afternoon-bf] 완료: ${reports.length}일, 선정 ${totPicks}건, 익일3%↑ ${analysis.hit3Rate}%, 평균익일 ${pickAvg}% (baseline ${baseAvg}%, edge ${analysis.edge})`);
 }
 
 main().catch(e => { console.error("[afternoon-bf] 오류:", e); process.exit(1); });
