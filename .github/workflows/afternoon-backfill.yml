@@ -26,7 +26,7 @@ jobs:
       - name: Run afternoon backfill
         env:
           UNIVERSE_N: "500"
-          TOP_PICKS: "15"
+          TOP_PICKS: "5"
         run: node scripts/backfill-afternoon-reports.mjs "${{ inputs.start }}"
       - name: Commit & push
         run: |

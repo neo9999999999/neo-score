@@ -462,15 +462,15 @@ function CandidateRow({ c, T }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
             <span style={{ fontSize: 14.5, fontWeight: 800, color: T.text }}>{c.name}</span>
-            {c.target5 && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#dc2626", padding: "1px 6px", borderRadius: 6 }}>🔥 5%↑ 유력</span>}
+            {c.target3 && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#dc2626", padding: "1px 6px", borderRadius: 6 }}>🔥 3%↑ 유력</span>}
             <span style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{c.code} · {c.market}</span>
           </div>
         </div>
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
-          {c.expRet != null
-            ? <div style={{ fontSize: 15, fontWeight: 800, color: c.expRet >= 0 ? "#16a34a" : "#ef4444" }}>예상 {c.expRet >= 0 ? "+" : ""}{c.expRet}%</div>
+          {c.p3 != null
+            ? <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>3%↑ {c.p3}%</div>
             : <div style={{ fontSize: 14, fontWeight: 800, color: up ? "#16a34a" : "#ef4444" }}>{up ? "+" : ""}{c.changePct}%</div>}
-          <div style={{ fontSize: 11, color: T.hint }}>{c.p5 != null ? "5%↑ 확률 " + c.p5 + "%" : "점수 " + c.score}</div>
+          <div style={{ fontSize: 11, color: T.hint }}>{c.expRet != null ? "예상 익일 " + (c.expRet >= 0 ? "+" : "") + c.expRet + "%" : "점수 " + c.score}</div>
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
@@ -500,11 +500,17 @@ function AfternoonAnalysis({ a, T }) {
       <div style={{ fontSize: 14, fontWeight: 900, color: T.text, marginBottom: 3 }}>🧪 익일예측 OOS 백테스트</div>
       <div style={{ fontSize: 12, color: T.hint, marginBottom: 11 }}>{a.range?.start} ~ {a.range?.end} · {a.tradedDays}일 · 선정 {a.totalPicks}건</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {cell("익일 상승 적중률", a.hitRate == null ? "—" : a.hitRate + "%", a.hitRate >= 50 ? "#16a34a" : "#ef4444")}
-        {cell("후보 평균 익일", pct(a.avgNextRet), a.avgNextRet >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("익일 3%↑ 적중률", a.hit3Rate == null ? "—" : a.hit3Rate + "%", (a.hit3Rate || 0) >= 30 ? "#16a34a" : "#d97706")}
+        {cell("후보 평균 익일", pct(a.avgNextRet), (a.avgNextRet || 0) >= 0 ? "#16a34a" : "#ef4444")}
         {cell("시장 평균(baseline)", pct(a.baselineAvgNextRet))}
-        {cell("초과수익 edge", pct(a.edge), a.edge >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("초과수익 edge", pct(a.edge), (a.edge || 0) >= 0 ? "#16a34a" : "#ef4444")}
       </div>
+      {(a.hit5Rate != null || a.upRate != null) && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+          {cell("익일 5%↑", a.hit5Rate == null ? "—" : a.hit5Rate + "%")}
+          {cell("익일 상승(>0%)", a.upRate == null ? "—" : a.upRate + "%")}
+        </div>
+      )}
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
     </div>
   );
@@ -527,7 +533,7 @@ function AfternoonDayRow({ r, T }) {
         <div style={{ flex: "0 0 auto", textAlign: "right" }}>
           {hasOutcome ? (
             <>
-              <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 50 ? "#16a34a" : "#ef4444" }}>적중 {r.dayHitRate}%</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? "#16a34a" : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
               <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? "#16a34a" : "#ef4444" }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>
             </>
           ) : <div style={{ fontSize: 11, color: T.hint }}>결과 대기</div>}
@@ -542,7 +548,7 @@ function AfternoonDayRow({ r, T }) {
                 <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: T.text }}>{p.name} <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 500 }}>{p.code}</span></span>
                 <span style={{ fontSize: 12, color: T.hint }}>당일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>
                 {p.nextRet != null && <span style={{ fontSize: 12.5, fontWeight: 800, color: p.nextRet >= 0 ? "#16a34a" : "#ef4444" }}>→ 익일 {p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>}
-                {p.hit != null && <span style={{ fontSize: 12 }}>{p.hit ? "✅" : "❌"}</span>}
+                {p.nextRet != null && <span style={{ fontSize: 12 }} title="익일 3%↑ 달성">{(p.hit3 != null ? p.hit3 : p.nextRet >= 3) ? "✅" : "❌"}</span>}
               </div>
             ))}
           </div>
