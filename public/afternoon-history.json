@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T21:56:50+09:00",
+    "updatedAt": "2026-06-14T22:03:57+09:00",
     "count": 1958,
     "backfilledFrom": "2018-01-01"
   },
@@ -870,7 +870,174 @@
         "hit5HighRate": 50.5,
         "baselineAvgNextRet": -0.141,
         "edge": 1.98
-      }
+      },
+      "foldB": {
+        "trainRange": {
+          "start": "2023-01-01",
+          "end": "2026-06-11"
+        },
+        "testRange": {
+          "start": "2018-01-01",
+          "end": "2023-01-01"
+        },
+        "chosen": {
+          "scoreMin": 78,
+          "chgMin": 20,
+          "topN": 5,
+          "exit": "전량 트레일 + 갭−7%"
+        },
+        "train": {
+          "n": 1794,
+          "avg": 1.892,
+          "hit3HighRate": 60.9,
+          "hit5HighRate": 50.2
+        },
+        "test": {
+          "n": 1759,
+          "avg": 1.193,
+          "hit3HighRate": 56.1,
+          "hit5HighRate": 45.4,
+          "baselineAvgNextRet": -0.025,
+          "edge": 1.218
+        }
+      },
+      "byYear": [
+        {
+          "year": "2018",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 97,
+          "avg": 1.922,
+          "hit3HighRate": 52.6,
+          "hit5HighRate": 40.2,
+          "baselineAvgNextRet": 0.155,
+          "edge": 1.767
+        },
+        {
+          "year": "2019",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 96,
+          "avg": 0.195,
+          "hit3HighRate": 62.5,
+          "hit5HighRate": 49,
+          "baselineAvgNextRet": -0.064,
+          "edge": 0.259
+        },
+        {
+          "year": "2020",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 197,
+          "avg": 2.394,
+          "hit3HighRate": 59.9,
+          "hit5HighRate": 50.8,
+          "baselineAvgNextRet": 0.108,
+          "edge": 2.286
+        },
+        {
+          "year": "2021",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 160,
+          "avg": 1.117,
+          "hit3HighRate": 55.6,
+          "hit5HighRate": 46.3,
+          "baselineAvgNextRet": 0.073,
+          "edge": 1.044
+        },
+        {
+          "year": "2022",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 102,
+          "avg": 1.398,
+          "hit3HighRate": 52,
+          "hit5HighRate": 41.2,
+          "baselineAvgNextRet": -0.532,
+          "edge": 1.93
+        },
+        {
+          "year": "2023",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 175,
+          "avg": 1.278,
+          "hit3HighRate": 64.6,
+          "hit5HighRate": 52.6,
+          "baselineAvgNextRet": -0.32,
+          "edge": 1.598
+        },
+        {
+          "year": "2024",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 188,
+          "avg": 1.18,
+          "hit3HighRate": 59,
+          "hit5HighRate": 50.5,
+          "baselineAvgNextRet": -0.333,
+          "edge": 1.513
+        },
+        {
+          "year": "2025",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 3,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 201,
+          "avg": 2.102,
+          "hit3HighRate": 52.7,
+          "hit5HighRate": 44.3,
+          "baselineAvgNextRet": 0.064,
+          "edge": 2.038
+        },
+        {
+          "year": "2026",
+          "chosen": {
+            "scoreMin": 84,
+            "chgMin": 20,
+            "topN": 5,
+            "exit": "전량 트레일 + 갭−7%"
+          },
+          "n": 167,
+          "avg": 2.251,
+          "hit3HighRate": 64.1,
+          "hit5HighRate": 53.9,
+          "baselineAvgNextRet": 0.017,
+          "edge": 2.234
+        }
+      ]
     }
   },
   "reports": [
