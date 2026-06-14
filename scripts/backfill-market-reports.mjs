@@ -22,7 +22,7 @@ import { writeFile, readFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
-  kstIso, STOOQ, fetchStooqSeries, closesAsOf, makeIndicator,
+  kstIso, MARKETS, KOSPI_SYMBOL, fetchYahooSeries, closesAsOf, makeIndicator,
   loadStockMap, attachCodes, ruleBasedBody, sentToSign,
 } from "./lib/report-core.mjs";
 
@@ -52,12 +52,12 @@ async function main() {
 
   // 1) 시리즈 수집
   const series = {};
-  for (const item of STOOQ) {
-    try { series[item.key] = await fetchStooqSeries(item.symbol); console.log(`[backfill] ${item.key}: ${series[item.key].length}개`); }
+  for (const item of MARKETS) {
+    try { series[item.key] = await fetchYahooSeries(item.symbol); console.log(`[backfill] ${item.key}: ${series[item.key].length}개`); }
     catch (e) { series[item.key] = []; console.warn(`[backfill] ${item.key} 수집 실패: ${e.message}`); }
   }
   let kospi = [];
-  try { kospi = await fetchStooqSeries("^kospi"); console.log(`[backfill] kospi: ${kospi.length}개`); }
+  try { kospi = await fetchYahooSeries(KOSPI_SYMBOL); console.log(`[backfill] kospi: ${kospi.length}개`); }
   catch (e) { console.error("[backfill] 코스피 수집 실패 — OOS 평가 불가:", e.message); }
   if (!kospi.length) { console.error("[backfill] 코스피 데이터 없음. 중단."); process.exit(1); }
 

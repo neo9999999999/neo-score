@@ -16,15 +16,18 @@ export async function fetchWithTimeout(url, opts = {}, ms = 15000) {
   finally { clearTimeout(t); }
 }
 
-// ---- 지표 정의 ----
-export const STOOQ = [
-  { key: "nasdaq", label: "나스닥", symbol: "^ndq", fmt: "index" },
-  { key: "sp500", label: "S&P 500", symbol: "^spx", fmt: "index" },
-  { key: "wti", label: "WTI 유가", symbol: "cl.f", fmt: "usd" },
-  { key: "dxy", label: "달러인덱스", symbol: "dx.f", fmt: "num" },
-  { key: "usdkrw", label: "원/달러 환율", symbol: "usdkrw", fmt: "krw" },
-  { key: "ust10y", label: "미 10년물 금리", symbol: "10usy.b", fmt: "pct" },
+// ---- 지표 정의 (Yahoo Finance 심볼) ----
+export const MARKETS = [
+  { key: "nasdaq", label: "나스닥", symbol: "^IXIC", fmt: "index" },
+  { key: "sp500", label: "S&P 500", symbol: "^GSPC", fmt: "index" },
+  { key: "wti", label: "WTI 유가", symbol: "CL=F", fmt: "usd" },
+  { key: "dxy", label: "달러인덱스", symbol: "DX-Y.NYB", fmt: "num" },
+  { key: "usdkrw", label: "원/달러 환율", symbol: "KRW=X", fmt: "krw" },
+  { key: "ust10y", label: "미 10년물 금리", symbol: "^TNX", fmt: "pct" },
 ];
+export const KOSPI_SYMBOL = "^KS11";
+// 하위 호환 별칭
+export const STOOQ = MARKETS;
 
 export function fmtVal(v, fmt) {
   if (v == null || !isFinite(v)) return "—";
@@ -56,22 +59,34 @@ export function makeIndicator(item, close, prevClose) {
   };
 }
 
-// Stooq 일봉 CSV 전체를 [{date, close}] 로 파싱 (오름차순)
-export function parseStooqCsv(text) {
-  const lines = text.trim().split("\n").filter(Boolean);
-  if (lines.length < 2) return [];
-  return lines.slice(1).map(l => {
-    const c = l.split(",");
-    return { date: c[0], close: parseFloat(c[4]) };
-  }).filter(r => r.date && isFinite(r.close));
+// Yahoo Finance 차트 JSON → [{date, close}] (오름차순)
+export function parseYahooChart(json) {
+  const res = json?.chart?.result?.[0];
+  if (!res || !Array.isArray(res.timestamp)) return [];
+  const ts = res.timestamp;
+  const q = res.indicators?.quote?.[0]?.close || [];
+  const adj = res.indicators?.adjclose?.[0]?.adjclose || [];
+  const out = [];
+  for (let i = 0; i < ts.length; i++) {
+    const close = (q[i] != null ? q[i] : adj[i]);
+    if (close == null || !isFinite(close)) continue;
+    const date = new Date(ts[i] * 1000).toISOString().slice(0, 10);
+    out.push({ date, close: +close });
+  }
+  // 같은 날짜 중복 시 마지막 값 유지
+  const map = new Map(out.map(r => [r.date, r.close]));
+  return [...map.entries()].map(([date, close]) => ({ date, close })).sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export async function fetchStooqSeries(symbol) {
-  const url = `https://stooq.com/q/d/l/?s=${encodeURIComponent(symbol)}&i=d`;
-  const r = await fetchWithTimeout(url);
+export async function fetchYahooSeries(symbol, range = "2y") {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
+  const r = await fetchWithTimeout(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; neo-score/1.0)" } }, 20000);
   if (!r.ok) throw new Error("HTTP " + r.status);
-  return parseStooqCsv(await r.text());
+  return parseYahooChart(await r.json());
 }
+
+// 하위 호환 별칭
+export const fetchStooqSeries = fetchYahooSeries;
 
 // 시리즈에서 date 이하(<=)의 가장 최근 종가와 그 직전 종가
 export function closesAsOf(series, date) {
