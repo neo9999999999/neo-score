@@ -452,6 +452,8 @@ export function MarketReportTab({ theme }) {
   const [error, setError] = useState(null);
   const [detail, setDetail] = useState(null); // 히스토리에서 연 개별 리포트
   const [detailLoading, setDetailLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [spin, setSpin] = useState(false);
 
   const loadToday = useCallback(async () => {
     setLoading(true); setError(null);
@@ -469,8 +471,16 @@ export function MarketReportTab({ theme }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const handleRefresh = useCallback(async () => {
+    setSpin(true);
+    setDetail(null);
+    if (mode === "today") await loadToday();
+    setRefreshKey(k => k + 1); // 히스토리/분석 재로딩 (HistoryView remount)
+    setTimeout(() => setSpin(false), 500);
+  }, [mode, loadToday]);
+
   const Toggle = () => (
-    <div style={{ display: "flex", gap: 6, background: T.cardAlt, borderRadius: 10, padding: 4, marginBottom: 14 }}>
+    <div style={{ display: "flex", gap: 6, flex: 1, background: T.cardAlt, borderRadius: 10, padding: 4 }}>
       {[["today", "오늘 리포트"], ["history", "일자별 히스토리"]].map(([k, label]) => (
         <button key={k} onClick={() => { setMode(k); setDetail(null); }} style={{ flex: 1, border: "none", borderRadius: 8, padding: "9px 0", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", background: mode === k ? T.card : "transparent", color: mode === k ? T.text : T.hint, boxShadow: mode === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
       ))}
@@ -479,7 +489,12 @@ export function MarketReportTab({ theme }) {
 
   return (
     <div>
-      <Toggle />
+      <div style={{ display: "flex", gap: 8, alignItems: "stretch", marginBottom: 14 }}>
+        <Toggle />
+        <button onClick={handleRefresh} title="새로고침" aria-label="새로고침" style={{ flex: "0 0 auto", border: "1px solid " + T.border, background: T.card, color: T.text, borderRadius: 10, padding: "0 14px", fontSize: 18, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ display: "inline-block", transition: "transform .5s", transform: spin ? "rotate(360deg)" : "none" }}>↻</span>
+        </button>
+      </div>
       {mode === "today" && (
         loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
           : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
@@ -492,7 +507,7 @@ export function MarketReportTab({ theme }) {
             {detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <ReportBody report={detail} T={T} />}
           </div>
         ) : (
-          detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <HistoryView T={T} onOpen={openDate} />
+          detailLoading ? <div style={{ padding: 30, textAlign: "center", color: T.hint }}>불러오는 중…</div> : <HistoryView key={refreshKey} T={T} onOpen={openDate} />
         )
       )}
     </div>
