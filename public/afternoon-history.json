@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-14T15:33:47+09:00",
+    "updatedAt": "2026-06-14T16:05:37+09:00",
     "count": 108,
     "backfilledFrom": "2026-01-01"
   },
@@ -26,6 +26,12 @@
       "marketBias": "bullish",
       "picks": [
         {
+          "name": "DB하이텍",
+          "code": "000990",
+          "score": 78,
+          "changePct": 12.31
+        },
+        {
           "name": "후성",
           "code": "093370",
           "score": 88.2,
@@ -44,76 +50,10 @@
           "changePct": 14.01
         },
         {
-          "name": "DB하이텍",
-          "code": "000990",
-          "score": 78,
-          "changePct": 12.31
-        },
-        {
           "name": "케이뱅크",
           "code": "279570",
           "score": 77.4,
           "changePct": 5.63
-        },
-        {
-          "name": "한미반도체",
-          "code": "042700",
-          "score": 76.9,
-          "changePct": 24.05
-        },
-        {
-          "name": "SGC에너지",
-          "code": "005090",
-          "score": 76.4,
-          "changePct": 11.88
-        },
-        {
-          "name": "코람코라이프인프라리츠",
-          "code": "357120",
-          "score": 76,
-          "changePct": 8.04
-        },
-        {
-          "name": "삼성카드",
-          "code": "029780",
-          "score": 75.8,
-          "changePct": 9.23
-        },
-        {
-          "name": "케이카",
-          "code": "381970",
-          "score": 73.5,
-          "changePct": 11.74
-        },
-        {
-          "name": "제일기획",
-          "code": "030000",
-          "score": 72.3,
-          "changePct": 5.9
-        },
-        {
-          "name": "드림텍",
-          "code": "192650",
-          "score": 72.3,
-          "changePct": 29.79
-        },
-        {
-          "name": "HD현대일렉트릭",
-          "code": "267260",
-          "score": 70.7,
-          "changePct": 9.39
-        },
-        {
-          "name": "넥센타이어",
-          "code": "002350",
-          "score": 69.5,
-          "changePct": 6.92
-        },
-        {
-          "name": "엠앤씨솔루션",
-          "code": "484870",
-          "score": 69,
-          "changePct": 24.31
         }
       ],
       "nq": 0.67,
