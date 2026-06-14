@@ -532,6 +532,79 @@ function AfternoonAnalysis({ a, T }) {
   );
 }
 
+function MonthCard({ ym, days, T, perStock, recOpt, defaultOpen }) {
+  const [open, setOpen] = useState(!!defaultOpen);
+  const picks = days.flatMap(r => (r.picks || [])).filter(p => p.nextRet != null);
+  const nP = picks.length;
+  const hit3H = picks.filter(p => p.nextHigh != null ? p.nextHigh >= 3 : p.nextRet >= 3).length;
+  const avg = nP ? picks.reduce((s, p) => s + p.nextRet, 0) / nP : 0;
+  const profit = (perStock && nP) ? picks.reduce((s, p) => s + perStock * simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt) / 100, 0) : null;
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, overflow: "hidden" }}>
+      <button onClick={() => setOpen(o => !o)} style={{ width: "100%", textAlign: "left", border: "none", background: "transparent", cursor: "pointer", padding: "11px 13px", display: "flex", alignItems: "center", gap: 10, fontFamily: "inherit" }}>
+        <div style={{ flex: "0 0 70px", fontSize: 14, fontWeight: 800, color: T.text }}>{ym}</div>
+        <div style={{ flex: 1, fontSize: 12, color: T.sub }}>{days.length}일 · {nP}건 · 3%↑ {nP ? (100 * hit3H / nP).toFixed(0) : 0}%</div>
+        <div style={{ flex: "0 0 auto", textAlign: "right" }}>
+          {profit != null
+            ? <div style={{ fontSize: 13, fontWeight: 800, color: profit >= 0 ? "#16a34a" : "#ef4444" }}>{profit >= 0 ? "+" : ""}{wonFmt(profit)}</div>
+            : <div style={{ fontSize: 13, fontWeight: 800, color: avg >= 0 ? "#16a34a" : "#ef4444" }}>평균 {avg >= 0 ? "+" : ""}{avg.toFixed(2)}%</div>}
+        </div>
+        <span style={{ flex: "0 0 auto", fontSize: 11, color: T.hint }}>{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div style={{ padding: "0 10px 10px", display: "flex", flexDirection: "column", gap: 6 }}>
+          {days.map(r => <AfternoonDayRow key={r.date} r={r} T={T} perStock={perStock} recOpt={recOpt} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MonthlyHistory({ reports, T, perStock, recOpt }) {
+  const [years, setYears] = useState(() => new Set());
+  const [months, setMonths] = useState(() => new Set());
+  const [sort, setSort] = useState("desc");
+  const allYears = useMemo(() => [...new Set(reports.map(r => r.date.slice(0, 4)))].sort((a, b) => b.localeCompare(a)), [reports]);
+  const toggle = (set, val, setter) => { const n = new Set(set); n.has(val) ? n.delete(val) : n.add(val); setter(n); };
+  const filtered = reports.filter(r => {
+    const y = r.date.slice(0, 4), m = r.date.slice(5, 7);
+    if (years.size && !years.has(y)) return false;
+    if (months.size && !months.has(m)) return false;
+    return true;
+  });
+  const groups = {};
+  for (const r of filtered) { const ym = r.date.slice(0, 7); (groups[ym] = groups[ym] || []).push(r); }
+  const yms = Object.keys(groups).sort((a, b) => sort === "desc" ? b.localeCompare(a) : a.localeCompare(b));
+  for (const ym of yms) groups[ym].sort((a, b) => sort === "desc" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+
+  const selChip = (active) => active
+    ? { fontSize: 11.5, fontWeight: 800, color: "#fff", background: "#7c3aed", padding: "4px 9px", borderRadius: 7, cursor: "pointer", border: "1px solid #7c3aed" }
+    : { ...chip(T), cursor: "pointer", border: "1px solid " + T.border };
+
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 7 }}>
+        {allYears.map(y => <span key={y} onClick={() => toggle(years, y, setYears)} style={selChip(years.has(y))}>{y}</span>)}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 7 }}>
+        {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0")).map(m => (
+          <span key={m} onClick={() => toggle(months, m, setMonths)} style={selChip(months.has(m))}>{(+m)}월</span>
+        ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+        <button onClick={() => setSort(s => s === "desc" ? "asc" : "desc")} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>
+          {sort === "desc" ? "최신순 ↓" : "오래된순 ↑"}
+        </button>
+        {(years.size > 0 || months.size > 0) && <button onClick={() => { setYears(new Set()); setMonths(new Set()); }} style={{ ...chip(T), cursor: "pointer", border: "1px solid " + T.border }}>필터 해제</button>}
+        <span style={{ fontSize: 11.5, color: T.hint }}>{yms.length}개월 · {filtered.reduce((s, r) => s + (r.picks ? r.picks.length : 0), 0)}건</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {yms.map((ym, i) => <MonthCard key={ym} ym={ym} days={groups[ym]} T={T} perStock={perStock} recOpt={recOpt} defaultOpen={i === 0 && yms.length <= 2} />)}
+      </div>
+    </div>
+  );
+}
+
 function AfternoonDayRow({ r, T, perStock, recOpt }) {
   const [open, setOpen] = useState(false);
   const hasOutcome = r.dayHitRate != null;
@@ -684,10 +757,8 @@ function AfternoonView({ T }) {
       {hist && hist.analysis && <div style={{ marginTop: 16 }}><AfternoonAnalysis a={hist.analysis} T={T} /></div>}
       {hist && hist.reports && hist.reports.length > 0 && (
         <div style={{ marginTop: 16, textAlign: "left" }}>
-          <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-              {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} />)}
-            </div>
+          <Section title="📅 월별 예측 · 결과" sub="연도·월 선택 · 정렬 가능" T={T}>
+            <MonthlyHistory reports={hist.reports} T={T} perStock={0} recOpt={null} />
           </Section>
         </div>
       )}
@@ -791,10 +862,8 @@ function AfternoonView({ T }) {
       {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
-        <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-            {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} perStock={capNum} recOpt={oosRecOpt} />)}
-          </div>
+        <Section title="📅 월별 예측 · 결과" sub="연도·월 선택(복수 가능) · 월을 눌러 종목 확인 · 최신/오래된순 정렬" T={T}>
+          <MonthlyHistory reports={hist.reports} T={T} perStock={capNum} recOpt={oosRecOpt} />
         </Section>
       )}
 

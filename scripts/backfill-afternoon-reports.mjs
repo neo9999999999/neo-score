@@ -31,22 +31,21 @@ async function main() {
   console.log("[afternoon-bf] 시작일:", START, "유니버스:", UNIVERSE_N);
   await mkdir(DIR, { recursive: true });
 
+  // 시작일에 맞춰 수집 범위 결정
+  const yrs = Math.ceil((Date.now() - new Date(START + "T00:00:00Z").getTime()) / (365.25 * 864e5)) + 1;
+  const RANGE = process.env.RANGE || (yrs <= 2 ? "2y" : yrs <= 5 ? "5y" : yrs <= 10 ? "10y" : "max");
+
   const universe = await loadUniverse(STOCKS_PATH, UNIVERSE_N);
-  const codeName = new Map(universe.map(u => [u.code, u.name]));
-  console.log("[afternoon-bf] 주가 수집 중…", universe.length, "종목");
+  console.log(`[afternoon-bf] 주가 수집 중… ${universe.length}종목 range=${RANGE} (스트리밍)`);
 
-  const seriesList = await pMap(universe, async (u) => {
-    const s = await fetchYahooOHLCV(u.symbol, "1y");
-    return s.length ? { ...u, series: s } : null;
-  }, 8);
-  const stocks = seriesList.filter(Boolean);
-  console.log("[afternoon-bf] 수집 완료:", stocks.length, "종목");
-
-  // 일자별 후보 수집 + 익일 결과 + 베이스라인
+  // 스트리밍: 종목별로 받아 후보만 추출하고 시리즈는 버림(메모리 절약)
   const byDate = new Map();
-  let baseSum = 0, baseN = 0;
-  for (const st of stocks) {
-    const s = st.series;
+  let baseSum = 0, baseN = 0, fetched = 0;
+  await pMap(universe, async (u) => {
+    let s;
+    try { s = await fetchYahooOHLCV(u.symbol, RANGE); } catch { return null; }
+    if (!s || !s.length) return null;
+    fetched++;
     for (let i = 20; i < s.length - 1; i++) {
       const d = s[i].date;
       if (d < START) continue;
@@ -54,16 +53,19 @@ async function main() {
       if (!next || !isFinite(next.close) || s[i].close <= 0) continue;
       const base = s[i].close;
       const nextRet = (next.close - base) / base * 100;
-      const nextHigh = (next.high - base) / base * 100; // 익일 고가 도달폭(당일 종가 기준)
-      const nextOpen = (next.open - base) / base * 100;
-      const nextLow = (next.low - base) / base * 100;
       baseSum += nextRet; baseN++;
       const m = scoreAt(s, i, 0);
       if (!m || !isLeader(m)) continue;
       if (!byDate.has(d)) byDate.set(d, []);
-      byDate.get(d).push({ code: st.code, name: st.name, score: m.score, changePct: m.changePct, nextRet: +nextRet.toFixed(2), nextHigh: +nextHigh.toFixed(2), nextOpen: +nextOpen.toFixed(2), nextLow: +nextLow.toFixed(2) });
+      byDate.get(d).push({
+        code: u.code, name: u.name, score: m.score, changePct: m.changePct,
+        nextRet: +nextRet.toFixed(2), nextHigh: +((next.high - base) / base * 100).toFixed(2),
+        nextOpen: +((next.open - base) / base * 100).toFixed(2), nextLow: +((next.low - base) / base * 100).toFixed(2),
+      });
     }
-  }
+    return null;
+  }, 6);
+  console.log(`[afternoon-bf] 수집 완료: ${fetched}/${universe.length}종목, 후보일수 ${byDate.size}`);
 
   // 일자별 당일 급등폭 상위 K 선정 + 평가 (익일 3%↑ 타겟: 고가 도달 / 종가 마감)
   const dates = [...byDate.keys()].sort();
@@ -100,8 +102,25 @@ async function main() {
     avgNextRet: pickAvg,
     baselineAvgNextRet: baseAvg,
     edge: (pickAvg != null && baseAvg != null) ? +(pickAvg - baseAvg).toFixed(3) : null,
-    note: "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락.",
+    stocksFetched: fetched, stocksTotal: universe.length,
+    note: "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락. ※상장폐지 종목 미포함(생존편향) 가능.",
   };
+
+  // 월별 OOS 집계
+  const mMap = new Map();
+  for (const r of reports) {
+    const ym = r.date.slice(0, 7);
+    if (!mMap.has(ym)) mMap.set(ym, { ym, days: 0, picks: 0, hit3H: 0, retSum: 0 });
+    const mm = mMap.get(ym);
+    mm.days++; mm.picks += r.picks.length;
+    mm.hit3H += r.picks.filter(p => p.hit3High).length;
+    mm.retSum += r.picks.reduce((s, p) => s + p.nextRet, 0);
+  }
+  analysis.monthly = [...mMap.values()].map(mm => ({
+    ym: mm.ym, days: mm.days, picks: mm.picks,
+    hit3HighRate: mm.picks ? +((mm.hit3H / mm.picks) * 100).toFixed(1) : null,
+    avgNextRet: mm.picks ? +(mm.retSum / mm.picks).toFixed(2) : null,
+  })).sort((a, b) => b.ym.localeCompare(a.ym));
 
   // 매도 전략 비교 (손절 포함) — 익일 시/고/저/종가로 시뮬레이션
   const simPicks = [];

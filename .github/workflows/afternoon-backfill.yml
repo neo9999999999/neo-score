@@ -6,7 +6,11 @@ on:
       start:
         description: "백필 시작일 (YYYY-MM-DD)"
         required: true
-        default: "2026-01-01"
+        default: "2018-01-01"
+      universe:
+        description: "분석 종목 수 (전 종목≈3000)"
+        required: false
+        default: "3000"
 
 permissions:
   contents: write
@@ -25,7 +29,7 @@ jobs:
           node-version: "20"
       - name: Run afternoon backfill
         env:
-          UNIVERSE_N: "500"
+          UNIVERSE_N: ${{ inputs.universe }}
           TOP_PICKS: "5"
         run: node scripts/backfill-afternoon-reports.mjs "${{ inputs.start }}"
       - name: Commit & push

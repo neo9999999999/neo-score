@@ -33,9 +33,16 @@ export function parseYahooOHLCV(json) {
 
 export async function fetchYahooOHLCV(symbol, range = "3mo") {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
-  const r = await fetchWithTimeout(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; neo-score/1.0)" } }, 20000);
-  if (!r.ok) throw new Error("HTTP " + r.status);
-  return parseYahooOHLCV(await r.json());
+  let lastErr;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetchWithTimeout(url, { headers: { "User-Agent": "Mozilla/5.0 (compatible; neo-score/1.0)" } }, 25000);
+      if (r.status === 429) { await new Promise(z => setTimeout(z, 800 + Math.random() * 600)); lastErr = new Error("429"); continue; }
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return parseYahooOHLCV(await r.json());
+    } catch (e) { lastErr = e; await new Promise(z => setTimeout(z, 300)); }
+  }
+  throw lastErr || new Error("fetch failed");
 }
 
 // 동시성 제한 실행
