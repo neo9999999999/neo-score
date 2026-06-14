@@ -81,7 +81,7 @@ async function main() {
     const i = series.length - 1;
     const m = scoreAt(series, i, macroBias);
     if (!m) return null;
-    const nhc = newHighCandidate(series, i, { chgMin: 2, chgMax: 27 });
+    const nhc = newHighCandidate(series, i, { chgMin: 7, chgMax: 27 });
     return { ...u, ...m, date: series[i].date, price: series[i].close, nh: !!nhc, nearHighPct: nhc ? nhc.nearHighPct : null, breakout: nhc ? nhc.breakout : false };
   }, 8);
 
