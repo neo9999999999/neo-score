@@ -532,10 +532,13 @@ function AfternoonAnalysis({ a, T }) {
   );
 }
 
-function AfternoonDayRow({ r, T }) {
+function AfternoonDayRow({ r, T, perStock, recOpt }) {
   const [open, setOpen] = useState(false);
   const hasOutcome = r.dayHitRate != null;
   const picks = r.picks || [];
+  const dayProfit = (perStock && picks.some(p => p.nextRet != null))
+    ? picks.filter(p => p.nextRet != null).reduce((s, p) => s + perStock * simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt) / 100, 0)
+    : null;
   return (
     <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, overflow: "hidden" }}>
       <button onClick={() => setOpen(o => !o)} style={{ width: "100%", textAlign: "left", border: "none", background: "transparent", cursor: "pointer", padding: "11px 13px", display: "flex", alignItems: "center", gap: 10, fontFamily: "inherit" }}>
@@ -550,7 +553,9 @@ function AfternoonDayRow({ r, T }) {
           {hasOutcome ? (
             <>
               <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? "#16a34a" : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
-              <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? "#16a34a" : "#ef4444" }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>
+              {dayProfit != null
+                ? <div style={{ fontSize: 11.5, fontWeight: 700, color: dayProfit >= 0 ? "#16a34a" : "#ef4444" }}>{dayProfit >= 0 ? "+" : ""}{wonFmt(dayProfit)}</div>
+                : <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? "#16a34a" : "#ef4444" }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>}
             </>
           ) : <div style={{ fontSize: 11, color: T.hint }}>결과 대기</div>}
         </div>
@@ -571,6 +576,61 @@ function AfternoonDayRow({ r, T }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// 청산 시뮬레이터 (백엔드 simExit와 동일 로직) — 익일 %수익 반환
+function simExitJS(nb, opt) {
+  const { tp1Lvl = 5, tp1Frac = 0.5, trailGap = 5, floorLvl = 10, trailFrom = 15, stop = null } = opt || {};
+  const { o, h, l, c } = nb;
+  if (stop != null) { if (o != null && o <= stop) return o; if (l != null && l <= stop) return stop; }
+  if (h == null || c == null) return c ?? 0;
+  if (h < tp1Lvl) return c;
+  let runner;
+  if (h < floorLvl) runner = c;
+  else if (h < trailFrom) runner = (c < floorLvl ? floorLvl : c);
+  else runner = (c < h - trailGap ? h - trailGap : c);
+  return tp1Frac * tp1Lvl + (1 - tp1Frac) * runner;
+}
+
+// OOS 백테스트에 종목당 투자금 적용 → 총 투입·수익금·수익률
+function OosInvestment({ hist, perStock, T }) {
+  const a = hist && hist.analysis;
+  if (!a || !hist.reports) return null;
+  const recOpt = (a.strategies && a.recommendedStrategy ? (a.strategies.find(s => s.name === a.recommendedStrategy) || {}).opt : null) || { tp1Lvl: 5, tp1Frac: 0.5, stop: null };
+  const picks = hist.reports.flatMap(r => (r.picks || [])).filter(p => p.nextRet != null);
+  if (!picks.length) return null;
+  const rets = picks.map(p => simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt));
+  const n = rets.length;
+  const avgRet = rets.reduce((s, r) => s + r, 0) / n;
+  const wins = rets.filter(r => r > 0).length;
+  if (!perStock) {
+    return (
+      <div style={{ marginTop: 12, fontSize: 12.5, color: T.hint, lineHeight: 1.6 }}>
+        ⓘ 위 "💰 종목당 투자금"에 금액을 넣으면, 이 백테스트 {n}건에 종목당 그 금액을 투자했을 때의 <b>누적 수익금</b>이 계산됩니다.
+      </div>
+    );
+  }
+  const totalInvested = perStock * n;
+  const totalProfit = rets.reduce((s, r) => s + perStock * r / 100, 0);
+  const totalRet = totalProfit / totalInvested * 100;
+  const cell = (label, val, c) => (
+    <div style={{ background: T.cardAlt, borderRadius: 10, padding: "10px 12px", flex: "1 1 100px" }}>
+      <div style={{ fontSize: 11, color: T.hint, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 15, fontWeight: 800, color: c || T.text, marginTop: 2 }}>{val}</div>
+    </div>
+  );
+  return (
+    <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px dashed " + T.border }}>
+      <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text, marginBottom: 8 }}>💰 종목당 {wonFmt(perStock)} 투자 시 (추천 전략, {n}건)</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {cell("총 투입(누적)", wonFmt(totalInvested))}
+        {cell("총 수익금", (totalProfit >= 0 ? "+" : "") + wonFmt(totalProfit), totalProfit >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("평균 수익률/건", (avgRet >= 0 ? "+" : "") + avgRet.toFixed(2) + "%", avgRet >= 0 ? "#16a34a" : "#ef4444")}
+        {cell("승률", (100 * wins / n).toFixed(1) + "%")}
+      </div>
+      <div style={{ fontSize: 11, color: T.hint, marginTop: 8, lineHeight: 1.5 }}>※ 거래마다 종목당 동일 금액 투자 가정(중복기간 무시). 백테스트 추정치이며 실제 체결·세금·슬리피지 제외.</div>
     </div>
   );
 }
@@ -633,6 +693,9 @@ function AfternoonView({ T }) {
     </div>
   );
   const bias = SENT[rep.marketBias] || SENT.neutral;
+  const oosRecOpt = (hist && hist.analysis && hist.analysis.strategies && hist.analysis.recommendedStrategy)
+    ? (hist.analysis.strategies.find(s => s.name === hist.analysis.recommendedStrategy) || {}).opt || null
+    : null;
 
   return (
     <div style={{ paddingBottom: 20 }}>
@@ -704,12 +767,12 @@ function AfternoonView({ T }) {
         )}
       </Section>
 
-      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
+      {hist && hist.analysis && <div style={{ marginTop: 22 }}><AfternoonAnalysis a={hist.analysis} T={T} /><OosInvestment hist={hist} perStock={capNum} T={T} /><StrategyTable a={hist.analysis} T={T} /></div>}
 
       {hist && hist.reports && hist.reports.length > 0 && (
         <Section title="📅 일자별 예측 · 결과" sub="날짜를 눌러 그날 선정 종목과 실제 익일 등락 확인" T={T}>
           <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-            {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} />)}
+            {hist.reports.map((r) => <AfternoonDayRow key={r.date} r={r} T={T} perStock={capNum} recOpt={oosRecOpt} />)}
           </div>
         </Section>
       )}
