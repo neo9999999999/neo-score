@@ -38,6 +38,7 @@ export function OosHistoryTab({ theme = "dark" }) {
 
   const [activeTab, setActiveTab] = useState('leader');
   const [yearFilter, setYearFilter] = useState('all');
+  const [monthFilter, setMonthFilter] = useState([]); // 빈 배열 = 전체 (멀티선택)
   const [exitMethod, setExitMethod] = useState('d1_trail');
   const [sortKey, setSortKey] = useState('date_desc');
   const [investAmt, setInvestAmt] = useState(() => { try { return +localStorage.getItem('oos_invest') || 100; } catch { return 100; } });
@@ -57,9 +58,10 @@ export function OosHistoryTab({ theme = "dark" }) {
     });
   }, [activeTab, tabDef]);
 
-  // 년도 필터
+  // 년도 + 월 필터
   const filtered = useMemo(() => {
     let arr = yearFilter === 'all' ? tabFiltered : tabFiltered.filter(r => +r[C.YEAR] === +yearFilter);
+    if (monthFilter.length > 0) arr = arr.filter(r => monthFilter.includes(String(r[C.DATE]).slice(5,7)));
     const idx = exitDef.idx;
     if (sortKey === 'date_desc') arr = [...arr].sort((a,b) => String(b[C.DATE]).localeCompare(String(a[C.DATE])));
     else if (sortKey === 'date_asc') arr = [...arr].sort((a,b) => String(a[C.DATE]).localeCompare(String(b[C.DATE])));
@@ -67,13 +69,14 @@ export function OosHistoryTab({ theme = "dark" }) {
     else if (sortKey === 'ret_asc') arr = [...arr].sort((a,b) => (+a[idx]||0) - (+b[idx]||0));
     else if (sortKey === 'ch_desc') arr = [...arr].sort((a,b) => (+b[C.CH]||0) - (+a[C.CH]||0));
     return arr;
-  }, [tabFiltered, yearFilter, sortKey, exitDef]);
+  }, [tabFiltered, yearFilter, monthFilter, sortKey, exitDef]);
 
   // 년도별 통계
   const yearStats = useMemo(() => {
     const idx = exitDef.idx;
     const by = {};
     for (const r of tabFiltered) {
+      if (monthFilter.length > 0 && !monthFilter.includes(String(r[C.DATE]).slice(5,7))) continue;
       const y = +r[C.YEAR];
       if (!by[y]) by[y] = { n:0, win:0, loss:0, flat:0, retSum:0 };
       by[y].n++;
@@ -90,7 +93,7 @@ export function OosHistoryTab({ theme = "dark" }) {
       totalInvest: s.n * investAmt,
       totalPnl: s.n * investAmt * (s.retSum/Math.max(s.n,1)) / 100,
     })).sort((a,b) => a.year - b.year);
-  }, [tabFiltered, exitDef, investAmt]);
+  }, [tabFiltered, exitDef, investAmt, monthFilter]);
 
   // 탭별 신호 count
   const tabCounts = useMemo(() => {
@@ -218,6 +221,17 @@ export function OosHistoryTab({ theme = "dark" }) {
           <option value="ret_asc">수익↓</option>
           <option value="ch_desc">당일등락↑</option>
         </select>
+      </div>
+
+      {/* 월 멀티선택 (On/off) */}
+      <div style={{display:'flex', gap:5, marginBottom:10, flexWrap:'wrap', alignItems:'center'}}>
+        <span style={{fontSize:11, color:_T.sub, fontWeight:700}}>월</span>
+        <button onClick={()=>setMonthFilter([])} style={{padding:'4px 9px', borderRadius:6, border:'1px solid '+(monthFilter.length===0?_T.accent:_T.line), background:monthFilter.length===0?_T.accent:_T.bg, color:monthFilter.length===0?'#fff':_T.body, fontSize:11, fontWeight:monthFilter.length===0?700:500, cursor:'pointer'}}>전체</button>
+        {['01','02','03','04','05','06','07','08','09','10','11','12'].map(m => {
+          const on = monthFilter.includes(m);
+          return (<button key={m} onClick={()=>setMonthFilter(p => on ? p.filter(x=>x!==m) : [...p, m])} style={{padding:'4px 8px', borderRadius:6, border:'1px solid '+(on?_T.accent:_T.line), background:on?_T.accent:_T.bg, color:on?'#fff':_T.body, fontSize:11, fontWeight:on?700:500, cursor:'pointer'}}>{(+m)+'월'}</button>);
+        })}
+        {monthFilter.length>0 && <span style={{fontSize:11, color:_T.hint, marginLeft:4}}>{monthFilter.length}개월 선택</span>}
       </div>
 
       {/* 종목 카드 */}
