@@ -57,12 +57,23 @@ node scripts/generate-market-report.mjs
 스코어: 종가 위치(고가권) + 거래량 급증 + 당일 등락 + 5·20일선 정배열 + 갭, 미 선물
 방향 보정. OOS 백필은 각 거래일 선정 종목의 **실제 익일 등락**으로 적중률·초과수익(edge)을 검증한다.
 
-## 향후 확장 (푸시 알림)
+## 카카오 '나에게 보내기' 발송 (08:00 KST)
 
-현재는 앱 내에서 리포트를 **확인**하는 방식이다. 매일 아침 휴대폰으로 **푸시/이메일
-수신**을 원하면 다음 중 하나를 추가하면 된다.
+매일 새벽 리포트가 생성되어 **앱에 자동 업데이트**된다. 추가로 **매일 08:00 KST**에
+카카오톡으로 요약을 받으려면 시크릿만 설정하면 된다(미설정 시 발송은 건너뜀).
 
-- 웹 푸시(FCM) 또는 카카오 알림톡 / 이메일(SendGrid 등)을 워크플로 마지막 단계에 연동
-- 리포트 요약(`summary`)과 링크를 메시지 본문으로 발송
+- 스크립트: `scripts/send-kakao.mjs` · 워크플로: `kakao-send.yml`(cron 23:00 UTC = 08:00 KST)
+- 발송 내용: 날짜·센티먼트·요약·상승 예상 섹터 + 사이트 링크 버튼
 
-이 부분은 별도 채널·키 설정이 필요해 기본 구현에서는 제외했다.
+### 설정 방법 (추후)
+1. [카카오 개발자](https://developers.kakao.com) 앱 생성 → **REST API 키** 확보.
+2. 카카오 로그인 동의항목에 **`talk_message`(카카오톡 메시지 전송)** 추가.
+3. 본인 계정으로 OAuth 인가 → **refresh_token** 발급(나에게 보내기는 본인 토큰이면 충분).
+4. 저장소 **Settings → Secrets and variables → Actions** 에 추가:
+   - Secret `KAKAO_REST_API_KEY`
+   - Secret `KAKAO_REFRESH_TOKEN`
+   - Variable `SITE_URL` (선택, 리포트 링크 주소)
+5. 설정 후 자동으로 매일 08:00 KST 발송. 즉시 테스트는 Actions → *Kakao Daily Send* → Run workflow.
+
+### 다른 채널
+이메일(Resend/SendGrid)·텔레그램·FCM도 동일하게 워크플로 마지막 단계에 추가 가능.

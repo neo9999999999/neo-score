@@ -1,0 +1,23 @@
+name: Kakao Daily Send (08:00 KST)
+
+# 매일 08:00 KST(23:00 UTC) 데일리 마켓리포트 요약을 카카오 '나에게 보내기'로 발송.
+# KAKAO_* 시크릿이 없으면 스크립트가 그냥 건너뜀(앱 업데이트만 동작).
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Send Kakao memo
+        env:
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: node scripts/send-kakao.mjs
