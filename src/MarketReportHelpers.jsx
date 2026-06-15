@@ -498,6 +498,10 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
         <span style={chip(T)}>거래량 {c.volSurge}배</span>
         <span style={chip(T)}>종가강도 {Math.round((c.rangePos || 0) * 100)}%</span>
       </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 7, flexWrap: "wrap", fontSize: 12 }}>
+        {c.p3High != null && <span style={{ color: T.sub }}>익일 고가3%↑ <b style={{ color: "#7c3aed" }}>{c.p3High}%</b></span>}
+        {c.p5in5 != null && <span style={{ color: T.sub }}>5일내 고가+5%↑ <b style={{ color: ACCENT }}>{c.p5in5}%</b>{c.avgDays5 != null ? <span style={{ color: T.hint }}> (평균 {c.avgDays5}일)</span> : null}</span>}
+      </div>
       {qty != null && (
         <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(234,179,8,0.16)", border: "1px solid " + T.border, borderRadius: 9, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 12.5 }}>
           <span style={{ color: T.sub }}>현재가 <b style={{ color: T.text }}>{c.price.toLocaleString("ko-KR")}원</b></span>
@@ -536,6 +540,12 @@ function AfternoonAnalysis({ a, T }) {
           {cell("익일 고가 5% 도달", a.hit5HighRate == null ? "—" : a.hit5HighRate + "%")}
           {cell("익일 상승(종가>0%)", a.upRate == null ? "—" : a.upRate + "%")}
           {cell("초과수익 edge", pct(a.edge), (a.edge || 0) >= 0 ? UP_C : DN_C)}
+        </div>
+      )}
+      {a.within5Rate != null && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+          {cell("5일내 고가 +5% 도달", a.within5Rate + "%", a.within5Rate >= 50 ? UP_C : "#d97706")}
+          {cell("평균 소요일", a.within5AvgDays == null ? "—" : a.within5AvgDays + "일")}
         </div>
       )}
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}

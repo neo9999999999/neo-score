@@ -100,7 +100,7 @@ async function main() {
   const pool = universeByValue.filter(x => x.nh).map(x => {
     const e = estimate(calibration, x.changePct) || {};
     const si = supplyInfo(supplyMap.get(x.code));
-    return { ...x, expRet: e.expRet ?? null, p3: e.p3 ?? null, p5: e.p5 ?? null, p3High: e.p3High ?? null, p5High: e.p5High ?? null, calHit: e.hitRate ?? null, supplyLabel: si.label, dongban: si.dongban, supplyKnown: si.known };
+    return { ...x, expRet: e.expRet ?? null, p3: e.p3 ?? null, p5: e.p5 ?? null, p3High: e.p3High ?? null, p5High: e.p5High ?? null, p5in5: e.p5in5 ?? null, avgDays5: e.avgDays5 ?? null, calHit: e.hitRate ?? null, supplyLabel: si.label, dongban: si.dongban, supplyKnown: si.known };
   });
   // 외+기 동반매수 우선 → 신고가 돌파 우선 → 당일 등락폭 순
   pool.sort((a, b) => (b.dongban ? 1 : 0) - (a.dongban ? 1 : 0) || (b.nearHighPct ?? -99) - (a.nearHighPct ?? -99) || b.changePct - a.changePct);
@@ -125,7 +125,7 @@ async function main() {
     nearHighPct: x.nearHighPct, breakout: x.breakout,
     value: x.value, valueText: fmtEok(x.value),
     sector: sectorMap.get(x.name) || null,
-    expRet: x.expRet, p3: x.p3, p5: x.p5, p3High: x.p3High, p5High: x.p5High, hitRate: x.calHit,
+    expRet: x.expRet, p3: x.p3, p5: x.p5, p3High: x.p3High, p5High: x.p5High, p5in5: x.p5in5, avgDays5: x.avgDays5, hitRate: x.calHit,
     supplyLabel: x.supplyLabel, dongban: x.dongban,
     target3: x.p3High != null && x.p3High >= 45,
     reason: pickReason(x, x.name) + (x.breakout ? " · 신고가 돌파" : " · 신고가 근접") + " · 정배열" + (sectorMap.get(x.name) ? " · " + sectorMap.get(x.name) + "(리포트 상승섹터)" : "") + (x.dongban ? " · 외+기 동반매수" : ""),

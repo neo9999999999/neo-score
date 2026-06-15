@@ -67,10 +67,13 @@ async function main() {
         }
         if (!poolByDate.has(d)) poolByDate.set(d, []);
         poolByDate.get(d).push({ score: nhc.score, chg: nhc.changePct, rangePos: nhc.rangePos, vol: nhc.volSurge, nearHigh: nhc.nearHighPct, o: +no.toFixed(2), h: +nh.toFixed(2), l: +nl.toFixed(2), c: +nextRet.toFixed(2), fwdH, fwdC });
+        // 5일 내 매수가 대비 고가 +5% 도달 + 소요일
+        let days5 = null; for (let k = 0; k < 5 && k < fwdH.length; k++) { if (fwdH[k] >= 5) { days5 = k + 1; break; } }
         if (!byDate.has(d)) byDate.set(d, []);
         byDate.get(d).push({
           code: u.code, name: u.name, score: nhc.score, changePct: nhc.changePct, nearHigh: nhc.nearHighPct, breakout: nhc.breakout,
           nextRet: +nextRet.toFixed(2), nextHigh: +nh.toFixed(2), nextOpen: +no.toFixed(2), nextLow: +nl.toFixed(2),
+          days5, hit5in5: days5 != null,
         });
       }
       // 눌림목 스윙 후보(가격 기반)
@@ -123,6 +126,14 @@ async function main() {
     stocksFetched: fetched, stocksTotal: universe.length,
     note: "당일 급등폭 상위 선정 종목의 익일 성과. hit3HighRate=익일 장중 고가가 +3% 도달한 비율(매도 기회), hit3Rate=익일 종가가 +3% 마감 비율. baseline=유니버스 전체 평균 익일 종가등락. ※상장폐지 종목 미포함(생존편향) 가능.",
   };
+  // 5일 내 매수가 대비 고가 +5% 도달률 + 평균 소요일
+  {
+    const ps = reports.flatMap(r => r.picks);
+    const h5 = ps.filter(p => p.hit5in5).length;
+    const ds = ps.filter(p => p.days5 != null).map(p => p.days5);
+    analysis.within5Rate = ps.length ? +((100 * h5 / ps.length)).toFixed(1) : null;
+    analysis.within5AvgDays = ds.length ? +(ds.reduce((a, b) => a + b, 0) / ds.length).toFixed(1) : null;
+  }
 
   // 월별 OOS 집계
   const mMap = new Map();

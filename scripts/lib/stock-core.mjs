@@ -173,11 +173,13 @@ export function runStrategyGrid(picks) {
 export function buildCalibration(reports) {
   const samples = [];
   for (const r of reports || []) for (const p of r.picks || []) {
-    if (p.nextRet != null && p.changePct != null) samples.push({ chg: p.changePct, ret: p.nextRet, high: p.nextHigh ?? null });
+    if (p.nextRet != null && p.changePct != null) samples.push({ chg: p.changePct, ret: p.nextRet, high: p.nextHigh ?? null, h5: !!p.hit5in5, d5: p.days5 ?? null, has5: p.hit5in5 !== undefined });
   }
   const stat = (xs) => {
-    if (!xs.length) return { n: 0, expRet: null, p3: null, p5: null, p3High: null, p5High: null, hitRate: null };
+    if (!xs.length) return { n: 0, expRet: null, p3: null, p5: null, p3High: null, p5High: null, hitRate: null, p5in5: null, avgDays5: null };
     const hs = xs.filter(s => s.high != null);
+    const f5 = xs.filter(s => s.has5);                 // 5일 데이터 있는 표본
+    const ds = f5.filter(s => s.h5).map(s => s.d5).filter(v => v != null);
     return {
       n: xs.length,
       expRet: +(xs.reduce((a, b) => a + b.ret, 0) / xs.length).toFixed(2),
@@ -185,6 +187,8 @@ export function buildCalibration(reports) {
       p5: +((xs.filter(s => s.ret >= 5).length / xs.length) * 100).toFixed(1),
       p3High: hs.length ? +((hs.filter(s => s.high >= 3).length / hs.length) * 100).toFixed(1) : null,
       p5High: hs.length ? +((hs.filter(s => s.high >= 5).length / hs.length) * 100).toFixed(1) : null,
+      p5in5: f5.length ? +((f5.filter(s => s.h5).length / f5.length) * 100).toFixed(1) : null,
+      avgDays5: ds.length ? +(ds.reduce((a, b) => a + b, 0) / ds.length).toFixed(1) : null,
       hitRate: +((xs.filter(s => s.ret > 0).length / xs.length) * 100).toFixed(1),
     };
   };
@@ -203,7 +207,7 @@ export function estimate(cal, changePct) {
   const b = cal.buckets.find(x => changePct >= x.lo && changePct < x.hi);
   const src = (b && b.n >= 15) ? b : (cal.all && cal.all.n ? cal.all : null);
   if (!src) return null;
-  return { expRet: src.expRet, p3: src.p3, p5: src.p5, p3High: src.p3High, p5High: src.p5High, hitRate: src.hitRate, n: src.n };
+  return { expRet: src.expRet, p3: src.p3, p5: src.p5, p3High: src.p3High, p5High: src.p5High, p5in5: src.p5in5, avgDays5: src.avgDays5, hitRate: src.hitRate, n: src.n };
 }
 
 // 신고가+정배열 후보: 5>20>60일선 정배열 + 종가가 120일 고가의 95% 이상(근접/돌파).
