@@ -1,6 +1,6 @@
 // vercel rebuild trigger 1777038639400
 // rebuild 1777034990679
-import { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense, Component } from "react";
 import {R_26 as R_26_OLD} from "./data.js";
 import {R_26_BACKFILL} from "./data_2026_backfill.js";
 import {R_26_EXTEND} from "./data_2026_extend.js";
@@ -31,6 +31,26 @@ const HaseunghoonBacktestTab = lazy(() => import("./HaseunghoonBacktestHelpers.j
 import { MarketReportTab } from "./MarketReportHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+
+// 페이지 렌더 중 예외가 나도 검은 화면 대신 에러를 표시 (앱 전체가 죽는 것 방지)
+class PageErrorBoundary extends Component {
+  constructor(p){super(p);this.state={err:null};}
+  static getDerivedStateFromError(err){return {err};}
+  componentDidCatch(err,info){try{console.error("[PageErrorBoundary]",err,info&&info.componentStack);}catch(e){}}
+  render(){
+    if(this.state.err){
+      const dark=this.props.theme!=="light";
+      const msg=String((this.state.err&&this.state.err.stack)||this.state.err||"unknown error");
+      return(<div style={{padding:"40px 18px",background:dark?"#161b22":"#fff",border:"1px solid "+(dark?"#30363d":"#e5e8eb"),borderRadius:14,color:dark?"#e6edf3":"#191f28"}}>
+        <div style={{fontSize:18,fontWeight:800,marginBottom:10}}>⚠️ 화면 로딩 중 오류</div>
+        <div style={{fontSize:13,color:dark?"#8b949e":"#4e5968",marginBottom:14,lineHeight:1.6}}>이 페이지를 그리는 중 오류가 발생했습니다. 아래 메시지를 캡처해서 알려주시면 바로 고치겠습니다.</div>
+        <pre style={{fontSize:12,whiteSpace:"pre-wrap",wordBreak:"break-word",background:dark?"#0d1117":"#f6f8fa",padding:"12px",borderRadius:8,border:"1px solid "+(dark?"#30363d":"#e5e8eb"),color:dark?"#f85149":"#cf222e",maxHeight:320,overflow:"auto",margin:0}}>{msg}</pre>
+        <button onClick={()=>this.setState({err:null})} style={{marginTop:12,padding:"10px 18px",borderRadius:9,border:"none",background:"#7c3aed",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer"}}>다시 시도</button>
+      </div>);
+    }
+    return this.props.children;
+  }
+}
 
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
 const _mStats={};
@@ -2868,6 +2888,7 @@ export default function App(){
       <button onClick={()=>setTheme(_isDark?"light":"dark")} title={_isDark?"라이트 모드":"다크 모드"} style={{position:"fixed",top:14,right:14,zIndex:200,width:38,height:38,borderRadius:8,border:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),background:_isDark?"#161b22":"#fff",color:_isDark?"#e6edf3":"#1e293b",cursor:"pointer",fontSize:16,transition:"none"}}>{_isDark?"☀️":"🌙"}</button>
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0,color:_isDark?"#e6edf3":"#1e293b"}}>NEO-SCORE</h1><p style={{fontSize:12,color:_isDark?"#6e7681":"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
+        <PageErrorBoundary key={page} theme={theme}>
         {page==="today"&&<TodaySignals theme={theme} onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
         {page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
@@ -2881,7 +2902,9 @@ export default function App(){
         {page==="report"&&<MarketReportTab theme={theme}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
-        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
+        {page==="verify"&&<VerifyTab/>}
+        </PageErrorBoundary>
+        {detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:_isDark?"#161b22":"#fff",borderTop:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>
