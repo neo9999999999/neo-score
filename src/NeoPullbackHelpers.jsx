@@ -23,7 +23,8 @@ export function NeoPullbackTab({ theme = "dark" }) {
     : { text:'#191f28', body:'#333d4b', sub:'#4e5968', hint:'#6b7684', mute:'#8b95a1', line:'#e5e8eb', linelt:'#f2f4f6', bg:'#f9fafb', card:'#ffffff', up:'#f04452', down:'#1f6dee', accent:'#7c3aed' };
 
   const [yearFilter, setYearFilter] = useState('all');
-  const [gradeFilter, setGradeFilter] = useState('all');
+  const [monthFilter, setMonthFilter] = useState([]);  // 월 멀티선택 (빈=전체)
+  const [gradeFilter, setGradeFilter] = useState([]);   // 등급 멀티선택 (빈=전체)
   const [sortKey, setSortKey] = useState('date_desc');
   const [expanded, setExpanded] = useState({});  // index -> bool
   const [showAll, setShowAll] = useState(false);
@@ -41,7 +42,8 @@ export function NeoPullbackTab({ theme = "dark" }) {
   const filtered = useMemo(() => {
     let arr = PULLBACK.filter(r => {
       if (yearFilter !== 'all' && +r[C.YEAR] !== +yearFilter) return false;
-      if (gradeFilter !== 'all' && r[C.GRADE] !== gradeFilter) return false;
+      if (monthFilter.length && !monthFilter.includes(String(r[C.MONTH]).slice(5,7))) return false;
+      if (gradeFilter.length && !gradeFilter.includes(r[C.GRADE])) return false;
       return true;
     });
     if (sortKey === 'date_desc') arr = [...arr].sort((a,b)=>String(b[C.DATE]).localeCompare(String(a[C.DATE])));
@@ -49,7 +51,7 @@ export function NeoPullbackTab({ theme = "dark" }) {
     else if (sortKey === 'ret_desc') arr = [...arr].sort((a,b)=>(+b[C.RET60]||0)-(+a[C.RET60]||0));
     else if (sortKey === 'ret_asc') arr = [...arr].sort((a,b)=>(+a[C.RET60]||0)-(+b[C.RET60]||0));
     return arr;
-  }, [yearFilter, gradeFilter, sortKey]);
+  }, [yearFilter, monthFilter, gradeFilter, sortKey]);
 
   const stats = useMemo(() => {
     const completed = filtered.filter(r => !r[C.INPROG]);
@@ -233,11 +235,20 @@ export function NeoPullbackTab({ theme = "dark" }) {
             <button key={y} onClick={()=>setYearFilter(y)} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+_T.line, background:yearFilter===y?_T.accent:_T.bg, color:yearFilter===y?'#fff':_T.body, fontSize:12, fontWeight:yearFilter===y?700:500, cursor:'pointer'}}>{y==='all'?'전체':y}</button>
           ))}
         </div>
+        <div style={{display:'flex', gap:5, marginBottom:6, flexWrap:'wrap', alignItems:'center'}}>
+          <span style={{fontSize:12, color:_T.sub, fontWeight:700, marginRight:2}}>월</span>
+          <button onClick={()=>setMonthFilter([])} style={{padding:'4px 9px', borderRadius:6, border:'1px solid '+(monthFilter.length===0?_T.accent:_T.line), background:monthFilter.length===0?_T.accent:_T.bg, color:monthFilter.length===0?'#fff':_T.body, fontSize:12, fontWeight:monthFilter.length===0?700:500, cursor:'pointer'}}>전체</button>
+          {['01','02','03','04','05','06','07','08','09','10','11','12'].map(m => {
+            const on = monthFilter.includes(m);
+            return (<button key={m} onClick={()=>setMonthFilter(p => p.includes(m) ? p.filter(x=>x!==m) : [...p, m])} style={{padding:'4px 8px', borderRadius:6, border:'1px solid '+(on?_T.accent:_T.line), background:on?_T.accent:_T.bg, color:on?'#fff':_T.body, fontSize:12, fontWeight:on?700:500, cursor:'pointer'}}>{(+m)+'월'}</button>);
+          })}
+        </div>
         <div style={{display:'flex', gap:6, flexWrap:'wrap', alignItems:'center'}}>
-          <span style={{fontSize:12, color:_T.sub, fontWeight:700, marginRight:2}}>등급</span>
-          {[{k:'all',l:'전체',c:_T.accent},{k:'S',l:'🔴 S급',c:'#dc2626'},{k:'A',l:'🔵 일반A',c:'#2563eb'}].map(g => (
-            <button key={g.k} onClick={()=>setGradeFilter(g.k)} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+_T.line, background:gradeFilter===g.k?g.c:_T.bg, color:gradeFilter===g.k?'#fff':_T.body, fontSize:12, fontWeight:gradeFilter===g.k?700:500, cursor:'pointer'}}>{g.l}</button>
-          ))}
+          <span style={{fontSize:12, color:_T.sub, fontWeight:700, marginRight:2}}>판정</span>
+          {[{k:'all',l:'전체',c:_T.accent},{k:'S',l:'🔴 S급',c:'#dc2626'},{k:'A',l:'🔵 일반A',c:'#2563eb'}].map(g => {
+            const on = g.k==='all' ? gradeFilter.length===0 : gradeFilter.includes(g.k);
+            return (<button key={g.k} onClick={()=>{ if(g.k==='all'){setGradeFilter([]);} else {setGradeFilter(p => p.includes(g.k) ? p.filter(x=>x!==g.k) : [...p, g.k]);} }} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+(on?g.c:_T.line), background:on?g.c:_T.bg, color:on?'#fff':_T.body, fontSize:12, fontWeight:on?700:500, cursor:'pointer'}}>{g.l}</button>);
+          })}
           <span style={{fontSize:12, color:_T.sub, fontWeight:700, marginLeft:8, marginRight:2}}>정렬</span>
           <select value={sortKey} onChange={e=>setSortKey(e.target.value)} style={{padding:'4px 8px', borderRadius:6, border:'1px solid '+_T.line, background:_T.bg, color:_T.body, fontSize:12, fontWeight:600, cursor:'pointer'}}>
             <option value="date_desc">최신순</option>
