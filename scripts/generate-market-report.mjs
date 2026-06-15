@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
   kstNow, kstDateStr, kstIso, fetchWithTimeout, STOOQ, fetchStooqSeries, closesAsOf,
-  makeIndicator, loadStockMap, attachCodes, ruleBasedBody,
+  makeIndicator, loadStockMap, attachCodes, ruleBasedBody, macroSignals,
 } from "./lib/report-core.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -119,10 +119,14 @@ async function callLLM(system, user) {
 
 function assembleReport(dateStr, mode, indicators, body) {
   const cleanIndicators = indicators.map(({ _raw, _err, ...rest }) => rest);
+  // 거시 신호 종합은 항상 실제 지표에서 계산 (LLM·룰 모드 공통 — UI에 투명 표시)
+  const macro = macroSignals(indicators);
   return {
     date: dateStr,
     generatedAt: kstIso(),
     source: mode,
+    macroScore: macro.score,
+    signals: macro.signals,
     indicators: cleanIndicators,
     title: body.title,
     sentiment: body.sentiment || "neutral",

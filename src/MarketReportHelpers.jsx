@@ -210,22 +210,77 @@ function IssueRow({ it, T }) {
 }
 
 // 리포트 본문 (오늘/히스토리 상세 공용)
-function ReportBody({ report, T }) {
+// 거시 신호 종합 — 5개 지표 가중 점수 + 지표별 우호/부담 분해 (투명성)
+const FAV = { good: { c: UP_C, label: "우호" }, bad: { c: DN_C, label: "부담" }, flat: { c: "#8b95a1", label: "중립" } };
+function MacroSignals({ signals, score, T }) {
+  if (!signals || !signals.length) return null;
+  const s = typeof score === "number" ? score : 0;
+  const headC = s > 0.5 ? UP_C : s < -0.5 ? DN_C : "#d97706";
+  const headL = s > 0.5 ? "강세 우호" : s < -0.5 ? "약세 경계" : "중립·혼조";
+  const barPct = Math.max(-3, Math.min(3, s)) / 3 * 50; // -50%~+50% (중앙 기준)
+  return (
+    <Section title="🧭 거시 신호 종합" sub="나스닥·S&P·원/달러·금리·유가 가중 → 국내증시 방향성 점수" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 14 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9, marginBottom: 10 }}>
+          <span style={{ fontSize: 12, color: T.hint, fontWeight: 700 }}>종합 점수</span>
+          <span style={{ fontSize: 21, fontWeight: 900, color: headC, letterSpacing: "-0.5px" }}>{s >= 0 ? "+" : ""}{s}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 800, color: headC }}>{headL}</span>
+          <span style={{ marginLeft: "auto", fontSize: 11, color: T.hint }}>−3 약세 · +3 강세</span>
+        </div>
+        <div style={{ position: "relative", height: 8, background: T.cardAlt, borderRadius: 4, marginBottom: 14 }}>
+          <div style={{ position: "absolute", left: "50%", top: -3, width: 2, height: 14, background: T.border }} />
+          <div style={{ position: "absolute", top: 0, height: 8, borderRadius: 4, background: s >= 0 ? UP_C : DN_C, left: s >= 0 ? "50%" : (50 + barPct) + "%", width: Math.abs(barPct) + "%" }} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+          {signals.map((g, i) => {
+            const f = FAV[g.fav] || FAV.flat;
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ flex: "0 0 78px", fontSize: 12.5, fontWeight: 700, color: T.text }}>{g.label}</span>
+                <span style={{ flex: "0 0 56px", fontSize: 12.5, fontWeight: 700, color: g.pct >= 0 ? UP_C : DN_C }}>{g.pct >= 0 ? "+" : ""}{g.pct}%</span>
+                <span style={{ flex: "0 0 auto", fontSize: 10.5, fontWeight: 800, color: f.c, background: f.c + "1f", padding: "2px 7px", borderRadius: 10 }}>{f.label}</span>
+                <span style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: T.hint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.note}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function ReportBody({ report, T, live }) {
   const [showDetail, setShowDetail] = useState(false);
   const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
   const todayIssues = report.todayIssues || report.issues || [];
+  const srcChip = report.source === "llm" ? { t: "🤖 AI 분석", c: ACCENT } : report.source === "rule" ? { t: "⚙️ 룰 기반", c: "#8b95a1" } : null;
+  // 신선도(라이브 '오늘' 뷰 한정): 리포트 기준일이 오늘(KST)보다 과거면 안내
+  let staleDays = 0;
+  if (live && report.date) {
+    const now = new Date();
+    const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
+    staleDays = Math.round((Date.parse(kstToday) - Date.parse(report.date)) / 86400000);
+  }
 
   return (
     <div style={{ paddingBottom: 20 }}>
       {/* 헤더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
-          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600 }}>{report.date} · 데일리 마켓 리포트</div>
+          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600, display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
+            <span>{report.date} · 데일리 마켓 리포트</span>
+            {srcChip && <span style={{ fontSize: 10.5, fontWeight: 800, color: srcChip.c, border: "1px solid " + srcChip.c + "66", padding: "1px 7px", borderRadius: 10 }}>{srcChip.t}</span>}
+          </div>
           <h2 style={{ fontSize: 19, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px", lineHeight: 1.25 }}>{report.title || "거시 연결 기반 증시 브리핑"}</h2>
         </div>
         <span style={{ fontSize: 12.5, fontWeight: 800, color: sent.c, background: sent.bg, padding: "5px 11px", borderRadius: 20 }}>{sent.emoji} {sent.label}</span>
       </div>
+      {staleDays >= 1 && (
+        <div style={{ marginTop: 10, fontSize: 12, color: "#b45309", background: "rgba(217,119,6,0.12)", border: "1px solid rgba(217,119,6,0.4)", borderRadius: 10, padding: "8px 11px", lineHeight: 1.5 }}>
+          ⏳ {staleDays}일 전({report.date}) 기준 리포트입니다. 주말·휴장이면 정상이며, 매 거래일 새벽 자동 갱신됩니다.
+        </div>
+      )}
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
           ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
@@ -262,6 +317,11 @@ function ReportBody({ report, T }) {
           </div>
         )}
       </div>
+
+      {/* 거시 신호 종합 (지표별 우호/부담 분해) */}
+      {report.signals && report.signals.length > 0 && (
+        <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
+      )}
 
       {/* 핵심 지표 */}
       {report.indicators && report.indicators.length > 0 && (
@@ -402,8 +462,8 @@ function AnalysisCard({ a, T }) {
         {cell("약세 예측", a.bearishDays + "일")}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish >= 0 ? UP_C : DN_C)}
-        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish >= 0 ? UP_C : DN_C)}
+        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish == null ? T.text : a.avgKospiOnBullish >= 0 ? UP_C : DN_C)}
+        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish == null ? T.text : a.avgKospiOnBearish >= 0 ? UP_C : DN_C)}
         {cell("중립일 코스피 평균", pct(a.avgKospiOnNeutral))}
       </div>
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
@@ -1213,7 +1273,7 @@ export function MarketReportTab({ theme }) {
       {mode === "today" && (
         loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
           : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-            : today ? <ReportBody report={today} T={T} /> : null
+            : today ? <ReportBody report={today} T={T} live /> : null
       )}
       {mode === "history" && (
         detail ? (
