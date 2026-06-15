@@ -192,10 +192,11 @@ export function ruleBasedBody(indicators, refDate = kstNow()) {
     weeklyCalendar: macroWatch(indicators, refDate),
     todayIssues: [{ category: "거시", title: "지표 자동 요약", detail: `유가 ${dirWord(oil?.chgPct)}, 달러 ${dirWord(dxy?.chgPct)}, 금리 ${dirWord(y10?.chgPct)} — 연결고리 섹션 참고.` }],
     cards: [
-      { emoji: sentiment === "bullish" ? "📈" : sentiment === "bearish" ? "📉" : "⚖️", title: "오늘의 한 줄", body: summary.split(". ")[0] + "." },
-      { emoji: "🛢️", title: "유가 → 금리", body: `유가 ${dirWord(oil?.chgPct)} → 금리 ${oil?.chgPct > 0 ? "상승 압력, 기술주 부담" : "하락 압력, 기술주 우호"}.` },
-      { emoji: "💵", title: "달러 → 환율 → 수급", body: `달러 ${dirWord(dxy?.chgPct)} → 원화 ${dxy?.chgPct > 0 ? "약세, 외국인 매도 경계" : "강세, 외국인 매수 우호"}.` },
-      { emoji: "🇰🇷", title: "국내 방향", body: `${sentiment === "bullish" ? "반도체·IT 강세 출발 기대." : sentiment === "bearish" ? "방어적 대응 권고." : "종목 장세, 선별 대응."}` },
+      { emoji: sentiment === "bullish" ? "📈" : sentiment === "bearish" ? "📉" : "⚖️", title: "오늘의 시장 한눈에", body: `${summary} 핵심은 금리 ${dirWord(y10?.chgPct)}·환율 ${dirWord(fx?.chgPct)}이며, 지수보다 종목·테마별 차별화가 클 수 있는 장입니다.` },
+      { emoji: "🛢️", title: "유가 → 금리 → 기술주", body: `WTI ${dirWord(oil?.chgPct)}로 인플레 기대가 ${oil?.chgPct > 0 ? "자극되어 금리 상승 압력 → 고밸류 기술주·성장주에 부담" : "완화되어 금리 하락 압력 → 기술주·성장주에 우호적"}. 정유·화학·항공 등 유가 민감주도 같이 체크.` },
+      { emoji: "💵", title: "달러 → 환율 → 외국인 수급", body: `달러인덱스 ${dirWord(dxy?.chgPct)}, 원/달러 ${dirWord(fx?.chgPct)}. ${fx?.chgPct > 0 ? "원화 약세 구간은 외국인 순매도 압력으로 대형주·지수에 부담" : "원화 강세는 외국인 순매수 유입에 우호적이라 대형주·반도체에 긍정적"}.` },
+      { emoji: "🇰🇷", title: "국내 증시 전략", body: `간밤 나스닥 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"} → 국내 반도체·IT ${nqPct >= 0 ? "동반 강세 시도 가능" : "약세 흐름 주의"}. ${sentiment === "bullish" ? "강세 우호 출발 기대, 주도 섹터 중심 대응" : sentiment === "bearish" ? "약세 경계, 방어주·현금비중 관리" : "혼조 속 종목 장세 — 강한 섹터만 선별 대응"}.` },
+      { emoji: "🎯", title: "주목 섹터", body: `${nqPct >= 0 ? "반도체·AI·2차전지·방산 등 주도 성장 섹터" : "통신·정유·음식료·금융 등 방어·가치 섹터"}가 상대적으로 부각될 수 있는 환경입니다. 신고가·정배열 종목 위주로 관심.` },
     ],
     detail: `[거시 연결고리]\n유가 ${dirWord(oil?.chgPct)}는 인플레 기대를 통해 금리에 ${oil?.chgPct > 0 ? "상승" : "하락"} 압력으로 작용합니다.\n\n[금리 → 나스닥]\n미 10년물 금리 ${dirWord(y10?.chgPct)}는 성장주 할인율을 ${y10?.chgPct > 0 ? "높여 기술주에 부담" : "낮춰 기술주에 우호적"}으로 작용했고, 나스닥은 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"}로 마감했습니다.\n\n[달러 → 환율 → 수급]\n달러인덱스 ${dirWord(dxy?.chgPct)}로 원/달러는 ${dirWord(fx?.chgPct)} 흐름을 보여 외국인 수급에 ${dxy?.chgPct > 0 ? "부담" : "우호적"}입니다.\n\n[국내증시 전망]\n종합하면 오늘 국내증시는 ${sentiment === "bullish" ? "반도체·IT 중심 강세 출발" : sentiment === "bearish" ? "약세 경계 속 방어적 대응" : "혼조 속 종목 장세"}가 예상됩니다.\n\n※ 룰 기반 자동 분석입니다. LLM 분석이 활성화되면 더 정교한 해설이 제공됩니다.`,
   };
