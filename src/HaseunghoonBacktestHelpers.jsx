@@ -30,7 +30,8 @@ export function HaseunghoonBacktestTab({ theme = "dark" }) {
     : { text:'#191f28', body:'#333d4b', sub:'#4e5968', hint:'#6b7684', mute:'#8b95a1', line:'#e5e8eb', linelt:'#f2f4f6', bg:'#f9fafb', card:'#ffffff', up:'#f04452', down:'#1f6dee', accent:'#7c3aed', green:'#10b981' };
 
   const [yearFilter, setYearFilter] = useState('all');
-  const [verdictFilter, setVerdictFilter] = useState('all'); // STRONG/BUY/HOLD/EXCLUDE
+  const [monthFilter, setMonthFilter] = useState([]); // 월 멀티선택 (빈=전체)
+  const [verdictFilter, setVerdictFilter] = useState([]); // 판정 멀티선택 STRONG/BUY/HOLD/EXCLUDE (빈=전체)
   const [exitMethod, setExitMethod] = useState('trail'); // open/close/trail
   const [sortKey, setSortKey] = useState('date_desc');
   const [showAll, setShowAll] = useState(false);
@@ -40,7 +41,8 @@ export function HaseunghoonBacktestTab({ theme = "dark" }) {
   const filtered = useMemo(() => {
     let arr = BT.filter(r => {
       if (yearFilter !== 'all' && +r[C.YEAR] !== +yearFilter) return false;
-      if (verdictFilter !== 'all' && r[C.VERDICT] !== verdictFilter) return false;
+      if (monthFilter.length && !monthFilter.includes(String(r[C.DATE]).slice(5,7))) return false;
+      if (verdictFilter.length && !verdictFilter.includes(r[C.VERDICT])) return false;
       return true;
     });
     const retIdx = exitMethod === 'open' ? C.RET_OPEN : exitMethod === 'close' ? C.RET_CLOSE : C.RET_TRAIL;
@@ -49,13 +51,13 @@ export function HaseunghoonBacktestTab({ theme = "dark" }) {
     else if (sortKey === 'ret_desc') arr = [...arr].sort((a,b) => (+b[retIdx]||0) - (+a[retIdx]||0));
     else if (sortKey === 'ret_asc') arr = [...arr].sort((a,b) => (+a[retIdx]||0) - (+b[retIdx]||0));
     return arr;
-  }, [yearFilter, verdictFilter, exitMethod, sortKey]);
+  }, [yearFilter, monthFilter, verdictFilter, exitMethod, sortKey]);
 
   const retIdx = exitMethod === 'open' ? C.RET_OPEN : exitMethod === 'close' ? C.RET_CLOSE : C.RET_TRAIL;
 
   // 년도별 통계 (verdict 필터 반영)
   const yearStats = useMemo(() => {
-    const rows = BT.filter(r => verdictFilter === 'all' || r[C.VERDICT] === verdictFilter);
+    const rows = BT.filter(r => (!verdictFilter.length || verdictFilter.includes(r[C.VERDICT])) && (!monthFilter.length || monthFilter.includes(String(r[C.DATE]).slice(5,7))));
     const byYear = {};
     for (const r of rows) {
       const y = +r[C.YEAR];
@@ -84,7 +86,7 @@ export function HaseunghoonBacktestTab({ theme = "dark" }) {
       totalInvest: s.evaluated * investAmt,
       totalPnl: s.evaluated * investAmt * (s.retSum/Math.max(s.evaluated,1)) / 100,
     })).sort((a,b) => a.year - b.year);
-  }, [verdictFilter, retIdx, investAmt]);
+  }, [verdictFilter, monthFilter, retIdx, investAmt]);
 
   const years = ['all', ...Array.from(new Set(BT.map(r=>+r[C.YEAR]))).sort((a,b)=>b-a)];
   const displayLimit = showAll ? filtered.length : 100;
@@ -205,11 +207,21 @@ export function HaseunghoonBacktestTab({ theme = "dark" }) {
             <button key={y} onClick={()=>setYearFilter(y)} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+_T.line, background:yearFilter===y?_T.accent:_T.bg, color:yearFilter===y?'#fff':_T.body, fontSize:12, fontWeight:yearFilter===y?700:500, cursor:'pointer'}}>{y==='all'?'전체':y}</button>
           ))}
         </div>
+        <div style={{display:'flex', gap:5, marginBottom:6, flexWrap:'wrap', alignItems:'center'}}>
+          <span style={{fontSize:12, color:_T.sub, fontWeight:700}}>월</span>
+          <button onClick={()=>setMonthFilter([])} style={{padding:'4px 9px', borderRadius:6, border:'1px solid '+(monthFilter.length===0?_T.accent:_T.line), background:monthFilter.length===0?_T.accent:_T.bg, color:monthFilter.length===0?'#fff':_T.body, fontSize:12, fontWeight:monthFilter.length===0?700:500, cursor:'pointer'}}>전체</button>
+          {['01','02','03','04','05','06','07','08','09','10','11','12'].map(m => {
+            const on = monthFilter.includes(m);
+            return (<button key={m} onClick={()=>setMonthFilter(p => p.includes(m) ? p.filter(x=>x!==m) : [...p, m])} style={{padding:'4px 8px', borderRadius:6, border:'1px solid '+(on?_T.accent:_T.line), background:on?_T.accent:_T.bg, color:on?'#fff':_T.body, fontSize:12, fontWeight:on?700:500, cursor:'pointer'}}>{(+m)+'월'}</button>);
+          })}
+        </div>
         <div style={{display:'flex', gap:6, flexWrap:'wrap', alignItems:'center'}}>
           <span style={{fontSize:12, color:_T.sub, fontWeight:700}}>판정</span>
-          {['all','STRONG','BUY','HOLD','EXCLUDE'].map(v => (
-            <button key={v} onClick={()=>setVerdictFilter(v)} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+_T.line, background:verdictFilter===v?_verdictColor(v==='all'?'STRONG':v):_T.bg, color:verdictFilter===v?'#fff':_T.body, fontSize:12, fontWeight:verdictFilter===v?700:500, cursor:'pointer'}}>{v==='all'?'전체':_verdictKR(v)}</button>
-          ))}
+          {['all','STRONG','BUY','HOLD','EXCLUDE'].map(v => {
+            const on = v==='all' ? verdictFilter.length===0 : verdictFilter.includes(v);
+            const col = _verdictColor(v==='all'?'STRONG':v);
+            return (<button key={v} onClick={()=>{ if(v==='all'){setVerdictFilter([]);} else {setVerdictFilter(p => p.includes(v) ? p.filter(x=>x!==v) : [...p, v]);} }} style={{padding:'4px 10px', borderRadius:6, border:'1px solid '+(on?col:_T.line), background:on?col:_T.bg, color:on?'#fff':_T.body, fontSize:12, fontWeight:on?700:500, cursor:'pointer'}}>{v==='all'?'전체':_verdictKR(v)}</button>);
+          })}
           <span style={{fontSize:12, color:_T.sub, fontWeight:700, marginLeft:8}}>정렬</span>
           <select value={sortKey} onChange={e=>setSortKey(e.target.value)} style={{padding:'4px 8px', borderRadius:6, border:'1px solid '+_T.line, background:_T.bg, color:_T.body, fontSize:12, fontWeight:600}}>
             <option value="date_desc">최신순</option>

@@ -858,6 +858,7 @@ const _chMax=mode==='leader'?28:29;
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(mf.length&&r.d&&!mf.includes(r.d.slice(5,7)))return false;
+if(selSup.length&&!selSup.some(s=>{const o=_supplyOpts.find(x=>x.id===s);return o&&o.match(r.iv);}))return false;
 const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
 // 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
 if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
@@ -1199,6 +1200,17 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {_mos.map(m=>{const isActive=m.id==='all'?mf.length===0:mf.includes(m.id);return(<button key={m.id} onClick={()=>toggleMo(m.id)} style={{flex:'1 1 auto',minWidth:m.id==='all'?44:38,padding:'7px 4px',border:'1px solid '+(isActive?_T.accent:_T.line),borderRadius:7,background:isActive?_T.accent:_T.bg,color:isActive?'#fff':_T.sub,fontSize:12,fontWeight:isActive?700:500,cursor:'pointer',letterSpacing:'-0.2px'}}>{m.l}</button>);})}
 </div>
 {mf.length>0&&<div style={{fontSize:11,color:_T.hint,marginTop:5,fontWeight:600}}>{mf.length}개월 선택됨 · 연도×월 조합 필터 적용 중</div>}
+{/* 수급 필터 — 멀티선택 On/off */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>수급</span>
+<button onClick={()=>setSelSup([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selSup.length===0?_T.accent:_T.line),background:selSup.length===0?_T.accent:_T.bg,color:selSup.length===0?'#fff':_T.body,fontSize:12,fontWeight:selSup.length===0?700:500,cursor:'pointer'}}>전체</button>
+{_supplyOpts.map(o=>{const on=selSup.includes(o.id);return(<button key={o.id} onClick={()=>toggleSup(o.id)} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(on?o.col:_T.line),background:on?o.col:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?700:500,cursor:'pointer'}}>{o.l}</button>);})}
+</div>
+{/* 정렬 — 버튼형 (통일) */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>정렬</span>
+{_sorts.map(s=>{const on=sortMode===s.id;return(<button key={s.id} onClick={()=>setSortMode(s.id)} style={{padding:'4px 10px',borderRadius:6,border:'1px solid '+(on?_T.accent:_T.line),background:on?_T.accent:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?700:500,cursor:'pointer'}}>{s.l}</button>);})}
+</div>
 </Card>
 {exitStats&&(()=>{
   const items=[
@@ -1384,9 +1396,6 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:13,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>수익률</div><div style={{fontSize:18,fontWeight:800,letterSpacing:'-0.4px',color:stats.ret>=0?_T.up:_T.down}}>{stats.ret>=0?'+':''}{stats.ret.toFixed(2)}<span style={{fontSize:13,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
 </div>
 </div>)}
-<div style={{display:'flex',background:_T.card,border:'1px solid '+_T.line,borderRadius:10,padding:3,marginBottom:10}}>
-{_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
-</div>
 {/* 종목 리스트 — 카드형 (라이브 신호 포함) */}
 <div style={{background:_T.card,borderRadius:14,border:'1px solid '+_T.line,overflow:'hidden'}}>
 <div style={{maxHeight:'62vh',overflowY:'auto'}}>
