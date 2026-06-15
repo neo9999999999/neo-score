@@ -809,6 +809,7 @@ const liveAsD=useMemo(()=>{
   }).filter(x=>x);
 },[liveSignals]);
 const [yf,setYf]=useState([]);
+const [mf,setMf]=useState([]); // 월 필터 (멀티선택, 빈 배열=전체)
 const [selSup,setSelSup]=useState([]);
 const [sortMode,setSortMode]=useState('profit');
 const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('nbdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
@@ -856,6 +857,7 @@ const _chMin=mode==='leader'?10:15;
 const _chMax=mode==='leader'?28:29;
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
+if(mf.length&&r.d&&!mf.includes(r.d.slice(5,7)))return false;
 const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
 // 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
 if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
@@ -962,7 +964,7 @@ if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[yf,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
+},[yf,mf,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
 // 결과 단순 분류 — 익절(t≥1) / 손절(t≤-1) / 무사통과 / 진행중
 const _classifyResult=(r)=>{
   if(r._isLive||String(r.r||'')==='진행중')return 'live';
@@ -1122,6 +1124,8 @@ const leaderStats=useMemo(()=>{
   return {r1,r2,r3,events:evtArr.length,wAvg};
 },[filtered,mode]);
 const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
+const toggleMo=(m)=>{if(m==='all'){setMf([]);return;}setMf(mf.includes(m)?mf.filter(x=>x!==m):[...mf,m]);};
+const _mos=[{id:'all',l:'전체'},{id:'01',l:'1월'},{id:'02',l:'2월'},{id:'03',l:'3월'},{id:'04',l:'4월'},{id:'05',l:'5월'},{id:'06',l:'6월'},{id:'07',l:'7월'},{id:'08',l:'8월'},{id:'09',l:'9월'},{id:'10',l:'10월'},{id:'11',l:'11월'},{id:'12',l:'12월'}];
 const toggleSup=(s)=>{setSelSup(selSup.includes(s)?selSup.filter(x=>x!==s):[...selSup,s]);};
 const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'8px 8px',border:'none',background:active?_T.accent:'transparent',color:active?'#fff':_T.sub,fontSize:12,fontWeight:active?700:500,cursor:'pointer',borderRadius:8,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
 const Card=({title,hint,children,pad})=>(<div style={{background:_T.card,borderRadius:10,padding:pad||'14px 14px',marginBottom:8,border:'1px solid '+_T.line}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:10}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:13,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
@@ -1190,6 +1194,11 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{display:'flex',background:_T.bg,borderRadius:10,padding:3,gap:1,marginBottom:0}}>
 {_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)}>{y.l}</Seg>);})}
 </div>
+{/* 월 필터 — 멀티선택 On/off (빈=전체) */}
+<div style={{display:'flex',flexWrap:'wrap',gap:4,marginTop:6}}>
+{_mos.map(m=>{const isActive=m.id==='all'?mf.length===0:mf.includes(m.id);return(<button key={m.id} onClick={()=>toggleMo(m.id)} style={{flex:'1 1 auto',minWidth:m.id==='all'?44:38,padding:'7px 4px',border:'1px solid '+(isActive?_T.accent:_T.line),borderRadius:7,background:isActive?_T.accent:_T.bg,color:isActive?'#fff':_T.sub,fontSize:12,fontWeight:isActive?700:500,cursor:'pointer',letterSpacing:'-0.2px'}}>{m.l}</button>);})}
+</div>
+{mf.length>0&&<div style={{fontSize:11,color:_T.hint,marginTop:5,fontWeight:600}}>{mf.length}개월 선택됨 · 연도×월 조합 필터 적용 중</div>}
 </Card>
 {exitStats&&(()=>{
   const items=[
