@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-15T01:17:10+09:00",
-    "count": 1903,
+    "updatedAt": "2026-06-15T01:36:26+09:00",
+    "count": 1904,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1394,6 +1394,32 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-15",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "후성",
+          "code": "093370",
+          "score": 88.2,
+          "changePct": 20.55,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "neutral",
+        "topSectors": [
+          "반도체"
+        ],
+        "issues": [
+          "전쟁·국제 정세 (예시)",
+          "무역·관세 이슈 (예시)",
+          "예시 데이터"
+        ]
+      },
+      "nq": 0.67,
+      "es": 0.53
+    },
     {
       "date": "2026-06-11",
       "picks": [
