@@ -627,6 +627,21 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
+// OOS 추천등급 — 6년 24,249건 백테스트로 검증한 성과기반 등급 (거래대금 단독 X)
+// 점수가지표 최강 + 수급 + 120신고 + 등락 가중. S 실현 +0.45% / A -1.25% / B -2.67% (단조)
+const _perfScore=(r)=>{
+  let s=0;const sc=+r.sc||0;
+  if(sc>=5)s+=3;else if(sc===4)s+=2;else if(sc===3)s+=1;else if(sc===2)s+=0;else if(sc===1)s-=1.5;else s-=3;
+  const iv=r.iv;
+  if(iv==='기+외'||iv==='외+기')s+=1.5;else if(iv==='기만'||iv==='기관')s+=1.2;else if(iv==='외만'||iv==='외인')s+=0;else if(iv==='둘다-')s-=2;
+  if(r.h120===1)s+=1;else if(r.h60===1)s-=0.5;
+  const ch=+r.ch||0;
+  if(ch>=10&&ch<20)s+=0.5;else if(ch>=25)s-=0.5;
+  if(_amtNum(r.mc)>=2500)s+=0.3;
+  return s;
+};
+const _perfGrade=(r)=>{const s=_perfScore(r);return s>=2.5?'S':s>=0.5?'A':'B';};
+const _perfGradeMeta={S:{c:'#dc2626',l:'S',sub:'실현 +0.45%'},A:{c:'#2563eb',l:'A',sub:'-1.25%'},B:{c:'#8b95a1',l:'B',sub:'-2.67%'}};
 // 청산 추천 — 다차원 백테스트 (시장 × 거래대금) 기반 (best01 universe n=754)
 // 트레일+5% = 시초가+5%p 도달 즉익 / 미달 시 종가 매도 (분봉 검증 후 정확)
 const _exitRec=(amt,mkt)=>{
@@ -860,7 +875,7 @@ let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(mf.length&&r.d&&!mf.includes(r.d.slice(5,7)))return false;
 if(selSup.length&&!selSup.some(s=>{const o=_supplyOpts.find(x=>x.id===s);return o&&o.match(r.iv);}))return false;
-if(selGrade.length&&!selGrade.includes(r.g))return false;
+if(selGrade.length&&!selGrade.includes(_perfGrade(r)))return false;
 const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
 // 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
 if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
@@ -1202,11 +1217,11 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {_mos.map(m=>{const isActive=m.id==='all'?mf.length===0:mf.includes(m.id);return(<button key={m.id} onClick={()=>toggleMo(m.id)} style={{flex:'1 1 auto',minWidth:m.id==='all'?44:38,padding:'7px 4px',border:'1px solid '+(isActive?_T.accent:_T.line),borderRadius:7,background:isActive?_T.accent:_T.bg,color:isActive?'#fff':_T.sub,fontSize:12,fontWeight:isActive?700:500,cursor:'pointer',letterSpacing:'-0.2px'}}>{m.l}</button>);})}
 </div>
 {mf.length>0&&<div style={{fontSize:11,color:_T.hint,marginTop:5,fontWeight:600}}>{mf.length}개월 선택됨 · 연도×월 조합 필터 적용 중</div>}
-{/* 등급 필터 — S/A/B/X 멀티선택 (거래대금 등급) */}
+{/* 추천등급 필터 — 6년 백테스트 성과기반 (점수+수급+신고가+등락) */}
 <div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
-<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>등급</span>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}} title="6년 24,249건 OOS 백테스트로 수익률·승률 높은 조건 가중. 점수+수급+120신고+등락 종합">추천등급</span>
 <button onClick={()=>setSelGrade([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selGrade.length===0?_T.accent:_T.line),background:selGrade.length===0?_T.accent:_T.bg,color:selGrade.length===0?'#fff':_T.body,fontSize:12,fontWeight:selGrade.length===0?700:500,cursor:'pointer'}}>전체</button>
-{[{g:'S',sub:'2500억+'},{g:'A',sub:'500억+'},{g:'B',sub:'50억+'}].map(({g,sub})=>{const on=selGrade.includes(g);const col=(GI[g]&&GI[g].c)||_T.accent;return(<button key={g} title={sub} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?col:_T.line),background:on?col:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}>{g}<span style={{fontSize:10,fontWeight:500,opacity:0.8,marginLeft:3}}>{sub}</span></button>);})}
+{['S','A','B'].map(g=>{const on=selGrade.includes(g);const meta=_perfGradeMeta[g];return(<button key={g} title={'실현 평균 '+meta.sub} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?meta.c:_T.line),background:on?meta.c:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}>{g}<span style={{fontSize:10,fontWeight:500,opacity:0.8,marginLeft:3}}>{meta.sub}</span></button>);})}
 </div>
 {/* 수급 필터 — 멀티선택 On/off */}
 <div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
@@ -1448,6 +1463,7 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   const matchTitle=actual?`${rec.sub}\n실제 베스트: ${actual.best} (시초가${actual.open>=0?'+':''}${actual.open.toFixed(2)}% / 종가${actual.close>=0?'+':''}${actual.close.toFixed(2)}% / 트레일+5${actual.trail5>=0?'+':''}${actual.trail5.toFixed(2)}%)`:rec.sub;
   return(<span style={{fontSize:12,fontWeight:800,color:'#fff',background:match===true?'#10b981':match===false?'#dc2626':rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={matchTitle}>{rec.l}{matchIcon}</span>);
 })()}
+{(()=>{const pg=_perfGrade(r);const m=_perfGradeMeta[pg];return(<span title={'OOS 추천등급 '+pg+' · 실현 평균 '+m.sub} style={{fontSize:13,fontWeight:900,color:'#fff',background:m.c,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',flexShrink:0}}>{pg}</span>);})()}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:13,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:12,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
