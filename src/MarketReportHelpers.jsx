@@ -160,11 +160,13 @@ function CardNews({ cards, T }) {
             const accent = palette[i % palette.length];
             return (
               <div key={i} style={{ flex: "0 0 100%", minWidth: "100%", boxSizing: "border-box", padding: 1 }}>
-                <div style={{ position: "relative", borderRadius: 18, background: "linear-gradient(140deg," + accent + "f2," + accent + "b0)", padding: "26px 22px 24px", minHeight: 200, color: "#fff", boxShadow: "0 8px 24px " + accent + "40", userSelect: "none" }}>
-                  <div style={{ fontSize: 46, marginBottom: 10, lineHeight: 1 }}>{card.emoji || "📰"}</div>
-                  <div style={{ fontSize: 21, fontWeight: 900, letterSpacing: "-0.4px", marginBottom: 10, lineHeight: 1.3, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>{card.title}</div>
-                  <div style={{ fontSize: 15, lineHeight: 1.7, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>{card.body}</div>
-                  <div style={{ position: "absolute", top: 16, right: 18, fontSize: 13, fontWeight: 800, background: "rgba(255,255,255,0.22)", padding: "3px 10px", borderRadius: 20 }}>{i + 1} / {n}</div>
+                <div style={{ position: "relative", borderRadius: 18, background: "linear-gradient(140deg," + accent + "f2," + accent + "b0)", padding: "18px 18px 16px", minHeight: 124, color: "#fff", boxShadow: "0 8px 24px " + accent + "40", userSelect: "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
+                    <span style={{ fontSize: 30, lineHeight: 1 }}>{card.emoji || "📰"}</span>
+                    <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.4px", lineHeight: 1.25, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>{card.title}</span>
+                  </div>
+                  <div style={{ fontSize: 14, lineHeight: 1.6, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>{card.body}</div>
+                  <div style={{ position: "absolute", top: 14, right: 16, fontSize: 12, fontWeight: 800, background: "rgba(255,255,255,0.22)", padding: "2px 9px", borderRadius: 20 }}>{i + 1} / {n}</div>
                 </div>
               </div>
             );
