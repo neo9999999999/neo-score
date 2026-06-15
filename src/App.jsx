@@ -1,6 +1,6 @@
 // vercel rebuild trigger 1777038639400
 // rebuild 1777034990679
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from "react";
 import {R_26 as R_26_OLD} from "./data.js";
 import {R_26_BACKFILL} from "./data_2026_backfill.js";
 import {R_26_EXTEND} from "./data_2026_extend.js";
@@ -21,11 +21,13 @@ import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, Chimchakha
 import { calcJudojuScore, judojuGradeColor, JudojuToday, JudojuDetailModal, analyzeJudoju, JudojuResultCard } from "./JudojuHelpers.jsx";
 import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, HaseunghoonDetailModal, analyzeHaseunghoon, HaseunghoonResultCard } from "./HaseunghoonHelpers.jsx";
 import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor, NeoAnalysisDetailModal } from "./NeoAnalysisHelpers.jsx";
-import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
+const NeoPullbackTab = lazy(() => import("./NeoPullbackHelpers.jsx").then(m => ({ default: m.NeoPullbackTab })));
 import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
 import { HaseunghoonClosingBetTab } from "./HaseunghoonClosingBetHelpers.jsx";
-import { OosHistoryTab } from "./OosHistoryHelpers.jsx";
-import { HaseunghoonBacktestTab } from "./HaseunghoonBacktestHelpers.jsx";
+// OOS 히스토리 — 1.3MB 데이터. lazy-load로 메인 번들에서 분리 (탭 열 때만 로드)
+const OosHistoryTab = lazy(() => import("./OosHistoryHelpers.jsx").then(m => ({ default: m.OosHistoryTab })));
+const _OosFallback = ({theme})=>(<div style={{padding:"40px 20px",textAlign:"center",color:theme==="dark"?"#8b949e":"#4e5968",fontSize:13}}>📚 OOS 히스토리 로딩 중... (8,408건)</div>);
+const HaseunghoonBacktestTab = lazy(() => import("./HaseunghoonBacktestHelpers.jsx").then(m => ({ default: m.HaseunghoonBacktestTab })));
 import { MarketReportTab } from "./MarketReportHelpers.jsx";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
@@ -1125,7 +1127,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     <div style={{fontSize:13,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
-{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : mode==='haseunghoon' ? (<HaseunghoonBacktestTab theme={theme}/>) : (<>
+{mode==='pullback' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><NeoPullbackTab theme={theme}/></Suspense>) : mode==='haseunghoon' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><HaseunghoonBacktestTab theme={theme}/></Suspense>) : (<>
 {/* 청산 방식 토글 (모든 모드 공통) */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
 {[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
@@ -1728,7 +1730,7 @@ if(loading)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"
 // 첫 조회 화면 (다크)
 if(!data&&activeTab==='pullback')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><TodayPullbackTab theme={theme}/></div>);
 if(!data&&activeTab==='haseunghoon')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><HaseunghoonClosingBetTab theme={theme}/></div>);
-if(!data&&activeTab==='oos')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}><div style={{fontSize:13,fontWeight:700,color:_T.text}}>📚 OOS 신호 히스토리</div><button onClick={load} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,fontSize:12,fontWeight:600,cursor:"pointer"}}>📡 실시간 데이터 조회</button></div><div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>{[{id:"best01",l:"최고조합01",col:"#f59e0b"},{id:"leader",l:"네오 대장주",col:"#a855f7"},{id:"neo25",l:"네오 25%",col:"#c81e1e"},{id:"pullback",l:"네오눌림목반등",col:"#0ea5e9"},{id:"haseunghoon",l:"하승훈 종가베팅",col:"#0d9488"},{id:"oos",l:"OOS 히스토리",col:"#7c3aed"}].map(t=>{const a=activeTab===t.id;return(<button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:"1 1 0",padding:"12px 10px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",fontSize:13,fontWeight:800,letterSpacing:"-0.3px"}}>{t.l}</button>);})}</div><OosHistoryTab theme={theme}/></div>);
+if(!data&&activeTab==='oos')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}><div style={{fontSize:13,fontWeight:700,color:_T.text}}>📚 OOS 신호 히스토리</div><button onClick={load} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,fontSize:12,fontWeight:600,cursor:"pointer"}}>📡 실시간 데이터 조회</button></div><div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>{[{id:"best01",l:"최고조합01",col:"#f59e0b"},{id:"leader",l:"네오 대장주",col:"#a855f7"},{id:"neo25",l:"네오 25%",col:"#c81e1e"},{id:"pullback",l:"네오눌림목반등",col:"#0ea5e9"},{id:"haseunghoon",l:"하승훈 종가베팅",col:"#0d9488"},{id:"oos",l:"OOS 히스토리",col:"#7c3aed"}].map(t=>{const a=activeTab===t.id;return(<button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:"1 1 0",padding:"12px 10px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",fontSize:13,fontWeight:800,letterSpacing:"-0.3px"}}>{t.l}</button>);})}</div><Suspense fallback={<_OosFallback theme={theme}/>}><OosHistoryTab theme={theme}/></Suspense></div>);
 if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
@@ -1772,7 +1774,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
   })}
 </div>
 
-{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : activeTab==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : activeTab==='oos' ? (<OosHistoryTab theme={theme}/>) : (<>
+{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : activeTab==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : activeTab==='oos' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><OosHistoryTab theme={theme}/></Suspense>) : (<>
 {/* 활성 탭 진입조건/청산룰 카드 */}
 <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12,marginBottom:10}}>
   <div style={{display:"flex",gap:8,alignItems:"baseline",marginBottom:8}}>
