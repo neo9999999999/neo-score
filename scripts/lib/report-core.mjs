@@ -134,6 +134,21 @@ export function weekCalendar(refDate = kstNow()) {
   return out;
 }
 
+// 룰 기반 '이번주 관전 포인트' — 실제 지표값 기반(가짜 이벤트 대신)
+export function macroWatch(indicators) {
+  const get = k => indicators.find(i => i.key === k);
+  const fmt = ind => (ind && ind.value !== "—") ? `${ind.value} (${ind.changePct})` : "데이터 대기";
+  const big = ind => ind && ind._raw && Math.abs(ind._raw.chgPct) >= 0.5;
+  const nq = get("nasdaq"), y10 = get("ust10y"), fx = get("usdkrw"), oil = get("wti"), dxy = get("dxy");
+  return [
+    { date: "금리", day: "美10Y", title: `미 10년물 ${fmt(y10)}`, detail: "상승 지속 시 성장주(기술·바이오·2차전지) 밸류 부담, 하락 시 우호. 한·미 통화정책 발언 주시.", importance: big(y10) ? "high" : "mid" },
+    { date: "환율", day: "원/달러", title: `원/달러 ${fmt(fx)}`, detail: "고환율 구간 — 외국인 순매수/순매도 방향을 좌우. 환율 안정 시 외인 수급 개선.", importance: "high" },
+    { date: "유가", day: "WTI", title: `WTI ${fmt(oil)}`, detail: "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.", importance: big(oil) ? "high" : "mid" },
+    { date: "미증시", day: "나스닥", title: `나스닥 ${fmt(nq)}`, detail: "간밤 흐름이 국내 반도체·AI 동조. 빅테크 실적·미 지표 발표 주시.", importance: "mid" },
+    { date: "달러", day: "DXY", title: `달러인덱스 ${fmt(dxy)}`, detail: "달러 강세 시 신흥국·원화 약세 압력, 약세 시 위험자산 선호.", importance: "low" },
+  ];
+}
+
 // ---- 룰 기반 리포트 본문 (지표 배열 → 분석 객체) ----
 export function ruleBasedBody(indicators, refDate = kstNow()) {
   const get = k => indicators.find(i => i.key === k)?._raw;
@@ -160,17 +175,21 @@ export function ruleBasedBody(indicators, refDate = kstNow()) {
       detail: `나스닥 흐름과 환율을 종합하면 국내증시는 ${sentiment === "bullish" ? "반도체·IT 중심 강세" : sentiment === "bearish" ? "방어주 중심 보수적 대응" : "종목 장세 속 혼조"}가 예상됩니다.`,
     },
     sectors: nqPct >= 0 ? [
-      { name: "반도체", bias: "up", reason: "나스닥·SOX 동조화가 높아 간밤 미 반도체 강세가 직접 반영.", stocks: [{ name: "삼성전자", reason: "외국인 수급 바로미터, 지수 대표주." }, { name: "SK하이닉스", reason: "HBM·AI 메모리 수요 직접 수혜." }] },
-      { name: "2차전지", bias: "neutral", reason: "달러·금리 흐름에 따른 성장주 투자심리 영향.", stocks: [{ name: "LG에너지솔루션", reason: "글로벌 전기차 수요 민감주." }, { name: "삼성SDI", reason: "ESS·전지 수요 모멘텀." }] },
+      { name: "반도체", bias: "up", reason: "나스닥·SOX 동조화가 높아 간밤 미 반도체 강세가 직접 반영.", stocks: [{ name: "삼성전자", reason: "외국인 수급 바로미터, 지수 대표주." }, { name: "SK하이닉스", reason: "HBM·AI 메모리 수요 직접 수혜." }, { name: "한미반도체", reason: "HBM 본더 장비 대표주." }] },
+      { name: "AI·인터넷", bias: "up", reason: "미 빅테크·AI 강세 동조.", stocks: [{ name: "네이버", reason: "AI·검색 플랫폼." }, { name: "카카오", reason: "플랫폼·AI 모멘텀." }] },
+      { name: "2차전지", bias: "neutral", reason: "달러·금리 흐름에 따른 성장주 투자심리 영향.", stocks: [{ name: "LG에너지솔루션", reason: "글로벌 전기차 수요 민감주." }, { name: "삼성SDI", reason: "ESS·전지 수요." }, { name: "에코프로비엠", reason: "양극재 대표주." }] },
+      { name: "방산", bias: "up", reason: "지정학 리스크·수출 모멘텀.", stocks: [{ name: "한화에어로스페이스", reason: "방산 수출 대표주." }, { name: "LIG넥스원", reason: "유도무기 수주." }] },
     ] : [
-      { name: "방어주·통신", bias: "up", reason: "위험회피 국면에서 상대적 강세 기대.", stocks: [{ name: "KT", reason: "고배당·경기방어 특성." }, { name: "SK텔레콤", reason: "안정적 현금흐름, 방어주." }] },
-      { name: "정유·에너지", bias: oil?.chgPct > 0 ? "up" : "neutral", reason: "유가 흐름에 직접 연동.", stocks: [{ name: "S-Oil", reason: "정제마진·유가 민감주." }, { name: "GS", reason: "에너지 사업 비중 큼." }] },
+      { name: "방어주·통신", bias: "up", reason: "위험회피 국면에서 상대적 강세 기대.", stocks: [{ name: "KT", reason: "고배당·경기방어." }, { name: "SK텔레콤", reason: "안정적 현금흐름." }] },
+      { name: "정유·에너지", bias: oil?.chgPct > 0 ? "up" : "neutral", reason: "유가 흐름에 직접 연동.", stocks: [{ name: "S-Oil", reason: "정제마진·유가 민감주." }, { name: "GS", reason: "에너지 사업 비중." }] },
+      { name: "음식료·필수소비", bias: "up", reason: "경기방어 성격.", stocks: [{ name: "CJ제일제당", reason: "필수소비 대표주." }, { name: "오리온", reason: "안정적 실적." }] },
+      { name: "금융", bias: "neutral", reason: "금리 상승기 이자이익 수혜 가능.", stocks: [{ name: "KB금융", reason: "대표 금융지주." }, { name: "신한지주", reason: "고배당 금융주." }] },
     ],
     globalIssues: [
       { category: "지정학", title: "국제 정세 모니터링", detail: "전쟁·지정학 리스크는 유가와 안전자산(달러·금) 선호를 통해 증시에 영향을 줍니다." },
       { category: "무역", title: "무역·관세 이슈", detail: "관세·수출규제 등 무역 이슈는 반도체·자동차 등 수출주에 직접 영향을 줍니다." },
     ],
-    weeklyCalendar: weekCalendar(refDate),
+    weeklyCalendar: macroWatch(indicators, refDate),
     todayIssues: [{ category: "거시", title: "지표 자동 요약", detail: `유가 ${dirWord(oil?.chgPct)}, 달러 ${dirWord(dxy?.chgPct)}, 금리 ${dirWord(y10?.chgPct)} — 연결고리 섹션 참고.` }],
     cards: [
       { emoji: sentiment === "bullish" ? "📈" : sentiment === "bearish" ? "📉" : "⚖️", title: "오늘의 한 줄", body: summary.split(". ")[0] + "." },
