@@ -810,6 +810,7 @@ const liveAsD=useMemo(()=>{
 },[liveSignals]);
 const [yf,setYf]=useState([]);
 const [mf,setMf]=useState([]); // 월 필터 (멀티선택, 빈 배열=전체)
+const [selGrade,setSelGrade]=useState([]); // 등급 필터 S/A/B/X (멀티, 빈=전체)
 const [selSup,setSelSup]=useState([]);
 const [sortMode,setSortMode]=useState('profit');
 const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('nbdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
@@ -859,6 +860,7 @@ let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
 if(mf.length&&r.d&&!mf.includes(r.d.slice(5,7)))return false;
 if(selSup.length&&!selSup.some(s=>{const o=_supplyOpts.find(x=>x.id===s);return o&&o.match(r.iv);}))return false;
+if(selGrade.length&&!selGrade.includes(r.g))return false;
 const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
 // 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
 if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
@@ -965,7 +967,7 @@ if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[yf,mf,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
+},[yf,mf,selGrade,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
 // 결과 단순 분류 — 익절(t≥1) / 손절(t≤-1) / 무사통과 / 진행중
 const _classifyResult=(r)=>{
   if(r._isLive||String(r.r||'')==='진행중')return 'live';
@@ -1200,6 +1202,12 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {_mos.map(m=>{const isActive=m.id==='all'?mf.length===0:mf.includes(m.id);return(<button key={m.id} onClick={()=>toggleMo(m.id)} style={{flex:'1 1 auto',minWidth:m.id==='all'?44:38,padding:'7px 4px',border:'1px solid '+(isActive?_T.accent:_T.line),borderRadius:7,background:isActive?_T.accent:_T.bg,color:isActive?'#fff':_T.sub,fontSize:12,fontWeight:isActive?700:500,cursor:'pointer',letterSpacing:'-0.2px'}}>{m.l}</button>);})}
 </div>
 {mf.length>0&&<div style={{fontSize:11,color:_T.hint,marginTop:5,fontWeight:600}}>{mf.length}개월 선택됨 · 연도×월 조합 필터 적용 중</div>}
+{/* 등급 필터 — S/A/B/X 멀티선택 (거래대금 등급) */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>등급</span>
+<button onClick={()=>setSelGrade([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selGrade.length===0?_T.accent:_T.line),background:selGrade.length===0?_T.accent:_T.bg,color:selGrade.length===0?'#fff':_T.body,fontSize:12,fontWeight:selGrade.length===0?700:500,cursor:'pointer'}}>전체</button>
+{[{g:'S',sub:'2500억+'},{g:'A',sub:'500억+'},{g:'B',sub:'50억+'}].map(({g,sub})=>{const on=selGrade.includes(g);const col=(GI[g]&&GI[g].c)||_T.accent;return(<button key={g} title={sub} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?col:_T.line),background:on?col:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}>{g}<span style={{fontSize:10,fontWeight:500,opacity:0.8,marginLeft:3}}>{sub}</span></button>);})}
+</div>
 {/* 수급 필터 — 멀티선택 On/off */}
 <div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
 <span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>수급</span>
