@@ -643,6 +643,8 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
   const [open, setOpen] = useState(false);
   const hasOutcome = r.dayHitRate != null;
   const picks = r.picks || [];
+  const p5picks = picks.filter(p => p.hit5in5 != null);
+  const day5Rate = p5picks.length ? Math.round(p5picks.filter(p => p.hit5in5).length / p5picks.length * 100) : null;
   const dayProfit = (perStock && picks.some(p => p.nextRet != null))
     ? picks.filter(p => p.nextRet != null).reduce((s, p) => s + perStock * simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt) / 100, 0)
     : null;
@@ -660,6 +662,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
           {hasOutcome ? (
             <>
               <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? UP_C : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
+              {day5Rate != null && <div style={{ fontSize: 10.5, fontWeight: 700, color: ACCENT }}>5일내+5% {day5Rate}%</div>}
               {dayProfit != null
                 ? <div style={{ fontSize: 11.5, fontWeight: 700, color: dayProfit >= 0 ? UP_C : DN_C }}>{dayProfit >= 0 ? "+" : ""}{wonFmt(dayProfit)}</div>
                 : <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? UP_C : DN_C }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>}
@@ -694,6 +697,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
                     <span style={{ color: T.hint }}>당일 <b style={{ color: p.changePct >= 0 ? UP_C : DN_C }}>{p.changePct >= 0 ? "+" : ""}{p.changePct}%</b></span>
                     {p.nextHigh != null && <span style={{ color: T.hint }}>익일고가 <b style={{ color: ACCENT }}>{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</b></span>}
                     {p.nextRet != null && <span style={{ color: T.hint }}>익일종가 <b style={{ color: p.nextRet >= 0 ? UP_C : DN_C }}>{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</b></span>}
+                    {p.hit5in5 != null && <span style={{ color: T.hint }}>5일내+5% <b style={{ color: p.hit5in5 ? UP_C : DN_C }}>{p.hit5in5 ? (p.days5 + "일째 도달") : "미달"}</b></span>}
                   </div>
                 </div>
               );
@@ -731,7 +735,13 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
     const avg = rs.reduce((s, x) => s + x, 0) / n;
     const win = rs.filter(x => x > 0).length / n * 100;
     const profit = perStock ? rs.reduce((s, x) => s + perStock * x / 100, 0) : null;
-    return { n, avg, win, profit };
+    // 5일 내 매수가 대비 고가 +5% 도달 (추가검증)
+    const p5 = ps.filter(p => p.hit5in5 != null);
+    const n5 = p5.length;
+    const rate5 = n5 ? p5.filter(p => p.hit5in5).length / n5 * 100 : null;
+    const dArr = p5.filter(p => p.hit5in5 && p.days5 != null).map(p => p.days5);
+    const avgDays5 = dArr.length ? dArr.reduce((s, x) => s + x, 0) / dArr.length : null;
+    return { n, avg, win, profit, rate5, avgDays5 };
   };
   const yearStats = allYears.map(y => ({ y, ...statOf(reports.filter(r => r.date.slice(0, 4) === y)) }));
   const fStat = statOf(filtered);
@@ -761,13 +771,14 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
               <span style={{ flex: "0 0 auto", color: T.sub }}>{ys.n || 0}종목</span>
               {ys.n ? <span style={{ flex: "0 0 auto", fontWeight: 800, color: ys.avg >= 0 ? UP_C : DN_C }}>익절 {ys.avg >= 0 ? "+" : ""}{ys.avg.toFixed(2)}%</span> : <span style={{ color: T.hint }}>—</span>}
               {ys.n ? <span style={{ color: T.hint, fontSize: 11 }}>승률 {ys.win.toFixed(0)}%</span> : null}
+              {ys.rate5 != null && <span style={{ color: ACCENT, fontSize: 11, fontWeight: 700 }}>5일+5% {ys.rate5.toFixed(0)}%{ys.avgDays5 != null ? "·" + ys.avgDays5.toFixed(1) + "일" : ""}</span>}
               {ys.profit != null && <span style={{ marginLeft: "auto", fontWeight: 700, color: ys.profit >= 0 ? UP_C : DN_C }}>{ys.profit >= 0 ? "+" : ""}{wonFmt(ys.profit)}</span>}
             </div>
           ))}
         </div>
         {fStat.n > 0 && (
           <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px dashed " + T.border, fontSize: 12.5, color: T.sub }}>
-            선택 구간: <b style={{ color: T.text }}>{fStat.n}종목</b> · 평균 익절 <b style={{ color: fStat.avg >= 0 ? UP_C : DN_C }}>{fStat.avg >= 0 ? "+" : ""}{fStat.avg.toFixed(2)}%</b> · 승률 {fStat.win.toFixed(0)}%{fStat.profit != null ? <> · 수익금 <b style={{ color: fStat.profit >= 0 ? UP_C : DN_C }}>{fStat.profit >= 0 ? "+" : ""}{wonFmt(fStat.profit)}</b></> : null}
+            선택 구간: <b style={{ color: T.text }}>{fStat.n}종목</b> · 평균 익절 <b style={{ color: fStat.avg >= 0 ? UP_C : DN_C }}>{fStat.avg >= 0 ? "+" : ""}{fStat.avg.toFixed(2)}%</b> · 승률 {fStat.win.toFixed(0)}%{fStat.rate5 != null ? <> · 5일내+5% <b style={{ color: fStat.rate5 >= 50 ? UP_C : "#d97706" }}>{fStat.rate5.toFixed(0)}%</b>{fStat.avgDays5 != null ? " (평균 " + fStat.avgDays5.toFixed(1) + "일)" : ""}</> : null}{fStat.profit != null ? <> · 수익금 <b style={{ color: fStat.profit >= 0 ? UP_C : DN_C }}>{fStat.profit >= 0 ? "+" : ""}{wonFmt(fStat.profit)}</b></> : null}
           </div>
         )}
       </div>
