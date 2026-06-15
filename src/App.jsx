@@ -1452,9 +1452,9 @@ const _profit=(r.t||0);
 const _showSingle=mode==='neo90'||mode==='best01'||mode==='leader';
 // 대장주 랭크 배지 색상
 const _rankCol=r._rank===1?'#dc2626':r._rank===2?'#f59e0b':r._rank===3?'#10b981':null;
-return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
+return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'12px 15px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
 {/* 1행: 종목명 (큼) + 수급/LIVE + 우측 진행중/결과 */}
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:12}}>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:6}}>
 <div style={{flex:1,minWidth:0,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
 {_rankCol&&<span style={{fontSize:13,fontWeight:900,color:'#fff',background:_rankCol,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',minWidth:32,textAlign:'center'}}>{r._rank}등</span>}
 {_rankCol&&r._mktLabel&&<span style={{fontSize:12,fontWeight:700,color:_T.body,background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._mktLabel}</span>}
@@ -1474,83 +1474,19 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
 {r._isLive&&r.maAlign===1&&<span style={{fontSize:12,fontWeight:700,color:'#fff',background:'#10b981',padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="MA5 > MA20 > MA60">📈 MA정배열</span>}
 {r._isLive&&Math.abs(+r.cum5||0)>=1&&<span style={{fontSize:12,fontWeight:700,color:(+r.cum5||0)>=0?'#dc2626':'#2563eb',background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="5일 누적 등락률">5일 {(+r.cum5||0)>=0?'+':''}{(+r.cum5||0).toFixed(1)}%</span>}
 </div>
-{!r._isLive&&<span style={{fontWeight:800,color:_resCol(r.r),fontSize:13,padding:'4px 10px',background:_T.bg,borderRadius:6,border:'1px solid '+_T.line}}>{_resLbl(r.r)}</span>}
-{r._isLive&&<span style={{fontSize:13,fontWeight:800,color:'#f59e0b',padding:'4px 10px',background:'rgba(245,158,11,0.12)',borderRadius:6,border:'1px solid rgba(245,158,11,0.35)'}}>진행중</span>}
+{r._isLive?(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:15,fontWeight:800,color:'#f59e0b'}}>진행중</div><div style={{fontSize:11,color:_T.sub,fontWeight:600,marginTop:1}}>당일 +{r.ch}%</div></div>):(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:18,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div><div style={{fontSize:11,color:_resCol(r.r),fontWeight:700,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원 · {_resLbl(r.r)}</div></div>)}
 </div>
 {/* 2행: 기본 정보 — 폰트 키움 */}
-<div style={{display:'flex',gap:10,fontSize:12,color:_T.body,fontWeight:600,marginBottom:12,flexWrap:'wrap',alignItems:'baseline'}}>
-<span><b style={{color:_T.text,fontSize:13}}>{r.mc}</b></span>
+<div style={{display:'flex',gap:8,fontSize:12,color:_T.sub,fontWeight:600,flexWrap:'wrap',alignItems:'baseline'}}>
+<span><b style={{color:_T.body,fontSize:13}}>{r.mc}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>당일 <b style={{color:_T.body}}>+{r.ch}%</b></span>
+<span>📅 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>📅 매수 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>청산 <b style={{color:_T.body}}>{r.exd||'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>소요 <b style={{color:_T.body}}>{r.exdy?r.exdy+'일':'—'}</b></span>
+<span style={{color:_T.hint}}>{_showSingle?(mode==='leader'||mode==='best01'?'D+1시초':mode==='neo90'?'트레일':'익절'):'1차'} <b style={{color:tp1Reached?_T.up:_T.mute}}>{tp1Reached?'D+'+tp1dy+'일':((mode==='leader'||mode==='best01')?'대기':'미달')}</b></span>
+{!_showSingle&&<><span style={{color:_T.mute}}>·</span><span style={{color:_T.hint}}>2차 <b style={{color:tp2Reached?_T.up:_T.mute}}>{tp2Reached?(tp2dy?'D+'+tp2dy+'일':'도달'):'미달'}</b></span></>}
+{mode==='neo90'&&r._peak>0&&<><span style={{color:_T.mute}}>·</span><span style={{color:_T.hint}}>peak <b style={{color:_T.up}}>+{r._peak.toFixed(1)}%</b></span></>}
+{!r._isLive&&(()=>{const cmp=_compareExits(r.ohlc);if(cmp.open==null&&cmp.close==null&&cmp.trail==null)return null;const valid=[cmp.open,cmp.close,cmp.trail].filter(v=>v!=null);const best=valid.length?Math.max(...valid):null;const F=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(1);const St=v=>v!=null&&v===best?'★':'';return(<><span style={{color:_T.mute}}>·</span><span style={{color:_T.mute}}>청산 <b style={{color:cmp.open>=0?_T.up:_T.down}}>시{F(cmp.open)}{St(cmp.open)}</b> <b style={{color:cmp.close>=0?_T.up:_T.down}}>종{F(cmp.close)}{St(cmp.close)}</b> <b style={{color:cmp.trail>=0?_T.up:_T.down}}>트{F(cmp.trail)}{St(cmp.trail)}</b></span></>);})()}
 </div>
-{/* 3행: 익절 정보 — 모드별 분기 */}
-{_showSingle?(
-  // 7%/90% 모드: 단일 익절 + 최종수익
-  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='leader'||mode==='best01'?`D+1 시초가 매도`:mode==='neo90'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:12,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{(mode==='neo90')&&r._peak>0&&<div style={{fontSize:12,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='leader'||mode==='best01'?'대기':mode==='neo90'?'5% 미도달':'미도달'}</div>}
-    </div>
-    <div style={{textAlign:'center'}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
-      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
-      <div style={{fontSize:16,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-      <div style={{fontSize:12,color:_T.sub,fontWeight:600,marginTop:2}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
-      </>)}
-    </div>
-  </div>
-):(
-  // 25%/맞춤 모드: 1차/2차/최종
-  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>1차 (+{tp1}%)</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>D+{tp1dy}일</div><div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{tp1d}</div></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
-    </div>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>2차 (+{tp2}%)</div>
-      {tp2Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>{tp2dy?'D+'+tp2dy+'일':'도달'}</div>{tp2d&&<div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{tp2d}</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
-    </div>
-    <div style={{textAlign:'center'}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
-      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
-      <div style={{fontSize:15,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px',lineHeight:1.1}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-      <div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
-      </>)}
-    </div>
-  </div>
-)}
-{/* 3-way 청산 비교 (시초가 / 종가 / 트레일) — 모든 모드 공통 */}
-{!r._isLive&&(()=>{
-  const cmp=_compareExits(r.ohlc);
-  if(cmp.open===null&&cmp.close===null&&cmp.trail===null)return null;
-  const vals=[
-    {l:'시초가',v:cmp.open,sub:'D+1 시가'},
-    {l:'종가',v:cmp.close,sub:'D+1 종가'},
-    {l:'트레일',v:cmp.trail,sub:cmp.trailDays?'D+'+cmp.trailDays+'일':'15일 만기'}
-  ];
-  const valid=vals.filter(x=>x.v!=null).map(x=>x.v);
-  const best=valid.length?Math.max(...valid):null;
-  return(<div style={{marginTop:8,padding:'10px 12px',background:_T.linelt,borderRadius:9,border:'1px solid '+_T.line}}>
-    <div style={{fontSize:12,fontWeight:700,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px'}}>📊 청산 비교</div>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
-      {vals.map((x,j)=>{
-        const isBest=x.v!=null&&x.v===best;
-        const col=x.v==null?_T.mute:x.v>=0?_T.up:_T.down;
-        return(<div key={j} style={{textAlign:'center',padding:'6px 4px',borderRadius:7,background:isBest?(_T.text==='#e6edf3'?'rgba(168,85,247,0.18)':'rgba(168,85,247,0.10)'):'transparent',border:'1px solid '+(isBest?'#a855f7':'transparent')}}>
-          <div style={{fontSize:13,color:isBest?'#a855f7':_T.hint,fontWeight:isBest?800:600,letterSpacing:'-0.2px'}}>{x.l}{isBest&&' ★'}</div>
-          <div style={{fontSize:13,fontWeight:800,color:col,letterSpacing:'-0.3px',marginTop:2}}>{x.v==null?'—':(x.v>=0?'+':'')+x.v.toFixed(1)+'%'}</div>
-          <div style={{fontSize:8,color:_T.sub,fontWeight:600,marginTop:1}}>{x.sub}</div>
-        </div>);
-      })}
-    </div>
-  </div>);
-})()}
 </div>);})}
 </div>
 {filtered.length>300&&(<div style={{padding:'12px',textAlign:'center',color:_T.mute,fontSize:13,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
