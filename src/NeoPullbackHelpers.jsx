@@ -1,5 +1,5 @@
 // 네오 눌림목 반등매매법 컴포넌트
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { PULLBACK, PULLBACK_HEADERS } from "./data_neo_pullback.js";
 
 // 컬럼 인덱스
