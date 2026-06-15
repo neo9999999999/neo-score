@@ -57,12 +57,12 @@ node scripts/generate-market-report.mjs
 스코어: 종가 위치(고가권) + 거래량 급증 + 당일 등락 + 5·20일선 정배열 + 갭, 미 선물
 방향 보정. OOS 백필은 각 거래일 선정 종목의 **실제 익일 등락**으로 적중률·초과수익(edge)을 검증한다.
 
-## 카카오 '나에게 보내기' 발송 (08:00 KST)
+## 카카오 '나에게 보내기' 발송 (07:00 KST)
 
-매일 새벽 리포트가 생성되어 **앱에 자동 업데이트**된다. 추가로 **매일 08:00 KST**에
+매일 새벽 리포트가 생성되어 **앱에 자동 업데이트**된다. 추가로 **매일 07:00 KST**에
 카카오톡으로 요약을 받으려면 시크릿만 설정하면 된다(미설정 시 발송은 건너뜀).
 
-- 스크립트: `scripts/send-kakao.mjs` · 워크플로: `kakao-send.yml`(cron 23:00 UTC = 08:00 KST)
+- 스크립트: `scripts/send-kakao.mjs` · 워크플로: `kakao-send.yml`(cron 22:00 UTC = 07:00 KST, 발송 직전 리포트 최신화)
 - 발송 내용: 날짜·센티먼트·요약·상승 예상 섹터 + 사이트 링크 버튼
 
 ### 설정 방법 (추후)
@@ -73,7 +73,7 @@ node scripts/generate-market-report.mjs
    - Secret `KAKAO_REST_API_KEY`
    - Secret `KAKAO_REFRESH_TOKEN`
    - Variable `SITE_URL` (선택, 리포트 링크 주소)
-5. 설정 후 자동으로 매일 08:00 KST 발송. 즉시 테스트는 Actions → *Kakao Daily Send* → Run workflow.
+5. 설정 후 자동으로 매일 07:00 KST 발송. 즉시 테스트는 Actions → *Kakao Daily Send* → Run workflow.
 
 ### 다른 채널
 이메일(Resend/SendGrid)·텔레그램·FCM도 동일하게 워크플로 마지막 단계에 추가 가능.

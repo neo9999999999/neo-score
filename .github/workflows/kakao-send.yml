@@ -1,21 +1,49 @@
-name: Kakao Daily Send (08:00 KST)
+name: Morning Report — 07:00 KST 정리·발송
 
-# 매일 08:00 KST(23:00 UTC) 데일리 마켓리포트 요약을 카카오 '나에게 보내기'로 발송.
-# KAKAO_* 시크릿이 없으면 스크립트가 그냥 건너뜀(앱 업데이트만 동작).
+# 매일 07:00 KST(22:00 UTC): 리포트를 최신화(생성·커밋)한 뒤 카카오 '나에게 보내기'로 발송.
+# 22:00 UTC = 07:00 KST = 미국 증시 마감(16:00 ET) 이후라 간밤 종가 데이터 반영.
+# KAKAO_* 시크릿이 없으면 발송만 건너뜀(생성·앱 업데이트는 동작).
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 22 * * *"
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
+concurrency:
+  group: morning-report
+  cancel-in-progress: false
+
 jobs:
-  send:
+  morning:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Send Kakao memo
+
+      - name: Generate market report (최신화)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+        run: node scripts/generate-market-report.mjs
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/market-report.json public/market-report-history.json public/reports
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+          else
+            DATE=$(date -u -d '+9 hours' +%Y-%m-%d)
+            git commit -m "Morning market report ${DATE} (07:00 KST)"
+            git push
+          fi
+
+      - name: Send Kakao memo (07:00 KST)
         env:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
