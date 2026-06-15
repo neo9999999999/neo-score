@@ -1,61 +1,61 @@
 {
   "date": "2026-06-15",
-  "generatedAt": "2026-06-15T14:06:04+09:00",
+  "generatedAt": "2026-06-15T20:47:58+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+1.87%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 대한항공, 신고가 근접).",
+  "summary": "미 선물은 나스닥 상승(+3.11%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 2개를 대장주 후보로 추렸습니다 (1순위 후성, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,215.75",
-      "change": "+553.75",
-      "changePct": "+1.87%",
+      "value": "30,585.25",
+      "change": "+923.25",
+      "changePct": "+3.11%",
       "dir": "up",
       "_raw": {
-        "close": 30215.75,
+        "close": 30585.25,
         "prevClose": 29662,
-        "chgPct": 1.87
+        "chgPct": 3.11
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,524.5",
-      "change": "+89.5",
-      "changePct": "+1.20%",
+      "value": "7,593",
+      "change": "+158",
+      "changePct": "+2.13%",
       "dir": "up",
       "_raw": {
-        "close": 7524.5,
+        "close": 7593,
         "prevClose": 7435,
-        "chgPct": 1.2
+        "chgPct": 2.13
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,089",
-      "change": "+862",
-      "changePct": "+1.68%",
+      "value": "52,092",
+      "change": "+865",
+      "changePct": "+1.69%",
       "dir": "up",
       "_raw": {
-        "close": 52089,
+        "close": 52092,
         "prevClose": 51227,
-        "chgPct": 1.68
+        "chgPct": 1.69
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "17.68",
-      "change": "-1.76",
-      "changePct": "-9.05%",
+      "value": "16.64",
+      "change": "-1.04",
+      "changePct": "-5.88%",
       "dir": "down",
       "_raw": {
-        "close": 17.68000030517578,
-        "prevClose": 19.440000534057617,
-        "chgPct": -9.05
+        "close": 16.639999389648438,
+        "prevClose": 17.68000030517578,
+        "chgPct": -5.88
       }
     }
   ],
@@ -76,40 +76,40 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,510.7원",
-      "change": "-6.68",
-      "changePct": "-0.44%",
+      "value": "1,513.7원",
+      "change": "-3.7",
+      "changePct": "-0.24%",
       "dir": "down",
       "_raw": {
-        "close": 1510.699951171875,
+        "close": 1513.6800537109375,
         "prevClose": 1517.3800048828125,
-        "chgPct": -0.44
+        "chgPct": -0.24
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$80.56",
-      "change": "-4.32",
-      "changePct": "-5.09%",
+      "value": "$80.38",
+      "change": "-4.5",
+      "changePct": "-5.30%",
       "dir": "down",
       "_raw": {
-        "close": 80.55999755859375,
+        "close": 80.37999725341797,
         "prevClose": 84.87999725341797,
-        "chgPct": -5.09
+        "chgPct": -5.3
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "99.46",
-      "change": "-0.29",
-      "changePct": "-0.29%",
+      "value": "99.53",
+      "change": "-0.22",
+      "changePct": "-0.22%",
       "dir": "down",
       "_raw": {
-        "close": 99.45999908447266,
+        "close": 99.52899932861328,
         "prevClose": 99.75,
-        "chgPct": -0.29
+        "chgPct": -0.22
       }
     }
   ],
@@ -117,47 +117,77 @@
     {
       "key": "kospi",
       "label": "코스피",
-      "value": "8,555.97",
-      "change": "+432.35",
-      "changePct": "+5.32%",
+      "value": "8,545.98",
+      "change": "+422.36",
+      "changePct": "+5.20%",
       "dir": "up",
       "_raw": {
-        "close": 8555.9697265625,
+        "close": 8545.98046875,
         "prevClose": 8123.6201171875,
-        "chgPct": 5.32
+        "chgPct": 5.2
       }
     },
     {
       "key": "kosdaq",
       "label": "코스닥",
-      "value": "1,030.77",
-      "change": "+1.72",
-      "changePct": "+0.17%",
+      "value": "1,034.03",
+      "change": "+4.98",
+      "changePct": "+0.48%",
       "dir": "up",
       "_raw": {
-        "close": 1030.77001953125,
+        "close": 1034.030029296875,
         "prevClose": 1029.050048828125,
-        "chgPct": 0.17
+        "chgPct": 0.48
       }
     }
   ],
   "candidates": [
     {
       "rank": 1,
+      "name": "후성",
+      "code": "093370",
+      "market": "KOSPI",
+      "price": 22400,
+      "score": 85.5,
+      "changePct": 17.83,
+      "rangePos": 0.75,
+      "volSurge": 5.07,
+      "gapPct": 0,
+      "aboveMA": true,
+      "nearHighPct": 11.72,
+      "breakout": true,
+      "value": 395124979200,
+      "valueText": "3,951억",
+      "sector": null,
+      "expRet": -0.24,
+      "p3": 21.8,
+      "p5": 15.3,
+      "p3High": 57,
+      "p5High": 43.2,
+      "p5in5": 69.2,
+      "avgDays5": 1.6,
+      "hitRate": 43.2,
+      "supplyLabel": "외+기 동반매수",
+      "dongban": true,
+      "target3": true,
+      "reason": "종가 상단 마감(강도 75%) · 거래량 평소 5.1배 · +17.83% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열 · 외+기 동반매수"
+    },
+    {
+      "rank": 2,
       "name": "대한항공",
       "code": "003490",
       "market": "KOSPI",
-      "price": 29500,
-      "score": 85.9,
-      "changePct": 10.9,
-      "rangePos": 0.53,
-      "volSurge": 5.14,
+      "price": 30000,
+      "score": 90.7,
+      "changePct": 12.78,
+      "rangePos": 0.67,
+      "volSurge": 6.03,
       "gapPct": 5.26,
       "aboveMA": true,
-      "nearHighPct": -0.84,
-      "breakout": false,
-      "value": 308370550500,
-      "valueText": "3,084억",
+      "nearHighPct": 0.84,
+      "breakout": true,
+      "value": 368227650000,
+      "valueText": "3,682억",
       "sector": null,
       "expRet": 0.05,
       "p3": 22.3,
@@ -170,7 +200,7 @@
       "supplyLabel": "수급 미확인",
       "dongban": false,
       "target3": true,
-      "reason": "종가 상단 마감(강도 53%) · 거래량 평소 5.1배 · +10.9% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 근접 · 정배열"
+      "reason": "종가 상단 마감(강도 67%) · 거래량 평소 6.0배 · +12.78% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열"
     }
   ],
   "marketContext": {
