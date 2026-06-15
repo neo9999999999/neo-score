@@ -641,7 +641,11 @@ const _perfScore=(r)=>{
   return s;
 };
 const _perfGrade=(r)=>{const s=_perfScore(r);return s>=2.5?'S':s>=0.5?'A':'B';};
-const _perfGradeMeta={S:{c:'#dc2626',l:'S',sub:'실현 +0.45%'},A:{c:'#2563eb',l:'A',sub:'-1.25%'},B:{c:'#8b95a1',l:'B',sub:'-2.67%'}};
+const _perfGradeMeta={
+  S:{c:'#dc2626',l:'S',sub:'최상위',stat:'실현 +0.45% · 승률 35%'},
+  A:{c:'#2563eb',l:'A',sub:'양호',stat:'실현 -1.25% · 승률 32%'},
+  B:{c:'#8b95a1',l:'B',sub:'주의',stat:'실현 -2.67% · 승률 29%'}
+};
 // 청산 추천 — 다차원 백테스트 (시장 × 거래대금) 기반 (best01 universe n=754)
 // 트레일+5% = 시초가+5%p 도달 즉익 / 미달 시 종가 매도 (분봉 검증 후 정확)
 const _exitRec=(amt,mkt)=>{
@@ -1221,7 +1225,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
 <span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}} title="6년 24,249건 OOS 백테스트로 수익률·승률 높은 조건 가중. 점수+수급+120신고+등락 종합">추천등급</span>
 <button onClick={()=>setSelGrade([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selGrade.length===0?_T.accent:_T.line),background:selGrade.length===0?_T.accent:_T.bg,color:selGrade.length===0?'#fff':_T.body,fontSize:12,fontWeight:selGrade.length===0?700:500,cursor:'pointer'}}>전체</button>
-{['S','A','B'].map(g=>{const on=selGrade.includes(g);const meta=_perfGradeMeta[g];return(<button key={g} title={'실현 평균 '+meta.sub} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?meta.c:_T.line),background:on?meta.c:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}>{g}<span style={{fontSize:10,fontWeight:500,opacity:0.8,marginLeft:3}}>{meta.sub}</span></button>);})}
+{['S','A','B'].map(g=>{const on=selGrade.includes(g);const meta=_perfGradeMeta[g];return(<button key={g} title={'추천등급 '+g+' · '+meta.stat} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?meta.c:_T.line),background:on?meta.c:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}><b>{g}</b><span style={{fontSize:11,fontWeight:500,opacity:0.85,marginLeft:4}}>{meta.sub}</span></button>);})}
 </div>
 {/* 수급 필터 — 멀티선택 On/off */}
 <div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
@@ -1463,7 +1467,7 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   const matchTitle=actual?`${rec.sub}\n실제 베스트: ${actual.best} (시초가${actual.open>=0?'+':''}${actual.open.toFixed(2)}% / 종가${actual.close>=0?'+':''}${actual.close.toFixed(2)}% / 트레일+5${actual.trail5>=0?'+':''}${actual.trail5.toFixed(2)}%)`:rec.sub;
   return(<span style={{fontSize:12,fontWeight:800,color:'#fff',background:match===true?'#10b981':match===false?'#dc2626':rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={matchTitle}>{rec.l}{matchIcon}</span>);
 })()}
-{(()=>{const pg=_perfGrade(r);const m=_perfGradeMeta[pg];return(<span title={'OOS 추천등급 '+pg+' · 실현 평균 '+m.sub} style={{fontSize:13,fontWeight:900,color:'#fff',background:m.c,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',flexShrink:0}}>{pg}</span>);})()}
+{(()=>{const pg=_perfGrade(r);const m=_perfGradeMeta[pg];return(<span title={'OOS 추천등급 '+pg+' ('+m.sub+') · '+m.stat} style={{fontSize:13,fontWeight:900,color:'#fff',background:m.c,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',flexShrink:0}}>{pg}</span>);})()}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:13,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:12,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
