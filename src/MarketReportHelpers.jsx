@@ -97,6 +97,7 @@ function SectorCard({ s, T }) {
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 800, color: T.text }}>{s.name}</div>
           <div style={{ fontSize: 12, color: b.c, fontWeight: 700, marginTop: 1 }}>{b.label}</div>
+          {(s.stocks || []).length > 0 && <div style={{ fontSize: 12, color: T.sub, marginTop: 3 }}>{(s.stocks || []).map(st => st.name).join(" · ")}</div>}
         </div>
         <span style={{ fontSize: 12, color: T.hint }}>{open ? "▲" : "▼"}</span>
       </button>
@@ -322,7 +323,7 @@ function ReportBody({ report, T }) {
 
       {/* 이번주 경제 일정 */}
       {report.weeklyCalendar && report.weeklyCalendar.length > 0 && (
-        <Section title="🗓️ 이번주 경제 일정" sub="일자별 주요 이벤트" T={T}>
+        <Section title="🗓️ 이번주 관전 포인트" sub="금리·환율·유가·미증시 체크 (LLM 활성화 시 일자별 발표 일정으로 확장)" T={T}>
           <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
             {report.weeklyCalendar.map((d, i) => {
               const imp = IMP[d.importance] || IMP.mid;
