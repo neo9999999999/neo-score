@@ -29,6 +29,7 @@ const OosHistoryTab = lazy(() => import("./OosHistoryHelpers.jsx").then(m => ({ 
 const _OosFallback = ({theme})=>(<div style={{padding:"40px 20px",textAlign:"center",color:theme==="dark"?"#8b949e":"#4e5968",fontSize:13}}>📚 OOS 히스토리 로딩 중... (8,408건)</div>);
 const HaseunghoonBacktestTab = lazy(() => import("./HaseunghoonBacktestHelpers.jsx").then(m => ({ default: m.HaseunghoonBacktestTab })));
 import { MarketReportTab } from "./MarketReportHelpers.jsx";
+import { HORIZONS } from "./data_horizons.js";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
 
@@ -1477,16 +1478,21 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
 {r._isLive?(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:15,fontWeight:800,color:'#f59e0b'}}>진행중</div><div style={{fontSize:11,color:_T.sub,fontWeight:600,marginTop:1}}>당일 +{r.ch}%</div></div>):(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:18,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div><div style={{fontSize:11,color:_resCol(r.r),fontWeight:700,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원 · {_resLbl(r.r)}</div></div>)}
 </div>
 {/* 2행: 기본 정보 — 폰트 키움 */}
-<div style={{display:'flex',gap:8,fontSize:12,color:_T.sub,fontWeight:600,flexWrap:'wrap',alignItems:'baseline'}}>
+<div style={{display:'flex',gap:8,fontSize:12,color:_T.sub,fontWeight:600,flexWrap:'wrap',alignItems:'baseline',marginBottom:6}}>
 <span><b style={{color:_T.body,fontSize:13}}>{r.mc}</b></span>
 <span style={{color:_T.mute}}>·</span>
 <span>📅 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.hint}}>{_showSingle?(mode==='leader'||mode==='best01'?'D+1시초':mode==='neo90'?'트레일':'익절'):'1차'} <b style={{color:tp1Reached?_T.up:_T.mute}}>{tp1Reached?'D+'+tp1dy+'일':((mode==='leader'||mode==='best01')?'대기':'미달')}</b></span>
-{!_showSingle&&<><span style={{color:_T.mute}}>·</span><span style={{color:_T.hint}}>2차 <b style={{color:tp2Reached?_T.up:_T.mute}}>{tp2Reached?(tp2dy?'D+'+tp2dy+'일':'도달'):'미달'}</b></span></>}
-{mode==='neo90'&&r._peak>0&&<><span style={{color:_T.mute}}>·</span><span style={{color:_T.hint}}>peak <b style={{color:_T.up}}>+{r._peak.toFixed(1)}%</b></span></>}
-{!r._isLive&&(()=>{const cmp=_compareExits(r.ohlc);if(cmp.open==null&&cmp.close==null&&cmp.trail==null)return null;const valid=[cmp.open,cmp.close,cmp.trail].filter(v=>v!=null);const best=valid.length?Math.max(...valid):null;const F=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(1);const St=v=>v!=null&&v===best?'★':'';return(<><span style={{color:_T.mute}}>·</span><span style={{color:_T.mute}}>청산 <b style={{color:cmp.open>=0?_T.up:_T.down}}>시{F(cmp.open)}{St(cmp.open)}</b> <b style={{color:cmp.close>=0?_T.up:_T.down}}>종{F(cmp.close)}{St(cmp.close)}</b> <b style={{color:cmp.trail>=0?_T.up:_T.down}}>트{F(cmp.trail)}{St(cmp.trail)}</b></span></>);})()}
 </div>
+{/* 다지표 종가매도 + 5%고가도달일 그리드 */}
+{(()=>{
+  const H=HORIZONS[r.n+'|'+(r.d?r.d.slice(2):'')];
+  const labels=['D+1','D+5','D+30','D+60','D+120','D+180'];
+  const cell=(l,v,bg,bd,vc)=>(<div key={l} style={{flex:'1 1 0',minWidth:50,textAlign:'center',padding:'5px 3px',borderRadius:7,background:bg,border:'1px solid '+bd}}><div style={{fontSize:10,color:_T.hint,fontWeight:600,letterSpacing:'-0.2px'}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:vc,letterSpacing:'-0.3px',marginTop:1}}>{v}</div></div>);
+  return(<div style={{display:'flex',gap:4,flexWrap:'wrap',alignItems:'stretch'}}>
+    {labels.map((l,j)=>{const v=H?H[j]:null;return cell(l, v==null?'—':(v>=0?'+':'')+v+'%', _T.bg, _T.line, v==null?_T.mute:v>=0?_T.up:_T.down);})}
+    {(()=>{const hi=H?H[6]:null;return cell('5%고가', hi?'D+'+hi:'미달', hi?'rgba(16,185,129,0.12)':_T.bg, hi?'rgba(16,185,129,0.35)':_T.line, hi?_T.green:_T.mute);})()}
+  </div>);
+})()}
 </div>);})}
 </div>
 {filtered.length>300&&(<div style={{padding:'12px',textAlign:'center',color:_T.mute,fontSize:13,borderTop:'1px solid '+_T.line,background:_T.linelt}}>상위 300건만 표시 · 전체 {filtered.length.toLocaleString()}건</div>)}
