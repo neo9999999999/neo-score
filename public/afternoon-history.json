@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-15T14:04:10+09:00",
-    "count": 1904,
+    "updatedAt": "2026-06-15T14:06:04+09:00",
+    "count": 1905,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-15",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "대한항공",
+          "code": "003490",
+          "score": 85.9,
+          "changePct": 10.9,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "neutral",
+        "topSectors": [
+          "반도체",
+          "AI·인터넷",
+          "2차전지"
+        ],
+        "issues": [
+          "국제 정세 모니터링",
+          "무역·관세 이슈",
+          "지표 자동 요약"
+        ]
+      },
+      "nq": 1.87,
+      "es": 1.2
+    },
     {
       "date": "2026-06-12",
       "picks": [

@@ -1,48 +1,48 @@
 {
   "date": "2026-06-15",
-  "generatedAt": "2026-06-15T01:36:26+09:00",
+  "generatedAt": "2026-06-15T14:06:04+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+0.67%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 후성, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 상승(+1.87%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 대한항공, 신고가 근접).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "29,662",
-      "change": "+197.25",
-      "changePct": "+0.67%",
+      "value": "30,215.75",
+      "change": "+553.75",
+      "changePct": "+1.87%",
       "dir": "up",
       "_raw": {
-        "close": 29662,
-        "prevClose": 29464.75,
-        "chgPct": 0.67
+        "close": 30215.75,
+        "prevClose": 29662,
+        "chgPct": 1.87
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,435",
-      "change": "+39",
-      "changePct": "+0.53%",
+      "value": "7,524.5",
+      "change": "+89.5",
+      "changePct": "+1.20%",
       "dir": "up",
       "_raw": {
-        "close": 7435,
-        "prevClose": 7396,
-        "chgPct": 0.53
+        "close": 7524.5,
+        "prevClose": 7435,
+        "chgPct": 1.2
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "51,605",
-      "change": "+730",
-      "changePct": "+1.43%",
+      "value": "52,089",
+      "change": "+862",
+      "changePct": "+1.68%",
       "dir": "up",
       "_raw": {
-        "close": 51605,
-        "prevClose": 50875,
-        "chgPct": 1.43
+        "close": 52089,
+        "prevClose": 51227,
+        "chgPct": 1.68
       }
     },
     {
@@ -76,40 +76,40 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,517.9원",
-      "change": "+0.51",
-      "changePct": "+0.03%",
-      "dir": "flat",
+      "value": "1,510.7원",
+      "change": "-6.68",
+      "changePct": "-0.44%",
+      "dir": "down",
       "_raw": {
-        "close": 1517.8900146484375,
+        "close": 1510.699951171875,
         "prevClose": 1517.3800048828125,
-        "chgPct": 0.03
+        "chgPct": -0.44
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$84.88",
-      "change": "-2.83",
-      "changePct": "-3.23%",
+      "value": "$80.56",
+      "change": "-4.32",
+      "changePct": "-5.09%",
       "dir": "down",
       "_raw": {
-        "close": 84.87999725341797,
-        "prevClose": 87.70999908447266,
-        "chgPct": -3.23
+        "close": 80.55999755859375,
+        "prevClose": 84.87999725341797,
+        "chgPct": -5.09
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "99.75",
-      "change": "-0.11",
-      "changePct": "-0.11%",
+      "value": "99.46",
+      "change": "-0.29",
+      "changePct": "-0.29%",
       "dir": "down",
       "_raw": {
-        "close": 99.75,
-        "prevClose": 99.86000061035156,
-        "chgPct": -0.11
+        "close": 99.45999908447266,
+        "prevClose": 99.75,
+        "chgPct": -0.29
       }
     }
   ],
@@ -117,93 +117,109 @@
     {
       "key": "kospi",
       "label": "코스피",
-      "value": "8,123.62",
-      "change": "+359.67",
-      "changePct": "+4.63%",
+      "value": "8,555.97",
+      "change": "+432.35",
+      "changePct": "+5.32%",
       "dir": "up",
       "_raw": {
-        "close": 8123.6201171875,
-        "prevClose": 7763.9501953125,
-        "chgPct": 4.63
+        "close": 8555.9697265625,
+        "prevClose": 8123.6201171875,
+        "chgPct": 5.32
       }
     },
     {
       "key": "kosdaq",
       "label": "코스닥",
-      "value": "1,029.05",
-      "change": "+32.12",
-      "changePct": "+3.22%",
+      "value": "1,030.77",
+      "change": "+1.72",
+      "changePct": "+0.17%",
       "dir": "up",
       "_raw": {
-        "close": 1029.050048828125,
-        "prevClose": 996.9299926757812,
-        "chgPct": 3.22
+        "close": 1030.77001953125,
+        "prevClose": 1029.050048828125,
+        "chgPct": 0.17
       }
     }
   ],
   "candidates": [
     {
       "rank": 1,
-      "name": "후성",
-      "code": "093370",
+      "name": "대한항공",
+      "code": "003490",
       "market": "KOSPI",
-      "price": 19010,
-      "score": 88.2,
-      "changePct": 20.55,
-      "rangePos": 0.7,
-      "volSurge": 6.73,
-      "gapPct": 5.33,
+      "price": 29500,
+      "score": 85.9,
+      "changePct": 10.9,
+      "rangePos": 0.53,
+      "volSurge": 5.14,
+      "gapPct": 5.26,
       "aboveMA": true,
-      "nearHighPct": 11.89,
-      "breakout": true,
-      "value": 339273275950,
-      "valueText": "3,393억",
+      "nearHighPct": -0.84,
+      "breakout": false,
+      "value": 308370550500,
+      "valueText": "3,084억",
       "sector": null,
-      "expRet": -0.46,
-      "p3": 23.9,
-      "p5": 18,
-      "p3High": 58.3,
-      "p5High": 47.2,
-      "hitRate": 41.4,
-      "supplyLabel": "외+기 동반매수",
-      "dongban": true,
+      "expRet": 0.05,
+      "p3": 22.3,
+      "p5": 14,
+      "p3High": 54.9,
+      "p5High": 37.5,
+      "p5in5": 65.4,
+      "avgDays5": 1.8,
+      "hitRate": 45.2,
+      "supplyLabel": "수급 미확인",
+      "dongban": false,
       "target3": true,
-      "reason": "종가 상단 마감(강도 70%) · 거래량 평소 6.7배 · +20.55% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열 · 외+기 동반매수"
+      "reason": "종가 상단 마감(강도 53%) · 거래량 평소 5.1배 · +10.9% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 근접 · 정배열"
     }
   ],
   "marketContext": {
-    "date": "2026-06-14",
+    "date": "2026-06-15",
     "sentiment": "neutral",
     "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
-    "summary": "유가·달러·금리 등 핵심 거시지표를 한 흐름으로 연결해 간밤 나스닥 반응과 오늘 국내증시 방향성을 예측하는 리포트입니다. 첫 자동 생성 전까지 표시되는 예시 데이터이며, 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 갱신됩니다.",
+    "summary": "간밤 나스닥은 +0.31%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 상승, 원/달러 하락 흐름을 종합하면 오늘 국내증시는 혼조·관망 출발이 예상됩니다.",
     "sectors": [
       {
         "name": "반도체",
+        "bias": "up"
+      },
+      {
+        "name": "AI·인터넷",
+        "bias": "up"
+      },
+      {
+        "name": "2차전지",
+        "bias": "neutral"
+      },
+      {
+        "name": "방산",
         "bias": "up"
       }
     ],
     "issues": [
       {
         "category": "지정학",
-        "title": "전쟁·국제 정세 (예시)"
+        "title": "국제 정세 모니터링"
       },
       {
         "category": "무역",
-        "title": "무역·관세 이슈 (예시)"
+        "title": "무역·관세 이슈"
       },
       {
         "category": "거시",
-        "title": "예시 데이터"
+        "title": "지표 자동 요약"
       }
     ]
   },
   "calibration": {
-    "n": 7294,
+    "n": 7297,
     "expRet": -0.18,
     "p3": 22.2,
     "p5": 15.2,
     "p3High": 55.8,
-    "p5High": 40.7,
+    "p5High": 40.8,
+    "p5in5": 67,
+    "avgDays5": 1.7,
     "hitRate": 43.5
   },
   "note": "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어 + 오늘 마켓리포트(섹터·이슈) 연동. 예상치는 과거 OOS 통계 기반 추정으로 보장값 아님. 투자 책임은 본인에게."
