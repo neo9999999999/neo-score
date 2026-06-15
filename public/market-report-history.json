@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-15T10:23:34+09:00",
+    "updatedAt": "2026-06-15T11:08:35+09:00",
     "count": 109,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,9 +48,9 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$80.90",
-          "change": "-3.98",
-          "changePct": "-4.69%",
+          "value": "$80.88",
+          "change": "-4",
+          "changePct": "-4.71%",
           "dir": "down"
         },
         {
@@ -58,15 +58,15 @@
           "label": "달러인덱스",
           "value": "99.57",
           "change": "-0.18",
-          "changePct": "-0.18%",
+          "changePct": "-0.19%",
           "dir": "down"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,511.3원",
-          "change": "-6.1",
-          "changePct": "-0.40%",
+          "value": "1,512.4원",
+          "change": "-5.02",
+          "changePct": "-0.33%",
           "dir": "down"
         },
         {
