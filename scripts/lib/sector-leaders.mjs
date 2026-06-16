@@ -58,18 +58,19 @@ export async function buildSectorLeaders(stocksPath, { dateStr = null, topSector
   for (const [name, arr] of bySector) {
     arr.sort((a, b) => strengthOf(b) - strengthOf(a));
     const top = arr.slice(0, perSector);
-    const meanChg = arr.reduce((s, x) => s + x.changePct, 0) / arr.length;
+    // bias·평균은 '실제 표시하는 주도주(top)' 기준으로 계산 (약한 비주도 종목에 희석되지 않게)
+    const meanChg = top.reduce((s, x) => s + x.changePct, 0) / top.length;
     const secStrength = top.reduce((s, x) => s + strengthOf(x), 0) / top.length;
-    const strongCnt = arr.filter(x => x.changePct > 0 && x.aboveMA).length;
+    const strongCnt = top.filter(x => x.changePct > 0 && x.aboveMA).length;
     const bias = meanChg > 0.4 ? "up" : meanChg < -0.4 ? "down" : "neutral";
-    sectors.push({ name, _rank: secStrength + strongCnt * 2, bias, meanChg: +meanChg.toFixed(2), strongCnt, total: arr.length, top });
+    sectors.push({ name, _rank: secStrength + strongCnt * 2, bias, meanChg: +meanChg.toFixed(2), strongCnt, total: top.length, top });
   }
   sectors.sort((a, b) => b._rank - a._rank);
 
   return sectors.slice(0, topSectors).map(s => ({
     name: s.name,
     bias: s.bias,
-    reason: `전일 평균 ${s.meanChg >= 0 ? "+" : ""}${s.meanChg}% · 구성종목 ${s.strongCnt}/${s.total}개 강세 — 실거래 데이터 기준 전일 상위 섹터.`,
+    reason: `전일 주도주 평균 ${s.meanChg >= 0 ? "+" : ""}${s.meanChg}% · ${s.strongCnt}/${s.total}개 강세 — 실거래 데이터 기준 전일 상위 섹터.`,
     stocks: s.top.map(m => ({ name: m.name, code: m.code, market: m.market, reason: stockReason(m), changePct: m.changePct, value: m.value, breakout: m.breakout, nearHigh: m.nearHigh, aligned: m.aligned })),
     dataDriven: true,
   }));
