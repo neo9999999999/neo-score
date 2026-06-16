@@ -193,6 +193,77 @@ function Section({ title, sub, children, T }) {
   );
 }
 
+const PROB = {
+  high: { c: "#ef4444", bg: "rgba(239,68,68,0.12)", label: "고위험" },
+  mid: { c: "#d97706", bg: "rgba(217,119,6,0.12)", label: "중위험" },
+  low: { c: "#8b95a1", bg: "rgba(139,149,161,0.12)", label: "저위험" },
+};
+
+function RiskFactors({ risks, T }) {
+  if (!risks || !risks.length) return null;
+  return (
+    <Section title="⚠️ 리스크 요인" sub="이 전망을 뒤집을 수 있는 조건 · 발생 확률" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {risks.map((r, i) => {
+          const p = PROB[r.probability] || PROB.low;
+          return (
+            <div key={i} style={{ background: T.card, border: "1px solid " + T.border, borderLeft: "3px solid " + p.c, borderRadius: 10, padding: "10px 13px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 7, marginBottom: r.impact ? 5 : 0, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 10.5, fontWeight: 800, color: p.c, background: p.bg, padding: "2px 7px", borderRadius: 8, flex: "0 0 auto", marginTop: 1 }}>{p.label}</span>
+                <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text, flex: 1 }}>{r.trigger}</span>
+              </div>
+              {r.impact && <div style={{ fontSize: 12.5, color: T.sub, lineHeight: 1.6 }}>↳ {r.impact}</div>}
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
+function Strategy({ strategy, T }) {
+  if (!strategy) return null;
+  const items = [
+    { emoji: "⚡", title: "당일 단기 전략", body: strategy.dayTrading },
+    { emoji: "📐", title: "스윙·중기 방향 (1~2주)", body: strategy.swing },
+    { emoji: "🔄", title: "섹터 로테이션", body: strategy.sectorRotation },
+  ].filter(x => x.body);
+  if (!items.length) return null;
+  return (
+    <Section title="💡 전략 제안" sub="당일 단기 · 스윙 · 섹터 로테이션" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "12px 14px" }}>
+            <div style={{ fontSize: 13.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>{item.emoji} {item.title}</div>
+            <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.7 }}>{item.body}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function KeyLevels({ levels, T }) {
+  if (!levels || !levels.length) return null;
+  return (
+    <Section title="📏 핵심 가격대" sub="지지선·저항선 및 오늘 주목 레벨" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+        {levels.map((lv, i) => (
+          <div key={i} style={{ padding: "10px 14px", borderTop: i ? "1px solid " + T.border : "none" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: T.text, flex: "0 0 72px" }}>{lv.asset}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: DN_C }}>▼ {lv.support}</span>
+              <span style={{ fontSize: 11, color: T.hint }}>|</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: UP_C }}>▲ {lv.resistance}</span>
+            </div>
+            {lv.note && <div style={{ fontSize: 12, color: T.hint, marginTop: 4, paddingLeft: 82, lineHeight: 1.55 }}>{lv.note}</div>}
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 function IssueRow({ it, T }) {
   return (
     <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 12, padding: "11px 13px" }}>
@@ -360,6 +431,15 @@ function ReportBody({ report, T, live }) {
           </div>
         </Section>
       )}
+
+      {/* 전략 제안 */}
+      {report.strategy && <Strategy strategy={report.strategy} T={T} />}
+
+      {/* 리스크 요인 */}
+      {report.riskFactors && report.riskFactors.length > 0 && <RiskFactors risks={report.riskFactors} T={T} />}
+
+      {/* 핵심 가격대 */}
+      {report.keyLevels && report.keyLevels.length > 0 && <KeyLevels levels={report.keyLevels} T={T} />}
 
       {/* 수혜 섹터 · 종목 */}
       {report.sectors && report.sectors.length > 0 && (

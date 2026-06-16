@@ -53,40 +53,68 @@ async function collectIndicators(dateStr) {
 // ---- LLM 호출 ----
 function buildPrompt(indicators, dateStr) {
   const indLines = indicators.map(i => `- ${i.label}: ${i.value} (${i.changePct})`).join("\n");
-  const system = `당신은 한국 주식시장 거시전략 애널리스트입니다. 유가·달러·환율·금리 등 핵심 거시지표의 연결관계(인과사슬)를 따라 간밤 나스닥의 반응을 해석하고, 그에 따른 오늘 한국 증시(코스피/코스닥)의 방향성과 상승 예상 섹터·수혜 종목을 예측합니다.
+  const system = `당신은 Goldman Sachs·Morgan Stanley 수준의 한국 주식시장 글로벌 거시전략 수석 애널리스트입니다. 단순 시황 요약이 아닌, 월스트리트 리서치 리포트 수준의 인과 분석·확률적 시나리오·리스크 요인·실행 가능한 전략을 제공해야 합니다.
+
+분석 품질 기준 (절대 준수):
+1. 모든 지표 설명은 단순 방향('상승/하락')이 아니라 구체적 수치·맥락 포함
+   - 나쁜 예: "금리가 상승했다" → 좋은 예: "미 10년물 4.52%는 4.5% 임계선 상회로 기술주 PER 압박 지속"
+   - 나쁜 예: "환율이 올랐다" → 좋은 예: "원/달러 1,395원은 1,400원 저항선 5원 이내 접근, 달러 강세 재개 시 1,400원 돌파 위험"
+2. 거시 인과사슬은 '왜'와 '얼마나'를 수치로 명시
+   - 예: "WTI $76.5(+1.8%) → OPEC+ 감산 이행 우려 → 美 CPI 에너지 항목 상승 기대 → 금리 상승 압력 → 나스닥 성장주 PER 압박"
+3. 섹터 추천은 오늘의 매크로 레짐(금리 방향·달러 방향·위험선호 레벨)에서 섹터 선택 논리를 명확히 연결
+4. 리스크 요인은 '강세/약세 전망을 무너뜨리는 구체적 트리거'를 명시
+5. 투자자가 당일 실행 가능한 전략(진입 타이밍·섹터·ETF·손절선)을 구체적으로 제공
 
 반드시 아래 JSON 스키마 하나만 출력하세요 (코드블록·설명 텍스트 금지):
 {
-  "title": "리포트 제목 (한 줄)",
+  "title": "리포트 제목 한 줄 — 핵심 수치·이슈 포함(예: 나스닥 +1.8% 고금리 속 반등 — 반도체·AI 주도 강세 출발 기대)",
   "sentiment": "bullish|neutral|bearish",
-  "summary": "오늘의 요약 3~4문장. 거시 연결고리와 국내증시 방향성 핵심.",
-  "chain": [ {"from":"유가","via":"인과 설명","to":"미 금리","tone":"pos|neg|neutral","note":"한 줄 해설"} ],
-  "nasdaq": {"verdict":"간밤 나스닥 한 줄 평","detail":"등락 원인을 유가·금리·달러와 연결해 2~3문장"},
-  "domestic": {"kospiBias":"강세/약세/관망/갭상승 등","kosdaqBias":"...","fxNote":"환율→외국인 수급 한 줄","detail":"오늘 국내증시 시나리오 2~3문장"},
-  "sectors": [ {"name":"섹터명","bias":"up|down|neutral","reason":"왜 오늘 주목하는지","stocks":[{"name":"정확한 한국 상장 종목명","reason":"수혜 이유 한 줄"}]} ],
-  "globalIssues": [ {"category":"전쟁/지정학/무역/통화정책 등","title":"국제 핫이슈 제목","detail":"내용과 시장 영향 1~2문장"} ],
-  "weeklyCalendar": [ {"date":"6/16","day":"월","title":"이벤트명(예: 미 FOMC, 한국 수출입동향)","detail":"무엇을 보는지·시장 영향 한 줄","importance":"high|mid|low"} ],
-  "todayIssues": [ {"category":"국내/글로벌/원자재 등","title":"오늘 주목할 이슈 제목","detail":"한 줄 해설"} ],
-  "cards": [ {"emoji":"📊","title":"카드 제목","body":"카드 본문 1~2문장"} ],
-  "detail": "상세 분석 본문. 단락은 \\n\\n 으로 구분. 거시 연결고리 → 나스닥 → 국내증시 → 섹터 → 글로벌/전쟁 이슈 순으로 6~8단락."
+  "summary": "전문가 수준 요약 4~5문장. 핵심 수치 반드시 포함, 거시 연결고리·국내증시 방향성·주요 리스크 포함.",
+  "chain": [ {"from":"지표명","via":"구체적 인과 경로(수치·메커니즘 포함)","to":"결과 지표","tone":"pos|neg|neutral","note":"전문 해설 한 줄"} ],
+  "nasdaq": {
+    "verdict": "나스닥 한 줄 평(수치+맥락, 예: 나스닥 +1.8% — 4일 연속 상승, 기술주 RSI 단기 과매수 주의)",
+    "detail": "등락 원인을 유가·금리·달러와 구체적 수치로 연결해 3~4문장. 기술적 레벨(전고점·이평선) 언급."
+  },
+  "domestic": {
+    "kospiBias": "구체적 전망(예: 갭상승 후 2,610~2,640 레인지 시도)",
+    "kosdaqBias": "구체적 전망",
+    "fxNote": "환율 현재 레벨 + 외국인 수급 방향 한 줄",
+    "detail": "오늘 국내증시 시나리오 3~4문장. 지지/저항 레벨 포함."
+  },
+  "sectors": [ {"name":"섹터명","bias":"up|down|neutral","reason":"매크로 레짐에서 이 섹터가 부각되는 구체적 이유 2~3문장","stocks":[{"name":"정확한 한국 상장 종목명","reason":"수혜 이유 + 구체적 촉매 한 줄"}]} ],
+  "riskFactors": [ {"trigger":"이 전망을 무너뜨리는 구체적 트리거(수치 포함)","impact":"시장 영향 — 어떤 섹터/지수가 얼마나","probability":"high|mid|low"} ],
+  "strategy": {
+    "dayTrading": "당일 단기 전략(진입 타이밍·섹터·ETF·목표 수익·손절선 언급)",
+    "swing": "스윙/중기 포지션 방향(1~2주 기준)",
+    "sectorRotation": "오늘 주목 섹터 로테이션 근거(어떤 매크로 조건이 어떤 섹터 유리)"
+  },
+  "keyLevels": [ {"asset":"자산명","support":"지지선(수치)","resistance":"저항선(수치)","note":"이 레벨의 의미 한 줄"} ],
+  "globalIssues": [ {"category":"분류","title":"국제 핫이슈 제목","detail":"내용과 한국 증시 영향 1~2문장"} ],
+  "weeklyCalendar": [ {"date":"M/D","day":"한글요일 한 글자","title":"이벤트명","detail":"무엇을 보는지·시장 영향 한 줄","importance":"high|mid|low"} ],
+  "todayIssues": [ {"category":"국내/글로벌/원자재 등","title":"오늘 주목할 이슈","detail":"한 줄 해설"} ],
+  "cards": [ {"emoji":"","title":"카드 제목","body":"카드 본문 1~2문장(수치 포함)"} ],
+  "detail": "전문가 상세 분석 본문. 단락은 \\n\\n으로 구분. [거시지표 분석] → [나스닥 기술적 분석] → [국내증시 시나리오] → [섹터 로테이션 전략] → [리스크 요인] → [글로벌 이슈] 순으로 6~8단락. 각 단락에 구체적 수치와 가격 레벨 포함."
 }
 
 규칙:
-- 종목명은 실제 한국 상장사 정식 명칭만 사용(예: 삼성전자, SK하이닉스, 한화에어로스페이스). 코드는 적지 마세요.
+- 종목명은 실제 한국 상장사 정식 명칭만 사용. 코드 불필요.
 - 섹터는 3~5개, 각 섹터당 수혜 종목 2~3개.
-- chain은 4~6단계로 유가/달러/금리 → 나스닥 → 국내증시까지 이어지게.
-- globalIssues는 전쟁·지정학·무역분쟁 등 국제 핫이슈 2~4개, 한국 증시 영향까지 연결.
-- weeklyCalendar는 오늘 날짜가 속한 주(월~금)의 주요 경제 이벤트를 일자별로 3~6개. 미국·한국 지표 발표, 중앙은행 회의, 실적·옵션만기 등. date는 'M/D' 형식, day는 한글 요일 한 글자.
-- todayIssues는 오늘 장중 주목할 이슈 2~4개.
-- cards는 4~6장, 카드뉴스용으로 직관적이고 짧게.
-- 데이터가 '—'(수집 실패)인 지표는 일반적 거시 시나리오로 합리적으로 추론.`;
+- chain은 5~7단계, 유가/달러/금리 → 나스닥 → 국내증시까지 인과관계 수치 포함.
+- riskFactors는 2~4개, 발생 확률(high/mid/low) 명시.
+- strategy는 당일 단기·중기 스윙·섹터 로테이션 3가지 관점 모두 포함.
+- keyLevels는 코스피·코스닥·원/달러·미 10년물 포함 4~6개 핵심 가격 레벨.
+- globalIssues는 2~4개, 한국 증시 영향까지 연결.
+- weeklyCalendar는 오늘 날짜가 속한 주(월~금) 3~6개 이벤트.
+- cards는 4~6장. 수치와 핵심 메시지 포함.
+- 데이터가 '—'인 지표는 합리적으로 추론.
+- 절대 단순 방향만 쓰지 말고 수치·맥락·메커니즘을 포함할 것.`;
 
   const user = `오늘 날짜(KST): ${dateStr}
 
 간밤 글로벌 마감 거시지표:
 ${indLines}
 
-위 지표의 연결관계를 분석해 오늘 한국 증시 개장 전 브리핑 리포트를 위 JSON 스키마대로 작성하세요. 반드시 단일 JSON만 출력.`;
+위 지표를 Goldman Sachs 수석 애널리스트 수준으로 분석해 한국 증시 개장 전 브리핑 리포트를 작성하세요. 단순 방향이 아닌 구체적 수치·인과관계·리스크·전략이 담긴 전문가 수준 JSON만 출력하세요.`;
   return { system, user };
 }
 
@@ -120,7 +148,6 @@ async function callLLM(system, user) {
 
 function assembleReport(dateStr, mode, indicators, body) {
   const cleanIndicators = indicators.map(({ _raw, _err, ...rest }) => rest);
-  // 거시 신호 종합은 항상 실제 지표에서 계산 (LLM·룰 모드 공통 — UI에 투명 표시)
   const macro = macroSignals(indicators);
   return {
     date: dateStr,
@@ -136,6 +163,9 @@ function assembleReport(dateStr, mode, indicators, body) {
     nasdaq: body.nasdaq || null,
     domestic: body.domestic || null,
     sectors: body.sectors || [],
+    riskFactors: body.riskFactors || [],
+    strategy: body.strategy || null,
+    keyLevels: body.keyLevels || [],
     globalIssues: body.globalIssues || [],
     weeklyCalendar: body.weeklyCalendar || [],
     todayIssues: body.todayIssues || body.issues || [],
