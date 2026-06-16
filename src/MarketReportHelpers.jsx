@@ -592,11 +592,15 @@ function OpenPicks({ report, T }) {
   );
 }
 
-// 종가 브리핑 — 종가베팅(익일) 추천종목 TOP 3 + 시장 요약 (오후 리포트 기반)
+// 종가 브리핑 — 미 선물·거시지표·국내지수·뉴스이슈·섹터 + 종가베팅 추천 (오후+아침 리포트 종합)
 function ClosingBriefing({ T }) {
-  const [rep, setRep] = useState(null);
+  const [rep, setRep] = useState(null);   // 오후 리포트(미선물·매크로·후보)
+  const [mkt, setMkt] = useState(null);   // 아침 마켓리포트(뉴스·이슈 상세)
   const [loading, setLoading] = useState(true);
-  useEffect(() => { (async () => { setRep(await fetchFirst(AFT_SOURCES.map(f => f()))); setLoading(false); })(); }, []);
+  useEffect(() => { (async () => {
+    const [r, m] = await Promise.all([fetchFirst(AFT_SOURCES.map(f => f())), fetchFirst(REPORT_SOURCES.map(f => f()))]);
+    setRep(r); setMkt(m); setLoading(false);
+  })(); }, []);
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>종가 브리핑 불러오는 중…</div>;
   if (!rep || !rep.candidates) return (
     <div style={{ padding: 24, textAlign: "center", color: T.sub, fontSize: 13.5, lineHeight: 1.7 }}>
@@ -605,12 +609,18 @@ function ClosingBriefing({ T }) {
   );
   const bias = SENT[rep.marketBias] || SENT.neutral;
   const picks = (rep.candidates || []).slice(0, 3);
+  const mc = rep.marketContext || {};
+  // 뉴스·이슈: 아침 리포트의 상세(globalIssues/todayIssues, detail 포함) 우선, 없으면 오후 marketContext.issues(제목만)
+  const globalIssues = (mkt && mkt.globalIssues && mkt.globalIssues.length) ? mkt.globalIssues : [];
+  const todayIssues = (mkt && (mkt.todayIssues || mkt.issues) || []);
+  const fallbackIssues = (!globalIssues.length && !todayIssues.length) ? (mc.issues || []) : [];
+  const mcSectors = mc.sectors || [];
   return (
     <div style={{ paddingBottom: 20 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
           <div style={{ fontSize: 12, color: T.hint, fontWeight: 600 }}>{rep.date} 15:00 KST · 종가 브리핑</div>
-          <h2 style={{ fontSize: 18, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px" }}>오늘 마감 정리 · 종가베팅 추천</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px" }}>오늘 마감 정리 · 미 선물 · 뉴스 이슈 · 종가베팅</h2>
         </div>
         <span style={{ fontSize: 12.5, fontWeight: 800, color: bias.c, background: bias.bg, padding: "5px 11px", borderRadius: 20 }}>{bias.emoji} {bias.label}</span>
       </div>
@@ -620,6 +630,60 @@ function ClosingBriefing({ T }) {
           <div style={{ fontSize: 13, fontWeight: 800, color: bias.c, marginBottom: 7 }}>📋 종가 시장 요약</div>
           <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
         </div>
+      )}
+
+      {/* 미 선물 · 변동성 */}
+      {(rep.futures || []).length > 0 && (
+        <Section title="🇺🇸 미 선물 · 변동성" sub="장 마감 시점 미국 지수선물 — 익일 갭 방향의 1차 단서" T={T}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8 }}>
+            {rep.futures.map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+          </div>
+        </Section>
+      )}
+
+      {/* 금리 · 환율 · 유가 · 국내지수 */}
+      {([...(rep.macro || []), ...(rep.indices || [])].length > 0) && (
+        <Section title="금리 · 환율 · 유가 · 국내지수" sub="익일 외국인 수급·성장주 밸류에이션에 직결되는 거시 변수" T={T}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 8 }}>
+            {[...(rep.macro || []), ...(rep.indices || [])].map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+          </div>
+        </Section>
+      )}
+
+      {/* 글로벌·전쟁 뉴스 이슈 (아침 리포트 상세) */}
+      {globalIssues.length > 0 && (
+        <Section title="🌍 글로벌·전쟁 뉴스 이슈" sub="오늘 마켓리포트 연동 · 국제 정세 · 무역 · 지정학" T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+          </div>
+        </Section>
+      )}
+
+      {/* 국내 당일 뉴스 이슈 */}
+      {todayIssues.length > 0 && (
+        <Section title="📰 국내 당일 뉴스 이슈" sub="장중 주목 이슈 · 거시 지표 요약" T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+          </div>
+        </Section>
+      )}
+
+      {/* 아침 리포트 미연동 시 폴백(제목만) */}
+      {fallbackIssues.length > 0 && (
+        <Section title="📰 오늘 주요 이슈" sub="마켓리포트 연동 이슈" T={T}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {fallbackIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+          </div>
+        </Section>
+      )}
+
+      {/* 마켓리포트 연동 섹터 */}
+      {mcSectors.length > 0 && (
+        <Section title="🎯 오늘 주도 섹터 (마켓리포트 연동)" sub="아침 리포트가 꼽은 주도 섹터 — 종가베팅 종목과 교차 확인" T={T}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {mcSectors.map((s, i) => <SectorChip key={i} name={s.name} T={T} size="lg" />)}
+          </div>
+        </Section>
       )}
 
       <Section title={"🔥 종가베팅 추천종목 TOP " + picks.length} sub="장 마감 무렵 매수 → 익일 청산 전략 · 거래대금·종가강도·정배열·OOS 확률 상위" T={T}>
