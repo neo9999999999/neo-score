@@ -25,6 +25,9 @@ import {
   kstIso, MARKETS, KOSPI_SYMBOL, fetchYahooSeries, closesAsOf, makeIndicator,
   loadStockMap, attachCodes, ruleBasedBody, sentToSign,
 } from "./lib/report-core.mjs";
+import { buildSectorLeadersFromData } from "./lib/sector-leaders.mjs";
+import { fetchYahooOHLCV, pMap } from "./lib/stock-core.mjs";
+import { SECTOR_MAP } from "./lib/sector-map.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -66,6 +69,24 @@ async function main() {
 
   const stockMap = await loadStockMap(STOCKS_PATH);
 
+  // 2b) 섹터 주도주 주가 사전 수집 (아침 추천주 OOS용)
+  const sectorSymbols = [];
+  const seenSym = new Set();
+  for (const sec of SECTOR_MAP) {
+    for (const nm of sec.stocks) {
+      const info = stockMap.get(nm);
+      if (!info) continue;
+      const sym = info.code + (info.market === "KOSDAQ" ? ".KQ" : ".KS");
+      if (!seenSym.has(sym)) { seenSym.add(sym); sectorSymbols.push(sym); }
+    }
+  }
+  const sectorSeriesMap = new Map();
+  console.log(`[backfill] 섹터 주가 수집 중… ${sectorSymbols.length}종목`);
+  await pMap(sectorSymbols.map(s => ({ symbol: s })), async (e) => {
+    try { const s = await fetchYahooOHLCV(e.symbol, "2y"); if (s && s.length >= 25) sectorSeriesMap.set(e.symbol, s); } catch {}
+  }, 8);
+  console.log(`[backfill] 섹터 주가 수집 완료: ${sectorSeriesMap.size}/${sectorSymbols.length}`);
+
   // 2) 일자별 OOS 리포트 + 평가
   const index = [];
   for (let i = 0; i < kospiDates.length; i++) {
@@ -93,11 +114,33 @@ async function main() {
 
     await writeFile(join(REPORTS_DIR, d + ".json"), JSON.stringify(report, null, 2) + "\n", "utf8");
 
+    // 아침 추천주 OOS: 데이터 기반 섹터 주도주 상위 3종목 → 익일 고가/종가 수익률
+    let morningPicks;
+    try {
+      const leaders = buildSectorLeadersFromData(sectorSeriesMap, stockMap, d, { topSectors: 3, perSector: 1 });
+      const mp = [];
+      for (const sec of (leaders || [])) {
+        const top = (sec.stocks || [])[0];
+        if (!top || !top.symbol || top._si == null) continue;
+        const s = sectorSeriesMap.get(top.symbol);
+        if (!s) continue;
+        const si = top._si;
+        if (si + 1 >= s.length) continue;
+        const base = s[si].close, next = s[si + 1];
+        if (!base || !next || !isFinite(next.close)) continue;
+        const nextRet = +((next.close - base) / base * 100).toFixed(2);
+        const nextHigh = +((next.high - base) / base * 100).toFixed(2);
+        mp.push({ name: top.name, code: top.code, sector: sec.name, changePct: top.changePct, nextRet, nextHigh, hit3High: nextHigh >= 3 });
+      }
+      if (mp.length) morningPicks = mp;
+    } catch {}
+
     index.push({
       date: d, sentiment: report.sentiment, title: report.title, summary: report.summary,
       kospiBias: report.domestic?.kospiBias || "", indicators: report.indicators,
       topSectors: report.sectors.slice(0, 3).map(s => ({ name: s.name, bias: s.bias })),
       source: "oos", oos: report.oos,
+      ...(morningPicks ? { morningPicks } : {}),
     });
   }
 
@@ -120,6 +163,24 @@ async function main() {
     avgKospiOnNeutral: avg(neut),
     note: "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외.",
   };
+
+  // 아침 추천주 OOS 집계
+  const mAll = index.flatMap(r => r.morningPicks || []);
+  if (mAll.length) {
+    const hit3H = mAll.filter(p => p.hit3High).length;
+    const upCnt = mAll.filter(p => p.nextRet > 0).length;
+    const avgRet = +(mAll.reduce((s, p) => s + p.nextRet, 0) / mAll.length).toFixed(2);
+    analysis.morningAnalysis = {
+      range: { start: START, end: index[0]?.date || START },
+      tradedDays: index.filter(r => r.morningPicks?.length).length,
+      totalPicks: mAll.length,
+      hit3HighRate: +((hit3H / mAll.length) * 100).toFixed(1),
+      upRate: +((upCnt / mAll.length) * 100).toFixed(1),
+      avgNextRet: avgRet,
+      note: "데이터 기반 섹터 주도주 Top3(아침 추천주) — 당일 종가 기준 다음 거래일 고가 +3% 도달률 및 익일 종가 평균 수익률",
+    };
+    console.log(`[backfill] 아침 추천주 OOS: ${mAll.length}건, 고가3%도달 ${analysis.morningAnalysis.hit3HighRate}%, 익일평균 ${avgRet}%`);
+  }
 
   index.sort((a, b) => b.date.localeCompare(a.date));
   const hist = { meta: { updatedAt: kstIso(), count: index.length, backfilledFrom: START }, analysis, reports: index };

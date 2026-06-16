@@ -182,6 +182,23 @@ async function appendHistory(report) {
   let hist = { meta: {}, analysis: null, reports: [] };
   try { hist = JSON.parse(await readFile(HIST, "utf8")); } catch { /* 신규 */ }
   if (!Array.isArray(hist.reports)) hist.reports = [];
+  // 아침 추천주: 데이터 기반 섹터에서 상위 3종목 저장 (익일 결과는 백필이 채운다)
+  let morningPicks;
+  if (report.sectorsSource === "data") {
+    const seen = new Set();
+    const flat = [];
+    for (const s of (report.sectors || [])) {
+      for (const st of (s.stocks || [])) {
+        if (!st.name || seen.has(st.name)) continue;
+        seen.add(st.name);
+        const chg = typeof st.changePct === "number" ? st.changePct : 0;
+        flat.push({ name: st.name, code: st.code, sector: s.name, changePct: chg, _str: chg + (st.breakout ? 12 : st.nearHigh ? 6 : 0) + (st.aligned ? 6 : 0) });
+      }
+    }
+    flat.sort((a, b) => b._str - a._str);
+    const picks = flat.slice(0, 3).map(({ _str, ...rest }) => rest);
+    if (picks.length) morningPicks = picks;
+  }
   const entry = {
     date: report.date,
     sentiment: report.sentiment,
@@ -193,6 +210,7 @@ async function appendHistory(report) {
     source: report.source,
     // oos(실제 결과 검증)는 백필 스크립트가 계산해 채운다. 당일 생성 시엔 미정.
     oos: (hist.reports.find(r => r.date === report.date) || {}).oos || null,
+    ...(morningPicks ? { morningPicks } : {}),
   };
   hist.reports = hist.reports.filter(r => r.date !== report.date);
   hist.reports.push(entry);

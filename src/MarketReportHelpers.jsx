@@ -901,10 +901,79 @@ function DailySectorTimeline({ reports, T, onOpen }) {
   );
 }
 
+function CombinedOosSummary({ mktHist, aftHist, T }) {
+  const ma = mktHist?.analysis;
+  const aa = aftHist?.analysis;
+  const moa = ma?.morningAnalysis;
+  if (!ma && !aa) return null;
+  const cell = (label, val, c) => (
+    <div style={{ flex: "1 1 80px", background: T.cardAlt, borderRadius: 9, padding: "9px 11px", textAlign: "center" }}>
+      <div style={{ fontSize: 10.5, color: T.hint, fontWeight: 600, marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 800, color: c || T.text }}>{val ?? "—"}</div>
+    </div>
+  );
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}>
+      <div style={{ padding: "12px 16px 10px", background: "linear-gradient(135deg, rgba(234,179,8,0.14), transparent)", borderBottom: "1px solid " + T.border }}>
+        <div style={{ fontSize: 14.5, fontWeight: 900, color: T.text }}>📈 OOS 종합 성과 검증</div>
+        <div style={{ fontSize: 11.5, color: T.hint, marginTop: 2 }}>아침 브리핑 방향·추천주 + 종가 브리핑 종목 — 과거 실제 결과 기준</div>
+      </div>
+      <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {/* 아침 브리핑 방향 OOS */}
+        {ma && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🌅 아침 브리핑 — 코스피 방향 적중률</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("방향 적중률", ma.hitRate != null ? ma.hitRate + "%" : null, (ma.hitRate || 0) >= 55 ? UP_C : "#d97706")}
+              {cell("강세일 KOSPI", ma.avgKospiOnBullish != null ? (ma.avgKospiOnBullish >= 0 ? "+" : "") + ma.avgKospiOnBullish + "%" : null, (ma.avgKospiOnBullish || 0) >= 0 ? UP_C : DN_C)}
+              {cell("약세일 KOSPI", ma.avgKospiOnBearish != null ? (ma.avgKospiOnBearish >= 0 ? "+" : "") + ma.avgKospiOnBearish + "%" : null, (ma.avgKospiOnBearish || 0) >= 0 ? UP_C : DN_C)}
+              {cell("중립일 KOSPI", ma.avgKospiOnNeutral != null ? (ma.avgKospiOnNeutral >= 0 ? "+" : "") + ma.avgKospiOnNeutral + "%" : null)}
+            </div>
+          </div>
+        )}
+        {/* 아침 추천주 OOS (백필 후 생성) */}
+        {moa && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🌅 아침 추천주 OOS ({moa.tradedDays}일 · {moa.totalPicks}건)</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("익일 고가 3% 도달", moa.hit3HighRate != null ? moa.hit3HighRate + "%" : null, (moa.hit3HighRate || 0) >= 40 ? UP_C : "#d97706")}
+              {cell("익일 상승(>0%)", moa.upRate != null ? moa.upRate + "%" : null, (moa.upRate || 0) >= 50 ? UP_C : "#d97706")}
+              {cell("익일 종가 평균", moa.avgNextRet != null ? (moa.avgNextRet >= 0 ? "+" : "") + moa.avgNextRet + "%" : null, (moa.avgNextRet || 0) >= 0 ? UP_C : DN_C)}
+            </div>
+          </div>
+        )}
+        {/* 종가 브리핑 추천주 OOS */}
+        {aa && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🔥 종가 브리핑 추천주 OOS ({aa.tradedDays}일 · {aa.totalPicks}건)</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("익일 고가 3% 도달", aa.hit3HighRate != null ? aa.hit3HighRate + "%" : null, (aa.hit3HighRate || 0) >= 40 ? UP_C : "#d97706")}
+              {cell("익일 종가 3% 마감", aa.hit3Rate != null ? aa.hit3Rate + "%" : null, (aa.hit3Rate || 0) >= 30 ? UP_C : "#d97706")}
+              {cell("익일 종가 평균", aa.avgNextRet != null ? (aa.avgNextRet >= 0 ? "+" : "") + aa.avgNextRet + "%" : null, (aa.avgNextRet || 0) >= 0 ? UP_C : DN_C)}
+              {cell("baseline 대비 edge", aa.edge != null ? (aa.edge >= 0 ? "+" : "") + aa.edge + "%" : null, (aa.edge || 0) >= 0 ? UP_C : DN_C)}
+            </div>
+          </div>
+        )}
+      </div>
+      {ma && <div style={{ padding: "6px 16px 10px", fontSize: 11, color: T.hint }}>
+        평가 기간: {ma.range?.start} ~ {ma.range?.end} · {ma.totalDays}일 수록 · 방향 평가 {ma.evaluated}일
+        {aa && ` / 종가 브리핑 ${aa.range?.start} ~ ${aa.range?.end}`}
+      </div>}
+    </div>
+  );
+}
+
 function HistoryView({ T, onOpen }) {
   const [hist, setHist] = useState(null);
+  const [aftHist, setAftHist] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => { (async () => { setHist(await fetchFirst(HIST_SOURCES.map(f => f()))); setLoading(false); })(); }, []);
+  useEffect(() => { (async () => {
+    const [h, a] = await Promise.all([
+      fetchFirst(HIST_SOURCES.map(f => f())),
+      fetchFirst(AFT_HIST_SOURCES.map(f => f())),
+    ]);
+    setHist(h); setAftHist(a); setLoading(false);
+  })(); }, []);
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>히스토리 불러오는 중…</div>;
   if (!hist || !hist.reports || !hist.reports.length) return (
@@ -913,28 +982,48 @@ function HistoryView({ T, onOpen }) {
     </div>
   );
 
+  // 날짜별 종가 브리핑 픽 성과 룩업맵
+  const aftDayMap = useMemo(() => {
+    const m = new Map();
+    if (aftHist?.reports) for (const r of aftHist.reports) m.set(r.date, r);
+    return m;
+  }, [aftHist]);
+
   return (
     <div style={{ paddingBottom: 20 }}>
+      <CombinedOosSummary mktHist={hist} aftHist={aftHist} T={T} />
       <AnalysisCard a={hist.analysis} T={T} />
+      {aftHist?.analysis && <div style={{ marginBottom: 14 }}><AfternoonAnalysis a={aftHist.analysis} T={T} /></div>}
       <DailySectorTimeline reports={hist.reports} T={T} onOpen={onOpen} />
       <div style={{ fontSize: 13, fontWeight: 800, color: T.text, marginBottom: 8 }}>일자별 리포트 ({hist.reports.length}건)</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {hist.reports.map((r) => {
           const s = SENT[r.sentiment] || SENT.neutral;
           const oos = r.oos || {};
+          const aft = aftDayMap.get(r.date);
           return (
             <button key={r.date} onClick={() => onOpen(r.date)} style={{ textAlign: "left", border: "1px solid " + T.border, background: T.card, borderRadius: 12, padding: "11px 13px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ flex: "0 0 66px" }}>
+              <div style={{ flex: "0 0 56px" }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{r.date.slice(5)}</div>
                 <div style={{ fontSize: 10.5, color: T.hint }}>{r.date.slice(0, 4)}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span style={{ fontSize: 11.5, fontWeight: 800, color: s.c, background: s.bg, padding: "2px 8px", borderRadius: 12 }}>{s.emoji} {s.label}</span>
-                <div style={{ fontSize: 12, color: T.sub, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
+                <div style={{ fontSize: 11.5, color: T.sub, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
+                {/* 아침 추천주 OOS */}
+                {(r.morningPicks || []).length > 0 && (
+                  <div style={{ fontSize: 11, color: T.hint, marginTop: 2 }}>
+                    🌅 {r.morningPicks.map(p => p.name).join("·")}
+                    {r.morningPicks.some(p => p.nextRet != null) && (
+                      <span> — 익일 {r.morningPicks.filter(p => p.nextRet != null).map(p => <span key={p.name} style={{ color: p.hit3High ? UP_C : p.nextRet >= 0 ? "#16a34a" : DN_C }}>{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>).reduce((a, b) => [a, " / ", b])}</span>
+                    )}
+                  </div>
+                )}
               </div>
               <div style={{ flex: "0 0 auto", textAlign: "right" }}>
-                {oos.kospiRet != null && <div style={{ fontSize: 13, fontWeight: 800, color: oos.kospiRet >= 0 ? UP_C : DN_C }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
-                {oos.hit != null && <div style={{ fontSize: 12 }}>{oos.hit ? "✅" : "❌"}</div>}
+                {oos.kospiRet != null && <div style={{ fontSize: 12.5, fontWeight: 800, color: oos.kospiRet >= 0 ? UP_C : DN_C }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
+                {oos.hit != null && <div style={{ fontSize: 11 }}>{oos.hit ? "✅" : "❌"}</div>}
+                {aft?.dayHitRate != null && <div style={{ fontSize: 11, color: ACCENT, fontWeight: 700 }}>🔥 {aft.dayHitRate}%</div>}
               </div>
             </button>
           );
