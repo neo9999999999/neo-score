@@ -46,6 +46,41 @@ const BIAS = {
   down: { c: DN_C, label: "약세", emoji: "🔻" },
   neutral: { c: "#d97706", label: "중립", emoji: "▪️" },
 };
+
+// 섹터별 고유 식별 색상 — 상승(빨강)/하락(파랑) 방향색과 별개의 '정체성' 색
+const SECTOR_COLORS = {
+  "반도체": "#2563eb",
+  "AI·인터넷": "#8b5cf6",
+  "2차전지": "#059669",
+  "방산·우주": "#dc2626",
+  "방산": "#dc2626",
+  "자동차": "#ea580c",
+  "원자력·전력기기": "#0891b2",
+  "전력기기·원전": "#0891b2",
+  "조선": "#0ea5e9",
+  "바이오·제약": "#db2777",
+  "엔터·미디어": "#f59e0b",
+  "로봇": "#14b8a6",
+  "금융": "#6366f1",
+  "방어주·통신": "#64748b",
+  "정유·에너지": "#b45309",
+  "음식료·필수소비": "#65a30d",
+};
+const SECTOR_PALETTE = ["#2563eb", "#8b5cf6", "#059669", "#dc2626", "#ea580c", "#0891b2", "#0ea5e9", "#db2777", "#f59e0b", "#14b8a6", "#6366f1", "#65a30d"];
+function sectorColor(name) {
+  if (!name) return "#8b95a1";
+  if (SECTOR_COLORS[name]) return SECTOR_COLORS[name];
+  let h = 0; for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return SECTOR_PALETTE[h % SECTOR_PALETTE.length];
+}
+// 섹터 칩 (고유색 pill)
+function SectorChip({ name, T, size = "sm" }) {
+  if (!name) return null;
+  const c = sectorColor(name);
+  const fs = size === "lg" ? 12 : 10.5;
+  const pad = size === "lg" ? "3px 9px" : "2px 7px";
+  return <span style={{ fontSize: fs, fontWeight: 800, color: c, background: c + "1f", border: "1px solid " + c + "55", padding: pad, borderRadius: 9 }}>{name}</span>;
+}
 const IMP = {
   high: { c: "#ef4444", label: "★★★" },
   mid: { c: "#d97706", label: "★★" },
@@ -90,13 +125,14 @@ function ChainStep({ step, T, last }) {
 function SectorCard({ s, T }) {
   const [open, setOpen] = useState(false);
   const b = BIAS[s.bias] || BIAS.neutral;
+  const sc = sectorColor(s.name);
   return (
-    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderLeft: "4px solid " + sc, borderRadius: 14, overflow: "hidden" }}>
       <button onClick={() => setOpen(o => !o)} style={{ width: "100%", textAlign: "left", border: "none", background: "transparent", cursor: "pointer", padding: "13px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 18 }}>{b.emoji}</span>
+        <span style={{ flex: "0 0 10px", width: 10, height: 10, borderRadius: 5, background: sc }} />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: T.text }}>{s.name}</div>
-          <div style={{ fontSize: 12, color: b.c, fontWeight: 700, marginTop: 1 }}>{b.label}</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: sc }}>{s.name}</div>
+          <div style={{ fontSize: 12, color: b.c, fontWeight: 700, marginTop: 1 }}>{b.emoji} {b.label}</div>
           {(s.stocks || []).length > 0 && <div style={{ fontSize: 12, color: T.sub, marginTop: 3 }}>{(s.stocks || []).map(st => st.name).join(" · ")}</div>}
         </div>
         <span style={{ fontSize: 12, color: T.hint }}>{open ? "▲" : "▼"}</span>
@@ -173,7 +209,7 @@ function FlowSummary({ report, T }) {
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: T.card, border: "1px solid " + T.border, borderRadius: 20, padding: "5px 10px" }}>
                 <span style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{st.name}</span>
                 {st.changePct != null && <span style={{ fontSize: 12, fontWeight: 800, color: st.changePct >= 0 ? UP_C : DN_C }}>{st.changePct >= 0 ? "+" : ""}{st.changePct}%</span>}
-                {st.sector && <span style={{ fontSize: 10, fontWeight: 700, color: ON_ACCENT, background: ACCENT, padding: "1px 6px", borderRadius: 8 }}>{st.sector}</span>}
+                {st.sector && <SectorChip name={st.sector} T={T} />}
               </div>
             ))}
           </div>
@@ -501,6 +537,108 @@ function ReportBody({ report, T, live }) {
   );
 }
 
+// 오전 시가 추천종목 — 아침 리포트의 데이터 기반 섹터 주도주에서 강도순 3종목
+function pickOpenStocks(report, n = 3) {
+  const sectors = report?.sectors || [];
+  const flat = [];
+  const seen = new Set();
+  for (const s of sectors) {
+    for (const st of (s.stocks || [])) {
+      if (!st.name || seen.has(st.name)) continue;
+      seen.add(st.name);
+      const chg = typeof st.changePct === "number" ? st.changePct : 0;
+      const strength = chg + (st.breakout ? 12 : st.nearHigh ? 6 : 0) + (st.aligned ? 6 : 0);
+      flat.push({ ...st, sector: s.name, _strength: strength });
+    }
+  }
+  flat.sort((a, b) => b._strength - a._strength);
+  return flat.slice(0, n);
+}
+
+function OpenPicks({ report, T }) {
+  if (report?.sectorsSource !== "data") return null;
+  const picks = pickOpenStocks(report, 3);
+  if (!picks.length) return null;
+  return (
+    <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: "linear-gradient(135deg, rgba(224,36,36,0.10), transparent)", padding: "14px 16px", marginBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 15, fontWeight: 900, color: T.text }}>🌅 오전 시가 추천종목 TOP {picks.length}</span>
+        <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 8 }}>시초가 베팅</span>
+      </div>
+      <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>전일 실거래(등락·거래대금·신고가·정배열) 기준 주도주 — 시가 추격은 분할·손절선 필수</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {picks.map((p, i) => {
+          const sc = sectorColor(p.sector);
+          return (
+            <div key={i} style={{ background: T.card, border: "1px solid " + T.border, borderLeft: "4px solid " + sc, borderRadius: 12, padding: "10px 12px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ flex: "0 0 22px", height: 22, borderRadius: 6, background: sc, color: "#fff", fontSize: 12, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+                <span style={{ fontSize: 14.5, fontWeight: 800, color: T.text }}>{p.name}</span>
+                {p.code && <span style={{ fontSize: 10.5, color: T.hint, fontWeight: 600 }}>{p.code}</span>}
+                <SectorChip name={p.sector} T={T} />
+                {typeof p.changePct === "number" && <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 800, color: p.changePct >= 0 ? UP_C : DN_C }}>전일 {p.changePct >= 0 ? "+" : ""}{p.changePct}%</span>}
+              </div>
+              <div style={{ display: "flex", gap: 5, marginTop: 7, flexWrap: "wrap" }}>
+                {p.breakout && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 7 }}>🚀 신고가 돌파</span>}
+                {!p.breakout && p.nearHigh && <span style={{ fontSize: 10.5, fontWeight: 800, color: "#fff", background: "#0d9488", padding: "2px 7px", borderRadius: 7 }}>신고가 근접</span>}
+                {p.aligned && <span style={{ fontSize: 10.5, fontWeight: 700, color: "#16a34a", background: T.cardAlt, padding: "2px 7px", borderRadius: 7 }}>정배열</span>}
+              </div>
+              {p.reason && <div style={{ fontSize: 12, color: T.sub, marginTop: 6, lineHeight: 1.55 }}>{p.reason}</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// 종가 브리핑 — 종가베팅(익일) 추천종목 TOP 3 + 시장 요약 (오후 리포트 기반)
+function ClosingBriefing({ T }) {
+  const [rep, setRep] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { (async () => { setRep(await fetchFirst(AFT_SOURCES.map(f => f()))); setLoading(false); })(); }, []);
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>종가 브리핑 불러오는 중…</div>;
+  if (!rep || !rep.candidates) return (
+    <div style={{ padding: 24, textAlign: "center", color: T.sub, fontSize: 13.5, lineHeight: 1.7 }}>
+      아직 종가 브리핑이 없습니다.<br />매일 오후 3시(KST) 장 마감 무렵 자동 생성됩니다.
+    </div>
+  );
+  const bias = SENT[rep.marketBias] || SENT.neutral;
+  const picks = (rep.candidates || []).slice(0, 3);
+  return (
+    <div style={{ paddingBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600 }}>{rep.date} 15:00 KST · 종가 브리핑</div>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px" }}>오늘 마감 정리 · 종가베팅 추천</h2>
+        </div>
+        <span style={{ fontSize: 12.5, fontWeight: 800, color: bias.c, background: bias.bg, padding: "5px 11px", borderRadius: 20 }}>{bias.emoji} {bias.label}</span>
+      </div>
+
+      {rep.summary && (
+        <div style={{ marginTop: 14, background: "linear-gradient(135deg," + bias.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: bias.c, marginBottom: 7 }}>📋 종가 시장 요약</div>
+          <div style={{ fontSize: 14, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{rep.summary}</div>
+        </div>
+      )}
+
+      <Section title={"🔥 종가베팅 추천종목 TOP " + picks.length} sub="장 마감 무렵 매수 → 익일 청산 전략 · 거래대금·종가강도·정배열·OOS 확률 상위" T={T}>
+        {picks.length === 0 ? (
+          <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 종가베팅 후보가 없습니다.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {picks.map((c, i) => <CandidateRow key={i} c={c} T={T} alloc={0} stratAvg={null} />)}
+          </div>
+        )}
+      </Section>
+
+      <div style={{ marginTop: 14, fontSize: 11.5, color: T.hint, lineHeight: 1.6, textAlign: "center" }}>
+        더 많은 후보·OOS 백테스트·연도별 결과는 상단 <b style={{ color: T.sub }}>익일예측</b> 탭에서 볼 수 있습니다.
+      </div>
+    </div>
+  );
+}
+
 // 히스토리 인덱스 / 개별 리포트 소스
 const HIST_SOURCES = [
   () => "/market-report-history.json?_=" + Date.now(),
@@ -547,6 +685,47 @@ function AnalysisCard({ a, T }) {
   );
 }
 
+// 최근 30일 일별 주요 섹터 타임라인 — 섹터 고유색 칩으로 흐름 파악
+function DailySectorTimeline({ reports, T, onOpen }) {
+  const rows = useMemo(() => (reports || []).slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30), [reports]);
+  if (!rows.length) return null;
+  // 30일간 등장 빈도 상위 섹터 (요약)
+  const freq = new Map();
+  for (const r of rows) for (const s of (r.topSectors || [])) freq.set(s.name, (freq.get(s.name) || 0) + 1);
+  const top = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
+  return (
+    <Section title="🗂️ 최근 30일 일별 주요 섹터" sub="아침 리포트가 꼽은 전일 주도 섹터 흐름 — 색상으로 섹터 구분" T={T}>
+      {top.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10, alignItems: "center" }}>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: T.hint }}>30일 최다 등장:</span>
+          {top.map(([name, cnt]) => {
+            const c = sectorColor(name);
+            return <span key={name} style={{ fontSize: 11, fontWeight: 800, color: c, background: c + "1f", border: "1px solid " + c + "55", padding: "2px 8px", borderRadius: 10 }}>{name} {cnt}일</span>;
+          })}
+        </div>
+      )}
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+        {rows.map((r, i) => {
+          const s = SENT[r.sentiment] || SENT.neutral;
+          return (
+            <button key={r.date} onClick={() => onOpen && onOpen(r.date)} style={{ width: "100%", textAlign: "left", border: "none", borderTop: i ? "1px solid " + T.border : "none", background: "transparent", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px" }}>
+              <div style={{ flex: "0 0 50px" }}>
+                <div style={{ fontSize: 12.5, fontWeight: 800, color: T.text }}>{r.date.slice(5)}</div>
+                <div style={{ fontSize: 10, color: T.hint }}>{r.date.slice(0, 4)}</div>
+              </div>
+              <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: 4, background: s.c }} title={s.label} />
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {(r.topSectors || []).length ? (r.topSectors || []).map((x, j) => <SectorChip key={j} name={x.name} T={T} />) : <span style={{ fontSize: 11.5, color: T.hint }}>{r.kospiBias || "—"}</span>}
+              </div>
+              {r.oos && r.oos.kospiRet != null && <span style={{ flex: "0 0 auto", fontSize: 12, fontWeight: 800, color: r.oos.kospiRet >= 0 ? UP_C : DN_C }}>{r.oos.kospiRet >= 0 ? "+" : ""}{r.oos.kospiRet}%</span>}
+            </button>
+          );
+        })}
+      </div>
+    </Section>
+  );
+}
+
 function HistoryView({ T, onOpen }) {
   const [hist, setHist] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -562,6 +741,7 @@ function HistoryView({ T, onOpen }) {
   return (
     <div style={{ paddingBottom: 20 }}>
       <AnalysisCard a={hist.analysis} T={T} />
+      <DailySectorTimeline reports={hist.reports} T={T} onOpen={onOpen} />
       <div style={{ fontSize: 13, fontWeight: 800, color: T.text, marginBottom: 8 }}>일자별 리포트 ({hist.reports.length}건)</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {hist.reports.map((r) => {
@@ -627,7 +807,7 @@ function CandidateRow({ c, T, alloc, stratAvg }) {
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
         {c.nearHighPct != null && <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: c.breakout ? UP_C : "#0d9488", padding: "3px 8px", borderRadius: 7 }}>{c.breakout ? "🚀 신고가 돌파" : "신고가 " + c.nearHighPct + "%"}</span>}
         <span style={{ ...chip(T), color: "#16a34a" }}>정배열</span>
-        {c.sector && <span style={{ fontSize: 11, fontWeight: 800, color: ON_ACCENT, background: ACCENT, padding: "3px 8px", borderRadius: 7 }}>📑 {c.sector}</span>}
+        {c.sector && (() => { const sc = sectorColor(c.sector); return <span style={{ fontSize: 11, fontWeight: 800, color: sc, background: sc + "1f", border: "1px solid " + sc + "55", padding: "3px 8px", borderRadius: 7 }}>📑 {c.sector}</span>; })()}
         {c.supplyLabel && <span style={c.dongban ? { fontSize: 11, fontWeight: 800, color: "#fff", background: "#16a34a", padding: "3px 8px", borderRadius: 7 } : chip(T)}>{c.dongban ? "🟢 " : ""}{c.supplyLabel}</span>}
         <span style={chip(T)}>당일 {up ? "+" : ""}{c.changePct}%</span>
         <span style={chip(T)}>거래대금 {c.valueText}</span>
@@ -1298,6 +1478,7 @@ function AfternoonView({ T }) {
 export function MarketReportTab({ theme }) {
   const T = useTheme(theme);
   const [mode, setMode] = useState("today");
+  const [todayTab, setTodayTab] = useState("morning"); // morning | closing
   const [today, setToday] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1347,9 +1528,20 @@ export function MarketReportTab({ theme }) {
         </button>
       </div>
       {mode === "today" && (
-        loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
-          : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-            : today ? <ReportBody report={today} T={T} live /> : null
+        <>
+          <div style={{ display: "flex", gap: 6, background: T.cardAlt, borderRadius: 10, padding: 4, marginBottom: 14 }}>
+            {[["morning", "🌅 아침 브리핑"], ["closing", "🔥 종가 브리핑"]].map(([k, label]) => (
+              <button key={k} onClick={() => setTodayTab(k)} style={{ flex: 1, border: "none", borderRadius: 8, padding: "9px 0", fontSize: 12.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit", background: todayTab === k ? T.card : "transparent", color: todayTab === k ? T.text : T.hint, boxShadow: todayTab === k ? "0 1px 3px rgba(0,0,0,0.12)" : "none" }}>{label}</button>
+            ))}
+          </div>
+          {todayTab === "morning" ? (
+            loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
+              : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
+                : today ? <><OpenPicks report={today} T={T} /><ReportBody report={today} T={T} live /></> : null
+          ) : (
+            <ClosingBriefing T={T} />
+          )}
+        </>
       )}
       {mode === "history" && (
         detail ? (
