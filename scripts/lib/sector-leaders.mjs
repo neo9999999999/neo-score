@@ -70,7 +70,7 @@ export async function buildSectorLeaders(stocksPath, { dateStr = null, topSector
   return sectors.slice(0, topSectors).map(s => ({
     name: s.name,
     bias: s.bias,
-    reason: `전일 주도주 평균 ${s.meanChg >= 0 ? "+" : ""}${s.meanChg}% · ${s.strongCnt}/${s.total}개 강세 — 실거래 데이터 기준 전일 상위 섹터.`,
+    reason: `전일 주도주 평균 ${s.meanChg >= 0 ? "+" : ""}${s.meanChg}% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.`,
     stocks: s.top.map(m => ({ name: m.name, code: m.code, market: m.market, reason: stockReason(m), changePct: m.changePct, value: m.value, breakout: m.breakout, nearHigh: m.nearHigh, aligned: m.aligned })),
     dataDriven: true,
   }));
