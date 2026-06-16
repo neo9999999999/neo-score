@@ -1,6 +1,6 @@
 // vercel rebuild trigger 1777038639400
 // rebuild 1777034990679
-import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense, Component } from "react";
 import {R_26 as R_26_OLD} from "./data.js";
 import {R_26_BACKFILL} from "./data_2026_backfill.js";
 import {R_26_EXTEND} from "./data_2026_extend.js";
@@ -21,14 +21,37 @@ import { analyzeChimchakhae, ChimchakhaeResultCard, ChimchakhaeToday, Chimchakha
 import { calcJudojuScore, judojuGradeColor, JudojuToday, JudojuDetailModal, analyzeJudoju, JudojuResultCard } from "./JudojuHelpers.jsx";
 import { calcHaseunghoonScore, haseunghoonGradeColor, HaseunghoonToday, HaseunghoonDetailModal, analyzeHaseunghoon, HaseunghoonResultCard } from "./HaseunghoonHelpers.jsx";
 import { analyzeNeoAnalysis, NeoAnalysisResultCard, calcNeoAnalysisGrade, neoAnalysisGradeColor, NeoAnalysisDetailModal } from "./NeoAnalysisHelpers.jsx";
-import { NeoPullbackTab } from "./NeoPullbackHelpers.jsx";
+const NeoPullbackTab = lazy(() => import("./NeoPullbackHelpers.jsx").then(m => ({ default: m.NeoPullbackTab })));
 import { TodayPullbackTab } from "./NeoTodayPullbackHelpers.jsx";
 import { HaseunghoonClosingBetTab } from "./HaseunghoonClosingBetHelpers.jsx";
-import { OosHistoryTab } from "./OosHistoryHelpers.jsx";
-import { HaseunghoonBacktestTab } from "./HaseunghoonBacktestHelpers.jsx";
+// OOS 히스토리 — 1.3MB 데이터. lazy-load로 메인 번들에서 분리 (탭 열 때만 로드)
+const OosHistoryTab = lazy(() => import("./OosHistoryHelpers.jsx").then(m => ({ default: m.OosHistoryTab })));
+const _OosFallback = ({theme})=>(<div style={{padding:"40px 20px",textAlign:"center",color:theme==="dark"?"#8b949e":"#4e5968",fontSize:13}}>📚 OOS 히스토리 로딩 중... (8,408건)</div>);
+const HaseunghoonBacktestTab = lazy(() => import("./HaseunghoonBacktestHelpers.jsx").then(m => ({ default: m.HaseunghoonBacktestTab })));
 import { MarketReportTab } from "./MarketReportHelpers.jsx";
+import { HORIZONS } from "./data_horizons.js";
 
 function _getCacheDateKey(){const d=new Date();const day=d.getDay();if(day===0)d.setDate(d.getDate()-2);else if(day===6)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
+
+// 페이지 렌더 중 예외가 나도 검은 화면 대신 에러를 표시 (앱 전체가 죽는 것 방지)
+class PageErrorBoundary extends Component {
+  constructor(p){super(p);this.state={err:null};}
+  static getDerivedStateFromError(err){return {err};}
+  componentDidCatch(err,info){try{console.error("[PageErrorBoundary]",err,info&&info.componentStack);}catch(e){}}
+  render(){
+    if(this.state.err){
+      const dark=this.props.theme!=="light";
+      const msg=String((this.state.err&&this.state.err.stack)||this.state.err||"unknown error");
+      return(<div style={{padding:"40px 18px",background:dark?"#161b22":"#fff",border:"1px solid "+(dark?"#30363d":"#e5e8eb"),borderRadius:14,color:dark?"#e6edf3":"#191f28"}}>
+        <div style={{fontSize:18,fontWeight:800,marginBottom:10}}>⚠️ 화면 로딩 중 오류</div>
+        <div style={{fontSize:13,color:dark?"#8b949e":"#4e5968",marginBottom:14,lineHeight:1.6}}>이 페이지를 그리는 중 오류가 발생했습니다. 아래 메시지를 캡처해서 알려주시면 바로 고치겠습니다.</div>
+        <pre style={{fontSize:12,whiteSpace:"pre-wrap",wordBreak:"break-word",background:dark?"#0d1117":"#f6f8fa",padding:"12px",borderRadius:8,border:"1px solid "+(dark?"#30363d":"#e5e8eb"),color:dark?"#f85149":"#cf222e",maxHeight:320,overflow:"auto",margin:0}}>{msg}</pre>
+        <button onClick={()=>this.setState({err:null})} style={{marginTop:12,padding:"10px 18px",borderRadius:9,border:"none",background:"#7c3aed",color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer"}}>다시 시도</button>
+      </div>);
+    }
+    return this.props.children;
+  }
+}
 
 const R=[...R_26,...R_2025,...R_2024,...R_2023,...R_2022,...R_2021];
 const _mStats={};
@@ -605,6 +628,25 @@ const _qualifyInst=(iv)=>iv==="기관"||iv==="기만"||iv==="기+외"||iv==="외
 const _supLabel=(iv)=>{const o=_supplyOpts.find(x=>x.match(iv));return o?o.id:iv||"—";};
 const _supColor=(lbl)=>{const o=_supplyOpts.find(x=>x.id===lbl);return o?o.col:_T.mute;};
 const _amtNum=(s)=>{const m=String(s||"").match(/(\d+(?:\.\d+)?)/);if(!m)return 0;const n=+m[1];return s.includes("兆")||s.includes("조")?n*10000:n;};
+// OOS 추천등급 — 6년 24,249건 백테스트로 검증한 성과기반 등급 (거래대금 단독 X)
+// 점수가지표 최강 + 수급 + 120신고 + 등락 가중. S 실현 +0.45% / A -1.25% / B -2.67% (단조)
+const _perfScore=(r)=>{
+  let s=0;const sc=+r.sc||0;
+  if(sc>=5)s+=3;else if(sc===4)s+=2;else if(sc===3)s+=1;else if(sc===2)s+=0;else if(sc===1)s-=1.5;else s-=3;
+  const iv=r.iv;
+  if(iv==='기+외'||iv==='외+기')s+=1.5;else if(iv==='기만'||iv==='기관')s+=1.2;else if(iv==='외만'||iv==='외인')s+=0;else if(iv==='둘다-')s-=2;
+  if(r.h120===1)s+=1;else if(r.h60===1)s-=0.5;
+  const ch=+r.ch||0;
+  if(ch>=10&&ch<20)s+=0.5;else if(ch>=25)s-=0.5;
+  if(_amtNum(r.mc)>=2500)s+=0.3;
+  return s;
+};
+const _perfGrade=(r)=>{const s=_perfScore(r);return s>=2.5?'S':s>=0.5?'A':'B';};
+const _perfGradeMeta={
+  S:{c:'#dc2626',l:'S',sub:'최상위',stat:'실현 +0.45% · 승률 35%'},
+  A:{c:'#2563eb',l:'A',sub:'양호',stat:'실현 -1.25% · 승률 32%'},
+  B:{c:'#8b95a1',l:'B',sub:'주의',stat:'실현 -2.67% · 승률 29%'}
+};
 // 청산 추천 — 다차원 백테스트 (시장 × 거래대금) 기반 (best01 universe n=754)
 // 트레일+5% = 시초가+5%p 도달 즉익 / 미달 시 종가 매도 (분봉 검증 후 정확)
 const _exitRec=(amt,mkt)=>{
@@ -787,6 +829,8 @@ const liveAsD=useMemo(()=>{
   }).filter(x=>x);
 },[liveSignals]);
 const [yf,setYf]=useState([]);
+const [mf,setMf]=useState([]); // 월 필터 (멀티선택, 빈 배열=전체)
+const [selGrade,setSelGrade]=useState([]); // 등급 필터 S/A/B/X (멀티, 빈=전체)
 const [selSup,setSelSup]=useState([]);
 const [sortMode,setSortMode]=useState('profit');
 const [invAmt,setInvAmt]=useState(()=>{try{const v=localStorage.getItem('nbdb_invAmt_v1');return v?+v:500000;}catch(e){return 500000;}});
@@ -834,6 +878,9 @@ const _chMin=mode==='leader'?10:15;
 const _chMax=mode==='leader'?28:29;
 let arr=merged.filter(r=>{
 if(yf.length&&r.d&&!yf.includes(r.d.slice(2,4)))return false;
+if(mf.length&&r.d&&!mf.includes(r.d.slice(5,7)))return false;
+if(selSup.length&&!selSup.some(s=>{const o=_supplyOpts.find(x=>x.id===s);return o&&o.match(r.iv);}))return false;
+if(selGrade.length&&!selGrade.includes(_perfGrade(r)))return false;
 const _isRecentEntry=(r.d||'')>='2026-04-17'&&(r._rank===1||r._rank===2);
 // 최근 종목 (4/17+) leader rank 1|2는 ch range 우회
 if(!_isRecentEntry){if(!(r.ch>=_chMin&&r.ch<_chMax))return false;}
@@ -940,7 +987,7 @@ if(sortMode==='profit')return arr.sort((a,b)=>(b.t||0)-(a.t||0));
 if(sortMode==='oldest')return arr.sort((a,b)=>String(a.d||'').localeCompare(String(b.d||'')));
 if(sortMode==='newest')return arr.sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
 return arr;
-},[yf,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
+},[yf,mf,selGrade,selSup,sortMode,mode,exitMethod,liveAsD,_leaderSet]);
 // 결과 단순 분류 — 익절(t≥1) / 손절(t≤-1) / 무사통과 / 진행중
 const _classifyResult=(r)=>{
   if(r._isLive||String(r.r||'')==='진행중')return 'live';
@@ -1100,6 +1147,8 @@ const leaderStats=useMemo(()=>{
   return {r1,r2,r3,events:evtArr.length,wAvg};
 },[filtered,mode]);
 const toggleYr=(y)=>{if(y==='all'){setYf([]);return;}setYf(yf.includes(y)?yf.filter(x=>x!==y):[...yf,y]);};
+const toggleMo=(m)=>{if(m==='all'){setMf([]);return;}setMf(mf.includes(m)?mf.filter(x=>x!==m):[...mf,m]);};
+const _mos=[{id:'all',l:'전체'},{id:'01',l:'1월'},{id:'02',l:'2월'},{id:'03',l:'3월'},{id:'04',l:'4월'},{id:'05',l:'5월'},{id:'06',l:'6월'},{id:'07',l:'7월'},{id:'08',l:'8월'},{id:'09',l:'9월'},{id:'10',l:'10월'},{id:'11',l:'11월'},{id:'12',l:'12월'}];
 const toggleSup=(s)=>{setSelSup(selSup.includes(s)?selSup.filter(x=>x!==s):[...selSup,s]);};
 const Seg=({active,children,onClick})=>(<button onClick={onClick} style={{flex:'1 1 0',padding:'8px 8px',border:'none',background:active?_T.accent:'transparent',color:active?'#fff':_T.sub,fontSize:12,fontWeight:active?700:500,cursor:'pointer',borderRadius:8,transition:'all .15s',letterSpacing:'-0.2px'}}>{children}</button>);
 const Card=({title,hint,children,pad})=>(<div style={{background:_T.card,borderRadius:10,padding:pad||'14px 14px',marginBottom:8,border:'1px solid '+_T.line}}><div style={{display:'flex',alignItems:'baseline',justifyContent:'space-between',marginBottom:10}}><div style={{fontSize:13,fontWeight:700,color:_T.text,letterSpacing:'-0.3px'}}>{title}</div>{hint&&<div style={{fontSize:13,color:_T.hint,fontWeight:500}}>{hint}</div>}</div>{children}</div>);
@@ -1125,7 +1174,7 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
     <div style={{fontSize:13,fontWeight:500,opacity:a?0.85:0.7,marginTop:2,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.sub}</div>
   </button>);})}
 </div>
-{mode==='pullback' ? (<NeoPullbackTab theme={theme}/>) : mode==='haseunghoon' ? (<HaseunghoonBacktestTab theme={theme}/>) : (<>
+{mode==='pullback' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><NeoPullbackTab theme={theme}/></Suspense>) : mode==='haseunghoon' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><HaseunghoonBacktestTab theme={theme}/></Suspense>) : (<>
 {/* 청산 방식 토글 (모든 모드 공통) */}
 <div style={{display:'flex',background:_T.linelt,borderRadius:10,padding:3,marginBottom:10,gap:2}}>
 {[{id:'open',l:'🐌 D+1 시초가',col:'#1f6dee'},{id:'close',l:'📈 D+1 종가',col:'#0d8050'},{id:'trail',l:'🚀 트레일링 (5%↑/-3%)',col:'#10b981'}].map(e=>{const a=exitMethod===e.id;return(
@@ -1167,6 +1216,28 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 {/* 연도 필터 — 모든 모드에서 표시 */}
 <div style={{display:'flex',background:_T.bg,borderRadius:10,padding:3,gap:1,marginBottom:0}}>
 {_yrs.map(y=>{const isActive=y.id==='all'?yf.length===0:yf.includes(y.id);return(<Seg key={y.id} active={isActive} onClick={()=>toggleYr(y.id)}>{y.l}</Seg>);})}
+</div>
+{/* 월 필터 — 멀티선택 On/off (빈=전체) */}
+<div style={{display:'flex',flexWrap:'wrap',gap:4,marginTop:6}}>
+{_mos.map(m=>{const isActive=m.id==='all'?mf.length===0:mf.includes(m.id);return(<button key={m.id} onClick={()=>toggleMo(m.id)} style={{flex:'1 1 auto',minWidth:m.id==='all'?44:38,padding:'7px 4px',border:'1px solid '+(isActive?_T.accent:_T.line),borderRadius:7,background:isActive?_T.accent:_T.bg,color:isActive?'#fff':_T.sub,fontSize:12,fontWeight:isActive?700:500,cursor:'pointer',letterSpacing:'-0.2px'}}>{m.l}</button>);})}
+</div>
+{mf.length>0&&<div style={{fontSize:11,color:_T.hint,marginTop:5,fontWeight:600}}>{mf.length}개월 선택됨 · 연도×월 조합 필터 적용 중</div>}
+{/* 추천등급 필터 — 6년 백테스트 성과기반 (점수+수급+신고가+등락) */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}} title="6년 24,249건 OOS 백테스트로 수익률·승률 높은 조건 가중. 점수+수급+120신고+등락 종합">추천등급</span>
+<button onClick={()=>setSelGrade([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selGrade.length===0?_T.accent:_T.line),background:selGrade.length===0?_T.accent:_T.bg,color:selGrade.length===0?'#fff':_T.body,fontSize:12,fontWeight:selGrade.length===0?700:500,cursor:'pointer'}}>전체</button>
+{['S','A','B'].map(g=>{const on=selGrade.includes(g);const meta=_perfGradeMeta[g];return(<button key={g} title={'추천등급 '+g+' · '+meta.stat} onClick={()=>setSelGrade(p=>p.includes(g)?p.filter(x=>x!==g):[...p,g])} style={{padding:'4px 11px',borderRadius:6,border:'1px solid '+(on?meta.c:_T.line),background:on?meta.c:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?800:600,cursor:'pointer'}}><b>{g}</b><span style={{fontSize:11,fontWeight:500,opacity:0.85,marginLeft:4}}>{meta.sub}</span></button>);})}
+</div>
+{/* 수급 필터 — 멀티선택 On/off */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>수급</span>
+<button onClick={()=>setSelSup([])} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(selSup.length===0?_T.accent:_T.line),background:selSup.length===0?_T.accent:_T.bg,color:selSup.length===0?'#fff':_T.body,fontSize:12,fontWeight:selSup.length===0?700:500,cursor:'pointer'}}>전체</button>
+{_supplyOpts.map(o=>{const on=selSup.includes(o.id);return(<button key={o.id} onClick={()=>toggleSup(o.id)} style={{padding:'4px 9px',borderRadius:6,border:'1px solid '+(on?o.col:_T.line),background:on?o.col:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?700:500,cursor:'pointer'}}>{o.l}</button>);})}
+</div>
+{/* 정렬 — 버튼형 (통일) */}
+<div style={{display:'flex',gap:5,marginTop:8,flexWrap:'wrap',alignItems:'center'}}>
+<span style={{fontSize:12,color:_T.sub,fontWeight:700,marginRight:2}}>정렬</span>
+{_sorts.map(s=>{const on=sortMode===s.id;return(<button key={s.id} onClick={()=>setSortMode(s.id)} style={{padding:'4px 10px',borderRadius:6,border:'1px solid '+(on?_T.accent:_T.line),background:on?_T.accent:_T.bg,color:on?'#fff':_T.body,fontSize:12,fontWeight:on?700:500,cursor:'pointer'}}>{s.l}</button>);})}
 </div>
 </Card>
 {exitStats&&(()=>{
@@ -1353,9 +1424,6 @@ return (<div style={{padding:'12px',background:_T.bg,minHeight:'100vh',fontFamil
 <div style={{flex:1,borderLeft:'1px solid '+_T.line,paddingLeft:14}}><div style={{fontSize:13,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px',fontWeight:600}}>수익률</div><div style={{fontSize:18,fontWeight:800,letterSpacing:'-0.4px',color:stats.ret>=0?_T.up:_T.down}}>{stats.ret>=0?'+':''}{stats.ret.toFixed(2)}<span style={{fontSize:13,fontWeight:500,opacity:0.8,marginLeft:2}}>%</span></div></div>
 </div>
 </div>)}
-<div style={{display:'flex',background:_T.card,border:'1px solid '+_T.line,borderRadius:10,padding:3,marginBottom:10}}>
-{_sorts.map(s=>(<Seg key={s.id} active={sortMode===s.id} onClick={()=>setSortMode(s.id)}>{s.l}</Seg>))}
-</div>
 {/* 종목 리스트 — 카드형 (라이브 신호 포함) */}
 <div style={{background:_T.card,borderRadius:14,border:'1px solid '+_T.line,overflow:'hidden'}}>
 <div style={{maxHeight:'62vh',overflowY:'auto'}}>
@@ -1385,9 +1453,9 @@ const _profit=(r.t||0);
 const _showSingle=mode==='neo90'||mode==='best01'||mode==='leader';
 // 대장주 랭크 배지 색상
 const _rankCol=r._rank===1?'#dc2626':r._rank===2?'#f59e0b':r._rank===3?'#10b981':null;
-return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'18px 20px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
+return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'pointer',padding:'12px 15px',borderTop:i?'1px solid '+_T.line:'none',transition:'all .12s'}} onMouseEnter={(e)=>e.currentTarget.style.background=_T.cardHov} onMouseLeave={(e)=>e.currentTarget.style.background='transparent'}>
 {/* 1행: 종목명 (큼) + 수급/LIVE + 우측 진행중/결과 */}
-<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:12}}>
+<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,marginBottom:6}}>
 <div style={{flex:1,minWidth:0,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
 {_rankCol&&<span style={{fontSize:13,fontWeight:900,color:'#fff',background:_rankCol,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',minWidth:32,textAlign:'center'}}>{r._rank}등</span>}
 {_rankCol&&r._mktLabel&&<span style={{fontSize:12,fontWeight:700,color:_T.body,background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}}>{r._mktLabel}</span>}
@@ -1400,87 +1468,29 @@ return(<div key={i} onClick={()=>onRowClick&&onRowClick(r)} style={{cursor:'poin
   const matchTitle=actual?`${rec.sub}\n실제 베스트: ${actual.best} (시초가${actual.open>=0?'+':''}${actual.open.toFixed(2)}% / 종가${actual.close>=0?'+':''}${actual.close.toFixed(2)}% / 트레일+5${actual.trail5>=0?'+':''}${actual.trail5.toFixed(2)}%)`:rec.sub;
   return(<span style={{fontSize:12,fontWeight:800,color:'#fff',background:match===true?'#10b981':match===false?'#dc2626':rec.col,padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}} title={matchTitle}>{rec.l}{matchIcon}</span>);
 })()}
+{(()=>{const pg=_perfGrade(r);const m=_perfGradeMeta[pg];return(<span title={'OOS 추천등급 '+pg+' ('+m.sub+') · '+m.stat} style={{fontSize:13,fontWeight:900,color:'#fff',background:m.c,padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px',flexShrink:0}}>{pg}</span>);})()}
 <span style={{fontSize:19,fontWeight:800,color:_T.text,letterSpacing:'-0.4px'}}>{r.n}</span>
 <span style={{fontSize:13,fontWeight:700,color:'#fff',background:_supColor(sLbl),padding:'3px 9px',borderRadius:5,letterSpacing:'-0.2px'}}>{sLbl}</span>
 {r._isLive&&<span style={{fontSize:12,fontWeight:800,color:'#fff',background:'#f59e0b',padding:'3px 8px',borderRadius:4,letterSpacing:'-0.2px'}}>📡 LIVE</span>}
 {r._isLive&&r.maAlign===1&&<span style={{fontSize:12,fontWeight:700,color:'#fff',background:'#10b981',padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="MA5 > MA20 > MA60">📈 MA정배열</span>}
 {r._isLive&&Math.abs(+r.cum5||0)>=1&&<span style={{fontSize:12,fontWeight:700,color:(+r.cum5||0)>=0?'#dc2626':'#2563eb',background:_T.linelt,padding:'3px 7px',borderRadius:4,letterSpacing:'-0.2px'}} title="5일 누적 등락률">5일 {(+r.cum5||0)>=0?'+':''}{(+r.cum5||0).toFixed(1)}%</span>}
 </div>
-{!r._isLive&&<span style={{fontWeight:800,color:_resCol(r.r),fontSize:13,padding:'4px 10px',background:_T.bg,borderRadius:6,border:'1px solid '+_T.line}}>{_resLbl(r.r)}</span>}
-{r._isLive&&<span style={{fontSize:13,fontWeight:800,color:'#f59e0b',padding:'4px 10px',background:'rgba(245,158,11,0.12)',borderRadius:6,border:'1px solid rgba(245,158,11,0.35)'}}>진행중</span>}
+{r._isLive?(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:15,fontWeight:800,color:'#f59e0b'}}>진행중</div><div style={{fontSize:11,color:_T.sub,fontWeight:600,marginTop:1}}>당일 +{r.ch}%</div></div>):(<div style={{textAlign:'right',flexShrink:0}}><div style={{fontSize:18,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div><div style={{fontSize:11,color:_resCol(r.r),fontWeight:700,marginTop:1}}>{won>=0?'+':''}{_man(Math.abs(won))}원 · {_resLbl(r.r)}</div></div>)}
 </div>
 {/* 2행: 기본 정보 — 폰트 키움 */}
-<div style={{display:'flex',gap:10,fontSize:12,color:_T.body,fontWeight:600,marginBottom:12,flexWrap:'wrap',alignItems:'baseline'}}>
-<span><b style={{color:_T.text,fontSize:13}}>{r.mc}</b></span>
+<div style={{display:'flex',gap:8,fontSize:12,color:_T.sub,fontWeight:600,flexWrap:'wrap',alignItems:'baseline',marginBottom:6}}>
+<span><b style={{color:_T.body,fontSize:13}}>{r.mc}</b></span>
 <span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>당일 <b style={{color:_T.body}}>+{r.ch}%</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>📅 매수 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>청산 <b style={{color:_T.body}}>{r.exd||'—'}</b></span>
-<span style={{color:_T.mute}}>·</span>
-<span style={{color:_T.sub}}>소요 <b style={{color:_T.body}}>{r.exdy?r.exdy+'일':'—'}</b></span>
+<span>📅 <b style={{color:_T.body}}>{r.d?r.d.slice(2):'—'}</b></span>
 </div>
-{/* 3행: 익절 정보 — 모드별 분기 */}
-{_showSingle?(
-  // 7%/90% 모드: 단일 익절 + 최종수익
-  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:8}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>{mode==='leader'||mode==='best01'?`D+1 시초가 매도`:mode==='neo90'?`5% 도달 후 트레일`:`익절 도달 (+${tp1}%)`}</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px'}}>D+{tp1dy}일 <span style={{fontSize:12,color:_T.sub,fontWeight:600,marginLeft:3}}>{tp1d}</span></div>{(mode==='neo90')&&r._peak>0&&<div style={{fontSize:12,color:_T.sub,fontWeight:600,marginTop:2}}>peak +{r._peak.toFixed(1)}%</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute}}>{mode==='leader'||mode==='best01'?'대기':mode==='neo90'?'5% 미도달':'미도달'}</div>}
-    </div>
-    <div style={{textAlign:'center'}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
-      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
-      <div style={{fontSize:16,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px'}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-      <div style={{fontSize:12,color:_T.sub,fontWeight:600,marginTop:2}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
-      </>)}
-    </div>
-  </div>
-):(
-  // 25%/맞춤 모드: 1차/2차/최종
-  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,padding:'12px 14px',background:_T.bg,borderRadius:10,border:'1px solid '+_T.line}}>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>1차 (+{tp1}%)</div>
-      {tp1Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>D+{tp1dy}일</div><div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{tp1d}</div></div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
-    </div>
-    <div style={{textAlign:'center',borderRight:'1px solid '+_T.line,paddingRight:6}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>2차 (+{tp2}%)</div>
-      {tp2Reached?<div><div style={{fontSize:15,fontWeight:800,color:_T.up,letterSpacing:'-0.3px',lineHeight:1.1}}>{tp2dy?'D+'+tp2dy+'일':'도달'}</div>{tp2d&&<div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{tp2d}</div>}</div>:<div style={{fontSize:13,fontWeight:700,color:_T.mute,lineHeight:1.4}}>미도달</div>}
-    </div>
-    <div style={{textAlign:'center'}}>
-      <div style={{fontSize:12,color:_T.hint,fontWeight:600,marginBottom:5,letterSpacing:'-0.2px'}}>최종 수익</div>
-      {r._isLive?<div style={{fontSize:14,fontWeight:800,color:'#f59e0b'}}>진행중</div>:(<>
-      <div style={{fontSize:15,fontWeight:800,color:_profit>=0?_T.up:_T.down,letterSpacing:'-0.3px',lineHeight:1.1}}>{_profit>=0?'+':''}{_profit.toFixed(1)}%</div>
-      <div style={{fontSize:13,color:_T.sub,fontWeight:600,marginTop:3}}>{won>=0?'+':''}{_man(Math.abs(won))}원</div>
-      </>)}
-    </div>
-  </div>
-)}
-{/* 3-way 청산 비교 (시초가 / 종가 / 트레일) — 모든 모드 공통 */}
-{!r._isLive&&(()=>{
-  const cmp=_compareExits(r.ohlc);
-  if(cmp.open===null&&cmp.close===null&&cmp.trail===null)return null;
-  const vals=[
-    {l:'시초가',v:cmp.open,sub:'D+1 시가'},
-    {l:'종가',v:cmp.close,sub:'D+1 종가'},
-    {l:'트레일',v:cmp.trail,sub:cmp.trailDays?'D+'+cmp.trailDays+'일':'15일 만기'}
-  ];
-  const valid=vals.filter(x=>x.v!=null).map(x=>x.v);
-  const best=valid.length?Math.max(...valid):null;
-  return(<div style={{marginTop:8,padding:'10px 12px',background:_T.linelt,borderRadius:9,border:'1px solid '+_T.line}}>
-    <div style={{fontSize:12,fontWeight:700,color:_T.hint,marginBottom:6,letterSpacing:'-0.2px'}}>📊 청산 비교</div>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
-      {vals.map((x,j)=>{
-        const isBest=x.v!=null&&x.v===best;
-        const col=x.v==null?_T.mute:x.v>=0?_T.up:_T.down;
-        return(<div key={j} style={{textAlign:'center',padding:'6px 4px',borderRadius:7,background:isBest?(_T.text==='#e6edf3'?'rgba(168,85,247,0.18)':'rgba(168,85,247,0.10)'):'transparent',border:'1px solid '+(isBest?'#a855f7':'transparent')}}>
-          <div style={{fontSize:13,color:isBest?'#a855f7':_T.hint,fontWeight:isBest?800:600,letterSpacing:'-0.2px'}}>{x.l}{isBest&&' ★'}</div>
-          <div style={{fontSize:13,fontWeight:800,color:col,letterSpacing:'-0.3px',marginTop:2}}>{x.v==null?'—':(x.v>=0?'+':'')+x.v.toFixed(1)+'%'}</div>
-          <div style={{fontSize:8,color:_T.sub,fontWeight:600,marginTop:1}}>{x.sub}</div>
-        </div>);
-      })}
-    </div>
+{/* 다지표 종가매도 + 5%고가도달일 그리드 */}
+{(()=>{
+  const H=HORIZONS[r.n+'|'+(r.d?r.d.slice(2):'')];
+  const labels=['D+1','D+5','D+30','D+60','D+120','D+180'];
+  const cell=(l,v,bg,bd,vc)=>(<div key={l} style={{flex:'1 1 0',minWidth:50,textAlign:'center',padding:'5px 3px',borderRadius:7,background:bg,border:'1px solid '+bd}}><div style={{fontSize:10,color:_T.hint,fontWeight:600,letterSpacing:'-0.2px'}}>{l}</div><div style={{fontSize:13,fontWeight:800,color:vc,letterSpacing:'-0.3px',marginTop:1}}>{v}</div></div>);
+  return(<div style={{display:'flex',gap:4,flexWrap:'wrap',alignItems:'stretch'}}>
+    {labels.map((l,j)=>{const v=H?H[j]:null;return cell(l, v==null?'—':(v>=0?'+':'')+v+'%', _T.bg, _T.line, v==null?_T.mute:v>=0?_T.up:_T.down);})}
+    {(()=>{const hi=H?H[6]:null;return cell('5%고가', hi?'D+'+hi:'미달', hi?'rgba(16,185,129,0.12)':_T.bg, hi?'rgba(16,185,129,0.35)':_T.line, hi?_T.green:_T.mute);})()}
   </div>);
 })()}
 </div>);})}
@@ -1728,8 +1738,10 @@ if(loading)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"
 // 첫 조회 화면 (다크)
 if(!data&&activeTab==='pullback')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><TodayPullbackTab theme={theme}/></div>);
 if(!data&&activeTab==='haseunghoon')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><HaseunghoonClosingBetTab theme={theme}/></div>);
-if(!data&&activeTab==='oos')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}><div style={{fontSize:13,fontWeight:700,color:_T.text}}>📚 OOS 신호 히스토리</div><button onClick={load} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,fontSize:12,fontWeight:600,cursor:"pointer"}}>📡 실시간 데이터 조회</button></div><div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>{[{id:"best01",l:"최고조합01",col:"#f59e0b"},{id:"leader",l:"네오 대장주",col:"#a855f7"},{id:"neo25",l:"네오 25%",col:"#c81e1e"},{id:"pullback",l:"네오눌림목반등",col:"#0ea5e9"},{id:"haseunghoon",l:"하승훈 종가베팅",col:"#0d9488"},{id:"oos",l:"OOS 히스토리",col:"#7c3aed"}].map(t=>{const a=activeTab===t.id;return(<button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:"1 1 0",padding:"12px 10px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",fontSize:13,fontWeight:800,letterSpacing:"-0.3px"}}>{t.l}</button>);})}</div><OosHistoryTab theme={theme}/></div>);
-if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
+if(!data&&activeTab==='oos')return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12}}><div style={{fontSize:13,fontWeight:700,color:_T.text}}>📚 OOS 신호 히스토리</div><button onClick={load} style={{padding:"8px 12px",borderRadius:9,border:"1px solid "+_T.line,background:_T.bg,color:_T.body,fontSize:12,fontWeight:600,cursor:"pointer"}}>📡 실시간 데이터 조회</button></div><div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>{[{id:"best01",l:"최고조합01",col:"#f59e0b"},{id:"leader",l:"네오 대장주",col:"#a855f7"},{id:"neo25",l:"네오 25%",col:"#c81e1e"},{id:"pullback",l:"네오눌림목반등",col:"#0ea5e9"},{id:"haseunghoon",l:"하승훈 종가베팅",col:"#0d9488"},{id:"oos",l:"OOS 히스토리",col:"#7c3aed"}].map(t=>{const a=activeTab===t.id;return(<button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:"1 1 0",padding:"12px 10px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",fontSize:13,fontWeight:800,letterSpacing:"-0.3px"}}>{t.l}</button>);})}</div><Suspense fallback={<_OosFallback theme={theme}/>}><OosHistoryTab theme={theme}/></Suspense></div>);
+if(!data)return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh"}}>
+<div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>{[{id:"best01",l:"최고조합01",col:"#f59e0b"},{id:"leader",l:"네오 대장주",col:"#a855f7"},{id:"neo25",l:"네오 25%",col:"#c81e1e"},{id:"pullback",l:"네오눌림목반등",col:"#0ea5e9"},{id:"haseunghoon",l:"하승훈 종가베팅",col:"#0d9488"},{id:"oos",l:"📚 OOS 히스토리",col:"#7c3aed"}].map(t=>{const a=activeTab===t.id;return(<button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:"1 1 0",padding:"12px 10px",borderRadius:11,border:"1px solid "+(a?t.col:_T.line),background:a?t.col:_T.card,color:a?"#fff":_T.body,cursor:"pointer",fontSize:13,fontWeight:800,letterSpacing:"-0.3px",whiteSpace:"nowrap"}}>{t.l}</button>);})}</div>
+<div style={{padding:"60px 24px",textAlign:"center",background:_T.card,borderRadius:14,border:"1px solid "+_T.line}}><div style={{fontSize:42,marginBottom:14}}>📡</div><div style={{fontSize:17,fontWeight:800,color:_T.text,marginBottom:10,letterSpacing:"-0.3px"}}>네오 종배 신호 조회</div><div style={{fontSize:12,color:_T.sub,marginBottom:24,lineHeight:1.7}}>등락 15-29% / 거래대금 100억+ / 기관·기+외 / 점수3+ / 120일 신고가<br/>네오 7% (소형~중형) / 네오 25% (대장주) 자동 분류</div>{err&&<div style={{padding:"10px 14px",borderRadius:9,background:"rgba(248,81,73,0.12)",border:"1px solid rgba(248,81,73,0.35)",color:_T.up,fontSize:12,marginBottom:14}}>⚠️ {err}</div>}<button onClick={load} style={{padding:"14px 32px",borderRadius:11,border:"none",background:_T.accent,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:"-0.3px"}}>📡 KIS 조회</button></div></div>);
 // 메인 화면 (다크 + 좌우 탭)
 const _tabConf={
   neo25:{l:"네오 25%",emoji:"🐉",col:"#c81e1e",cnt:(data.summary&&data.summary.neo25)||0,winRate:"51.3%",avg:"+4.75%",amtRange:"5,000억 이상",tp:"+25%",strategy:"대장주, 큰 수익 추구"},
@@ -1772,7 +1784,7 @@ return(<div style={{padding:"12px",background:_T.bg,minHeight:"100vh",color:_T.t
   })}
 </div>
 
-{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : activeTab==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : activeTab==='oos' ? (<OosHistoryTab theme={theme}/>) : (<>
+{activeTab==='pullback' ? (<TodayPullbackTab theme={theme}/>) : activeTab==='haseunghoon' ? (<HaseunghoonClosingBetTab theme={theme}/>) : activeTab==='oos' ? (<Suspense fallback={<_OosFallback theme={theme}/>}><OosHistoryTab theme={theme}/></Suspense>) : (<>
 {/* 활성 탭 진입조건/청산룰 카드 */}
 <div style={{padding:"12px 14px",background:_T.card,border:"1px solid "+_T.line,borderRadius:12,marginBottom:10}}>
   <div style={{display:"flex",gap:8,alignItems:"baseline",marginBottom:8}}>
@@ -2864,6 +2876,7 @@ export default function App(){
       <button onClick={()=>setTheme(_isDark?"light":"dark")} title={_isDark?"라이트 모드":"다크 모드"} style={{position:"fixed",top:14,right:14,zIndex:200,width:38,height:38,borderRadius:8,border:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),background:_isDark?"#161b22":"#fff",color:_isDark?"#e6edf3":"#1e293b",cursor:"pointer",fontSize:16,transition:"none"}}>{_isDark?"☀️":"🌙"}</button>
       <div style={{maxWidth:920,margin:"0 auto",padding:"20px 14px"}}>
         <div style={{marginBottom:16}}><h1 style={{fontSize:26,fontWeight:900,letterSpacing:"-0.5px",margin:0,color:_isDark?"#e6edf3":"#1e293b"}}>NEO-SCORE</h1><p style={{fontSize:12,color:_isDark?"#6e7681":"#94a3b8",margin:"2px 0 0"}}>종가돌파매매 · S/A/B/X · AI차트분석 · 실시간스크리닝 · 신호추적</p></div>
+        <PageErrorBoundary key={page} theme={theme}>
         {page==="today"&&<TodaySignals theme={theme} onSignalsLoaded={setTodaySignals} onSignalClick={(code)=>{window.__pendingAiCode=code;setPage("ai");}}/>}
         {page==="db"&&<SignalDB/>}
         {page==="cctoday"&&<ChimchakhaeToday apiUrl={API_URL}/>}
@@ -2877,7 +2890,9 @@ export default function App(){
         {page==="report"&&<MarketReportTab theme={theme}/>}
         {page==="history"&&<History items={history} onClear={clearHistory} onDelete={deleteHistoryItem}/>}
         {page==="track"&&<TrackTab todaySignals={todaySignals}/>}
-        {page==="verify"&&<VerifyTab/>}{detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
+        {page==="verify"&&<VerifyTab/>}
+        </PageErrorBoundary>
+        {detailModal&&<NeoAnalysisDetailModal result={detailModal} onClose={()=>setDetailModal(null)}/>}
       </div>
       <div style={{position:"fixed",bottom:0,left:0,right:0,background:_isDark?"#161b22":"#fff",borderTop:"1px solid "+(_isDark?"#30363d":"#e5e8eb"),display:"flex",justifyContent:"center",zIndex:100}}>
         <div style={{display:"flex",maxWidth:1080,width:"100%",overflowX:"auto"}}>

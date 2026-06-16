@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-15T14:06:04+09:00",
+    "updatedAt": "2026-06-15T20:47:58+09:00",
     "count": 1905,
     "backfilledFrom": "2018-01-01"
   },
@@ -1401,10 +1401,17 @@
       "marketBias": "bullish",
       "picks": [
         {
+          "name": "후성",
+          "code": "093370",
+          "score": 85.5,
+          "changePct": 17.83,
+          "sector": null
+        },
+        {
           "name": "대한항공",
           "code": "003490",
-          "score": 85.9,
-          "changePct": 10.9,
+          "score": 90.7,
+          "changePct": 12.78,
           "sector": null
         }
       ],
@@ -1421,8 +1428,8 @@
           "지표 자동 요약"
         ]
       },
-      "nq": 1.87,
-      "es": 1.2
+      "nq": 3.11,
+      "es": 2.13
     },
     {
       "date": "2026-06-12",
