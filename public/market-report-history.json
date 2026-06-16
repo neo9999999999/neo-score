@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-16T08:46:35+09:00",
+    "updatedAt": "2026-06-16T11:48:44+09:00",
     "count": 110,
     "backfilledFrom": "2026-01-01"
   },
@@ -26,7 +26,7 @@
       "date": "2026-06-16",
       "sentiment": "bullish",
       "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
-      "summary": "간밤 나스닥은 +3.07%로 마감했습니다. 유가 하락, 달러인덱스 보합, 미 10년물 금리 하락, 원/달러 하락 흐름을 종합하면 오늘 국내증시는 강세 우호적 출발이 예상됩니다.",
+      "summary": "간밤 나스닥은 +3.07%로 마감했습니다. 유가 하락, 달러인덱스 보합, 미 10년물 금리 하락, 원/달러 상승 흐름을 5개 지표 가중으로 종합한 거시 신호 점수는 +3.49로, 오늘 국내증시는 강세 우호적 출발이 예상됩니다. 우호 요인: 나스닥·S&P500·미 10년물·WTI 유가. 부담 요인: 원/달러.",
       "kospiBias": "강세 출발 기대",
       "indicators": [
         {
@@ -48,26 +48,26 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$81.45",
-          "change": "-3.43",
-          "changePct": "-4.04%",
+          "value": "$80.89",
+          "change": "-3.99",
+          "changePct": "-4.70%",
           "dir": "down"
         },
         {
           "key": "dxy",
           "label": "달러인덱스",
-          "value": "99.66",
-          "change": "-0.09",
-          "changePct": "-0.09%",
+          "value": "99.67",
+          "change": "-0.08",
+          "changePct": "-0.08%",
           "dir": "down"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,509.5원",
-          "change": "-7.88",
-          "changePct": "-0.52%",
-          "dir": "down"
+          "value": "1,512.4원",
+          "change": "+2.92",
+          "changePct": "+0.19%",
+          "dir": "up"
         },
         {
           "key": "ust10y",
@@ -80,16 +80,16 @@
       ],
       "topSectors": [
         {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
           "name": "반도체",
           "bias": "up"
         },
         {
-          "name": "AI·인터넷",
+          "name": "조선",
           "bias": "up"
-        },
-        {
-          "name": "2차전지",
-          "bias": "neutral"
         }
       ],
       "source": "rule",

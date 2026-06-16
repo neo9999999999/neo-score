@@ -149,21 +149,75 @@ export function macroWatch(indicators) {
   ];
 }
 
+// ---- 한글 조사 헬퍼 (받침 유무로 은/는·이/가·을/를 선택) ----
+export function hasBatchim(word) {
+  if (!word) return false;
+  const c = String(word).charCodeAt(String(word).length - 1);
+  if (c < 0xAC00 || c > 0xD7A3) return false; // 한글 음절이 아니면 받침 없음 취급
+  return (c - 0xAC00) % 28 !== 0;
+}
+export const josa = (w, withBatchim, noBatchim) => (w == null ? "" : w) + (hasBatchim(w) ? withBatchim : noBatchim);
+// 로/으로: 받침 없음 또는 ㄹ받침 → "로", 그 외 → "으로"
+export function josaRo(w) {
+  if (w == null) return "";
+  const s = String(w);
+  const c = s.charCodeAt(s.length - 1);
+  if (c < 0xAC00 || c > 0xD7A3) return s + "로";
+  const jong = (c - 0xAC00) % 28;
+  return s + (jong === 0 || jong === 8 ? "로" : "으로");
+}
+
+// ---- 다요인 거시 신호 종합 (나스닥 단일 → 5개 지표 가중 점수) ----
+// 각 지표가 '국내증시'에 주는 방향성을 부호×가중치로 합산한다.
+//   sign=+1: 값 상승이 국내 우호 / sign=-1: 값 상승이 국내 부담
+export function macroSignals(indicators) {
+  const get = k => indicators.find(i => i.key === k)?._raw;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const defs = [
+    { key: "nasdaq", label: "나스닥", sign: 1, w: 1.0, up: "국내 반도체·IT 동반 강세에 우호", down: "기술주 투자심리 위축 요인" },
+    { key: "sp500", label: "S&P500", sign: 1, w: 0.5, up: "글로벌 위험선호 개선", down: "위험회피 분위기 확산" },
+    { key: "usdkrw", label: "원/달러", sign: -1, w: 0.7, up: "원화 강세 → 외국인 순매수 우호", down: "원화 약세 → 외국인 순매도 압력" },
+    { key: "ust10y", label: "미 10년물", sign: -1, w: 0.5, up: "금리 하락 → 성장주 밸류에이션 우호", down: "금리 상승 → 성장주 밸류에이션 부담" },
+    { key: "wti", label: "WTI 유가", sign: -1, w: 0.3, up: "유가 안정 → 물가·비용 부담 완화", down: "유가 급등 → 인플레·비용 부담" },
+  ];
+  const signals = [];
+  let score = 0;
+  for (const d of defs) {
+    const raw = get(d.key);
+    if (!raw) continue;
+    const pct = raw.chgPct;
+    const contrib = clamp(pct, -2, 2) * d.sign * d.w; // 단일 지표 outlier가 전체를 지배하지 않도록 ±2%로 제한
+    score += contrib;
+    const fav = contrib > 0.03 ? "good" : contrib < -0.03 ? "bad" : "flat";
+    signals.push({ key: d.key, label: d.label, pct: +pct.toFixed(2), score: +contrib.toFixed(2), fav, note: fav === "good" ? d.up : fav === "bad" ? d.down : "영향 중립" });
+  }
+  score = +score.toFixed(2);
+  const sentiment = score > 0.5 ? "bullish" : score < -0.5 ? "bearish" : "neutral";
+  return { score, sentiment, signals };
+}
+
 // ---- 룰 기반 리포트 본문 (지표 배열 → 분석 객체) ----
 export function ruleBasedBody(indicators, refDate = kstNow()) {
   const get = k => indicators.find(i => i.key === k)?._raw;
   const nq = get("nasdaq"), oil = get("wti"), dxy = get("dxy"), fx = get("usdkrw"), y10 = get("ust10y");
   const nqPct = nq?.chgPct ?? 0;
-  const sentiment = nqPct > 0.4 ? "bullish" : nqPct < -0.4 ? "bearish" : "neutral";
+  const macro = macroSignals(indicators);
+  const sentiment = macro.sentiment;
   const dirWord = v => v == null ? "혼조" : v > 0.1 ? "상승" : v < -0.1 ? "하락" : "보합";
-  const summary = `간밤 나스닥은 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"}로 마감했습니다. 유가 ${dirWord(oil?.chgPct)}, 달러인덱스 ${dirWord(dxy?.chgPct)}, 미 10년물 금리 ${dirWord(y10?.chgPct)}, 원/달러 ${dirWord(fx?.chgPct)} 흐름을 종합하면 오늘 국내증시는 ${sentiment === "bullish" ? "강세 우호적" : sentiment === "bearish" ? "약세 경계" : "혼조·관망"} 출발이 예상됩니다.`;
+  const dW = v => josa(dirWord(v), "은", "는");   // 상승은/하락은/보합은/혼조는
+  const dRo = v => josaRo(dirWord(v));            // 상승으로/하락으로/보합으로/혼조로
+  const goods = macro.signals.filter(s => s.fav === "good").map(s => s.label);
+  const bads = macro.signals.filter(s => s.fav === "bad").map(s => s.label);
+  const summary = `간밤 나스닥은 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"}로 마감했습니다. 유가 ${dirWord(oil?.chgPct)}, 달러인덱스 ${dirWord(dxy?.chgPct)}, 미 10년물 금리 ${dirWord(y10?.chgPct)}, 원/달러 ${dirWord(fx?.chgPct)} 흐름을 5개 지표 가중으로 종합한 거시 신호 점수는 ${macro.score >= 0 ? "+" : ""}${macro.score}로, 오늘 국내증시는 ${sentiment === "bullish" ? "강세 우호적" : sentiment === "bearish" ? "약세 경계" : "혼조·관망"} 출발이 예상됩니다.${goods.length ? ` 우호 요인: ${goods.join("·")}.` : ""}${bads.length ? ` 부담 요인: ${bads.join("·")}.` : ""}`;
   return {
+    macroScore: macro.score,
+    signals: macro.signals,
     title: "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
     sentiment,
     summary,
     chain: [
       { from: "유가", via: "에너지·운송 비용 → 인플레 기대", to: "미 금리", tone: oil?.chgPct > 0 ? "neg" : "pos", note: `유가 ${dirWord(oil?.chgPct)} → 금리 ${oil?.chgPct > 0 ? "상승 압력" : "하락 압력"}.` },
-      { from: "미 금리", via: "할인율 → 성장주 밸류에이션", to: "나스닥", tone: y10?.chgPct > 0 ? "neg" : "pos", note: `금리 ${dirWord(y10?.chgPct)}는 기술주에 ${y10?.chgPct > 0 ? "부담" : "우호적"}.` },
+      { from: "미 금리", via: "할인율 → 성장주 밸류에이션", to: "나스닥", tone: y10?.chgPct > 0 ? "neg" : "pos", note: `금리 ${dW(y10?.chgPct)} 기술주에 ${y10?.chgPct > 0 ? "부담" : "우호적"}.` },
       { from: "달러인덱스", via: "위험선호·자금 흐름", to: "원/달러 환율", tone: dxy?.chgPct > 0 ? "neg" : "pos", note: `달러 ${dirWord(dxy?.chgPct)} → 원화 ${dxy?.chgPct > 0 ? "약세, 외국인 매도 압력" : "강세, 외국인 매수 우호"}.` },
       { from: "나스닥", via: "반도체·빅테크 동조화", to: "코스피·코스닥", tone: nqPct > 0 ? "pos" : "neg", note: `나스닥 ${dirWord(nqPct)} → 국내 반도체·IT ${nqPct > 0 ? "동반 강세" : "약세"} 가능.` },
     ],
@@ -172,9 +226,9 @@ export function ruleBasedBody(indicators, refDate = kstNow()) {
       kospiBias: sentiment === "bullish" ? "강세 출발 기대" : sentiment === "bearish" ? "약세 경계" : "관망",
       kosdaqBias: sentiment === "bullish" ? "성장주 우호" : "관망",
       fxNote: `원/달러 ${dirWord(fx?.chgPct)} — ${fx?.chgPct > 0 ? "외국인 수급에 부담" : "외국인 수급에 우호적"}.`,
-      detail: `나스닥 흐름과 환율을 종합하면 국내증시는 ${sentiment === "bullish" ? "반도체·IT 중심 강세" : sentiment === "bearish" ? "방어주 중심 보수적 대응" : "종목 장세 속 혼조"}가 예상됩니다.`,
+      detail: `나스닥 흐름과 환율을 종합하면 국내증시는 ${josa(sentiment === "bullish" ? "반도체·IT 중심 강세" : sentiment === "bearish" ? "방어주 중심 보수적 대응" : "종목 장세 속 혼조", "이", "가")} 예상됩니다.`,
     },
-    sectors: nqPct >= 0 ? [
+    sectors: sentiment !== "bearish" ? [
       { name: "반도체", bias: "up", reason: "나스닥·SOX 동조화가 높아 간밤 미 반도체 강세가 직접 반영.", stocks: [{ name: "삼성전자", reason: "외국인 수급 바로미터, 지수 대표주." }, { name: "SK하이닉스", reason: "HBM·AI 메모리 수요 직접 수혜." }, { name: "한미반도체", reason: "HBM 본더 장비 대표주." }] },
       { name: "AI·인터넷", bias: "up", reason: "미 빅테크·AI 강세 동조.", stocks: [{ name: "네이버", reason: "AI·검색 플랫폼." }, { name: "카카오", reason: "플랫폼·AI 모멘텀." }] },
       { name: "2차전지", bias: "neutral", reason: "달러·금리 흐름에 따른 성장주 투자심리 영향.", stocks: [{ name: "LG에너지솔루션", reason: "글로벌 전기차 수요 민감주." }, { name: "삼성SDI", reason: "ESS·전지 수요." }, { name: "에코프로비엠", reason: "양극재 대표주." }] },
@@ -193,12 +247,12 @@ export function ruleBasedBody(indicators, refDate = kstNow()) {
     todayIssues: [{ category: "거시", title: "지표 자동 요약", detail: `유가 ${dirWord(oil?.chgPct)}, 달러 ${dirWord(dxy?.chgPct)}, 금리 ${dirWord(y10?.chgPct)} — 연결고리 섹션 참고.` }],
     cards: [
       { emoji: sentiment === "bullish" ? "📈" : sentiment === "bearish" ? "📉" : "⚖️", title: "오늘의 시장 한눈에", body: `${summary} 핵심은 금리 ${dirWord(y10?.chgPct)}·환율 ${dirWord(fx?.chgPct)}이며, 지수보다 종목·테마별 차별화가 클 수 있는 장입니다.` },
-      { emoji: "🛢️", title: "유가 → 금리 → 기술주", body: `WTI ${dirWord(oil?.chgPct)}로 인플레 기대가 ${oil?.chgPct > 0 ? "자극되어 금리 상승 압력 → 고밸류 기술주·성장주에 부담" : "완화되어 금리 하락 압력 → 기술주·성장주에 우호적"}. 정유·화학·항공 등 유가 민감주도 같이 체크.` },
+      { emoji: "🛢️", title: "유가 → 금리 → 기술주", body: `WTI ${dRo(oil?.chgPct)} 인플레 기대가 ${oil?.chgPct > 0 ? "자극되어 금리 상승 압력 → 고밸류 기술주·성장주에 부담" : "완화되어 금리 하락 압력 → 기술주·성장주에 우호적"}. 정유·화학·항공 등 유가 민감주도 같이 체크.` },
       { emoji: "💵", title: "달러 → 환율 → 외국인 수급", body: `달러인덱스 ${dirWord(dxy?.chgPct)}, 원/달러 ${dirWord(fx?.chgPct)}. ${fx?.chgPct > 0 ? "원화 약세 구간은 외국인 순매도 압력으로 대형주·지수에 부담" : "원화 강세는 외국인 순매수 유입에 우호적이라 대형주·반도체에 긍정적"}.` },
       { emoji: "🇰🇷", title: "국내 증시 전략", body: `간밤 나스닥 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"} → 국내 반도체·IT ${nqPct >= 0 ? "동반 강세 시도 가능" : "약세 흐름 주의"}. ${sentiment === "bullish" ? "강세 우호 출발 기대, 주도 섹터 중심 대응" : sentiment === "bearish" ? "약세 경계, 방어주·현금비중 관리" : "혼조 속 종목 장세 — 강한 섹터만 선별 대응"}.` },
-      { emoji: "🎯", title: "주목 섹터", body: `${nqPct >= 0 ? "반도체·AI·2차전지·방산 등 주도 성장 섹터" : "통신·정유·음식료·금융 등 방어·가치 섹터"}가 상대적으로 부각될 수 있는 환경입니다. 신고가·정배열 종목 위주로 관심.` },
+      { emoji: "🎯", title: "주목 섹터", body: `${sentiment !== "bearish" ? "반도체·AI·2차전지·방산 등 주도 성장 섹터" : "통신·정유·음식료·금융 등 방어·가치 섹터"}가 상대적으로 부각될 수 있는 환경입니다. 신고가·정배열 종목 위주로 관심.` },
     ],
-    detail: `[거시 연결고리]\n유가 ${dirWord(oil?.chgPct)}는 인플레 기대를 통해 금리에 ${oil?.chgPct > 0 ? "상승" : "하락"} 압력으로 작용합니다.\n\n[금리 → 나스닥]\n미 10년물 금리 ${dirWord(y10?.chgPct)}는 성장주 할인율을 ${y10?.chgPct > 0 ? "높여 기술주에 부담" : "낮춰 기술주에 우호적"}으로 작용했고, 나스닥은 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"}로 마감했습니다.\n\n[달러 → 환율 → 수급]\n달러인덱스 ${dirWord(dxy?.chgPct)}로 원/달러는 ${dirWord(fx?.chgPct)} 흐름을 보여 외국인 수급에 ${dxy?.chgPct > 0 ? "부담" : "우호적"}입니다.\n\n[국내증시 전망]\n종합하면 오늘 국내증시는 ${sentiment === "bullish" ? "반도체·IT 중심 강세 출발" : sentiment === "bearish" ? "약세 경계 속 방어적 대응" : "혼조 속 종목 장세"}가 예상됩니다.\n\n※ 룰 기반 자동 분석입니다. LLM 분석이 활성화되면 더 정교한 해설이 제공됩니다.`,
+    detail: `[거시 신호 종합]\n나스닥·S&P500·원/달러·미 10년물·유가 5개 지표를 가중 합산한 거시 신호 점수는 ${macro.score >= 0 ? "+" : ""}${macro.score}로, 오늘 방향성은 '${sentiment === "bullish" ? "강세 우호" : sentiment === "bearish" ? "약세 경계" : "중립·혼조"}'입니다.${goods.length ? ` 우호 요인은 ${goods.join("·")}, ` : " "}${bads.length ? `부담 요인은 ${bads.join("·")}입니다.` : ""}\n\n[거시 연결고리]\n유가 ${dW(oil?.chgPct)} 인플레 기대를 통해 금리에 ${oil?.chgPct > 0 ? "상승" : "하락"} 압력으로 작용합니다.\n\n[금리 → 나스닥]\n미 10년물 금리 ${dW(y10?.chgPct)} 성장주 할인율을 ${y10?.chgPct > 0 ? "높여 기술주에 부담" : "낮춰 기술주에 우호적"}으로 작용했고, 나스닥은 ${nq ? (nqPct >= 0 ? "+" : "") + nqPct + "%" : "혼조"}로 마감했습니다.\n\n[달러 → 환율 → 수급]\n달러인덱스 ${dRo(dxy?.chgPct)} 원/달러는 ${dirWord(fx?.chgPct)} 흐름을 보여 외국인 수급에 ${dxy?.chgPct > 0 ? "부담" : "우호적"}입니다.\n\n[국내증시 전망]\n종합하면 오늘 국내증시는 ${josa(sentiment === "bullish" ? "반도체·IT 중심 강세 출발" : sentiment === "bearish" ? "약세 경계 속 방어적 대응" : "혼조 속 종목 장세", "이", "가")} 예상됩니다.\n\n※ 룰 기반 자동 분석입니다. LLM(ANTHROPIC_API_KEY) 분석이 활성화되면 실제 뉴스·이벤트까지 반영한 더 정교한 해설이 제공됩니다.`,
   };
 }
 

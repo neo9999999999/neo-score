@@ -121,68 +121,64 @@ function SectorCard({ s, T }) {
   );
 }
 
-// 카드뉴스 — 손가락 스와이프 슬라이드 캐러셀
-function CardNews({ cards, T }) {
-  const [idx, setIdx] = useState(0);
-  const [drag, setDrag] = useState(0);
-  const startX = useRef(0);
-  const dx = useRef(0);
-  const dragging = useRef(false);
-  const n = (cards && cards.length) || 0;
-  const palette = [ACCENT, "#2563eb", "#0d9488", "#d97706", "#db2777", "#dc2626"];
-  if (!n) return null;
-
-  const go = (i) => setIdx(Math.max(0, Math.min(n - 1, i)));
-  const onStart = (x) => { startX.current = x; dx.current = 0; dragging.current = true; };
-  const onMove = (x) => { if (!dragging.current) return; dx.current = x - startX.current; setDrag(dx.current); };
-  const onEnd = () => {
-    if (!dragging.current) return;
-    dragging.current = false;
-    if (dx.current < -45 && idx < n - 1) go(idx + 1);
-    else if (dx.current > 45 && idx > 0) go(idx - 1);
-    setDrag(0); dx.current = 0;
-  };
-
+// 오늘의 시장 흐름 — 한 장 요약(주요 이슈 흐름 연결 → 시장 예측 → 주요 종목)
+function FlowSummary({ report, T }) {
+  const cards = report.cards || [];
+  const sent = SENT[report.sentiment] || SENT.neutral;
+  const score = report.macroScore;
+  // 흐름상 주목 종목: 데이터 기반이면 섹터별 대표주, 아니면 전체에서
+  const keyStocks = [];
+  const sectors = report.sectors || [];
+  if (report.sectorsSource === "data") {
+    for (const s of sectors) { const st = (s.stocks || [])[0]; if (st) keyStocks.push({ ...st, sector: s.name }); }
+    for (const s of sectors) { const st = (s.stocks || [])[1]; if (st && keyStocks.length < 6) keyStocks.push({ ...st, sector: s.name }); }
+  } else {
+    for (const s of sectors) for (const st of (s.stocks || [])) keyStocks.push({ ...st, sector: s.name });
+  }
+  const ks = keyStocks.slice(0, 6);
+  if (!cards.length && !ks.length) return null;
   return (
-    <div>
-      <div
-        style={{ overflow: "hidden", borderRadius: 18, touchAction: "pan-y" }}
-        onTouchStart={(e) => onStart(e.touches[0].clientX)}
-        onTouchMove={(e) => onMove(e.touches[0].clientX)}
-        onTouchEnd={onEnd}
-        onMouseDown={(e) => onStart(e.clientX)}
-        onMouseMove={(e) => dragging.current && onMove(e.clientX)}
-        onMouseUp={onEnd}
-        onMouseLeave={onEnd}
-      >
-        <div style={{ display: "flex", transform: `translateX(calc(${-idx * 100}% + ${drag}px))`, transition: drag ? "none" : "transform .3s cubic-bezier(.22,.61,.36,1)" }}>
-          {cards.map((card, i) => {
-            const accent = palette[i % palette.length];
-            return (
-              <div key={i} style={{ flex: "0 0 100%", minWidth: "100%", boxSizing: "border-box", padding: 1 }}>
-                <div style={{ position: "relative", borderRadius: 18, background: "linear-gradient(140deg," + accent + "f2," + accent + "b0)", padding: "18px 18px 16px", minHeight: 124, color: "#fff", boxShadow: "0 8px 24px " + accent + "40", userSelect: "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
-                    <span style={{ fontSize: 30, lineHeight: 1 }}>{card.emoji || "📰"}</span>
-                    <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.4px", lineHeight: 1.25, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>{card.title}</span>
-                  </div>
-                  <div style={{ fontSize: 14, lineHeight: 1.6, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>{card.body}</div>
-                  <div style={{ position: "absolute", top: 14, right: 16, fontSize: 12, fontWeight: 800, background: "rgba(255,255,255,0.22)", padding: "2px 9px", borderRadius: 20 }}>{i + 1} / {n}</div>
-                </div>
-              </div>
-            );
-          })}
+    <div style={{ borderRadius: 18, border: "1px solid " + T.border, background: T.card, overflow: "hidden", boxShadow: "0 6px 20px rgba(0,0,0,0.06)" }}>
+      <div style={{ padding: "14px 16px", background: "linear-gradient(135deg," + sent.c + "26, transparent)", borderBottom: "1px solid " + T.border }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 15.5, fontWeight: 900, color: T.text, letterSpacing: "-0.3px" }}>📊 오늘의 시장 흐름 한 장</span>
+          <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 800, color: sent.c, background: sent.bg, padding: "4px 11px", borderRadius: 14 }}>
+            {sent.emoji} {sent.label}{score != null ? ` · 신호 ${score >= 0 ? "+" : ""}${score}` : ""}
+          </span>
         </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-        <button onClick={() => go(idx - 1)} disabled={idx === 0} style={{ ...navBtn(T), opacity: idx === 0 ? 0.4 : 1 }}>‹</button>
-        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 6 }}>
-          {cards.map((_, i) => (
-            <span key={i} onClick={() => go(i)} style={{ cursor: "pointer", width: i === idx ? 24 : 8, height: 8, borderRadius: 4, background: i === idx ? palette[idx % palette.length] : T.border, transition: "all .2s" }} />
+      {/* 주요 이슈 흐름 (연결선) */}
+      {cards.length > 0 && (
+        <div style={{ padding: "2px 16px 6px" }}>
+          {cards.map((c, i) => (
+            <div key={i} style={{ display: "flex", gap: 11, paddingTop: 12 }}>
+              <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <span style={{ fontSize: 19, lineHeight: 1.1 }}>{c.emoji || "•"}</span>
+                {i < cards.length - 1 && <span style={{ width: 2, flex: 1, minHeight: 16, background: T.border, marginTop: 4 }} />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, paddingBottom: i < cards.length - 1 ? 0 : 6 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{c.title}</div>
+                <div style={{ fontSize: 12.5, lineHeight: 1.6, color: T.sub, marginTop: 2 }}>{c.body}</div>
+              </div>
+            </div>
           ))}
         </div>
-        <button onClick={() => go(idx + 1)} disabled={idx === n - 1} style={{ ...navBtn(T), opacity: idx === n - 1 ? 0.4 : 1 }}>›</button>
-      </div>
-      <div style={{ textAlign: "center", fontSize: 11.5, color: T.hint, marginTop: 6 }}>← 좌우로 밀어서 넘기기 →</div>
+      )}
+      {/* 흐름상 주목 종목 */}
+      {ks.length > 0 && (
+        <div style={{ padding: "12px 16px 14px", borderTop: "1px solid " + T.border, background: T.cardAlt }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: T.hint, marginBottom: 8 }}>🎯 흐름상 주목 종목{report.sectorsSource === "data" ? " (전일 실거래 주도주)" : ""}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+            {ks.map((st, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: T.card, border: "1px solid " + T.border, borderRadius: 20, padding: "5px 10px" }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{st.name}</span>
+                {st.changePct != null && <span style={{ fontSize: 12, fontWeight: 800, color: st.changePct >= 0 ? UP_C : DN_C }}>{st.changePct >= 0 ? "+" : ""}{st.changePct}%</span>}
+                {st.sector && <span style={{ fontSize: 10, fontWeight: 700, color: ON_ACCENT, background: ACCENT, padding: "1px 6px", borderRadius: 8 }}>{st.sector}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -210,22 +206,77 @@ function IssueRow({ it, T }) {
 }
 
 // 리포트 본문 (오늘/히스토리 상세 공용)
-function ReportBody({ report, T }) {
+// 거시 신호 종합 — 5개 지표 가중 점수 + 지표별 우호/부담 분해 (투명성)
+const FAV = { good: { c: UP_C, label: "우호" }, bad: { c: DN_C, label: "부담" }, flat: { c: "#8b95a1", label: "중립" } };
+function MacroSignals({ signals, score, T }) {
+  if (!signals || !signals.length) return null;
+  const s = typeof score === "number" ? score : 0;
+  const headC = s > 0.5 ? UP_C : s < -0.5 ? DN_C : "#d97706";
+  const headL = s > 0.5 ? "강세 우호" : s < -0.5 ? "약세 경계" : "중립·혼조";
+  const barPct = Math.max(-3, Math.min(3, s)) / 3 * 50; // -50%~+50% (중앙 기준)
+  return (
+    <Section title="🧭 거시 신호 종합" sub="나스닥·S&P·원/달러·금리·유가 가중 → 국내증시 방향성 점수" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 14 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 9, marginBottom: 10 }}>
+          <span style={{ fontSize: 12, color: T.hint, fontWeight: 700 }}>종합 점수</span>
+          <span style={{ fontSize: 21, fontWeight: 900, color: headC, letterSpacing: "-0.5px" }}>{s >= 0 ? "+" : ""}{s}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 800, color: headC }}>{headL}</span>
+          <span style={{ marginLeft: "auto", fontSize: 11, color: T.hint }}>−3 약세 · +3 강세</span>
+        </div>
+        <div style={{ position: "relative", height: 8, background: T.cardAlt, borderRadius: 4, marginBottom: 14 }}>
+          <div style={{ position: "absolute", left: "50%", top: -3, width: 2, height: 14, background: T.border }} />
+          <div style={{ position: "absolute", top: 0, height: 8, borderRadius: 4, background: s >= 0 ? UP_C : DN_C, left: s >= 0 ? "50%" : (50 + barPct) + "%", width: Math.abs(barPct) + "%" }} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+          {signals.map((g, i) => {
+            const f = FAV[g.fav] || FAV.flat;
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ flex: "0 0 78px", fontSize: 12.5, fontWeight: 700, color: T.text }}>{g.label}</span>
+                <span style={{ flex: "0 0 56px", fontSize: 12.5, fontWeight: 700, color: g.pct >= 0 ? UP_C : DN_C }}>{g.pct >= 0 ? "+" : ""}{g.pct}%</span>
+                <span style={{ flex: "0 0 auto", fontSize: 10.5, fontWeight: 800, color: f.c, background: f.c + "1f", padding: "2px 7px", borderRadius: 10 }}>{f.label}</span>
+                <span style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: T.hint, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.note}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function ReportBody({ report, T, live }) {
   const [showDetail, setShowDetail] = useState(false);
   const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
   const todayIssues = report.todayIssues || report.issues || [];
+  const srcChip = report.source === "llm" ? { t: "🤖 AI 분석", c: ACCENT } : report.source === "rule" ? { t: "⚙️ 룰 기반", c: "#8b95a1" } : null;
+  // 신선도(라이브 '오늘' 뷰 한정): 리포트 기준일이 오늘(KST)보다 과거면 안내
+  let staleDays = 0;
+  if (live && report.date) {
+    const now = new Date();
+    const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
+    staleDays = Math.round((Date.parse(kstToday) - Date.parse(report.date)) / 86400000);
+  }
 
   return (
     <div style={{ paddingBottom: 20 }}>
       {/* 헤더 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
-          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600 }}>{report.date} · 데일리 마켓 리포트</div>
+          <div style={{ fontSize: 12, color: T.hint, fontWeight: 600, display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
+            <span>{report.date} · 데일리 마켓 리포트</span>
+            {srcChip && <span style={{ fontSize: 10.5, fontWeight: 800, color: srcChip.c, border: "1px solid " + srcChip.c + "66", padding: "1px 7px", borderRadius: 10 }}>{srcChip.t}</span>}
+          </div>
           <h2 style={{ fontSize: 19, fontWeight: 900, color: T.text, margin: "3px 0 0", letterSpacing: "-0.5px", lineHeight: 1.25 }}>{report.title || "거시 연결 기반 증시 브리핑"}</h2>
         </div>
         <span style={{ fontSize: 12.5, fontWeight: 800, color: sent.c, background: sent.bg, padding: "5px 11px", borderRadius: 20 }}>{sent.emoji} {sent.label}</span>
       </div>
+      {staleDays >= 1 && (
+        <div style={{ marginTop: 10, fontSize: 12, color: "#b45309", background: "rgba(217,119,6,0.12)", border: "1px solid rgba(217,119,6,0.4)", borderRadius: 10, padding: "8px 11px", lineHeight: 1.5 }}>
+          ⏳ {staleDays}일 전({report.date}) 기준 리포트입니다. 주말·휴장이면 정상이며, 매 거래일 새벽 자동 갱신됩니다.
+        </div>
+      )}
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
           ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
@@ -240,10 +291,10 @@ function ReportBody({ report, T }) {
         </div>
       )}
 
-      {/* 카드뉴스 — 맨 위 */}
-      {report.cards && report.cards.length > 0 && (
+      {/* 오늘의 시장 흐름 — 한 장 요약 (맨 위) */}
+      {((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
         <div style={{ marginTop: 14 }}>
-          <CardNews cards={report.cards} T={T} />
+          <FlowSummary report={report} T={T} />
         </div>
       )}
 
@@ -262,6 +313,11 @@ function ReportBody({ report, T }) {
           </div>
         )}
       </div>
+
+      {/* 거시 신호 종합 (지표별 우호/부담 분해) */}
+      {report.signals && report.signals.length > 0 && (
+        <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
+      )}
 
       {/* 핵심 지표 */}
       {report.indicators && report.indicators.length > 0 && (
@@ -307,7 +363,7 @@ function ReportBody({ report, T }) {
 
       {/* 수혜 섹터 · 종목 */}
       {report.sectors && report.sectors.length > 0 && (
-        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub="섹터를 눌러 수혜 종목 확인" T={T}>
+        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
           </div>
@@ -402,8 +458,8 @@ function AnalysisCard({ a, T }) {
         {cell("약세 예측", a.bearishDays + "일")}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
-        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish >= 0 ? UP_C : DN_C)}
-        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish >= 0 ? UP_C : DN_C)}
+        {cell("강세일 코스피 평균", pct(a.avgKospiOnBullish), a.avgKospiOnBullish == null ? T.text : a.avgKospiOnBullish >= 0 ? UP_C : DN_C)}
+        {cell("약세일 코스피 평균", pct(a.avgKospiOnBearish), a.avgKospiOnBearish == null ? T.text : a.avgKospiOnBearish >= 0 ? UP_C : DN_C)}
         {cell("중립일 코스피 평균", pct(a.avgKospiOnNeutral))}
       </div>
       {a.note && <div style={{ fontSize: 11.5, color: T.hint, marginTop: 10, lineHeight: 1.55 }}>{a.note}</div>}
@@ -643,6 +699,8 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
   const [open, setOpen] = useState(false);
   const hasOutcome = r.dayHitRate != null;
   const picks = r.picks || [];
+  const p5picks = picks.filter(p => p.hit5in5 != null);
+  const day5Rate = p5picks.length ? Math.round(p5picks.filter(p => p.hit5in5).length / p5picks.length * 100) : null;
   const dayProfit = (perStock && picks.some(p => p.nextRet != null))
     ? picks.filter(p => p.nextRet != null).reduce((s, p) => s + perStock * simExitJS({ o: p.nextOpen, h: p.nextHigh, l: p.nextLow, c: p.nextRet }, recOpt) / 100, 0)
     : null;
@@ -660,6 +718,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
           {hasOutcome ? (
             <>
               <div style={{ fontSize: 13, fontWeight: 800, color: r.dayHitRate >= 30 ? UP_C : "#d97706" }}>3%↑ {r.dayHitRate}%</div>
+              {day5Rate != null && <div style={{ fontSize: 10.5, fontWeight: 700, color: ACCENT }}>5일내+5% {day5Rate}%</div>}
               {dayProfit != null
                 ? <div style={{ fontSize: 11.5, fontWeight: 700, color: dayProfit >= 0 ? UP_C : DN_C }}>{dayProfit >= 0 ? "+" : ""}{wonFmt(dayProfit)}</div>
                 : <div style={{ fontSize: 11, color: r.avgNextRet >= 0 ? UP_C : DN_C }}>익일 {r.avgNextRet >= 0 ? "+" : ""}{r.avgNextRet}%</div>}
@@ -694,6 +753,7 @@ function AfternoonDayRow({ r, T, perStock, recOpt }) {
                     <span style={{ color: T.hint }}>당일 <b style={{ color: p.changePct >= 0 ? UP_C : DN_C }}>{p.changePct >= 0 ? "+" : ""}{p.changePct}%</b></span>
                     {p.nextHigh != null && <span style={{ color: T.hint }}>익일고가 <b style={{ color: ACCENT }}>{p.nextHigh >= 0 ? "+" : ""}{p.nextHigh}%</b></span>}
                     {p.nextRet != null && <span style={{ color: T.hint }}>익일종가 <b style={{ color: p.nextRet >= 0 ? UP_C : DN_C }}>{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</b></span>}
+                    {p.hit5in5 != null && <span style={{ color: T.hint }}>5일내+5% <b style={{ color: p.hit5in5 ? UP_C : DN_C }}>{p.hit5in5 ? (p.days5 + "일째 도달") : "미달"}</b></span>}
                   </div>
                 </div>
               );
@@ -731,7 +791,13 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
     const avg = rs.reduce((s, x) => s + x, 0) / n;
     const win = rs.filter(x => x > 0).length / n * 100;
     const profit = perStock ? rs.reduce((s, x) => s + perStock * x / 100, 0) : null;
-    return { n, avg, win, profit };
+    // 5일 내 매수가 대비 고가 +5% 도달 (추가검증)
+    const p5 = ps.filter(p => p.hit5in5 != null);
+    const n5 = p5.length;
+    const rate5 = n5 ? p5.filter(p => p.hit5in5).length / n5 * 100 : null;
+    const dArr = p5.filter(p => p.hit5in5 && p.days5 != null).map(p => p.days5);
+    const avgDays5 = dArr.length ? dArr.reduce((s, x) => s + x, 0) / dArr.length : null;
+    return { n, avg, win, profit, rate5, avgDays5 };
   };
   const yearStats = allYears.map(y => ({ y, ...statOf(reports.filter(r => r.date.slice(0, 4) === y)) }));
   const fStat = statOf(filtered);
@@ -761,13 +827,14 @@ function HistoryBrowser({ reports, T, perStock, recOpt }) {
               <span style={{ flex: "0 0 auto", color: T.sub }}>{ys.n || 0}종목</span>
               {ys.n ? <span style={{ flex: "0 0 auto", fontWeight: 800, color: ys.avg >= 0 ? UP_C : DN_C }}>익절 {ys.avg >= 0 ? "+" : ""}{ys.avg.toFixed(2)}%</span> : <span style={{ color: T.hint }}>—</span>}
               {ys.n ? <span style={{ color: T.hint, fontSize: 11 }}>승률 {ys.win.toFixed(0)}%</span> : null}
+              {ys.rate5 != null && <span style={{ color: ACCENT, fontSize: 11, fontWeight: 700 }}>5일+5% {ys.rate5.toFixed(0)}%{ys.avgDays5 != null ? "·" + ys.avgDays5.toFixed(1) + "일" : ""}</span>}
               {ys.profit != null && <span style={{ marginLeft: "auto", fontWeight: 700, color: ys.profit >= 0 ? UP_C : DN_C }}>{ys.profit >= 0 ? "+" : ""}{wonFmt(ys.profit)}</span>}
             </div>
           ))}
         </div>
         {fStat.n > 0 && (
           <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px dashed " + T.border, fontSize: 12.5, color: T.sub }}>
-            선택 구간: <b style={{ color: T.text }}>{fStat.n}종목</b> · 평균 익절 <b style={{ color: fStat.avg >= 0 ? UP_C : DN_C }}>{fStat.avg >= 0 ? "+" : ""}{fStat.avg.toFixed(2)}%</b> · 승률 {fStat.win.toFixed(0)}%{fStat.profit != null ? <> · 수익금 <b style={{ color: fStat.profit >= 0 ? UP_C : DN_C }}>{fStat.profit >= 0 ? "+" : ""}{wonFmt(fStat.profit)}</b></> : null}
+            선택 구간: <b style={{ color: T.text }}>{fStat.n}종목</b> · 평균 익절 <b style={{ color: fStat.avg >= 0 ? UP_C : DN_C }}>{fStat.avg >= 0 ? "+" : ""}{fStat.avg.toFixed(2)}%</b> · 승률 {fStat.win.toFixed(0)}%{fStat.rate5 != null ? <> · 5일내+5% <b style={{ color: fStat.rate5 >= 50 ? UP_C : "#d97706" }}>{fStat.rate5.toFixed(0)}%</b>{fStat.avgDays5 != null ? " (평균 " + fStat.avgDays5.toFixed(1) + "일)" : ""}</> : null}{fStat.profit != null ? <> · 수익금 <b style={{ color: fStat.profit >= 0 ? UP_C : DN_C }}>{fStat.profit >= 0 ? "+" : ""}{wonFmt(fStat.profit)}</b></> : null}
           </div>
         )}
       </div>
@@ -1202,7 +1269,7 @@ export function MarketReportTab({ theme }) {
       {mode === "today" && (
         loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
           : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-            : today ? <ReportBody report={today} T={T} /> : null
+            : today ? <ReportBody report={today} T={T} live /> : null
       )}
       {mode === "history" && (
         detail ? (

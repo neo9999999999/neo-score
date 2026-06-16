@@ -20,8 +20,9 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
   kstNow, kstDateStr, kstIso, fetchWithTimeout, STOOQ, fetchStooqSeries, closesAsOf,
-  makeIndicator, loadStockMap, attachCodes, ruleBasedBody,
+  makeIndicator, loadStockMap, attachCodes, ruleBasedBody, macroSignals,
 } from "./lib/report-core.mjs";
+import { buildSectorLeaders } from "./lib/sector-leaders.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -119,10 +120,14 @@ async function callLLM(system, user) {
 
 function assembleReport(dateStr, mode, indicators, body) {
   const cleanIndicators = indicators.map(({ _raw, _err, ...rest }) => rest);
+  // 거시 신호 종합은 항상 실제 지표에서 계산 (LLM·룰 모드 공통 — UI에 투명 표시)
+  const macro = macroSignals(indicators);
   return {
     date: dateStr,
     generatedAt: kstIso(),
     source: mode,
+    macroScore: macro.score,
+    signals: macro.signals,
     indicators: cleanIndicators,
     title: body.title,
     sentiment: body.sentiment || "neutral",
@@ -188,6 +193,27 @@ async function main() {
 
   attachCodes(body.sectors, await loadStockMap(STOCKS_PATH));
   const report = assembleReport(dateStr, mode, indicators, body);
+
+  // 데이터 기반 섹터 주도주 — 전일 실거래(등락·거래대금·신고가·정배열)로 매일 선정
+  try {
+    const leaders = await buildSectorLeaders(STOCKS_PATH, { dateStr });
+    if (leaders && leaders.length) {
+      report.sectors = leaders;
+      report.sectorsSource = "data";
+      // 카드뉴스 '주목 섹터' 서사를 실데이터 섹터·종목으로 동기화 (흐름 한 장 카드와 일치)
+      const secCard = (report.cards || []).find(c => c.title === "주목 섹터");
+      if (secCard) {
+        const names = leaders.map(s => s.name).join("·");
+        const leads = leaders.map(s => (s.stocks || [])[0]).filter(Boolean).map(x => x.name).slice(0, 4).join("·");
+        secCard.body = `전일 실거래 기준 주도 섹터는 ${names}입니다. ${leads ? `대표주 ${leads} 등 ` : ""}신고가·정배열·거래대금 상위 종목 위주로 관심.`;
+      }
+      console.log(`[market-report] 데이터 기반 섹터 ${leaders.length}개 (${leaders.map(s => s.name).join(", ")})`);
+    } else {
+      console.warn("[market-report] 섹터 주도주 데이터 없음 — 템플릿 섹터 유지");
+    }
+  } catch (e) {
+    console.warn("[market-report] 섹터 주도주 실패, 템플릿 섹터 유지:", e.message);
+  }
 
   await writeFile(OUT, JSON.stringify(report, null, 2) + "\n", "utf8");
   console.log("[market-report] 저장 완료:", OUT, `(source=${mode})`);
