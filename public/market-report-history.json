@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-16T11:48:44+09:00",
-    "count": 110,
+    "updatedAt": "2026-06-17T08:24:57+09:00",
+    "count": 111,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,79 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-06-17",
+      "sentiment": "neutral",
+      "title": "나스닥 -1.15% 혼조 — 종목 장세·차별화 전망",
+      "summary": "간밤 나스닥은 전일 대비 -1.15%(큰 폭)으로 마감, S&P500은 -0.57%를 기록했습니다. 미 10년물 금리는 4.43% — 4~4.5% 긴장 구간, 증시와 경쟁 관계. 원/달러 1,513원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -0.35(범위 ±3)으로, 오늘 국내증시는 혼조 속 종목·섹터별 차별화가 예상됩니다. 우호 요인: 미 10년물·WTI 유가 / 부담 요인: 나스닥·S&P500·원/달러.",
+      "kospiBias": "혼조·관망 — 종목·섹터 차별화",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,376.34",
+          "change": "-307.6",
+          "changePct": "-1.15%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,511.35",
+          "change": "-42.94",
+          "changePct": "-0.57%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$75.94",
+          "change": "-4.81",
+          "changePct": "-5.96%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.54",
+          "change": "-0.09",
+          "changePct": "-0.09%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,513.3원",
+          "change": "+3.81",
+          "changePct": "+0.25%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.43%",
+          "change": "-0.06%p",
+          "changePct": "-1.31%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "조선",
+          "bias": "up"
+        },
+        {
+          "name": "방산·우주",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null
+    },
     {
       "date": "2026-06-16",
       "sentiment": "bullish",
