@@ -352,7 +352,7 @@ function MacroSignals({ signals, score, T }) {
   );
 }
 
-function ReportBody({ report, T, live }) {
+function ReportBody({ report, T, live, topSlot }) {
   const [showDetail, setShowDetail] = useState(false);
   const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
@@ -398,8 +398,11 @@ function ReportBody({ report, T, live }) {
         </div>
       )}
 
-      {/* 오늘의 시장 흐름 — 한 장 요약 (맨 위) */}
-      {((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
+      {/* 진단·추천 카드 (아침 라이브 뷰) — 날짜 헤더 바로 아래, 헤드라인 결론 */}
+      {topSlot && <div style={{ marginTop: 16 }}>{topSlot}</div>}
+
+      {/* 오늘의 시장 흐름 — 한 장 요약. 진단 카드가 있으면 중복이라 숨김 */}
+      {!topSlot && ((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
         <div style={{ marginTop: 14 }}>
           <FlowSummary report={report} T={T} />
         </div>
@@ -1801,7 +1804,7 @@ export function MarketReportTab({ theme }) {
           {todayTab === "morning" ? (
             loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
               : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-                : today ? <><OpenPicks report={today} T={T} /><ReportBody report={today} T={T} live /></> : null
+                : today ? <ReportBody report={today} T={T} live topSlot={today.sectorsSource === "data" ? <OpenPicks report={today} T={T} /> : null} /> : null
           ) : (
             <ClosingBriefing T={T} />
           )}
