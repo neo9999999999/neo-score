@@ -367,7 +367,7 @@ function ReportBody({ report, T, live }) {
 
       {/* 수혜 섹터 · 종목 */}
       {report.sectors && report.sectors.length > 0 && (
-        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub="섹터를 눌러 수혜 종목 확인" T={T}>
+        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
           </div>

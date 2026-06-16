@@ -22,6 +22,7 @@ import {
   kstNow, kstDateStr, kstIso, fetchWithTimeout, STOOQ, fetchStooqSeries, closesAsOf,
   makeIndicator, loadStockMap, attachCodes, ruleBasedBody, macroSignals,
 } from "./lib/report-core.mjs";
+import { buildSectorLeaders } from "./lib/sector-leaders.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -192,6 +193,20 @@ async function main() {
 
   attachCodes(body.sectors, await loadStockMap(STOCKS_PATH));
   const report = assembleReport(dateStr, mode, indicators, body);
+
+  // 데이터 기반 섹터 주도주 — 전일 실거래(등락·거래대금·신고가·정배열)로 매일 선정
+  try {
+    const leaders = await buildSectorLeaders(STOCKS_PATH, { dateStr });
+    if (leaders && leaders.length) {
+      report.sectors = leaders;
+      report.sectorsSource = "data";
+      console.log(`[market-report] 데이터 기반 섹터 ${leaders.length}개 (${leaders.map(s => s.name).join(", ")})`);
+    } else {
+      console.warn("[market-report] 섹터 주도주 데이터 없음 — 템플릿 섹터 유지");
+    }
+  } catch (e) {
+    console.warn("[market-report] 섹터 주도주 실패, 템플릿 섹터 유지:", e.message);
+  }
 
   await writeFile(OUT, JSON.stringify(report, null, 2) + "\n", "utf8");
   console.log("[market-report] 저장 완료:", OUT, `(source=${mode})`);
