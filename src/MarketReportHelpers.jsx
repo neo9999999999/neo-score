@@ -555,17 +555,126 @@ function pickOpenStocks(report, n = 3) {
   return flat.slice(0, n);
 }
 
+function buildMorningNarrative(report) {
+  if (!report) return null;
+  const score = typeof report.macroScore === "number" ? report.macroScore : 0;
+  const sent = report.sentiment || "neutral";
+  const domestic = report.domestic || {};
+  const signals = report.signals || [];
+  const sectors = report.sectors || [];
+  const sentLabel = sent === "bullish" ? "강세 우호" : sent === "bearish" ? "약세 경계" : "중립·혼조";
+  const goodSignals = signals.filter(s => s.fav === "good").map(s => s.label);
+  const badSignals = signals.filter(s => s.fav === "bad").map(s => s.label);
+  const parts = [`거시 신호 ${score >= 0 ? "+" : ""}${score}점 · ${sentLabel}`];
+  if (goodSignals.length) parts.push(goodSignals.join("·") + " 우호");
+  if (badSignals.length) parts.push(badSignals.join("·") + " 부담");
+  if (domestic.kospiBias) parts.push(`코스피 ${domestic.kospiBias}${domestic.kosdaqBias ? ", 코스닥 " + domestic.kosdaqBias : ""} 전망`);
+  const environment = parts.join(" — ");
+  let prediction = "";
+  if (domestic.detail) {
+    const sents = domestic.detail.split(/(?<=[.。])\s*/);
+    prediction = sents.slice(0, 2).join(" ").trim();
+    if (prediction && !prediction.match(/[.。]$/)) prediction += ".";
+  }
+  if (!prediction) {
+    prediction = score > 1
+      ? "거시 환경이 전반적으로 우호적입니다. 외국인·기관 수급 유입을 주시하며 모멘텀 상위 종목 위주로 대응합니다."
+      : score > 0
+        ? "소폭 우호 환경에서 선별적 상승이 예상됩니다. 주도 섹터 내 대장주 위주로 집중하는 전략이 유효합니다."
+        : score < -1
+          ? "부담 요인이 복합적입니다. 방어적 포지션을 유지하되 낙폭 과대 단기 반등을 선별 대응합니다."
+          : score < 0
+            ? "불확실성이 상존합니다. 모멘텀이 확인되는 종목에만 집중하며 분할 대응을 권합니다."
+            : "방향성 탐색 구간으로 종목별 차별화가 예상됩니다. 거래대금·기술적 강도를 함께 확인하며 접근합니다.";
+  }
+  const topSectors = sectors.slice(0, 3).map(s => s.name);
+  const reason = topSectors.length
+    ? `이 환경에서 ${topSectors.join("·")} 섹터가 전일 실거래(등락률·거래대금·신고가·정배열) 기준 주도 섹터로 확인됐습니다. 이 섹터 내에서 신고가 돌파·종가 강도·거래량 급등이 겹치는 종목들을 추려 시가 매수 후보로 제시합니다.`
+    : `전일 실거래 데이터(등락·거래대금·신고가·정배열)를 기준으로 모멘텀이 가장 강한 종목들을 추려 시가 추천종목으로 선정했습니다. 시가 추격 시 반드시 분할 매수와 손절선을 설정하세요.`;
+  return { environment, prediction, reason };
+}
+
+function buildClosingNarrative(rep, mkt) {
+  if (!rep) return null;
+  const bias = rep.marketBias || "neutral";
+  const futures = rep.futures || [];
+  const mktScore = typeof mkt?.macroScore === "number" ? mkt.macroScore : null;
+  const futUp = futures.filter(f => f.dir === "up");
+  const futDown = futures.filter(f => f.dir === "down");
+  const biasLabel = bias === "up" ? "상승 우위" : bias === "down" ? "하락 압력" : "혼조";
+  const parts = [`오늘 국내 증시 ${biasLabel} 마감 추세`];
+  if (futUp.length > 0 && futDown.length === 0) parts.push("미 선물 전 지수 강세 — 익일 갭 상승 유력");
+  else if (futDown.length > 0 && futUp.length === 0) parts.push("미 선물 전 지수 약세 — 익일 갭 하락 주의");
+  else if (futUp.length > 0) parts.push(`미 선물 ${futUp.map(f => f.label).join("·")} 강세, ${futDown.map(f => f.label).join("·")} 약세`);
+  if (mktScore != null) parts.push(`아침 거시 신호 ${mktScore >= 0 ? "+" : ""}${mktScore}점(${mktScore > 0 ? "거시 우호" : mktScore < 0 ? "거시 부담" : "중립"})`);
+  const environment = parts.join(" — ");
+  const isBullFutures = futUp.length >= futDown.length;
+  const isDomesticUp = bias === "up";
+  let prediction = "";
+  if (isDomesticUp && isBullFutures) prediction = "오늘 강세 마감에 미 선물까지 우호적이어서 내일 갭 상승 출발 가능성이 높습니다. 오늘 종가 강도가 높은 종목들은 내일 추가 모멘텀을 이어갈 가능성이 있어 종가베팅에 유리한 환경입니다.";
+  else if (!isDomesticUp && !isBullFutures) prediction = "국내 증시 하락에 미 선물도 약세로 내일 갭 하락 리스크가 있습니다. 포지션 크기를 줄이고 종가 강도·OOS 확률 상위 종목만 선별적으로 대응하기를 권합니다.";
+  else if (isDomesticUp) prediction = "오늘 국내 증시는 강세로 마감했지만 미 선물이 혼조입니다. 내일 방향은 미 선물 확정치를 확인 후 결정하되, 강한 종가 강도 개별 종목은 갭 리스크를 감안한 분할 대응을 권합니다.";
+  else prediction = "오늘 국내 증시는 하락했지만 미 선물은 상승입니다. 단기 반등 가능성이 있으며 낙폭 과대·높은 종가 강도 종목 위주 선별적 대응이 유효합니다.";
+  const mc = rep.marketContext || {};
+  const topSectors = (mc.sectors || []).slice(0, 3).map(s => s.name);
+  let reason = "오늘 장 마감 시점 거래대금 상위 종목 중 종가 강도·거래량 급등·정배열·신고가 돌파 등 기술적 모멘텀이 복합적으로 겹친 종목들을 추려 종가베팅 후보로 선정했습니다.";
+  if (topSectors.length) reason += ` 오늘 주도 섹터(${topSectors.join("·")})와의 맥락도 교차 검토했습니다.`;
+  reason += " OOS 백테스트 기준 익일 고가 3% 도달 확률이 높은 순으로 정렬했으며, 갭 하락 −7% 이탈 시 청산 손절선을 반드시 사전 설정하세요.";
+  return { environment, prediction, reason };
+}
+
+function MarketEnvironmentCard({ narrative, accentColor, T, title }) {
+  if (!narrative) return null;
+  const { environment, prediction, reason } = narrative;
+  const ac = accentColor || ACCENT;
+  return (
+    <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: T.card, overflow: "hidden", marginBottom: 14 }}>
+      <div style={{ padding: "12px 16px 10px", background: "linear-gradient(135deg," + ac + "18, transparent)", borderBottom: "1px solid " + T.border, display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 900, color: T.text }}>🔍 {title || "시장 진단 & 추천 근거"}</span>
+        <span style={{ marginLeft: "auto", fontSize: 10.5, fontWeight: 700, color: ac, background: ac + "1f", padding: "2px 8px", borderRadius: 8 }}>애널리스트 내러티브</span>
+      </div>
+      <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 11 }}>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: ac, marginBottom: 5 }}>① 현재 시장 환경</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{environment}</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+          <span style={{ fontSize: 12, color: T.hint }}>↓ 이를 바탕으로 예측</span>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+        </div>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#8b5cf6", marginBottom: 5 }}>② 예측 시장 방향</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{prediction}</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+          <span style={{ fontSize: 12, color: T.hint }}>↓ 그래서 이 종목들을</span>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+        </div>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: ACCENT, marginBottom: 5 }}>③ 이 종목들을 추천하는 이유</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{reason}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function OpenPicks({ report, T }) {
   if (report?.sectorsSource !== "data") return null;
   const picks = pickOpenStocks(report, 3);
   if (!picks.length) return null;
+  const narrative = buildMorningNarrative(report);
   return (
-    <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: "linear-gradient(135deg, rgba(224,36,36,0.10), transparent)", padding: "14px 16px", marginBottom: 4 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 15, fontWeight: 900, color: T.text }}>🌅 오전 시가 추천종목 TOP {picks.length}</span>
-        <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 8 }}>시초가 베팅</span>
-      </div>
-      <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>전일 실거래(등락·거래대금·신고가·정배열) 기준 주도주 — 시가 추격은 분할·손절선 필수</div>
+    <>
+      <MarketEnvironmentCard narrative={narrative} accentColor={UP_C} T={T} title="아침 시장 진단 & 시가 추천 근거" />
+      <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: "linear-gradient(135deg, rgba(224,36,36,0.10), transparent)", padding: "14px 16px", marginBottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 15, fontWeight: 900, color: T.text }}>🌅 오전 시가 추천종목 TOP {picks.length}</span>
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 8 }}>시초가 베팅</span>
+        </div>
+        <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>전일 실거래(등락·거래대금·신고가·정배열) 기준 주도주 — 시가 추격은 분할·손절선 필수</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {picks.map((p, i) => {
           const sc = sectorColor(p.sector);
@@ -589,6 +698,7 @@ function OpenPicks({ report, T }) {
         })}
       </div>
     </div>
+    </>
   );
 }
 
@@ -686,6 +796,7 @@ function ClosingBriefing({ T }) {
         </Section>
       )}
 
+      <MarketEnvironmentCard narrative={buildClosingNarrative(rep, mkt)} accentColor={bias.c} T={T} title="종가 진단 & 종가베팅 근거" />
       <Section title={"🔥 종가베팅 추천종목 TOP " + picks.length} sub="장 마감 무렵 매수 → 익일 청산 전략 · 거래대금·종가강도·정배열·OOS 확률 상위" T={T}>
         {picks.length === 0 ? (
           <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 종가베팅 후보가 없습니다.</div>
