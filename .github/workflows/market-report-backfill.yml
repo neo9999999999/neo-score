@@ -41,5 +41,12 @@ jobs:
             echo "변경 없음"
           else
             git commit -m "Backfill OOS market reports from ${{ inputs.start }}"
-            git push
+            ok=0
+            for i in 1 2 3 4 5; do
+              if git push; then ok=1; echo "push 성공"; break; fi
+              echo "push 실패 ($i/5) — 원격 변경 rebase 후 재시도"
+              git pull --rebase origin main || git rebase --abort || true
+              sleep $((i * 3))
+            done
+            if [ "$ok" != "1" ]; then echo "::error::5회 재시도 후에도 push 실패"; exit 1; fi
           fi

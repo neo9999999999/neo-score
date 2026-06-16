@@ -4,7 +4,8 @@ name: Daily Market Report
 # 20:30 UTC = 05:30 KST  → 오전 7시 전에 준비 완료
 on:
   schedule:
-    - cron: "30 20 * * *"
+    - cron: "30 20 * * *"   # 05:30 KST — 주 실행
+    - cron: "0 21 * * *"    # 06:00 KST — 백업(스케줄 누락 대비, 변경 없으면 skip)
   workflow_dispatch: {}
 
 permissions:
@@ -42,5 +43,12 @@ jobs:
           else
             DATE=$(date -u -d '+9 hours' +%Y-%m-%d)
             git commit -m "Daily market report ${DATE}"
-            git push
+            ok=0
+            for i in 1 2 3 4 5; do
+              if git push; then ok=1; echo "push 성공"; break; fi
+              echo "push 실패 ($i/5) — 원격 변경 rebase 후 재시도"
+              git pull --rebase origin main || git rebase --abort || true
+              sleep $((i * 3))
+            done
+            if [ "$ok" != "1" ]; then echo "::error::5회 재시도 후에도 push 실패"; exit 1; fi
           fi
