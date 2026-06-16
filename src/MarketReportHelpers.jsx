@@ -121,68 +121,64 @@ function SectorCard({ s, T }) {
   );
 }
 
-// 카드뉴스 — 손가락 스와이프 슬라이드 캐러셀
-function CardNews({ cards, T }) {
-  const [idx, setIdx] = useState(0);
-  const [drag, setDrag] = useState(0);
-  const startX = useRef(0);
-  const dx = useRef(0);
-  const dragging = useRef(false);
-  const n = (cards && cards.length) || 0;
-  const palette = [ACCENT, "#2563eb", "#0d9488", "#d97706", "#db2777", "#dc2626"];
-  if (!n) return null;
-
-  const go = (i) => setIdx(Math.max(0, Math.min(n - 1, i)));
-  const onStart = (x) => { startX.current = x; dx.current = 0; dragging.current = true; };
-  const onMove = (x) => { if (!dragging.current) return; dx.current = x - startX.current; setDrag(dx.current); };
-  const onEnd = () => {
-    if (!dragging.current) return;
-    dragging.current = false;
-    if (dx.current < -45 && idx < n - 1) go(idx + 1);
-    else if (dx.current > 45 && idx > 0) go(idx - 1);
-    setDrag(0); dx.current = 0;
-  };
-
+// 오늘의 시장 흐름 — 한 장 요약(주요 이슈 흐름 연결 → 시장 예측 → 주요 종목)
+function FlowSummary({ report, T }) {
+  const cards = report.cards || [];
+  const sent = SENT[report.sentiment] || SENT.neutral;
+  const score = report.macroScore;
+  // 흐름상 주목 종목: 데이터 기반이면 섹터별 대표주, 아니면 전체에서
+  const keyStocks = [];
+  const sectors = report.sectors || [];
+  if (report.sectorsSource === "data") {
+    for (const s of sectors) { const st = (s.stocks || [])[0]; if (st) keyStocks.push({ ...st, sector: s.name }); }
+    for (const s of sectors) { const st = (s.stocks || [])[1]; if (st && keyStocks.length < 6) keyStocks.push({ ...st, sector: s.name }); }
+  } else {
+    for (const s of sectors) for (const st of (s.stocks || [])) keyStocks.push({ ...st, sector: s.name });
+  }
+  const ks = keyStocks.slice(0, 6);
+  if (!cards.length && !ks.length) return null;
   return (
-    <div>
-      <div
-        style={{ overflow: "hidden", borderRadius: 18, touchAction: "pan-y" }}
-        onTouchStart={(e) => onStart(e.touches[0].clientX)}
-        onTouchMove={(e) => onMove(e.touches[0].clientX)}
-        onTouchEnd={onEnd}
-        onMouseDown={(e) => onStart(e.clientX)}
-        onMouseMove={(e) => dragging.current && onMove(e.clientX)}
-        onMouseUp={onEnd}
-        onMouseLeave={onEnd}
-      >
-        <div style={{ display: "flex", transform: `translateX(calc(${-idx * 100}% + ${drag}px))`, transition: drag ? "none" : "transform .3s cubic-bezier(.22,.61,.36,1)" }}>
-          {cards.map((card, i) => {
-            const accent = palette[i % palette.length];
-            return (
-              <div key={i} style={{ flex: "0 0 100%", minWidth: "100%", boxSizing: "border-box", padding: 1 }}>
-                <div style={{ position: "relative", borderRadius: 18, background: "linear-gradient(140deg," + accent + "f2," + accent + "b0)", padding: "18px 18px 16px", minHeight: 124, color: "#fff", boxShadow: "0 8px 24px " + accent + "40", userSelect: "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 8 }}>
-                    <span style={{ fontSize: 30, lineHeight: 1 }}>{card.emoji || "📰"}</span>
-                    <span style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.4px", lineHeight: 1.25, textShadow: "0 1px 2px rgba(0,0,0,0.15)" }}>{card.title}</span>
-                  </div>
-                  <div style={{ fontSize: 14, lineHeight: 1.6, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.1)" }}>{card.body}</div>
-                  <div style={{ position: "absolute", top: 14, right: 16, fontSize: 12, fontWeight: 800, background: "rgba(255,255,255,0.22)", padding: "2px 9px", borderRadius: 20 }}>{i + 1} / {n}</div>
-                </div>
-              </div>
-            );
-          })}
+    <div style={{ borderRadius: 18, border: "1px solid " + T.border, background: T.card, overflow: "hidden", boxShadow: "0 6px 20px rgba(0,0,0,0.06)" }}>
+      <div style={{ padding: "14px 16px", background: "linear-gradient(135deg," + sent.c + "26, transparent)", borderBottom: "1px solid " + T.border }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 15.5, fontWeight: 900, color: T.text, letterSpacing: "-0.3px" }}>📊 오늘의 시장 흐름 한 장</span>
+          <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 800, color: sent.c, background: sent.bg, padding: "4px 11px", borderRadius: 14 }}>
+            {sent.emoji} {sent.label}{score != null ? ` · 신호 ${score >= 0 ? "+" : ""}${score}` : ""}
+          </span>
         </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-        <button onClick={() => go(idx - 1)} disabled={idx === 0} style={{ ...navBtn(T), opacity: idx === 0 ? 0.4 : 1 }}>‹</button>
-        <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 6 }}>
-          {cards.map((_, i) => (
-            <span key={i} onClick={() => go(i)} style={{ cursor: "pointer", width: i === idx ? 24 : 8, height: 8, borderRadius: 4, background: i === idx ? palette[idx % palette.length] : T.border, transition: "all .2s" }} />
+      {/* 주요 이슈 흐름 (연결선) */}
+      {cards.length > 0 && (
+        <div style={{ padding: "2px 16px 6px" }}>
+          {cards.map((c, i) => (
+            <div key={i} style={{ display: "flex", gap: 11, paddingTop: 12 }}>
+              <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <span style={{ fontSize: 19, lineHeight: 1.1 }}>{c.emoji || "•"}</span>
+                {i < cards.length - 1 && <span style={{ width: 2, flex: 1, minHeight: 16, background: T.border, marginTop: 4 }} />}
+              </div>
+              <div style={{ flex: 1, minWidth: 0, paddingBottom: i < cards.length - 1 ? 0 : 6 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{c.title}</div>
+                <div style={{ fontSize: 12.5, lineHeight: 1.6, color: T.sub, marginTop: 2 }}>{c.body}</div>
+              </div>
+            </div>
           ))}
         </div>
-        <button onClick={() => go(idx + 1)} disabled={idx === n - 1} style={{ ...navBtn(T), opacity: idx === n - 1 ? 0.4 : 1 }}>›</button>
-      </div>
-      <div style={{ textAlign: "center", fontSize: 11.5, color: T.hint, marginTop: 6 }}>← 좌우로 밀어서 넘기기 →</div>
+      )}
+      {/* 흐름상 주목 종목 */}
+      {ks.length > 0 && (
+        <div style={{ padding: "12px 16px 14px", borderTop: "1px solid " + T.border, background: T.cardAlt }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: T.hint, marginBottom: 8 }}>🎯 흐름상 주목 종목{report.sectorsSource === "data" ? " (전일 실거래 주도주)" : ""}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+            {ks.map((st, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, background: T.card, border: "1px solid " + T.border, borderRadius: 20, padding: "5px 10px" }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{st.name}</span>
+                {st.changePct != null && <span style={{ fontSize: 12, fontWeight: 800, color: st.changePct >= 0 ? UP_C : DN_C }}>{st.changePct >= 0 ? "+" : ""}{st.changePct}%</span>}
+                {st.sector && <span style={{ fontSize: 10, fontWeight: 700, color: ON_ACCENT, background: ACCENT, padding: "1px 6px", borderRadius: 8 }}>{st.sector}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -295,10 +291,10 @@ function ReportBody({ report, T, live }) {
         </div>
       )}
 
-      {/* 카드뉴스 — 맨 위 */}
-      {report.cards && report.cards.length > 0 && (
+      {/* 오늘의 시장 흐름 — 한 장 요약 (맨 위) */}
+      {((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
         <div style={{ marginTop: 14 }}>
-          <CardNews cards={report.cards} T={T} />
+          <FlowSummary report={report} T={T} />
         </div>
       )}
 
