@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-16T00:11:49+09:00",
+    "updatedAt": "2026-06-16T10:56:38+09:00",
     "count": 110,
     "backfilledFrom": "2026-01-01"
   },
@@ -26,70 +26,70 @@
       "date": "2026-06-16",
       "sentiment": "bullish",
       "title": "거시 연결고리 기반 나스닥·국내증시 데일리 브리핑",
-      "summary": "간밤 나스닥은 +2.65%로 마감했습니다. 유가 하락, 달러인덱스 하락, 미 10년물 금리 하락, 원/달러 하락 흐름을 5개 지표 가중으로 종합한 거시 신호 점수는 +4.04로, 오늘 국내증시는 강세 우호적 출발이 예상됩니다. 우호 요인: 나스닥·S&P500·원/달러·미 10년물·WTI 유가.",
+      "summary": "간밤 나스닥은 +3.07%로 마감했습니다. 유가 하락, 달러인덱스 보합, 미 10년물 금리 하락, 원/달러 상승 흐름을 5개 지표 가중으로 종합한 거시 신호 점수는 +3.47로, 오늘 국내증시는 강세 우호적 출발이 예상됩니다. 우호 요인: 나스닥·S&P500·미 10년물·WTI 유가. 부담 요인: 원/달러.",
       "kospiBias": "강세 출발 기대",
       "indicators": [
         {
           "key": "nasdaq",
           "label": "나스닥",
-          "value": "26,573.88",
-          "change": "+685.04",
-          "changePct": "+2.65%",
+          "value": "26,683.94",
+          "change": "+795.1",
+          "changePct": "+3.07%",
           "dir": "up"
         },
         {
           "key": "sp500",
           "label": "S&P 500",
-          "value": "7,558.69",
-          "change": "+127.23",
-          "changePct": "+1.71%",
+          "value": "7,554.29",
+          "change": "+122.83",
+          "changePct": "+1.65%",
           "dir": "up"
         },
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$80.59",
-          "change": "-4.29",
-          "changePct": "-5.05%",
+          "value": "$81.02",
+          "change": "-3.86",
+          "changePct": "-4.55%",
           "dir": "down"
         },
         {
           "key": "dxy",
           "label": "달러인덱스",
-          "value": "99.53",
-          "change": "-0.22",
-          "changePct": "-0.22%",
+          "value": "99.67",
+          "change": "-0.08",
+          "changePct": "-0.08%",
           "dir": "down"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,512.3원",
-          "change": "-5.07",
-          "changePct": "-0.33%",
-          "dir": "down"
+          "value": "1,512.8원",
+          "change": "+3.34",
+          "changePct": "+0.22%",
+          "dir": "up"
         },
         {
           "key": "ust10y",
           "label": "미 10년물 금리",
-          "value": "4.45%",
-          "change": "-0.03%p",
-          "changePct": "-0.71%",
+          "value": "4.47%",
+          "change": "-0.02%p",
+          "changePct": "-0.40%",
           "dir": "down"
         }
       ],
       "topSectors": [
         {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
           "name": "반도체",
-          "bias": "up"
+          "bias": "down"
         },
         {
-          "name": "AI·인터넷",
+          "name": "조선",
           "bias": "up"
-        },
-        {
-          "name": "2차전지",
-          "bias": "neutral"
         }
       ],
       "source": "rule",
