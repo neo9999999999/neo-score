@@ -706,7 +706,7 @@ function OpenPicks({ report, T }) {
 }
 
 // 종가 브리핑 — 미 선물·거시지표·국내지수·뉴스이슈·섹터 + 종가베팅 추천 (오후+아침 리포트 종합)
-function ClosingBriefing({ T }) {
+function ClosingBriefing({ T, onHistory }) {
   const [rep, setRep] = useState(null);   // 오후 리포트(미선물·매크로·후보)
   const [mkt, setMkt] = useState(null);   // 아침 마켓리포트(뉴스·이슈 상세)
   const [loading, setLoading] = useState(true);
@@ -720,16 +720,11 @@ function ClosingBriefing({ T }) {
       아직 종가 브리핑이 없습니다.<br />매일 오후 3시(KST) 장 마감 무렵 자동 생성됩니다.
     </div>
   );
+  // 오늘 탭은 '오늘 것'만 — 기준일이 오늘(KST)보다 과거면 어제 자료 대신 안내(히스토리로 유도)
+  if (rep.date && rep.date < kstTodayStr()) return <NotTodayNotice kind="closing" date={rep.date} T={T} onHistory={onHistory} />;
   const bias = SENT[rep.marketBias] || SENT.neutral;
   const picks = (rep.candidates || []).slice(0, 3);
   const mc = rep.marketContext || {};
-  // 신선도: 종가 리포트 기준일이 오늘(KST)보다 과거면 안내 (오늘 것은 15:00 이후 생성)
-  let staleDays = 0;
-  if (rep.date) {
-    const now = new Date();
-    const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
-    staleDays = Math.round((Date.parse(kstToday) - Date.parse(rep.date)) / 86400000);
-  }
   // 뉴스·이슈: 아침 리포트의 상세(globalIssues/todayIssues, detail 포함) 우선, 없으면 오후 marketContext.issues(제목만)
   const globalIssues = (mkt && mkt.globalIssues && mkt.globalIssues.length) ? mkt.globalIssues : [];
   const todayIssues = (mkt && (mkt.todayIssues || mkt.issues) || []);
@@ -744,12 +739,6 @@ function ClosingBriefing({ T }) {
         </div>
         <span style={{ fontSize: 12.5, fontWeight: 800, color: bias.c, background: bias.bg, padding: "5px 11px", borderRadius: 20 }}>{bias.emoji} {bias.label}</span>
       </div>
-
-      {staleDays >= 1 && (
-        <div style={{ marginTop: 10, fontSize: 12, color: "#b45309", background: "rgba(217,119,6,0.12)", border: "1px solid rgba(217,119,6,0.4)", borderRadius: 10, padding: "8px 11px", lineHeight: 1.5 }}>
-          ⏳ 오늘 종가 브리핑은 장 마감(15:00 KST) 이후 자동 생성됩니다. 아래는 직전 거래일({rep.date}) 기준이며, 생성되면 오늘 것으로 자동 갱신됩니다.
-        </div>
-      )}
 
       {rep.summary && (
         <div style={{ marginTop: 14, background: "linear-gradient(135deg," + bias.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
@@ -1755,6 +1744,31 @@ function AfternoonView({ T }) {
   );
 }
 
+// 오늘(KST) 날짜 문자열
+function kstTodayStr() {
+  const now = new Date();
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
+}
+
+// 오늘 탭 전용 — 오늘 자료가 아직 없을 때(어제 것은 히스토리로 유도, 오늘 탭엔 표시 안 함)
+function NotTodayNotice({ kind, date, T, onHistory }) {
+  const label = kind === "closing" ? "종가 브리핑" : "아침 브리핑";
+  const when = kind === "closing" ? "장 마감 무렵(15:00 KST)" : "매 거래일 새벽(05:30 KST)";
+  return (
+    <div style={{ padding: "32px 20px", textAlign: "center", background: T.card, border: "1px solid " + T.border, borderRadius: 16 }}>
+      <div style={{ fontSize: 30, marginBottom: 10 }}>🕗</div>
+      <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>오늘 {label}은 아직 생성 전입니다</div>
+      <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.7 }}>
+        {when}에 자동 생성됩니다. 주말·휴장일이면 다음 거래일에 갱신됩니다.
+        {date ? <><br />직전 거래일({date}) 자료는 히스토리에서 확인하세요.</> : null}
+      </div>
+      {onHistory && (
+        <button onClick={onHistory} style={{ marginTop: 14, border: "1px solid " + T.border, background: T.cardAlt, color: T.text, borderRadius: 10, padding: "9px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>📋 히스토리에서 보기</button>
+      )}
+    </div>
+  );
+}
+
 export function MarketReportTab({ theme }) {
   const T = useTheme(theme);
   const [mode, setMode] = useState("today");
@@ -1817,9 +1831,13 @@ export function MarketReportTab({ theme }) {
           {todayTab === "morning" ? (
             loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
               : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-                : today ? <ReportBody report={today} T={T} live topSlot={today.sectorsSource === "data" ? <OpenPicks report={today} T={T} /> : null} /> : null
+                : today ? (
+                  today.date >= kstTodayStr()
+                    ? <ReportBody report={today} T={T} live topSlot={today.sectorsSource === "data" ? <OpenPicks report={today} T={T} /> : null} />
+                    : <NotTodayNotice kind="morning" date={today.date} T={T} onHistory={() => { setMode("history"); setDetail(null); }} />
+                ) : null
           ) : (
-            <ClosingBriefing T={T} />
+            <ClosingBriefing T={T} onHistory={() => { setMode("history"); setDetail(null); }} />
           )}
         </>
       )}
