@@ -354,6 +354,9 @@ function MacroSignals({ signals, score, T }) {
 
 function ReportBody({ report, T, live, topSlot }) {
   const [showDetail, setShowDetail] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  // 아침 라이브 뷰(진단·추천 카드가 헤드라인)일 때는 결론만 먼저, 상세는 접어서 깔끔하게
+  const simplified = live && !!topSlot;
   const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
   const todayIssues = report.todayIssues || report.issues || [];
@@ -365,6 +368,120 @@ function ReportBody({ report, T, live, topSlot }) {
     const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
     staleDays = Math.round((Date.parse(kstToday) - Date.parse(report.date)) / 86400000);
   }
+
+  const summaryBlock = (
+    <div style={{ marginTop: 18, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
+      <div style={{ fontSize: 13, fontWeight: 800, color: sent.c, marginBottom: 7 }}>📋 오늘의 요약</div>
+      <div style={{ fontSize: 14.5, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{report.summary}</div>
+      {detailParas.length > 0 && (
+        <>
+          <button onClick={() => setShowDetail(s => !s)} style={{ marginTop: 12, width: "100%", border: "none", background: sent.c, color: "#fff", borderRadius: 10, padding: "10px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+            {showDetail ? "상세 분석 접기 ▲" : "상세 분석 보기 ▼"}
+          </button>
+          {showDetail && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid " + T.border }}>
+              {detailParas.map((p, i) => <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: "0 0 10px" }}>{p}</p>)}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+
+  const macroSignalsBlock = report.signals && report.signals.length > 0
+    ? <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
+    : null;
+
+  const indicatorsBlock = report.indicators && report.indicators.length > 0 ? (
+    <Section title="핵심 거시 지표" sub="간밤 글로벌 마감 기준" T={T}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(105px, 1fr))", gap: 8 }}>
+        {report.indicators.map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const chainBlock = report.chain && report.chain.length > 0 ? (
+    <Section title="🔗 거시 연결고리" sub="유가 · 달러 · 금리 → 나스닥 → 국내증시" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: "16px 16px 4px" }}>
+        {report.chain.map((step, i) => <ChainStep key={i} step={step} T={T} last={i === report.chain.length - 1} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const nasdaqBlock = report.nasdaq ? (
+    <Section title="🇺🇸 나스닥 시장 반응" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+        <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>{report.nasdaq.verdict}</div>
+        <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.nasdaq.detail}</div>
+      </div>
+    </Section>
+  ) : null;
+
+  const domesticBlock = report.domestic ? (
+    <Section title="🇰🇷 국내증시 예상" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스피 · {report.domestic.kospiBias}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스닥 · {report.domestic.kosdaqBias}</span>
+        </div>
+        <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.domestic.detail}</div>
+        {report.domestic.fxNote && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.hint, marginTop: 8 }}>💱 {report.domestic.fxNote}</div>}
+      </div>
+    </Section>
+  ) : null;
+
+  const strategyBlock = report.strategy ? <Strategy strategy={report.strategy} T={T} /> : null;
+  const riskBlock = report.riskFactors && report.riskFactors.length > 0 ? <RiskFactors risks={report.riskFactors} T={T} /> : null;
+  const keyLevelsBlock = report.keyLevels && report.keyLevels.length > 0 ? <KeyLevels levels={report.keyLevels} T={T} /> : null;
+
+  const sectorsBlock = report.sectors && report.sectors.length > 0 ? (
+    <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+        {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const globalIssuesBlock = report.globalIssues && report.globalIssues.length > 0 ? (
+    <Section title="🌍 글로벌·전쟁 핫이슈" sub="국제 정세 · 무역 · 지정학 리스크" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {report.globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const weeklyBlock = report.weeklyCalendar && report.weeklyCalendar.length > 0 ? (
+    <Section title="🗓️ 이번주 관전 포인트" sub="금리·환율·유가·미증시 체크 (LLM 활성화 시 일자별 발표 일정으로 확장)" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+        {report.weeklyCalendar.map((d, i) => {
+          const imp = IMP[d.importance] || IMP.mid;
+          return (
+            <div key={i} style={{ display: "flex", gap: 11, padding: "11px 13px", borderTop: i ? "1px solid " + T.border : "none" }}>
+              <div style={{ flex: "0 0 58px", textAlign: "center" }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{d.date}</div>
+                {d.day && <div style={{ fontSize: 11, color: T.hint, marginTop: 1 }}>{d.day}</div>}
+              </div>
+              <div style={{ flex: 1, borderLeft: "1px solid " + T.border, paddingLeft: 11 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{d.title}</span>
+                  <span style={{ fontSize: 10.5, color: imp.c, fontWeight: 800 }}>{imp.label}</span>
+                </div>
+                {d.detail && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 2, lineHeight: 1.55 }}>{d.detail}</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  ) : null;
+
+  const todayIssuesBlock = todayIssues.length > 0 ? (
+    <Section title="📌 당일 주요 이슈" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
 
   return (
     <div style={{ paddingBottom: 20 }}>
@@ -408,129 +525,50 @@ function ReportBody({ report, T, live, topSlot }) {
         </div>
       )}
 
-      {/* 요약본 (터치 시 상세) */}
-      <div style={{ marginTop: 18, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: sent.c, marginBottom: 7 }}>📋 오늘의 요약</div>
-        <div style={{ fontSize: 14.5, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{report.summary}</div>
-        <button onClick={() => setShowDetail(s => !s)} style={{ marginTop: 12, width: "100%", border: "none", background: sent.c, color: "#fff", borderRadius: 10, padding: "10px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-          {showDetail ? "상세 분석 접기 ▲" : "상세 분석 보기 ▼"}
-        </button>
-        {showDetail && (
-          <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid " + T.border }}>
-            {detailParas.map((p, i) => (
-              <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: "0 0 10px" }}>{p}</p>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 거시 신호 종합 (지표별 우호/부담 분해) */}
-      {report.signals && report.signals.length > 0 && (
-        <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
-      )}
-
-      {/* 핵심 지표 */}
-      {report.indicators && report.indicators.length > 0 && (
-        <Section title="핵심 거시 지표" sub="간밤 글로벌 마감 기준" T={T}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(105px, 1fr))", gap: 8 }}>
-            {report.indicators.map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 연결관계 */}
-      {report.chain && report.chain.length > 0 && (
-        <Section title="🔗 거시 연결고리" sub="유가 · 달러 · 금리 → 나스닥 → 국내증시" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: "16px 16px 4px" }}>
-            {report.chain.map((step, i) => <ChainStep key={i} step={step} T={T} last={i === report.chain.length - 1} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 나스닥 반응 */}
-      {report.nasdaq && (
-        <Section title="🇺🇸 나스닥 시장 반응" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>{report.nasdaq.verdict}</div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.nasdaq.detail}</div>
-          </div>
-        </Section>
-      )}
-
-      {/* 국내 전망 */}
-      {report.domestic && (
-        <Section title="🇰🇷 국내증시 예상" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스피 · {report.domestic.kospiBias}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스닥 · {report.domestic.kosdaqBias}</span>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.domestic.detail}</div>
-            {report.domestic.fxNote && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.hint, marginTop: 8 }}>💱 {report.domestic.fxNote}</div>}
-          </div>
-        </Section>
-      )}
-
-      {/* 전략 제안 */}
-      {report.strategy && <Strategy strategy={report.strategy} T={T} />}
-
-      {/* 리스크 요인 */}
-      {report.riskFactors && report.riskFactors.length > 0 && <RiskFactors risks={report.riskFactors} T={T} />}
-
-      {/* 핵심 가격대 */}
-      {report.keyLevels && report.keyLevels.length > 0 && <KeyLevels levels={report.keyLevels} T={T} />}
-
-      {/* 수혜 섹터 · 종목 */}
-      {report.sectors && report.sectors.length > 0 && (
-        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 글로벌·전쟁 핫이슈 */}
-      {report.globalIssues && report.globalIssues.length > 0 && (
-        <Section title="🌍 글로벌·전쟁 핫이슈" sub="국제 정세 · 무역 · 지정학 리스크" T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {report.globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 이번주 경제 일정 */}
-      {report.weeklyCalendar && report.weeklyCalendar.length > 0 && (
-        <Section title="🗓️ 이번주 관전 포인트" sub="금리·환율·유가·미증시 체크 (LLM 활성화 시 일자별 발표 일정으로 확장)" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
-            {report.weeklyCalendar.map((d, i) => {
-              const imp = IMP[d.importance] || IMP.mid;
-              return (
-                <div key={i} style={{ display: "flex", gap: 11, padding: "11px 13px", borderTop: i ? "1px solid " + T.border : "none" }}>
-                  <div style={{ flex: "0 0 58px", textAlign: "center" }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{d.date}</div>
-                    {d.day && <div style={{ fontSize: 11, color: T.hint, marginTop: 1 }}>{d.day}</div>}
-                  </div>
-                  <div style={{ flex: 1, borderLeft: "1px solid " + T.border, paddingLeft: 11 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{d.title}</span>
-                      <span style={{ fontSize: 10.5, color: imp.c, fontWeight: 800 }}>{imp.label}</span>
-                    </div>
-                    {d.detail && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 2, lineHeight: 1.55 }}>{d.detail}</div>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Section>
-      )}
-
-      {/* 당일 주요 이슈 */}
-      {todayIssues.length > 0 && (
-        <Section title="📌 당일 주요 이슈" T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
-          </div>
-        </Section>
+      {simplified ? (
+        /* 아침 라이브: 결론(진단·추천) → 거시신호 → 주도섹터만 기본 노출, 나머지는 접기 */
+        <>
+          {macroSignalsBlock}
+          {sectorsBlock}
+          {(summaryBlock || indicatorsBlock || chainBlock || nasdaqBlock || domesticBlock || strategyBlock || riskBlock || keyLevelsBlock || globalIssuesBlock || weeklyBlock || todayIssuesBlock) && (
+            <>
+              <button onClick={() => setShowAll(s => !s)} style={{ marginTop: 18, width: "100%", border: "1px solid " + T.border, background: T.card, color: T.text, borderRadius: 12, padding: "12px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {showAll ? "상세 분석 접기 ▲" : "📊 거시 지표 · 연결고리 · 국내 전망 · 이슈 상세 보기 ▼"}
+              </button>
+              {showAll && (
+                <>
+                  {summaryBlock}
+                  {indicatorsBlock}
+                  {chainBlock}
+                  {nasdaqBlock}
+                  {domesticBlock}
+                  {strategyBlock}
+                  {riskBlock}
+                  {keyLevelsBlock}
+                  {globalIssuesBlock}
+                  {weeklyBlock}
+                  {todayIssuesBlock}
+                </>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {summaryBlock}
+          {macroSignalsBlock}
+          {indicatorsBlock}
+          {chainBlock}
+          {nasdaqBlock}
+          {domesticBlock}
+          {strategyBlock}
+          {riskBlock}
+          {keyLevelsBlock}
+          {sectorsBlock}
+          {globalIssuesBlock}
+          {weeklyBlock}
+          {todayIssuesBlock}
+        </>
       )}
 
       <div style={{ marginTop: 24, textAlign: "center", fontSize: 11.5, color: T.hint }}>
