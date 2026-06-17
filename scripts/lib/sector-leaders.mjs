@@ -1,5 +1,5 @@
 // 전일(최근 거래일) 실거래 데이터로 섹터별 주도주를 선정한다.
-// 아침 리포트는 장 시작 전(05:30 KST) 생성 → KR 최신 종가는 '전일'이므로 전일 기준 주도주가 된다.
+// 아침 리포트는 장 시작 전(07:00 KST) 생성 → KR 최신 종가는 '전일'이므로 전일 기준 주도주가 된다.
 import { loadStockMap } from "./report-core.mjs";
 import { fetchYahooOHLCV, pMap, scoreAt, fmtEok } from "./stock-core.mjs";
 import { SECTOR_MAP } from "./sector-map.mjs";
@@ -74,4 +74,49 @@ export async function buildSectorLeaders(stocksPath, { dateStr = null, topSector
     stocks: s.top.map(m => ({ name: m.name, code: m.code, market: m.market, reason: stockReason(m), changePct: m.changePct, value: m.value, breakout: m.breakout, nearHigh: m.nearHigh, aligned: m.aligned })),
     dataDriven: true,
   }));
+}
+
+// Pre-loaded data version — takes seriesMap (symbol → OHLCVRow[]) and nameMap instead of fetching.
+// Returns sector leaders for dateStr with _si (series index) for next-day return lookup.
+export function buildSectorLeadersFromData(seriesMap, nameMap, dateStr, { topSectors = 4, perSector = 3 } = {}) {
+  const valid = [];
+  for (const sec of SECTOR_MAP) {
+    for (const nm of sec.stocks) {
+      const info = nameMap.get(nm);
+      if (!info) continue;
+      const symbol = info.code + (info.market === "KOSDAQ" ? ".KQ" : ".KS");
+      const series = seriesMap.get(symbol);
+      if (!series || series.length < 25) continue;
+      let i = series.length - 1;
+      for (let k = series.length - 1; k >= 0; k--) { if (series[k].date <= dateStr) { i = k; break; } }
+      if (!series[i] || series[i].date > dateStr) continue;
+      const m = scoreAt(series, i, 0);
+      if (!m) continue;
+      let aligned = false, nearHigh = false, breakout = false;
+      if (i >= 60) {
+        const ma = (n) => { let s = 0; for (let k = i - n + 1; k <= i; k++) s += series[k].close; return s / n; };
+        const c = series[i].close, ma5 = ma(5), ma20 = ma(20), ma60 = ma(60);
+        aligned = c > ma5 && ma5 > ma20 && ma20 > ma60;
+        if (i >= 119) {
+          let hi = 0; for (let k = i - 119; k <= i - 1; k++) hi = Math.max(hi, series[k].high);
+          if (hi > 0) { nearHigh = c >= 0.95 * hi; breakout = c > hi; }
+        }
+      }
+      valid.push({ sector: sec.name, name: nm, code: info.code, market: info.market, symbol, _si: i, score: m.score, changePct: m.changePct, value: m.value, volSurge: m.volSurge, aboveMA: m.aboveMA, aligned, nearHigh, breakout });
+    }
+  }
+  const bySector = new Map();
+  for (const m of valid) { if (!bySector.has(m.sector)) bySector.set(m.sector, []); bySector.get(m.sector).push(m); }
+  const sectors = [];
+  for (const [name, arr] of bySector) {
+    arr.sort((a, b) => strengthOf(b) - strengthOf(a));
+    const top = arr.slice(0, perSector);
+    const meanChg = top.reduce((s, x) => s + x.changePct, 0) / top.length;
+    const secStrength = top.reduce((s, x) => s + strengthOf(x), 0) / top.length;
+    const strongCnt = top.filter(x => x.changePct > 0 && x.aboveMA).length;
+    const bias = meanChg > 0.4 ? "up" : meanChg < -0.4 ? "down" : "neutral";
+    sectors.push({ name, _rank: secStrength + strongCnt * 2, bias, top });
+  }
+  sectors.sort((a, b) => b._rank - a._rank);
+  return sectors.slice(0, topSectors).map(s => ({ name: s.name, bias: s.bias, stocks: s.top }));
 }

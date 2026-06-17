@@ -352,8 +352,11 @@ function MacroSignals({ signals, score, T }) {
   );
 }
 
-function ReportBody({ report, T, live }) {
+function ReportBody({ report, T, live, topSlot }) {
   const [showDetail, setShowDetail] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  // 아침 라이브 뷰(진단·추천 카드가 헤드라인)일 때는 결론만 먼저, 상세는 접어서 깔끔하게
+  const simplified = live && !!topSlot;
   const sent = SENT[report.sentiment] || SENT.neutral;
   const detailParas = (report.detail || "").split("\n\n").filter(Boolean);
   const todayIssues = report.todayIssues || report.issues || [];
@@ -365,6 +368,120 @@ function ReportBody({ report, T, live }) {
     const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
     staleDays = Math.round((Date.parse(kstToday) - Date.parse(report.date)) / 86400000);
   }
+
+  const summaryBlock = (
+    <div style={{ marginTop: 18, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
+      <div style={{ fontSize: 13, fontWeight: 800, color: sent.c, marginBottom: 7 }}>📋 오늘의 요약</div>
+      <div style={{ fontSize: 14.5, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{report.summary}</div>
+      {detailParas.length > 0 && (
+        <>
+          <button onClick={() => setShowDetail(s => !s)} style={{ marginTop: 12, width: "100%", border: "none", background: sent.c, color: "#fff", borderRadius: 10, padding: "10px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+            {showDetail ? "상세 분석 접기 ▲" : "상세 분석 보기 ▼"}
+          </button>
+          {showDetail && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid " + T.border }}>
+              {detailParas.map((p, i) => <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: "0 0 10px" }}>{p}</p>)}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+
+  const macroSignalsBlock = report.signals && report.signals.length > 0
+    ? <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
+    : null;
+
+  const indicatorsBlock = report.indicators && report.indicators.length > 0 ? (
+    <Section title="핵심 거시 지표" sub="간밤 글로벌 마감 기준" T={T}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(105px, 1fr))", gap: 8 }}>
+        {report.indicators.map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const chainBlock = report.chain && report.chain.length > 0 ? (
+    <Section title="🔗 거시 연결고리" sub="유가 · 달러 · 금리 → 나스닥 → 국내증시" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: "16px 16px 4px" }}>
+        {report.chain.map((step, i) => <ChainStep key={i} step={step} T={T} last={i === report.chain.length - 1} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const nasdaqBlock = report.nasdaq ? (
+    <Section title="🇺🇸 나스닥 시장 반응" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+        <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>{report.nasdaq.verdict}</div>
+        <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.nasdaq.detail}</div>
+      </div>
+    </Section>
+  ) : null;
+
+  const domesticBlock = report.domestic ? (
+    <Section title="🇰🇷 국내증시 예상" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스피 · {report.domestic.kospiBias}</span>
+          <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스닥 · {report.domestic.kosdaqBias}</span>
+        </div>
+        <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.domestic.detail}</div>
+        {report.domestic.fxNote && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.hint, marginTop: 8 }}>💱 {report.domestic.fxNote}</div>}
+      </div>
+    </Section>
+  ) : null;
+
+  const strategyBlock = report.strategy ? <Strategy strategy={report.strategy} T={T} /> : null;
+  const riskBlock = report.riskFactors && report.riskFactors.length > 0 ? <RiskFactors risks={report.riskFactors} T={T} /> : null;
+  const keyLevelsBlock = report.keyLevels && report.keyLevels.length > 0 ? <KeyLevels levels={report.keyLevels} T={T} /> : null;
+
+  const sectorsBlock = report.sectors && report.sectors.length > 0 ? (
+    <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+        {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const globalIssuesBlock = report.globalIssues && report.globalIssues.length > 0 ? (
+    <Section title="🌍 글로벌·전쟁 핫이슈" sub="국제 정세 · 무역 · 지정학 리스크" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {report.globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
+
+  const weeklyBlock = report.weeklyCalendar && report.weeklyCalendar.length > 0 ? (
+    <Section title="🗓️ 이번주 관전 포인트" sub="금리·환율·유가·미증시 체크 (LLM 활성화 시 일자별 발표 일정으로 확장)" T={T}>
+      <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
+        {report.weeklyCalendar.map((d, i) => {
+          const imp = IMP[d.importance] || IMP.mid;
+          return (
+            <div key={i} style={{ display: "flex", gap: 11, padding: "11px 13px", borderTop: i ? "1px solid " + T.border : "none" }}>
+              <div style={{ flex: "0 0 58px", textAlign: "center" }}>
+                <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{d.date}</div>
+                {d.day && <div style={{ fontSize: 11, color: T.hint, marginTop: 1 }}>{d.day}</div>}
+              </div>
+              <div style={{ flex: 1, borderLeft: "1px solid " + T.border, paddingLeft: 11 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{d.title}</span>
+                  <span style={{ fontSize: 10.5, color: imp.c, fontWeight: 800 }}>{imp.label}</span>
+                </div>
+                {d.detail && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 2, lineHeight: 1.55 }}>{d.detail}</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Section>
+  ) : null;
+
+  const todayIssuesBlock = todayIssues.length > 0 ? (
+    <Section title="📌 당일 주요 이슈" T={T}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
+      </div>
+    </Section>
+  ) : null;
 
   return (
     <div style={{ paddingBottom: 20 }}>
@@ -386,7 +503,7 @@ function ReportBody({ report, T, live }) {
       )}
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
-          ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
+          ⓘ 예시 데이터입니다. 매일 아침 7시(KST) 실시간 시장 분석으로 자동 갱신됩니다.
         </div>
       )}
       {report.source === "oos" && (
@@ -398,136 +515,60 @@ function ReportBody({ report, T, live }) {
         </div>
       )}
 
-      {/* 오늘의 시장 흐름 — 한 장 요약 (맨 위) */}
-      {((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
+      {/* 진단·추천 카드 (아침 라이브 뷰) — 날짜 헤더 바로 아래, 헤드라인 결론 */}
+      {topSlot && <div style={{ marginTop: 16 }}>{topSlot}</div>}
+
+      {/* 오늘의 시장 흐름 — 한 장 요약. 진단 카드가 있으면 중복이라 숨김 */}
+      {!topSlot && ((report.cards && report.cards.length > 0) || (report.sectors && report.sectors.length > 0)) && (
         <div style={{ marginTop: 14 }}>
           <FlowSummary report={report} T={T} />
         </div>
       )}
 
-      {/* 요약본 (터치 시 상세) */}
-      <div style={{ marginTop: 18, background: "linear-gradient(135deg," + sent.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: sent.c, marginBottom: 7 }}>📋 오늘의 요약</div>
-        <div style={{ fontSize: 14.5, lineHeight: 1.7, color: T.text, fontWeight: 500 }}>{report.summary}</div>
-        <button onClick={() => setShowDetail(s => !s)} style={{ marginTop: 12, width: "100%", border: "none", background: sent.c, color: "#fff", borderRadius: 10, padding: "10px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-          {showDetail ? "상세 분석 접기 ▲" : "상세 분석 보기 ▼"}
-        </button>
-        {showDetail && (
-          <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid " + T.border }}>
-            {detailParas.map((p, i) => (
-              <p key={i} style={{ fontSize: 13.5, lineHeight: 1.75, color: T.sub, margin: "0 0 10px" }}>{p}</p>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 거시 신호 종합 (지표별 우호/부담 분해) */}
-      {report.signals && report.signals.length > 0 && (
-        <MacroSignals signals={report.signals} score={report.macroScore} T={T} />
-      )}
-
-      {/* 핵심 지표 */}
-      {report.indicators && report.indicators.length > 0 && (
-        <Section title="핵심 거시 지표" sub="간밤 글로벌 마감 기준" T={T}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(105px, 1fr))", gap: 8 }}>
-            {report.indicators.map((ind, i) => <Indicator key={i} ind={ind} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 연결관계 */}
-      {report.chain && report.chain.length > 0 && (
-        <Section title="🔗 거시 연결고리" sub="유가 · 달러 · 금리 → 나스닥 → 국내증시" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: "16px 16px 4px" }}>
-            {report.chain.map((step, i) => <ChainStep key={i} step={step} T={T} last={i === report.chain.length - 1} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 나스닥 반응 */}
-      {report.nasdaq && (
-        <Section title="🇺🇸 나스닥 시장 반응" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
-            <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>{report.nasdaq.verdict}</div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.nasdaq.detail}</div>
-          </div>
-        </Section>
-      )}
-
-      {/* 국내 전망 */}
-      {report.domestic && (
-        <Section title="🇰🇷 국내증시 예상" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, padding: 15 }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스피 · {report.domestic.kospiBias}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: T.text, background: T.cardAlt, padding: "5px 11px", borderRadius: 8 }}>코스닥 · {report.domestic.kosdaqBias}</span>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.7, color: T.sub }}>{report.domestic.detail}</div>
-            {report.domestic.fxNote && <div style={{ fontSize: 13, lineHeight: 1.6, color: T.hint, marginTop: 8 }}>💱 {report.domestic.fxNote}</div>}
-          </div>
-        </Section>
-      )}
-
-      {/* 전략 제안 */}
-      {report.strategy && <Strategy strategy={report.strategy} T={T} />}
-
-      {/* 리스크 요인 */}
-      {report.riskFactors && report.riskFactors.length > 0 && <RiskFactors risks={report.riskFactors} T={T} />}
-
-      {/* 핵심 가격대 */}
-      {report.keyLevels && report.keyLevels.length > 0 && <KeyLevels levels={report.keyLevels} T={T} />}
-
-      {/* 수혜 섹터 · 종목 */}
-      {report.sectors && report.sectors.length > 0 && (
-        <Section title="🎯 상승 예상 섹터 · 수혜 종목" sub={report.sectorsSource === "data" ? "전일 실거래(등락·거래대금·신고가·정배열) 기준 상위 섹터 — 매일 갱신" : "섹터를 눌러 수혜 종목 확인"} T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            {report.sectors.map((s, i) => <SectorCard key={i} s={s} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 글로벌·전쟁 핫이슈 */}
-      {report.globalIssues && report.globalIssues.length > 0 && (
-        <Section title="🌍 글로벌·전쟁 핫이슈" sub="국제 정세 · 무역 · 지정학 리스크" T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {report.globalIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
-          </div>
-        </Section>
-      )}
-
-      {/* 이번주 경제 일정 */}
-      {report.weeklyCalendar && report.weeklyCalendar.length > 0 && (
-        <Section title="🗓️ 이번주 관전 포인트" sub="금리·환율·유가·미증시 체크 (LLM 활성화 시 일자별 발표 일정으로 확장)" T={T}>
-          <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 14, overflow: "hidden" }}>
-            {report.weeklyCalendar.map((d, i) => {
-              const imp = IMP[d.importance] || IMP.mid;
-              return (
-                <div key={i} style={{ display: "flex", gap: 11, padding: "11px 13px", borderTop: i ? "1px solid " + T.border : "none" }}>
-                  <div style={{ flex: "0 0 58px", textAlign: "center" }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{d.date}</div>
-                    {d.day && <div style={{ fontSize: 11, color: T.hint, marginTop: 1 }}>{d.day}</div>}
-                  </div>
-                  <div style={{ flex: 1, borderLeft: "1px solid " + T.border, paddingLeft: 11 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 13.5, fontWeight: 800, color: T.text }}>{d.title}</span>
-                      <span style={{ fontSize: 10.5, color: imp.c, fontWeight: 800 }}>{imp.label}</span>
-                    </div>
-                    {d.detail && <div style={{ fontSize: 12.5, color: T.sub, marginTop: 2, lineHeight: 1.55 }}>{d.detail}</div>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Section>
-      )}
-
-      {/* 당일 주요 이슈 */}
-      {todayIssues.length > 0 && (
-        <Section title="📌 당일 주요 이슈" T={T}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {todayIssues.map((it, i) => <IssueRow key={i} it={it} T={T} />)}
-          </div>
-        </Section>
+      {simplified ? (
+        /* 아침 라이브: 결론(진단·추천) → 거시신호 → 주도섹터만 기본 노출, 나머지는 접기 */
+        <>
+          {macroSignalsBlock}
+          {sectorsBlock}
+          {(summaryBlock || indicatorsBlock || chainBlock || nasdaqBlock || domesticBlock || strategyBlock || riskBlock || keyLevelsBlock || globalIssuesBlock || weeklyBlock || todayIssuesBlock) && (
+            <>
+              <button onClick={() => setShowAll(s => !s)} style={{ marginTop: 18, width: "100%", border: "1px solid " + T.border, background: T.card, color: T.text, borderRadius: 12, padding: "12px 0", fontSize: 13.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {showAll ? "상세 분석 접기 ▲" : "📊 거시 지표 · 연결고리 · 국내 전망 · 이슈 상세 보기 ▼"}
+              </button>
+              {showAll && (
+                <>
+                  {summaryBlock}
+                  {indicatorsBlock}
+                  {chainBlock}
+                  {nasdaqBlock}
+                  {domesticBlock}
+                  {strategyBlock}
+                  {riskBlock}
+                  {keyLevelsBlock}
+                  {globalIssuesBlock}
+                  {weeklyBlock}
+                  {todayIssuesBlock}
+                </>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {summaryBlock}
+          {macroSignalsBlock}
+          {indicatorsBlock}
+          {chainBlock}
+          {nasdaqBlock}
+          {domesticBlock}
+          {strategyBlock}
+          {riskBlock}
+          {keyLevelsBlock}
+          {sectorsBlock}
+          {globalIssuesBlock}
+          {weeklyBlock}
+          {todayIssuesBlock}
+        </>
       )}
 
       <div style={{ marginTop: 24, textAlign: "center", fontSize: 11.5, color: T.hint }}>
@@ -555,17 +596,126 @@ function pickOpenStocks(report, n = 3) {
   return flat.slice(0, n);
 }
 
+function buildMorningNarrative(report) {
+  if (!report) return null;
+  const score = typeof report.macroScore === "number" ? report.macroScore : 0;
+  const sent = report.sentiment || "neutral";
+  const domestic = report.domestic || {};
+  const signals = report.signals || [];
+  const sectors = report.sectors || [];
+  const sentLabel = sent === "bullish" ? "강세 우호" : sent === "bearish" ? "약세 경계" : "중립·혼조";
+  const goodSignals = signals.filter(s => s.fav === "good").map(s => s.label);
+  const badSignals = signals.filter(s => s.fav === "bad").map(s => s.label);
+  const parts = [`거시 신호 ${score >= 0 ? "+" : ""}${score}점 · ${sentLabel}`];
+  if (goodSignals.length) parts.push(goodSignals.join("·") + " 우호");
+  if (badSignals.length) parts.push(badSignals.join("·") + " 부담");
+  if (domestic.kospiBias) parts.push(`코스피 ${domestic.kospiBias}${domestic.kosdaqBias ? ", 코스닥 " + domestic.kosdaqBias : ""} 전망`);
+  const environment = parts.join(" — ");
+  let prediction = "";
+  if (domestic.detail) {
+    const sents = domestic.detail.split(/(?<=[.。])\s*/);
+    prediction = sents.slice(0, 2).join(" ").trim();
+    if (prediction && !prediction.match(/[.。]$/)) prediction += ".";
+  }
+  if (!prediction) {
+    prediction = score > 1
+      ? "거시 환경이 전반적으로 우호적입니다. 외국인·기관 수급 유입을 주시하며 모멘텀 상위 종목 위주로 대응합니다."
+      : score > 0
+        ? "소폭 우호 환경에서 선별적 상승이 예상됩니다. 주도 섹터 내 대장주 위주로 집중하는 전략이 유효합니다."
+        : score < -1
+          ? "부담 요인이 복합적입니다. 방어적 포지션을 유지하되 낙폭 과대 단기 반등을 선별 대응합니다."
+          : score < 0
+            ? "불확실성이 상존합니다. 모멘텀이 확인되는 종목에만 집중하며 분할 대응을 권합니다."
+            : "방향성 탐색 구간으로 종목별 차별화가 예상됩니다. 거래대금·기술적 강도를 함께 확인하며 접근합니다.";
+  }
+  const topSectors = sectors.slice(0, 3).map(s => s.name);
+  const reason = topSectors.length
+    ? `이 환경에서 ${topSectors.join("·")} 섹터가 전일 실거래(등락률·거래대금·신고가·정배열) 기준 주도 섹터로 확인됐습니다. 이 섹터 내에서 신고가 돌파·종가 강도·거래량 급등이 겹치는 종목들을 추려 시가 매수 후보로 제시합니다.`
+    : `전일 실거래 데이터(등락·거래대금·신고가·정배열)를 기준으로 모멘텀이 가장 강한 종목들을 추려 시가 추천종목으로 선정했습니다. 시가 추격 시 반드시 분할 매수와 손절선을 설정하세요.`;
+  return { environment, prediction, reason };
+}
+
+function buildClosingNarrative(rep, mkt) {
+  if (!rep) return null;
+  const bias = rep.marketBias || "neutral";
+  const futures = rep.futures || [];
+  const mktScore = typeof mkt?.macroScore === "number" ? mkt.macroScore : null;
+  const futUp = futures.filter(f => f.dir === "up");
+  const futDown = futures.filter(f => f.dir === "down");
+  const biasLabel = bias === "up" ? "상승 우위" : bias === "down" ? "하락 압력" : "혼조";
+  const parts = [`오늘 국내 증시 ${biasLabel} 마감 추세`];
+  if (futUp.length > 0 && futDown.length === 0) parts.push("미 선물 전 지수 강세 — 익일 갭 상승 유력");
+  else if (futDown.length > 0 && futUp.length === 0) parts.push("미 선물 전 지수 약세 — 익일 갭 하락 주의");
+  else if (futUp.length > 0) parts.push(`미 선물 ${futUp.map(f => f.label).join("·")} 강세, ${futDown.map(f => f.label).join("·")} 약세`);
+  if (mktScore != null) parts.push(`아침 거시 신호 ${mktScore >= 0 ? "+" : ""}${mktScore}점(${mktScore > 0 ? "거시 우호" : mktScore < 0 ? "거시 부담" : "중립"})`);
+  const environment = parts.join(" — ");
+  const isBullFutures = futUp.length >= futDown.length;
+  const isDomesticUp = bias === "up";
+  let prediction = "";
+  if (isDomesticUp && isBullFutures) prediction = "오늘 강세 마감에 미 선물까지 우호적이어서 내일 갭 상승 출발 가능성이 높습니다. 오늘 종가 강도가 높은 종목들은 내일 추가 모멘텀을 이어갈 가능성이 있어 종가베팅에 유리한 환경입니다.";
+  else if (!isDomesticUp && !isBullFutures) prediction = "국내 증시 하락에 미 선물도 약세로 내일 갭 하락 리스크가 있습니다. 포지션 크기를 줄이고 종가 강도·OOS 확률 상위 종목만 선별적으로 대응하기를 권합니다.";
+  else if (isDomesticUp) prediction = "오늘 국내 증시는 강세로 마감했지만 미 선물이 혼조입니다. 내일 방향은 미 선물 확정치를 확인 후 결정하되, 강한 종가 강도 개별 종목은 갭 리스크를 감안한 분할 대응을 권합니다.";
+  else prediction = "오늘 국내 증시는 하락했지만 미 선물은 상승입니다. 단기 반등 가능성이 있으며 낙폭 과대·높은 종가 강도 종목 위주 선별적 대응이 유효합니다.";
+  const mc = rep.marketContext || {};
+  const topSectors = (mc.sectors || []).slice(0, 3).map(s => s.name);
+  let reason = "오늘 장 마감 시점 거래대금 상위 종목 중 종가 강도·거래량 급등·정배열·신고가 돌파 등 기술적 모멘텀이 복합적으로 겹친 종목들을 추려 종가베팅 후보로 선정했습니다.";
+  if (topSectors.length) reason += ` 오늘 주도 섹터(${topSectors.join("·")})와의 맥락도 교차 검토했습니다.`;
+  reason += " OOS 백테스트 기준 익일 고가 3% 도달 확률이 높은 순으로 정렬했으며, 갭 하락 −7% 이탈 시 청산 손절선을 반드시 사전 설정하세요.";
+  return { environment, prediction, reason };
+}
+
+function MarketEnvironmentCard({ narrative, accentColor, T, title }) {
+  if (!narrative) return null;
+  const { environment, prediction, reason } = narrative;
+  const ac = accentColor || ACCENT;
+  return (
+    <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: T.card, overflow: "hidden", marginBottom: 14 }}>
+      <div style={{ padding: "12px 16px 10px", background: "linear-gradient(135deg," + ac + "18, transparent)", borderBottom: "1px solid " + T.border, display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 14.5, fontWeight: 900, color: T.text }}>🔍 {title || "시장 진단 & 추천 근거"}</span>
+        <span style={{ marginLeft: "auto", fontSize: 10.5, fontWeight: 700, color: ac, background: ac + "1f", padding: "2px 8px", borderRadius: 8 }}>애널리스트 내러티브</span>
+      </div>
+      <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 11 }}>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: ac, marginBottom: 5 }}>① 현재 시장 환경</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{environment}</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+          <span style={{ fontSize: 12, color: T.hint }}>↓ 이를 바탕으로 예측</span>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+        </div>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#8b5cf6", marginBottom: 5 }}>② 예측 시장 방향</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{prediction}</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+          <span style={{ fontSize: 12, color: T.hint }}>↓ 그래서 이 종목들을</span>
+          <div style={{ flex: 1, height: 1, background: T.border }} />
+        </div>
+        <div style={{ background: T.cardAlt, borderRadius: 11, padding: "11px 13px" }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: ACCENT, marginBottom: 5 }}>③ 이 종목들을 추천하는 이유</div>
+          <div style={{ fontSize: 13.5, color: T.text, lineHeight: 1.65, fontWeight: 500 }}>{reason}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function OpenPicks({ report, T }) {
   if (report?.sectorsSource !== "data") return null;
   const picks = pickOpenStocks(report, 3);
   if (!picks.length) return null;
+  const narrative = buildMorningNarrative(report);
   return (
-    <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: "linear-gradient(135deg, rgba(224,36,36,0.10), transparent)", padding: "14px 16px", marginBottom: 4 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 15, fontWeight: 900, color: T.text }}>🌅 오전 시가 추천종목 TOP {picks.length}</span>
-        <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 8 }}>시초가 베팅</span>
-      </div>
-      <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>전일 실거래(등락·거래대금·신고가·정배열) 기준 주도주 — 시가 추격은 분할·손절선 필수</div>
+    <>
+      <MarketEnvironmentCard narrative={narrative} accentColor={UP_C} T={T} title="아침 시장 진단 & 시가 추천 근거" />
+      <div style={{ borderRadius: 16, border: "1px solid " + T.border, background: "linear-gradient(135deg, rgba(224,36,36,0.10), transparent)", padding: "14px 16px", marginBottom: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 15, fontWeight: 900, color: T.text }}>🌅 오전 시가 추천종목 TOP {picks.length}</span>
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: UP_C, padding: "2px 7px", borderRadius: 8 }}>시초가 베팅</span>
+        </div>
+        <div style={{ fontSize: 11.5, color: T.hint, marginBottom: 11 }}>전일 실거래(등락·거래대금·신고가·정배열) 기준 주도주 — 시가 추격은 분할·손절선 필수</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {picks.map((p, i) => {
           const sc = sectorColor(p.sector);
@@ -589,11 +739,12 @@ function OpenPicks({ report, T }) {
         })}
       </div>
     </div>
+    </>
   );
 }
 
 // 종가 브리핑 — 미 선물·거시지표·국내지수·뉴스이슈·섹터 + 종가베팅 추천 (오후+아침 리포트 종합)
-function ClosingBriefing({ T }) {
+function ClosingBriefing({ T, onHistory }) {
   const [rep, setRep] = useState(null);   // 오후 리포트(미선물·매크로·후보)
   const [mkt, setMkt] = useState(null);   // 아침 마켓리포트(뉴스·이슈 상세)
   const [loading, setLoading] = useState(true);
@@ -607,6 +758,8 @@ function ClosingBriefing({ T }) {
       아직 종가 브리핑이 없습니다.<br />매일 오후 3시(KST) 장 마감 무렵 자동 생성됩니다.
     </div>
   );
+  // 오늘 탭은 '오늘 것'만 — 기준일이 오늘(KST)보다 과거면 어제 자료 대신 안내(히스토리로 유도)
+  if (rep.date && rep.date < kstTodayStr()) return <NotTodayNotice kind="closing" date={rep.date} T={T} onHistory={onHistory} />;
   const bias = SENT[rep.marketBias] || SENT.neutral;
   const picks = (rep.candidates || []).slice(0, 3);
   const mc = rep.marketContext || {};
@@ -686,6 +839,7 @@ function ClosingBriefing({ T }) {
         </Section>
       )}
 
+      <MarketEnvironmentCard narrative={buildClosingNarrative(rep, mkt)} accentColor={bias.c} T={T} title="종가 진단 & 종가베팅 근거" />
       <Section title={"🔥 종가베팅 추천종목 TOP " + picks.length} sub="장 마감 무렵 매수 → 익일 청산 전략 · 거래대금·종가강도·정배열·OOS 확률 상위" T={T}>
         {picks.length === 0 ? (
           <div style={{ padding: 18, textAlign: "center", color: T.hint, fontSize: 13, background: T.card, border: "1px solid " + T.border, borderRadius: 12 }}>오늘은 조건을 충족하는 종가베팅 후보가 없습니다.</div>
@@ -790,10 +944,79 @@ function DailySectorTimeline({ reports, T, onOpen }) {
   );
 }
 
+function CombinedOosSummary({ mktHist, aftHist, T }) {
+  const ma = mktHist?.analysis;
+  const aa = aftHist?.analysis;
+  const moa = ma?.morningAnalysis;
+  if (!ma && !aa) return null;
+  const cell = (label, val, c) => (
+    <div style={{ flex: "1 1 80px", background: T.cardAlt, borderRadius: 9, padding: "9px 11px", textAlign: "center" }}>
+      <div style={{ fontSize: 10.5, color: T.hint, fontWeight: 600, marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 800, color: c || T.text }}>{val ?? "—"}</div>
+    </div>
+  );
+  return (
+    <div style={{ background: T.card, border: "1px solid " + T.border, borderRadius: 16, overflow: "hidden", marginBottom: 16 }}>
+      <div style={{ padding: "12px 16px 10px", background: "linear-gradient(135deg, rgba(234,179,8,0.14), transparent)", borderBottom: "1px solid " + T.border }}>
+        <div style={{ fontSize: 14.5, fontWeight: 900, color: T.text }}>📈 OOS 종합 성과 검증</div>
+        <div style={{ fontSize: 11.5, color: T.hint, marginTop: 2 }}>아침 브리핑 방향·추천주 + 종가 브리핑 종목 — 과거 실제 결과 기준</div>
+      </div>
+      <div style={{ padding: "12px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {/* 아침 브리핑 방향 OOS */}
+        {ma && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🌅 아침 브리핑 — 코스피 방향 적중률</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("방향 적중률", ma.hitRate != null ? ma.hitRate + "%" : null, (ma.hitRate || 0) >= 55 ? UP_C : "#d97706")}
+              {cell("강세일 KOSPI", ma.avgKospiOnBullish != null ? (ma.avgKospiOnBullish >= 0 ? "+" : "") + ma.avgKospiOnBullish + "%" : null, (ma.avgKospiOnBullish || 0) >= 0 ? UP_C : DN_C)}
+              {cell("약세일 KOSPI", ma.avgKospiOnBearish != null ? (ma.avgKospiOnBearish >= 0 ? "+" : "") + ma.avgKospiOnBearish + "%" : null, (ma.avgKospiOnBearish || 0) >= 0 ? UP_C : DN_C)}
+              {cell("중립일 KOSPI", ma.avgKospiOnNeutral != null ? (ma.avgKospiOnNeutral >= 0 ? "+" : "") + ma.avgKospiOnNeutral + "%" : null)}
+            </div>
+          </div>
+        )}
+        {/* 아침 추천주 OOS (백필 후 생성) */}
+        {moa && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🌅 아침 추천주 OOS ({moa.tradedDays}일 · {moa.totalPicks}건)</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("익일 고가 3% 도달", moa.hit3HighRate != null ? moa.hit3HighRate + "%" : null, (moa.hit3HighRate || 0) >= 40 ? UP_C : "#d97706")}
+              {cell("익일 상승(>0%)", moa.upRate != null ? moa.upRate + "%" : null, (moa.upRate || 0) >= 50 ? UP_C : "#d97706")}
+              {cell("익일 종가 평균", moa.avgNextRet != null ? (moa.avgNextRet >= 0 ? "+" : "") + moa.avgNextRet + "%" : null, (moa.avgNextRet || 0) >= 0 ? UP_C : DN_C)}
+            </div>
+          </div>
+        )}
+        {/* 종가 브리핑 추천주 OOS */}
+        {aa && (
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: T.sub, marginBottom: 7 }}>🔥 종가 브리핑 추천주 OOS ({aa.tradedDays}일 · {aa.totalPicks}건)</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {cell("익일 고가 3% 도달", aa.hit3HighRate != null ? aa.hit3HighRate + "%" : null, (aa.hit3HighRate || 0) >= 40 ? UP_C : "#d97706")}
+              {cell("익일 종가 3% 마감", aa.hit3Rate != null ? aa.hit3Rate + "%" : null, (aa.hit3Rate || 0) >= 30 ? UP_C : "#d97706")}
+              {cell("익일 종가 평균", aa.avgNextRet != null ? (aa.avgNextRet >= 0 ? "+" : "") + aa.avgNextRet + "%" : null, (aa.avgNextRet || 0) >= 0 ? UP_C : DN_C)}
+              {cell("baseline 대비 edge", aa.edge != null ? (aa.edge >= 0 ? "+" : "") + aa.edge + "%" : null, (aa.edge || 0) >= 0 ? UP_C : DN_C)}
+            </div>
+          </div>
+        )}
+      </div>
+      {ma && <div style={{ padding: "6px 16px 10px", fontSize: 11, color: T.hint }}>
+        평가 기간: {ma.range?.start} ~ {ma.range?.end} · {ma.totalDays}일 수록 · 방향 평가 {ma.evaluated}일
+        {aa && ` / 종가 브리핑 ${aa.range?.start} ~ ${aa.range?.end}`}
+      </div>}
+    </div>
+  );
+}
+
 function HistoryView({ T, onOpen }) {
   const [hist, setHist] = useState(null);
+  const [aftHist, setAftHist] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => { (async () => { setHist(await fetchFirst(HIST_SOURCES.map(f => f()))); setLoading(false); })(); }, []);
+  useEffect(() => { (async () => {
+    const [h, a] = await Promise.all([
+      fetchFirst(HIST_SOURCES.map(f => f())),
+      fetchFirst(AFT_HIST_SOURCES.map(f => f())),
+    ]);
+    setHist(h); setAftHist(a); setLoading(false);
+  })(); }, []);
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: T.hint }}>히스토리 불러오는 중…</div>;
   if (!hist || !hist.reports || !hist.reports.length) return (
@@ -802,28 +1025,48 @@ function HistoryView({ T, onOpen }) {
     </div>
   );
 
+  // 날짜별 종가 브리핑 픽 성과 룩업맵
+  const aftDayMap = useMemo(() => {
+    const m = new Map();
+    if (aftHist?.reports) for (const r of aftHist.reports) m.set(r.date, r);
+    return m;
+  }, [aftHist]);
+
   return (
     <div style={{ paddingBottom: 20 }}>
+      <CombinedOosSummary mktHist={hist} aftHist={aftHist} T={T} />
       <AnalysisCard a={hist.analysis} T={T} />
+      {aftHist?.analysis && <div style={{ marginBottom: 14 }}><AfternoonAnalysis a={aftHist.analysis} T={T} /></div>}
       <DailySectorTimeline reports={hist.reports} T={T} onOpen={onOpen} />
       <div style={{ fontSize: 13, fontWeight: 800, color: T.text, marginBottom: 8 }}>일자별 리포트 ({hist.reports.length}건)</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {hist.reports.map((r) => {
           const s = SENT[r.sentiment] || SENT.neutral;
           const oos = r.oos || {};
+          const aft = aftDayMap.get(r.date);
           return (
             <button key={r.date} onClick={() => onOpen(r.date)} style={{ textAlign: "left", border: "1px solid " + T.border, background: T.card, borderRadius: 12, padding: "11px 13px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ flex: "0 0 66px" }}>
+              <div style={{ flex: "0 0 56px" }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{r.date.slice(5)}</div>
                 <div style={{ fontSize: 10.5, color: T.hint }}>{r.date.slice(0, 4)}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span style={{ fontSize: 11.5, fontWeight: 800, color: s.c, background: s.bg, padding: "2px 8px", borderRadius: 12 }}>{s.emoji} {s.label}</span>
-                <div style={{ fontSize: 12, color: T.sub, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
+                <div style={{ fontSize: 11.5, color: T.sub, marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(r.topSectors || []).map(x => x.name).join(" · ") || r.kospiBias}</div>
+                {/* 아침 추천주 OOS */}
+                {(r.morningPicks || []).length > 0 && (
+                  <div style={{ fontSize: 11, color: T.hint, marginTop: 2 }}>
+                    🌅 {r.morningPicks.map(p => p.name).join("·")}
+                    {r.morningPicks.some(p => p.nextRet != null) && (
+                      <span> — 익일 {r.morningPicks.filter(p => p.nextRet != null).map(p => <span key={p.name} style={{ color: p.hit3High ? UP_C : p.nextRet >= 0 ? "#16a34a" : DN_C }}>{p.nextRet >= 0 ? "+" : ""}{p.nextRet}%</span>).reduce((a, b) => [a, " / ", b])}</span>
+                    )}
+                  </div>
+                )}
               </div>
               <div style={{ flex: "0 0 auto", textAlign: "right" }}>
-                {oos.kospiRet != null && <div style={{ fontSize: 13, fontWeight: 800, color: oos.kospiRet >= 0 ? UP_C : DN_C }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
-                {oos.hit != null && <div style={{ fontSize: 12 }}>{oos.hit ? "✅" : "❌"}</div>}
+                {oos.kospiRet != null && <div style={{ fontSize: 12.5, fontWeight: 800, color: oos.kospiRet >= 0 ? UP_C : DN_C }}>{oos.kospiRet >= 0 ? "+" : ""}{oos.kospiRet}%</div>}
+                {oos.hit != null && <div style={{ fontSize: 11 }}>{oos.hit ? "✅" : "❌"}</div>}
+                {aft?.dayHitRate != null && <div style={{ fontSize: 11, color: ACCENT, fontWeight: 700 }}>🔥 {aft.dayHitRate}%</div>}
               </div>
             </button>
           );
@@ -1539,6 +1782,31 @@ function AfternoonView({ T }) {
   );
 }
 
+// 오늘(KST) 날짜 문자열
+function kstTodayStr() {
+  const now = new Date();
+  return new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
+}
+
+// 오늘 탭 전용 — 오늘 자료가 아직 없을 때(어제 것은 히스토리로 유도, 오늘 탭엔 표시 안 함)
+function NotTodayNotice({ kind, date, T, onHistory }) {
+  const label = kind === "closing" ? "종가 브리핑" : "아침 브리핑";
+  const when = kind === "closing" ? "장 마감 무렵(15:00 KST)" : "매 거래일 아침(07:00 KST)";
+  return (
+    <div style={{ padding: "32px 20px", textAlign: "center", background: T.card, border: "1px solid " + T.border, borderRadius: 16 }}>
+      <div style={{ fontSize: 30, marginBottom: 10 }}>🕗</div>
+      <div style={{ fontSize: 14.5, fontWeight: 800, color: T.text, marginBottom: 6 }}>오늘 {label}은 아직 생성 전입니다</div>
+      <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.7 }}>
+        {when}에 자동 생성됩니다. 주말·휴장일이면 다음 거래일에 갱신됩니다.
+        {date ? <><br />직전 거래일({date}) 자료는 히스토리에서 확인하세요.</> : null}
+      </div>
+      {onHistory && (
+        <button onClick={onHistory} style={{ marginTop: 14, border: "1px solid " + T.border, background: T.cardAlt, color: T.text, borderRadius: 10, padding: "9px 18px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>📋 히스토리에서 보기</button>
+      )}
+    </div>
+  );
+}
+
 export function MarketReportTab({ theme }) {
   const T = useTheme(theme);
   const [mode, setMode] = useState("today");
@@ -1601,9 +1869,13 @@ export function MarketReportTab({ theme }) {
           {todayTab === "morning" ? (
             loading ? <div style={{ padding: 40, textAlign: "center", color: T.hint }}>리포트 불러오는 중…</div>
               : error ? <div style={{ padding: 30, textAlign: "center", color: T.sub }}><div style={{ marginBottom: 12 }}>{error}</div><button onClick={loadToday} style={navBtn(T)}>다시 시도</button></div>
-                : today ? <><OpenPicks report={today} T={T} /><ReportBody report={today} T={T} live /></> : null
+                : today ? (
+                  today.date >= kstTodayStr()
+                    ? <ReportBody report={today} T={T} live topSlot={today.sectorsSource === "data" ? <OpenPicks report={today} T={T} /> : null} />
+                    : <NotTodayNotice kind="morning" date={today.date} T={T} onHistory={() => { setMode("history"); setDetail(null); }} />
+                ) : null
           ) : (
-            <ClosingBriefing T={T} />
+            <ClosingBriefing T={T} onHistory={() => { setMode("history"); setDetail(null); }} />
           )}
         </>
       )}
