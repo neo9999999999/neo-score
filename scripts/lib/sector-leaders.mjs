@@ -1,5 +1,5 @@
 // 전일(최근 거래일) 실거래 데이터로 섹터별 주도주를 선정한다.
-// 아침 리포트는 장 시작 전(05:30 KST) 생성 → KR 최신 종가는 '전일'이므로 전일 기준 주도주가 된다.
+// 아침 리포트는 장 시작 전(07:00 KST) 생성 → KR 최신 종가는 '전일'이므로 전일 기준 주도주가 된다.
 import { loadStockMap } from "./report-core.mjs";
 import { fetchYahooOHLCV, pMap, scoreAt, fmtEok } from "./stock-core.mjs";
 import { SECTOR_MAP } from "./sector-map.mjs";

@@ -386,7 +386,7 @@ function ReportBody({ report, T, live, topSlot }) {
       )}
       {report.source === "seed" && (
         <div style={{ marginTop: 10, fontSize: 12, color: T.hint, background: T.cardAlt, border: "1px dashed " + T.border, borderRadius: 10, padding: "8px 11px" }}>
-          ⓘ 예시 데이터입니다. 매일 새벽 5시 30분(KST) 실시간 시장 분석으로 자동 갱신됩니다.
+          ⓘ 예시 데이터입니다. 매일 아침 7시(KST) 실시간 시장 분석으로 자동 갱신됩니다.
         </div>
       )}
       {report.source === "oos" && (
@@ -1753,7 +1753,7 @@ function kstTodayStr() {
 // 오늘 탭 전용 — 오늘 자료가 아직 없을 때(어제 것은 히스토리로 유도, 오늘 탭엔 표시 안 함)
 function NotTodayNotice({ kind, date, T, onHistory }) {
   const label = kind === "closing" ? "종가 브리핑" : "아침 브리핑";
-  const when = kind === "closing" ? "장 마감 무렵(15:00 KST)" : "매 거래일 새벽(05:30 KST)";
+  const when = kind === "closing" ? "장 마감 무렵(15:00 KST)" : "매 거래일 아침(07:00 KST)";
   return (
     <div style={{ padding: "32px 20px", textAlign: "center", background: T.card, border: "1px solid " + T.border, borderRadius: 16 }}>
       <div style={{ fontSize: 30, marginBottom: 10 }}>🕗</div>

@@ -1,11 +1,12 @@
 name: Daily Market Report
 
-# 매일 장 시작 전(07:00 KST 이전) 리포트 생성
-# 20:30 UTC = 05:30 KST  → 오전 7시 전에 준비 완료
+# 아침 리포트 백업 생성 — 주 생성·발송은 07:00 KST "Morning Report"(kakao-send.yml)가 담당.
+# 그 실행이 누락될 때를 대비한 백업이며, 이미 생성돼 변경이 없으면 커밋을 생략한다.
+# 22:30 UTC = 07:30 KST, 23:00 UTC = 08:00 KST (간밤 미국장 마감 반영)
 on:
   schedule:
-    - cron: "30 20 * * *"   # 05:30 KST — 주 실행
-    - cron: "0 21 * * *"    # 06:00 KST — 백업(스케줄 누락 대비, 변경 없으면 skip)
+    - cron: "30 22 * * *"   # 07:30 KST — 백업(주 실행 누락 대비, 변경 없으면 skip)
+    - cron: "0 23 * * *"    # 08:00 KST — 2차 백업
   workflow_dispatch: {}
 
 permissions:

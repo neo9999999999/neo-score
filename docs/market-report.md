@@ -9,13 +9,13 @@
 | 요소 | 경로 | 역할 |
 | --- | --- | --- |
 | 생성 스크립트 | `scripts/generate-market-report.mjs` | 지표 수집 → LLM 분석 → JSON 생성 |
-| 스케줄러 | `.github/workflows/market-report.yml` | 매일 05:30 KST(20:30 UTC) 실행·커밋 |
+| 스케줄러 | `.github/workflows/kakao-send.yml` (주 실행, 07:00 KST 생성·발송) / `market-report.yml` (07:30·08:00 KST 백업) | 매일 아침 07:00 KST(22:00 UTC) 실행·커밋 |
 | 데이터 | `public/market-report.json` | 프론트가 읽는 리포트 |
 | 화면 | `src/MarketReportHelpers.jsx` | 요약 → 터치 시 상세, 연결고리, 섹터·종목, 카드뉴스 |
 
 ## 동작 흐름
 
-1. GitHub Action 이 매일 **05:30 KST** 에 스크립트를 실행 (간밤 미국장 마감 반영).
+1. GitHub Action 이 매일 아침 **07:00 KST** 에 스크립트를 실행 (간밤 미국장 마감 반영).
 2. 스크립트가 Stooq(키 불필요)에서 나스닥·S&P500·WTI·달러인덱스·원달러·미10년물을 수집.
 3. Claude 로 연결관계 분석 → 요약/상세/섹터/수혜종목/카드뉴스 JSON 생성.
    - 종목명은 `data/stocks.json` 으로 종목코드를 자동 매핑.
