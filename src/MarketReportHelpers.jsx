@@ -723,6 +723,13 @@ function ClosingBriefing({ T }) {
   const bias = SENT[rep.marketBias] || SENT.neutral;
   const picks = (rep.candidates || []).slice(0, 3);
   const mc = rep.marketContext || {};
+  // 신선도: 종가 리포트 기준일이 오늘(KST)보다 과거면 안내 (오늘 것은 15:00 이후 생성)
+  let staleDays = 0;
+  if (rep.date) {
+    const now = new Date();
+    const kstToday = new Date(now.getTime() + now.getTimezoneOffset() * 60000 + 9 * 3600000).toISOString().slice(0, 10);
+    staleDays = Math.round((Date.parse(kstToday) - Date.parse(rep.date)) / 86400000);
+  }
   // 뉴스·이슈: 아침 리포트의 상세(globalIssues/todayIssues, detail 포함) 우선, 없으면 오후 marketContext.issues(제목만)
   const globalIssues = (mkt && mkt.globalIssues && mkt.globalIssues.length) ? mkt.globalIssues : [];
   const todayIssues = (mkt && (mkt.todayIssues || mkt.issues) || []);
@@ -737,6 +744,12 @@ function ClosingBriefing({ T }) {
         </div>
         <span style={{ fontSize: 12.5, fontWeight: 800, color: bias.c, background: bias.bg, padding: "5px 11px", borderRadius: 20 }}>{bias.emoji} {bias.label}</span>
       </div>
+
+      {staleDays >= 1 && (
+        <div style={{ marginTop: 10, fontSize: 12, color: "#b45309", background: "rgba(217,119,6,0.12)", border: "1px solid rgba(217,119,6,0.4)", borderRadius: 10, padding: "8px 11px", lineHeight: 1.5 }}>
+          ⏳ 오늘 종가 브리핑은 장 마감(15:00 KST) 이후 자동 생성됩니다. 아래는 직전 거래일({rep.date}) 기준이며, 생성되면 오늘 것으로 자동 갱신됩니다.
+        </div>
+      )}
 
       {rep.summary && (
         <div style={{ marginTop: 14, background: "linear-gradient(135deg," + bias.c + "1f, transparent)", border: "1px solid " + T.border, borderRadius: 16, padding: 16 }}>
