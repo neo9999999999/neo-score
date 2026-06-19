@@ -1,61 +1,61 @@
 {
   "date": "2026-06-19",
-  "generatedAt": "2026-06-19T19:14:03+09:00",
+  "generatedAt": "2026-06-19T20:40:11+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+1.16%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 삼성전기우, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 상승(+0.97%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 삼성전기우, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,615.25",
-      "change": "+351.9",
-      "changePct": "+1.16%",
+      "value": "30,558.25",
+      "change": "+294.9",
+      "changePct": "+0.97%",
       "dir": "up",
       "_raw": {
-        "close": 30615.25,
+        "close": 30558.25,
         "prevClose": 30263.349609375,
-        "chgPct": 1.16
+        "chgPct": 0.97
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,553.75",
-      "change": "+45.32",
-      "changePct": "+0.60%",
+      "value": "7,538.5",
+      "change": "+30.07",
+      "changePct": "+0.40%",
       "dir": "up",
       "_raw": {
-        "close": 7553.75,
+        "close": 7538.5,
         "prevClose": 7508.43017578125,
-        "chgPct": 0.6
+        "chgPct": 0.4
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "51,955",
-      "change": "-7",
-      "changePct": "-0.01%",
-      "dir": "flat",
+      "value": "51,833",
+      "change": "-129",
+      "changePct": "-0.25%",
+      "dir": "down",
       "_raw": {
-        "close": 51955,
+        "close": 51833,
         "prevClose": 51962,
-        "chgPct": -0.01
+        "chgPct": -0.25
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "16.91",
-      "change": "-1.53",
-      "changePct": "-8.30%",
-      "dir": "down",
+      "value": "17.17",
+      "change": "+0.77",
+      "changePct": "+4.70%",
+      "dir": "up",
       "_raw": {
-        "close": 16.90999984741211,
-        "prevClose": 18.440000534057617,
-        "chgPct": -8.3
+        "close": 17.170000076293945,
+        "prevClose": 16.399999618530273,
+        "chgPct": 4.7
       }
     }
   ],
@@ -76,12 +76,12 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,529.8원",
-      "change": "+4.43",
+      "value": "1,529.9원",
+      "change": "+4.46",
       "changePct": "+0.29%",
       "dir": "up",
       "_raw": {
-        "close": 1529.8499755859375,
+        "close": 1529.8800048828125,
         "prevClose": 1525.4200439453125,
         "chgPct": 0.29
       }
@@ -89,27 +89,27 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$75.70",
-      "change": "-0.9",
-      "changePct": "-1.17%",
+      "value": "$76.08",
+      "change": "-0.52",
+      "changePct": "-0.68%",
       "dir": "down",
       "_raw": {
-        "close": 75.69999694824219,
+        "close": 76.08000183105469,
         "prevClose": 76.5999984741211,
-        "chgPct": -1.17
+        "chgPct": -0.68
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
       "value": "100.78",
-      "change": "+0.69",
-      "changePct": "+0.69%",
-      "dir": "up",
+      "change": "-0.07",
+      "changePct": "-0.07%",
+      "dir": "down",
       "_raw": {
-        "close": 100.7770004272461,
-        "prevClose": 100.08999633789062,
-        "chgPct": 0.69
+        "close": 100.77799987792969,
+        "prevClose": 100.8499984741211,
+        "chgPct": -0.07
       }
     }
   ],
@@ -118,26 +118,26 @@
       "key": "kospi",
       "label": "코스피",
       "value": "9,052.42",
-      "change": "+188.18",
-      "changePct": "+2.12%",
-      "dir": "up",
+      "change": "-11.42",
+      "changePct": "-0.13%",
+      "dir": "down",
       "_raw": {
         "close": 9052.419921875,
-        "prevClose": 8864.240234375,
-        "chgPct": 2.12
+        "prevClose": 9063.83984375,
+        "chgPct": -0.13
       }
     },
     {
       "key": "kosdaq",
       "label": "코스닥",
       "value": "966.59",
-      "change": "-65.37",
-      "changePct": "-6.33%",
+      "change": "-34.34",
+      "changePct": "-3.43%",
       "dir": "down",
       "_raw": {
         "close": 966.5900268554688,
-        "prevClose": 1031.9599609375,
-        "chgPct": -6.33
+        "prevClose": 1000.9299926757812,
+        "chgPct": -3.43
       }
     }
   ],
@@ -148,7 +148,7 @@
       "code": "009155",
       "market": "KOSPI",
       "price": 809000,
-      "score": 86.6,
+      "score": 85.7,
       "changePct": 11.43,
       "rangePos": 0.6,
       "volSurge": 3.99,
