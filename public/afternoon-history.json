@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-18T20:13:26+09:00",
-    "count": 1908,
+    "updatedAt": "2026-06-19T19:14:03+09:00",
+    "count": 1909,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-19",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "삼성전기우",
+          "code": "009155",
+          "score": 86.6,
+          "changePct": 11.43,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "원자력·전력기기",
+          "반도체",
+          "AI·인터넷"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 1.16,
+      "es": 0.6
+    },
     {
       "date": "2026-06-18",
       "marketBias": "bullish",
