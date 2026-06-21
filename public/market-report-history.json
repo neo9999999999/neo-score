@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-21T09:02:29+09:00",
-    "count": 115,
+    "updatedAt": "2026-06-22T08:14:17+09:00",
+    "count": 116,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-06-22",
+      "sentiment": "bullish",
+      "title": "나스닥 +1.91% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +1.91%(큰 폭)으로 마감, S&P500은 +1.08%를 기록했습니다. 미 10년물 금리는 4.45% — 4~4.5% 긴장 구간, 증시와 경쟁 관계. 원/달러 1,529원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +2.61(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·미 10년물 / 부담 요인: WTI 유가.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,517.93",
+          "change": "+496.27",
+          "changePct": "+1.91%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,500.58",
+          "change": "+80.48",
+          "changePct": "+1.08%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$77.53",
+          "change": "+0.93",
+          "changePct": "+1.21%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "100.84",
+          "change": "-0.01",
+          "changePct": "-0.01%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,529.1원",
+          "change": "-8.46",
+          "changePct": "-0.55%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.45%",
+          "change": "-0.01%p",
+          "changePct": "-0.27%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "원자력·전력기기",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "down"
+        },
+        {
+          "name": "조선",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "SK하이닉스",
+          "code": "000660",
+          "sector": "반도체",
+          "changePct": 2.94
+        },
+        {
+          "name": "LS ELECTRIC",
+          "code": "010120",
+          "sector": "원자력·전력기기",
+          "changePct": 7.02
+        },
+        {
+          "name": "효성중공업",
+          "code": "298040",
+          "sector": "원자력·전력기기",
+          "changePct": 4.39
+        }
+      ]
+    },
     {
       "date": "2026-06-21",
       "sentiment": "bullish",
