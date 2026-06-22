@@ -1,61 +1,61 @@
 {
   "date": "2026-06-22",
-  "generatedAt": "2026-06-22T20:37:00+09:00",
+  "generatedAt": "2026-06-22T21:54:46+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+1.61%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 2개를 대장주 후보로 추렸습니다 (1순위 삼성전기우, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 상승(+1.8%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 2개를 대장주 후보로 추렸습니다 (1순위 삼성전기우, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,749.5",
-      "change": "+486.15",
-      "changePct": "+1.61%",
+      "value": "30,809.5",
+      "change": "+546.15",
+      "changePct": "+1.80%",
       "dir": "up",
       "_raw": {
-        "close": 30749.5,
+        "close": 30809.5,
         "prevClose": 30263.349609375,
-        "chgPct": 1.61
+        "chgPct": 1.8
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,563.75",
-      "change": "+55.32",
-      "changePct": "+0.74%",
+      "value": "7,570.75",
+      "change": "+62.32",
+      "changePct": "+0.83%",
       "dir": "up",
       "_raw": {
-        "close": 7563.75,
+        "close": 7570.75,
         "prevClose": 7508.43017578125,
-        "chgPct": 0.74
+        "chgPct": 0.83
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,009",
-      "change": "+47",
-      "changePct": "+0.09%",
+      "value": "52,076",
+      "change": "+114",
+      "changePct": "+0.22%",
       "dir": "up",
       "_raw": {
-        "close": 52009,
+        "close": 52076,
         "prevClose": 51962,
-        "chgPct": 0.09
+        "chgPct": 0.22
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "17.35",
-      "change": "+0.95",
-      "changePct": "+5.79%",
+      "value": "17.04",
+      "change": "+0.64",
+      "changePct": "+3.90%",
       "dir": "up",
       "_raw": {
-        "close": 17.350000381469727,
+        "close": 17.040000915527344,
         "prevClose": 16.399999618530273,
-        "chgPct": 5.79
+        "chgPct": 3.9
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "4.45%",
-      "change": "-0.01%p",
-      "changePct": "-0.27%",
-      "dir": "down",
+      "value": "4.49%",
+      "change": "+0.04%p",
+      "changePct": "+0.99%",
+      "dir": "up",
       "_raw": {
-        "close": 4.451000213623047,
-        "prevClose": 4.4629998207092285,
-        "chgPct": -0.27
+        "close": 4.494999885559082,
+        "prevClose": 4.451000213623047,
+        "chgPct": 0.99
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,536.9원",
-      "change": "-0.69",
-      "changePct": "-0.04%",
-      "dir": "flat",
+      "value": "1,536.8원",
+      "change": "-0.77",
+      "changePct": "-0.05%",
+      "dir": "down",
       "_raw": {
-        "close": 1536.8699951171875,
+        "close": 1536.7900390625,
         "prevClose": 1537.56005859375,
-        "chgPct": -0.04
+        "chgPct": -0.05
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$75.33",
-      "change": "-1.27",
-      "changePct": "-1.66%",
+      "value": "$74.56",
+      "change": "-2.04",
+      "changePct": "-2.66%",
       "dir": "down",
       "_raw": {
-        "close": 75.33000183105469,
+        "close": 74.55999755859375,
         "prevClose": 76.5999984741211,
-        "chgPct": -1.66
+        "chgPct": -2.66
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "100.92",
-      "change": "+0.07",
-      "changePct": "+0.07%",
-      "dir": "up",
+      "value": "100.81",
+      "change": "-0.04",
+      "changePct": "-0.04%",
+      "dir": "flat",
       "_raw": {
-        "close": 100.9219970703125,
+        "close": 100.81199645996094,
         "prevClose": 100.8499984741211,
-        "chgPct": 0.07
+        "chgPct": -0.04
       }
     }
   ],
@@ -148,7 +148,7 @@
       "code": "009155",
       "market": "KOSPI",
       "price": 954000,
-      "score": 86.5,
+      "score": 86.6,
       "changePct": 17.92,
       "rangePos": 0.78,
       "volSurge": 4.87,
@@ -178,7 +178,7 @@
       "code": "004710",
       "market": "KOSPI",
       "price": 15460,
-      "score": 85.3,
+      "score": 85.4,
       "changePct": 18.2,
       "rangePos": 0.75,
       "volSurge": 6.43,
