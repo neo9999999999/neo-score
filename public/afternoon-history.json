@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-19T20:40:11+09:00",
-    "count": 1909,
+    "updatedAt": "2026-06-22T20:37:00+09:00",
+    "count": 1910,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,41 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-22",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "삼성전기우",
+          "code": "009155",
+          "score": 86.5,
+          "changePct": 17.92,
+          "sector": null
+        },
+        {
+          "name": "한솔테크닉스",
+          "code": "004710",
+          "score": 85.3,
+          "changePct": 18.2,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "원자력·전력기기",
+          "반도체",
+          "조선"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 1.61,
+      "es": 0.74
+    },
     {
       "date": "2026-06-19",
       "marketBias": "bullish",
