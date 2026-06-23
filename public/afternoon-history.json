@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-22T21:54:47+09:00",
-    "count": 1910,
+    "updatedAt": "2026-06-23T18:00:01+09:00",
+    "count": 1911,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-06-23",
+      "marketBias": "bearish",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "반도체",
+          "바이오·제약",
+          "2차전지"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": -2.77,
+      "es": -1.52
+    },
     {
       "date": "2026-06-22",
       "marketBias": "bullish",
