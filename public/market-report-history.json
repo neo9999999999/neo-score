@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-06-25T08:04:21+09:00",
+    "updatedAt": "2026-06-25T08:45:13+09:00",
     "count": 119,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,9 +48,9 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$69.84",
-          "change": "-3.37",
-          "changePct": "-4.60%",
+          "value": "$69.98",
+          "change": "-3.23",
+          "changePct": "-4.41%",
           "dir": "down"
         },
         {
