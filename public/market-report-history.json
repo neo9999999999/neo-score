@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-26T09:06:11+09:00",
-    "count": 120,
+    "updatedAt": "2026-06-27T08:07:04+09:00",
+    "count": 121,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-06-27",
+      "sentiment": "bullish",
+      "title": "나스닥 -0.24% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 -0.24%(보합권)으로 마감, S&P500은 -0.05%를 기록했습니다. 미 10년물 금리는 4.37% — 4~4.5% 긴장 구간, 증시와 경쟁 관계. 원/달러 1,535원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +1.74(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 원/달러·미 10년물·WTI 유가 / 부담 요인: 나스닥.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,297.62",
+          "change": "-60.98",
+          "changePct": "-0.24%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,354.02",
+          "change": "-3.47",
+          "changePct": "-0.05%",
+          "dir": "flat"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$70.24",
+          "change": "-1.68",
+          "changePct": "-2.34%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.37",
+          "change": "-0.06",
+          "changePct": "-0.06%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,535원",
+          "change": "-11.48",
+          "changePct": "-0.74%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.37%",
+          "change": "-0.08%p",
+          "changePct": "-1.77%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "down"
+        },
+        {
+          "name": "방산·우주",
+          "bias": "down"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "원익IPS",
+          "code": "240810",
+          "sector": "반도체",
+          "changePct": 5.88
+        },
+        {
+          "name": "HPSP",
+          "code": "403870",
+          "sector": "반도체",
+          "changePct": 3.33
+        },
+        {
+          "name": "더존비즈온",
+          "code": "012510",
+          "sector": "AI·인터넷",
+          "changePct": 0
+        }
+      ]
+    },
     {
       "date": "2026-06-26",
       "sentiment": "neutral",
