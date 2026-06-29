@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-06-29T09:03:24+09:00",
-    "count": 123,
+    "updatedAt": "2026-06-30T07:59:15+09:00",
+    "count": 124,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-06-30",
+      "sentiment": "bullish",
+      "title": "나스닥 +2.07% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +2.07%(급등락)으로 마감, S&P500은 +1.18%를 기록했습니다. 미 10년물 금리는 4.37% — 4~4.5% 긴장 구간, 증시와 경쟁 관계. 원/달러 1,542원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +1.8(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500 / 부담 요인: 원/달러·WTI 유가.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,820.14",
+          "change": "+522.53",
+          "changePct": "+2.07%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,440.43",
+          "change": "+86.41",
+          "changePct": "+1.18%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$70.28",
+          "change": "+1.05",
+          "changePct": "+1.52%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.11",
+          "change": "-0.25",
+          "changePct": "-0.25%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,542원",
+          "change": "+6.8",
+          "changePct": "+0.44%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.37%",
+          "change": "+0.00%p",
+          "changePct": "+0.05%",
+          "dir": "flat"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "up"
+        },
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "에코프로",
+          "code": "086520",
+          "sector": "2차전지",
+          "changePct": 23.69
+        },
+        {
+          "name": "LG에너지솔루션",
+          "code": "373220",
+          "sector": "2차전지",
+          "changePct": 20.81
+        },
+        {
+          "name": "포스코퓨처엠",
+          "code": "003670",
+          "sector": "2차전지",
+          "changePct": 16.81
+        }
+      ]
+    },
     {
       "date": "2026-06-29",
       "sentiment": "neutral",
