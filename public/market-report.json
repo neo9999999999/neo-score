@@ -1,6 +1,6 @@
 {
   "date": "2026-07-03",
-  "generatedAt": "2026-07-03T08:08:31+09:00",
+  "generatedAt": "2026-07-03T08:39:56+09:00",
   "source": "rule",
   "macroScore": -1.9,
   "signals": [
@@ -39,8 +39,8 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -0.15,
-      "score": 0.04,
+      "pct": -0.17,
+      "score": 0.05,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
     }
@@ -65,9 +65,9 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$68.48",
-      "change": "-0.1",
-      "changePct": "-0.15%",
+      "value": "$68.46",
+      "change": "-0.12",
+      "changePct": "-0.17%",
       "dir": "down"
     },
     {
@@ -395,7 +395,7 @@
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $68.48 (-0.15%)",
+      "title": "WTI $68.46 (-0.17%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "mid"
     },
