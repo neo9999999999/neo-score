@@ -1,6 +1,6 @@
 {
   "date": "2026-07-03",
-  "generatedAt": "2026-07-03T08:39:56+09:00",
+  "generatedAt": "2026-07-03T09:00:01+09:00",
   "source": "rule",
   "macroScore": -1.9,
   "signals": [
@@ -39,7 +39,7 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -0.17,
+      "pct": -0.16,
       "score": 0.05,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
@@ -65,17 +65,17 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$68.46",
-      "change": "-0.12",
-      "changePct": "-0.17%",
+      "value": "$68.47",
+      "change": "-0.11",
+      "changePct": "-0.16%",
       "dir": "down"
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "100.85",
-      "change": "-0.54",
-      "changePct": "-0.53%",
+      "value": "100.94",
+      "change": "-0.45",
+      "changePct": "-0.44%",
       "dir": "down"
     },
     {
@@ -395,7 +395,7 @@
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $68.46 (-0.17%)",
+      "title": "WTI $68.47 (-0.16%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "mid"
     },
@@ -409,7 +409,7 @@
     {
       "date": "달러",
       "day": "DXY",
-      "title": "달러인덱스 100.85 (-0.53%)",
+      "title": "달러인덱스 100.94 (-0.44%)",
       "detail": "달러 강세 시 신흥국·원화 약세 압력, 약세 시 위험자산 선호.",
       "importance": "low"
     }
