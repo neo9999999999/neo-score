@@ -1,6 +1,6 @@
 {
   "date": "2026-07-06",
-  "generatedAt": "2026-07-06T08:01:44+09:00",
+  "generatedAt": "2026-07-06T08:37:16+09:00",
   "source": "rule",
   "macroScore": -0.15,
   "signals": [
@@ -23,8 +23,8 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "pct": -0.85,
-      "score": 0.59,
+      "pct": -0.86,
+      "score": 0.6,
       "fav": "good",
       "note": "원화 강세 → 외국인 순매수 우호"
     },
@@ -39,7 +39,7 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -0.54,
+      "pct": -0.52,
       "score": 0.16,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
@@ -65,25 +65,25 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$68.32",
-      "change": "-0.37",
-      "changePct": "-0.54%",
+      "value": "$68.33",
+      "change": "-0.36",
+      "changePct": "-0.52%",
       "dir": "down"
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "100.87",
-      "change": "+0.01",
-      "changePct": "+0.01%",
+      "value": "100.89",
+      "change": "+0.03",
+      "changePct": "+0.03%",
       "dir": "flat"
     },
     {
       "key": "usdkrw",
       "label": "원/달러 환율",
-      "value": "1,529원",
-      "change": "-13.14",
-      "changePct": "-0.85%",
+      "value": "1,528.8원",
+      "change": "-13.3",
+      "changePct": "-0.86%",
       "dir": "down"
     },
     {
@@ -383,14 +383,14 @@
     {
       "date": "환율",
       "day": "원/달러",
-      "title": "원/달러 1,529원 (-0.85%)",
+      "title": "원/달러 1,528.8원 (-0.86%)",
       "detail": "고환율 구간 — 외국인 순매수/순매도 방향을 좌우. 환율 안정 시 외인 수급 개선.",
       "importance": "high"
     },
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $68.32 (-0.54%)",
+      "title": "WTI $68.33 (-0.52%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "high"
     },
@@ -404,7 +404,7 @@
     {
       "date": "달러",
       "day": "DXY",
-      "title": "달러인덱스 100.87 (+0.01%)",
+      "title": "달러인덱스 100.89 (+0.03%)",
       "detail": "달러 강세 시 신흥국·원화 약세 압력, 약세 시 위험자산 선호.",
       "importance": "low"
     }
