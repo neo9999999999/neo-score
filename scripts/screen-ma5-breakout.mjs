@@ -92,11 +92,11 @@ export function matchAt(series, i, cfg = CFG) {
   const K = b.open < b.close;
   // L 최고종가: 당일 종가가 최근 4봉 중 최고종가
   const L = b.close >= Math.max(series[i - 1].close, series[i - 2].close, series[i - 3].close);
-  // M 주가이평비교: 전일 종가 < 전일 MA5
-  const M = prev.close < ma5p;
+  // M(전일 종가<MA5)은 5일선 조건을 "돌파 or 위"로 정의(H||J)하면서 AND에서 제외.
+  //   (M은 골든크로스 H = "전일 종가≤MA5 && 당일 종가>MA5"에 이미 포함되어 있음)
 
-  const orPart = H || J;                                   // 5일선 돌파 or 5일선 위
-  const andPart = A && B && C && D && E && F && G && I && K && L && M;
+  const orPart = H || J;                                   // 5일선 돌파(H) or 5일선 위(J)
+  const andPart = A && B && C && D && E && F && G && I && K && L;
   if (!(orPart && andPart)) return null;
 
   return {
