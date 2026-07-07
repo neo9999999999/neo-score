@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-07T09:02:45+09:00",
-    "count": 131,
+    "updatedAt": "2026-07-08T08:02:12+09:00",
+    "count": 132,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-08",
+      "sentiment": "bearish",
+      "title": "나스닥 -1.16% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -1.16%(큰 폭)으로 마감, S&P500은 -0.45%를 기록했습니다. 미 10년물 금리는 4.53% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,515원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -1.85(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 원/달러 / 부담 요인: 나스닥·S&P500·미 10년물·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,818.69",
+          "change": "-302.47",
+          "changePct": "-1.16%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,503.85",
+          "change": "-33.58",
+          "changePct": "-0.45%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$72.48",
+          "change": "+3.93",
+          "changePct": "+5.73%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.12",
+          "change": "+0.27",
+          "changePct": "+0.27%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,515.2원",
+          "change": "-13.61",
+          "changePct": "-0.89%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.53%",
+          "change": "+0.04%p",
+          "changePct": "+0.98%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        },
+        {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "가온칩스",
+          "code": "399720",
+          "sector": "반도체",
+          "changePct": 17.95
+        },
+        {
+          "name": "신한지주",
+          "code": "055550",
+          "sector": "금융",
+          "changePct": 0.84
+        },
+        {
+          "name": "하이브",
+          "code": "352820",
+          "sector": "엔터·미디어",
+          "changePct": 7.91
+        }
+      ]
+    },
     {
       "date": "2026-07-07",
       "sentiment": "bullish",
