@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-07-07T08:39:59+09:00",
+    "updatedAt": "2026-07-07T09:02:45+09:00",
     "count": 131,
     "backfilledFrom": "2026-01-01"
   },
@@ -57,15 +57,15 @@
           "key": "dxy",
           "label": "달러인덱스",
           "value": "100.86",
-          "change": "-0",
-          "changePct": "-0.00%",
+          "change": "+0",
+          "changePct": "+0.00%",
           "dir": "flat"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,528.9원",
-          "change": "-2.06",
+          "value": "1,529.1원",
+          "change": "-1.92",
           "changePct": "-0.13%",
           "dir": "down"
         },
