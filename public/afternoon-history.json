@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-07-10T18:19:54+09:00",
+    "updatedAt": "2026-07-10T19:27:18+09:00",
     "count": 1924,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,7 +1398,7 @@
   "reports": [
     {
       "date": "2026-07-10",
-      "marketBias": "bearish",
+      "marketBias": "neutral",
       "picks": [],
       "marketContext": {
         "sentiment": "bullish",
@@ -1413,8 +1413,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": -0.54,
-      "es": -0.14
+      "nq": -0.36,
+      "es": -0.06
     },
     {
       "date": "2026-07-09",
