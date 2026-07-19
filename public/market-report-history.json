@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-19T08:46:59+09:00",
-    "count": 143,
+    "updatedAt": "2026-07-20T07:53:07+09:00",
+    "count": 144,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-20",
+      "sentiment": "bearish",
+      "title": "나스닥 -1.40% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -1.40%(큰 폭)으로 마감, S&P500은 -1.01%를 기록했습니다. 미 10년물 금리는 4.54% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,487원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -2.57(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 미 10년물 / 부담 요인: 나스닥·S&P500·원/달러·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,520.24",
+          "change": "-361.71",
+          "changePct": "-1.40%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,457.69",
+          "change": "-76.08",
+          "changePct": "-1.01%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.17",
+          "change": "+1.68",
+          "changePct": "+2.04%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "100.83",
+          "change": "+0.08",
+          "changePct": "+0.08%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,486.7원",
+          "change": "+7.82",
+          "changePct": "+0.53%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.54%",
+          "change": "-0.03%p",
+          "changePct": "-0.61%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "조선",
+          "bias": "up"
+        },
+        {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "하나금융지주",
+          "code": "086790",
+          "sector": "금융",
+          "changePct": 0
+        },
+        {
+          "name": "신한지주",
+          "code": "055550",
+          "sector": "금융",
+          "changePct": 0.56
+        },
+        {
+          "name": "한화오션",
+          "code": "042660",
+          "sector": "조선",
+          "changePct": 5.73
+        }
+      ]
+    },
     {
       "date": "2026-07-19",
       "sentiment": "bearish",
