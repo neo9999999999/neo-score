@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-21T08:52:29+09:00",
-    "count": 145,
+    "updatedAt": "2026-07-22T07:57:48+09:00",
+    "count": 146,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-22",
+      "sentiment": "bullish",
+      "title": "나스닥 +1.29% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +1.29%(큰 폭)으로 마감, S&P500은 +0.89%를 기록했습니다. 미 10년물 금리는 4.63% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,480원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +0.65(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500 / 부담 요인: 원/달러·미 10년물·WTI 유가.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,837.21",
+          "change": "+329.14",
+          "changePct": "+1.29%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,509.2",
+          "change": "+65.92",
+          "changePct": "+0.89%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.71",
+          "change": "+1.48",
+          "changePct": "+1.78%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.19",
+          "change": "+0.2",
+          "changePct": "+0.20%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,479.9원",
+          "change": "+4.85",
+          "changePct": "+0.33%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.63%",
+          "change": "+0.03%p",
+          "changePct": "+0.65%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "로봇",
+          "bias": "up"
+        },
+        {
+          "name": "원자력·전력기기",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "레인보우로보틱스",
+          "code": "277810",
+          "sector": "로봇",
+          "changePct": 9.73
+        },
+        {
+          "name": "삼성전자",
+          "code": "005930",
+          "sector": "반도체",
+          "changePct": 6.15
+        },
+        {
+          "name": "LS ELECTRIC",
+          "code": "010120",
+          "sector": "원자력·전력기기",
+          "changePct": 5.47
+        }
+      ]
+    },
     {
       "date": "2026-07-21",
       "sentiment": "neutral",
