@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-22T08:51:56+09:00",
-    "count": 146,
+    "updatedAt": "2026-07-23T08:04:19+09:00",
+    "count": 147,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-23",
+      "sentiment": "bearish",
+      "title": "나스닥 -0.57% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -0.57%(소폭)으로 마감, S&P500은 -0.14%를 기록했습니다. 미 10년물 금리는 4.66% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,476원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -1.39(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 원/달러 / 부담 요인: 나스닥·S&P500·미 10년물·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,690.9",
+          "change": "-146.31",
+          "changePct": "-0.57%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,498.96",
+          "change": "-10.24",
+          "changePct": "-0.14%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$87.92",
+          "change": "+3.01",
+          "changePct": "+3.54%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.14",
+          "change": "-0.04",
+          "changePct": "-0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,476.3원",
+          "change": "-3.46",
+          "changePct": "-0.23%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.66%",
+          "change": "+0.03%p",
+          "changePct": "+0.63%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "로봇",
+          "bias": "up"
+        },
+        {
+          "name": "자동차",
+          "bias": "up"
+        },
+        {
+          "name": "조선",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "레인보우로보틱스",
+          "code": "277810",
+          "sector": "로봇",
+          "changePct": 16.28
+        },
+        {
+          "name": "현대모비스",
+          "code": "012330",
+          "sector": "자동차",
+          "changePct": 6.99
+        },
+        {
+          "name": "두산로보틱스",
+          "code": "454910",
+          "sector": "로봇",
+          "changePct": 5.79
+        }
+      ]
+    },
     {
       "date": "2026-07-22",
       "sentiment": "bullish",
