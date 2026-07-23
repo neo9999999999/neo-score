@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-22T18:32:12+09:00",
-    "count": 1932,
+    "updatedAt": "2026-07-23T17:12:59+09:00",
+    "count": 1933,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-07-23",
+      "marketBias": "bearish",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "로봇",
+          "자동차",
+          "조선"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": -0.7,
+      "es": -0.53
+    },
     {
       "date": "2026-07-22",
       "marketBias": "bearish",
