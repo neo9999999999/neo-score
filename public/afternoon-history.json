@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-23T18:29:00+09:00",
-    "count": 1933,
+    "updatedAt": "2026-07-24T17:09:14+09:00",
+    "count": 1934,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-07-24",
+      "marketBias": "neutral",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "AI·인터넷",
+          "원자력·전력기기",
+          "방산·우주"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0,
+      "es": 0.16
+    },
     {
       "date": "2026-07-23",
       "marketBias": "neutral",
