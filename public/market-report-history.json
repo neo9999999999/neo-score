@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-28T08:57:26+09:00",
-    "count": 152,
+    "updatedAt": "2026-07-29T07:59:02+09:00",
+    "count": 153,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-29",
+      "sentiment": "bullish",
+      "title": "나스닥 -0.22% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 -0.22%(보합권)으로 마감, S&P500은 +0.21%를 기록했습니다. 미 10년물 금리는 4.60% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,454원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +0.81(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: S&P500·원/달러·미 10년물 / 부담 요인: 나스닥.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "24,876.91",
+          "change": "-55.17",
+          "changePct": "-0.22%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,428.78",
+          "change": "+15.6",
+          "changePct": "+0.21%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$82.58",
+          "change": "-0.03",
+          "changePct": "-0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.39",
+          "change": "-0.12",
+          "changePct": "-0.12%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,453.8원",
+          "change": "-10.67",
+          "changePct": "-0.73%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.60%",
+          "change": "-0.04%p",
+          "changePct": "-0.80%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "AI·인터넷",
+          "bias": "down"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "down"
+        },
+        {
+          "name": "방산·우주",
+          "bias": "down"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "삼성바이오로직스",
+          "code": "207940",
+          "sector": "바이오·제약",
+          "changePct": 0.26
+        },
+        {
+          "name": "코난테크놀로지",
+          "code": "402030",
+          "sector": "AI·인터넷",
+          "changePct": 3.3
+        },
+        {
+          "name": "솔트룩스",
+          "code": "304100",
+          "sector": "AI·인터넷",
+          "changePct": -0.62
+        }
+      ]
+    },
     {
       "date": "2026-07-28",
       "sentiment": "neutral",
