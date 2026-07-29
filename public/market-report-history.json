@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-29T08:54:36+09:00",
-    "count": 153,
+    "updatedAt": "2026-07-30T07:59:12+09:00",
+    "count": 154,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-30",
+      "sentiment": "bearish",
+      "title": "나스닥 -1.74% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -1.74%(큰 폭)으로 마감, S&P500은 -1.52%를 기록했습니다. 미 10년물 금리는 4.62% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,444원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -2.85(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 원/달러 / 부담 요인: 나스닥·S&P500·미 10년물·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "24,442.94",
+          "change": "-433.97",
+          "changePct": "-1.74%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,316.15",
+          "change": "-112.63",
+          "changePct": "-1.52%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.38",
+          "change": "+5.12",
+          "changePct": "+6.46%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "100.8",
+          "change": "-0.58",
+          "changePct": "-0.57%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,444원",
+          "change": "-9.18",
+          "changePct": "-0.63%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.62%",
+          "change": "+0.02%p",
+          "changePct": "+0.39%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "바이오·제약",
+          "bias": "down"
+        },
+        {
+          "name": "로봇",
+          "bias": "down"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "down"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "레인보우로보틱스",
+          "code": "277810",
+          "sector": "로봇",
+          "changePct": 2.5
+        },
+        {
+          "name": "셀트리온",
+          "code": "068270",
+          "sector": "바이오·제약",
+          "changePct": 1.47
+        },
+        {
+          "name": "카카오",
+          "code": "035720",
+          "sector": "AI·인터넷",
+          "changePct": -0.98
+        }
+      ]
+    },
     {
       "date": "2026-07-29",
       "sentiment": "bullish",
