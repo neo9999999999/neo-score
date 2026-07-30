@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-30T08:56:13+09:00",
-    "count": 154,
+    "updatedAt": "2026-07-31T08:07:17+09:00",
+    "count": 155,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-07-31",
+      "sentiment": "bullish",
+      "title": "나스닥 +2.78% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +2.78%(급등락)으로 마감, S&P500은 +1.66%를 기록했습니다. 미 10년물 금리는 4.66% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,421원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +3.57(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·WTI 유가 / 부담 요인: 미 10년물.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,122.18",
+          "change": "+679.24",
+          "changePct": "+2.78%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,437.63",
+          "change": "+121.48",
+          "changePct": "+1.66%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.03",
+          "change": "-0.43",
+          "changePct": "-0.51%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.97",
+          "change": "-0.83",
+          "changePct": "-0.82%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,421.2원",
+          "change": "-21.13",
+          "changePct": "-1.47%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.66%",
+          "change": "+0.04%p",
+          "changePct": "+0.89%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        },
+        {
+          "name": "조선",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "코난테크놀로지",
+          "code": "402030",
+          "sector": "AI·인터넷",
+          "changePct": 20.07
+        },
+        {
+          "name": "메리츠금융지주",
+          "code": "138040",
+          "sector": "금융",
+          "changePct": 5.53
+        },
+        {
+          "name": "HD한국조선해양",
+          "code": "009540",
+          "sector": "조선",
+          "changePct": 10
+        }
+      ]
+    },
     {
       "date": "2026-07-30",
       "sentiment": "bearish",
