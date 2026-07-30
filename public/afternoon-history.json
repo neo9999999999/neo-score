@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-07-29T18:43:20+09:00",
-    "count": 1937,
+    "updatedAt": "2026-07-30T17:08:59+09:00",
+    "count": 1938,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-07-30",
+      "marketBias": "neutral",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "바이오·제약",
+          "로봇",
+          "AI·인터넷"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0.27,
+      "es": 0.15
+    },
     {
       "date": "2026-07-29",
       "marketBias": "neutral",
