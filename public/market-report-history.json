@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-03T08:52:56+09:00",
-    "count": 158,
+    "updatedAt": "2026-08-04T08:00:25+09:00",
+    "count": 159,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-04",
+      "sentiment": "bullish",
+      "title": "나스닥 +2.13% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +2.13%(급등락)으로 마감, S&P500은 +1.48%를 기록했습니다. 미 10년물 금리는 4.69% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,436원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 +3.22(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·미 10년물·WTI 유가 / 부담 요인: 원/달러.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,913.9",
+          "change": "+540.05",
+          "changePct": "+2.13%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,600.5",
+          "change": "+110.78",
+          "changePct": "+1.48%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$79.70",
+          "change": "-4.97",
+          "changePct": "-5.87%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.99",
+          "change": "+0.19",
+          "changePct": "+0.19%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,435.7원",
+          "change": "+15.1",
+          "changePct": "+1.06%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.69%",
+          "change": "-0.06%p",
+          "changePct": "-1.24%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "로봇",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "한미반도체",
+          "code": "042700",
+          "sector": "반도체",
+          "changePct": 27.98
+        },
+        {
+          "name": "HPSP",
+          "code": "403870",
+          "sector": "반도체",
+          "changePct": 21.19
+        },
+        {
+          "name": "한화비전",
+          "code": "489790",
+          "sector": "로봇",
+          "changePct": 20
+        }
+      ]
+    },
     {
       "date": "2026-08-03",
       "sentiment": "neutral",
