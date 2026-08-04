@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-03T19:49:36+09:00",
-    "count": 1940,
+    "updatedAt": "2026-08-04T17:22:53+09:00",
+    "count": 1941,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-04",
+      "marketBias": "bullish",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "AI·인터넷",
+          "바이오·제약",
+          "로봇"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 2.49,
+      "es": 1.65
+    },
     {
       "date": "2026-08-03",
       "marketBias": "bullish",
