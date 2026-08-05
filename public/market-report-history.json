@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-05T08:58:26+09:00",
-    "count": 160,
+    "updatedAt": "2026-08-06T07:58:43+09:00",
+    "count": 161,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-06",
+      "sentiment": "neutral",
+      "title": "나스닥 -0.83% 혼조 — 종목 장세·차별화 전망",
+      "summary": "간밤 나스닥은 전일 대비 -0.83%(소폭)으로 마감, S&P500은 -0.17%를 기록했습니다. 미 10년물 금리는 4.62% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,422원 — 연중 고환율 경계, 외국인 순매도 가속 위험. 5개 거시지표 가중 신호 점수 -0.21(범위 ±3)으로, 오늘 국내증시는 혼조 속 종목·섹터별 차별화가 예상됩니다. 우호 요인: 원/달러·미 10년물·WTI 유가 / 부담 요인: 나스닥·S&P500.",
+      "kospiBias": "혼조·관망 — 종목·섹터 차별화",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,363.44",
+          "change": "-221.55",
+          "changePct": "-0.83%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,723.55",
+          "change": "-12.97",
+          "changePct": "-0.17%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$75.05",
+          "change": "-0.72",
+          "changePct": "-0.95%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.69",
+          "change": "-0.2",
+          "changePct": "-0.20%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,422.2원",
+          "change": "-6.24",
+          "changePct": "-0.44%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.62%",
+          "change": "-0.01%p",
+          "changePct": "-0.22%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "조선",
+          "bias": "up"
+        },
+        {
+          "name": "로봇",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "효성중공업",
+          "code": "298040",
+          "sector": "원자력·전력기기",
+          "changePct": 12.43
+        },
+        {
+          "name": "한화비전",
+          "code": "489790",
+          "sector": "로봇",
+          "changePct": 9.62
+        },
+        {
+          "name": "솔트룩스",
+          "code": "304100",
+          "sector": "AI·인터넷",
+          "changePct": 9.41
+        }
+      ]
+    },
     {
       "date": "2026-08-05",
       "sentiment": "bullish",
