@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-11T08:27:57+09:00",
-    "count": 166,
+    "updatedAt": "2026-08-12T07:41:19+09:00",
+    "count": 167,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-12",
+      "sentiment": "bearish",
+      "title": "나스닥 -0.60% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -0.60%(소폭)으로 마감, S&P500은 -0.32%를 기록했습니다. 미 10년물 금리는 4.68% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,412원 — 1,400원 저항선 상회, 외국인 수급 부담 구간. 5개 거시지표 가중 신호 점수 -0.86(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 원/달러·미 10년물 / 부담 요인: 나스닥·S&P500·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,445.45",
+          "change": "-159.91",
+          "changePct": "-0.60%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,728.2",
+          "change": "-24.91",
+          "changePct": "-0.32%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$83.50",
+          "change": "+1.37",
+          "changePct": "+1.67%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.81",
+          "change": "+0",
+          "changePct": "+0.00%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,412.4원",
+          "change": "-4.91",
+          "changePct": "-0.35%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.68%",
+          "change": "-0.01%p",
+          "changePct": "-0.32%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "주성엔지니어링",
+          "code": "036930",
+          "sector": "반도체",
+          "changePct": 12.15
+        },
+        {
+          "name": "셀트리온",
+          "code": "068270",
+          "sector": "바이오·제약",
+          "changePct": 4.73
+        },
+        {
+          "name": "삼성바이오로직스",
+          "code": "207940",
+          "sector": "바이오·제약",
+          "changePct": 2.55
+        }
+      ]
+    },
     {
       "date": "2026-08-11",
       "sentiment": "bearish",
