@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-12T08:33:02+09:00",
-    "count": 167,
+    "updatedAt": "2026-08-13T07:40:20+09:00",
+    "count": 168,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-13",
+      "sentiment": "bullish",
+      "title": "나스닥 +0.54% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +0.54%(소폭)으로 마감, S&P500은 +0.26%를 기록했습니다. 미 10년물 금리는 4.68% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,417원 — 1,400원 저항선 상회, 외국인 수급 부담 구간. 5개 거시지표 가중 신호 점수 +0.62(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·WTI 유가 / 부담 요인: 원/달러.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,588.49",
+          "change": "+143.04",
+          "changePct": "+0.54%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,748.5",
+          "change": "+20.3",
+          "changePct": "+0.26%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$82.73",
+          "change": "-0.47",
+          "changePct": "-0.56%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.99",
+          "change": "+0.17",
+          "changePct": "+0.17%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,417원",
+          "change": "+4.79",
+          "changePct": "+0.34%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.68%",
+          "change": "-0.00%p",
+          "changePct": "-0.04%",
+          "dir": "flat"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "원자력·전력기기",
+          "bias": "up"
+        },
+        {
+          "name": "방산·우주",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "주성엔지니어링",
+          "code": "036930",
+          "sector": "반도체",
+          "changePct": 7.14
+        },
+        {
+          "name": "삼성전자",
+          "code": "005930",
+          "sector": "반도체",
+          "changePct": 6.68
+        },
+        {
+          "name": "한국항공우주",
+          "code": "047810",
+          "sector": "방산·우주",
+          "changePct": 6.35
+        }
+      ]
+    },
     {
       "date": "2026-08-12",
       "sentiment": "bearish",
