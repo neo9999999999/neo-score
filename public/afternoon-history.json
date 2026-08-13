@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-12T17:23:59+09:00",
-    "count": 1947,
+    "updatedAt": "2026-08-13T16:13:47+09:00",
+    "count": 1948,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-13",
+      "marketBias": "neutral",
+      "picks": [
+        {
+          "name": "NHN",
+          "code": "181710",
+          "score": 77.8,
+          "changePct": 8.81,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "원자력·전력기기",
+          "방산·우주",
+          "2차전지"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0.03,
+      "es": 0.05
+    },
     {
       "date": "2026-08-12",
       "marketBias": "bullish",
