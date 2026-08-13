@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-13T08:34:09+09:00",
-    "count": 168,
+    "updatedAt": "2026-08-14T07:41:02+09:00",
+    "count": 169,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-14",
+      "sentiment": "bullish",
+      "title": "나스닥 +0.81% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +0.81%(소폭)으로 마감, S&P500은 +0.65%를 기록했습니다. 미 10년물 금리는 4.64% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,418원 — 1,400원 저항선 상회, 외국인 수급 부담 구간. 5개 거시지표 가중 신호 점수 +2.1(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·미 10년물·WTI 유가 / 부담 요인: 원/달러.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,803.03",
+          "change": "+214.54",
+          "changePct": "+0.81%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,798.99",
+          "change": "+50.49",
+          "changePct": "+0.65%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$81.10",
+          "change": "-2.17",
+          "changePct": "-2.61%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.95",
+          "change": "-0.06",
+          "changePct": "-0.06%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,418.1원",
+          "change": "+1.62",
+          "changePct": "+0.11%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.64%",
+          "change": "-0.04%p",
+          "changePct": "-0.88%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "방산·우주",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "원익IPS",
+          "code": "240810",
+          "sector": "반도체",
+          "changePct": 7.62
+        },
+        {
+          "name": "HPSP",
+          "code": "403870",
+          "sector": "반도체",
+          "changePct": 6.6
+        },
+        {
+          "name": "한화시스템",
+          "code": "272210",
+          "sector": "방산·우주",
+          "changePct": 5.29
+        }
+      ]
+    },
     {
       "date": "2026-08-13",
       "sentiment": "bullish",
