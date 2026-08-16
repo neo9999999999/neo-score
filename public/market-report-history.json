@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-16T08:13:42+09:00",
-    "count": 171,
+    "updatedAt": "2026-08-17T07:20:21+09:00",
+    "count": 172,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-17",
+      "sentiment": "bearish",
+      "title": "나스닥 -0.28% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -0.28%(보합권)으로 마감, S&P500은 -0.17%를 기록했습니다. 미 10년물 금리는 4.70% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,416원 — 1,400원 저항선 상회, 외국인 수급 부담 구간. 5개 거시지표 가중 신호 점수 -1.01(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 없음 / 부담 요인: 나스닥·S&P500·미 10년물·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,729.16",
+          "change": "-73.87",
+          "changePct": "-0.28%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,785.76",
+          "change": "-13.23",
+          "changePct": "-0.17%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$82.61",
+          "change": "+0.21",
+          "changePct": "+0.25%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.67",
+          "change": "-0",
+          "changePct": "-0.00%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,416.5원",
+          "change": "-0.37",
+          "changePct": "-0.03%",
+          "dir": "flat"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.70%",
+          "change": "+0.06%p",
+          "changePct": "+1.19%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "자동차",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "현대차",
+          "code": "005380",
+          "sector": "자동차",
+          "changePct": 8.24
+        },
+        {
+          "name": "현대모비스",
+          "code": "012330",
+          "sector": "자동차",
+          "changePct": 7.05
+        },
+        {
+          "name": "엘앤에프",
+          "code": "066970",
+          "sector": "2차전지",
+          "changePct": 6.92
+        }
+      ]
+    },
     {
       "date": "2026-08-16",
       "sentiment": "bearish",
