@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-14T17:22:05+09:00",
-    "count": 1949,
+    "updatedAt": "2026-08-17T15:35:10+09:00",
+    "count": 1950,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,41 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-17",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "농심",
+          "code": "004370",
+          "score": 88,
+          "changePct": 12.32,
+          "sector": null
+        },
+        {
+          "name": "DN오토모티브",
+          "code": "007340",
+          "score": 82.9,
+          "changePct": 19.11,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "자동차",
+          "반도체",
+          "2차전지"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0.48,
+      "es": 0.16
+    },
     {
       "date": "2026-08-14",
       "marketBias": "neutral",
