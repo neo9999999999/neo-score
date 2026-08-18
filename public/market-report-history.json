@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-18T08:16:32+09:00",
-    "count": 173,
+    "updatedAt": "2026-08-19T07:23:03+09:00",
+    "count": 174,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-19",
+      "sentiment": "bearish",
+      "title": "나스닥 -1.33% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -1.33%(큰 폭)으로 마감, S&P500은 -0.69%를 기록했습니다. 미 10년물 금리는 4.71% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,412원 — 1,400원 저항선 상회, 외국인 수급 부담 구간. 5개 거시지표 가중 신호 점수 -1.36(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 원/달러·미 10년물 / 부담 요인: 나스닥·S&P500.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,289.71",
+          "change": "-355.2",
+          "changePct": "-1.33%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,691.76",
+          "change": "-53.3",
+          "changePct": "-0.69%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$84.50",
+          "change": "+0",
+          "changePct": "+0.00%",
+          "dir": "flat"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.64",
+          "change": "+0",
+          "changePct": "+0.00%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,412.2원",
+          "change": "-2.51",
+          "changePct": "-0.18%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.71%",
+          "change": "-0.02%p",
+          "changePct": "-0.38%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "금융",
+          "bias": "down"
+        },
+        {
+          "name": "원자력·전력기기",
+          "bias": "neutral"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "HPSP",
+          "code": "403870",
+          "sector": "반도체",
+          "changePct": 5.57
+        },
+        {
+          "name": "신한지주",
+          "code": "055550",
+          "sector": "금융",
+          "changePct": -0.84
+        },
+        {
+          "name": "하나금융지주",
+          "code": "086790",
+          "sector": "금융",
+          "changePct": -1.73
+        }
+      ]
+    },
     {
       "date": "2026-08-18",
       "sentiment": "bearish",
