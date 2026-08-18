@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-17T16:56:17+09:00",
-    "count": 1950,
+    "updatedAt": "2026-08-18T15:26:44+09:00",
+    "count": 1951,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-18",
+      "marketBias": "bearish",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "자동차",
+          "반도체",
+          "2차전지"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": -0.88,
+      "es": -0.44
+    },
     {
       "date": "2026-08-17",
       "marketBias": "bullish",
