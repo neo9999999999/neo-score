@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-19T16:45:33+09:00",
-    "count": 1952,
+    "updatedAt": "2026-08-20T15:29:27+09:00",
+    "count": 1953,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-20",
+      "marketBias": "neutral",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "반도체",
+          "엔터·미디어",
+          "금융"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0.44,
+      "es": 0.12
+    },
     {
       "date": "2026-08-19",
       "marketBias": "neutral",
