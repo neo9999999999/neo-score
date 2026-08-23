@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-23T08:13:52+09:00",
-    "count": 178,
+    "updatedAt": "2026-08-24T07:20:39+09:00",
+    "count": 179,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-24",
+      "sentiment": "bullish",
+      "title": "나스닥 +0.43% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +0.43%(소폭)으로 마감, S&P500은 +0.43%를 기록했습니다. 미 10년물 금리는 4.74% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,385원 — 1,380-1,400원 관리 구간, 안정 여부 주시. 5개 거시지표 가중 신호 점수 +0.69(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·WTI 유가 / 부담 요인: 미 10년물.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,180.46",
+          "change": "+113.29",
+          "changePct": "+0.43%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,674.37",
+          "change": "+33.21",
+          "changePct": "+0.43%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$86.43",
+          "change": "-0.63",
+          "changePct": "-0.72%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "98.84",
+          "change": "+0.04",
+          "changePct": "+0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,385.3원",
+          "change": "-5.44",
+          "changePct": "-0.39%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.74%",
+          "change": "+0.04%p",
+          "changePct": "+0.89%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "down"
+        },
+        {
+          "name": "반도체",
+          "bias": "neutral"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "하나금융지주",
+          "code": "086790",
+          "sector": "금융",
+          "changePct": 4.38
+        },
+        {
+          "name": "삼성바이오로직스",
+          "code": "207940",
+          "sector": "바이오·제약",
+          "changePct": -1.46
+        },
+        {
+          "name": "한미약품",
+          "code": "128940",
+          "sector": "바이오·제약",
+          "changePct": 4.14
+        }
+      ]
+    },
     {
       "date": "2026-08-23",
       "sentiment": "bullish",
