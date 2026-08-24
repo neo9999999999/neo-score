@@ -1,6 +1,6 @@
 {
   "date": "2026-08-25",
-  "generatedAt": "2026-08-25T07:54:26+09:00",
+  "generatedAt": "2026-08-25T08:16:48+09:00",
   "source": "rule",
   "macroScore": 0.21,
   "signals": [
@@ -39,7 +39,7 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -2.26,
+      "pct": -2.23,
       "score": 0.6,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
@@ -65,9 +65,9 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$85.09",
-      "change": "-1.97",
-      "changePct": "-2.26%",
+      "value": "$85.12",
+      "change": "-1.94",
+      "changePct": "-2.23%",
       "dir": "down"
     },
     {
@@ -82,7 +82,7 @@
       "key": "usdkrw",
       "label": "원/달러 환율",
       "value": "1,382원",
-      "change": "-2.96",
+      "change": "-2.94",
       "changePct": "-0.21%",
       "dir": "down"
     },
@@ -395,7 +395,7 @@
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $85.09 (-2.26%)",
+      "title": "WTI $85.12 (-2.23%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "high"
     },
