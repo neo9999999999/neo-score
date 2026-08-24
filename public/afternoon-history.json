@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-21T16:49:20+09:00",
-    "count": 1954,
+    "updatedAt": "2026-08-24T15:37:47+09:00",
+    "count": 1955,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-08-24",
+      "marketBias": "bearish",
+      "picks": [
+        {
+          "name": "한미사이언스",
+          "code": "008930",
+          "score": 79.4,
+          "changePct": 24.14,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "금융",
+          "바이오·제약",
+          "반도체"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": -0.74,
+      "es": -0.23
+    },
     {
       "date": "2026-08-21",
       "marketBias": "bullish",
