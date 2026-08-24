@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-24T08:14:35+09:00",
-    "count": 179,
+    "updatedAt": "2026-08-25T07:26:26+09:00",
+    "count": 180,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-25",
+      "sentiment": "neutral",
+      "title": "나스닥 -0.76% 혼조 — 종목 장세·차별화 전망",
+      "summary": "간밤 나스닥은 전일 대비 -0.76%(소폭)으로 마감, S&P500은 -0.28%를 기록했습니다. 미 10년물 금리는 4.70% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,382원 — 1,380-1,400원 관리 구간, 안정 여부 주시. 5개 거시지표 가중 신호 점수 +0.19(범위 ±3)으로, 오늘 국내증시는 혼조 속 종목·섹터별 차별화가 예상됩니다. 우호 요인: 원/달러·미 10년물·WTI 유가 / 부담 요인: 나스닥·S&P500.",
+      "kospiBias": "혼조·관망 — 종목·섹터 차별화",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,980.19",
+          "change": "-200.27",
+          "changePct": "-0.76%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,652.86",
+          "change": "-21.51",
+          "changePct": "-0.28%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$85.04",
+          "change": "-2.02",
+          "changePct": "-2.32%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "98.98",
+          "change": "+0.18",
+          "changePct": "+0.19%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,382.4원",
+          "change": "-2.55",
+          "changePct": "-0.18%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.70%",
+          "change": "-0.03%p",
+          "changePct": "-0.72%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "2차전지",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "한미약품",
+          "code": "128940",
+          "sector": "바이오·제약",
+          "changePct": 29.96
+        },
+        {
+          "name": "솔트룩스",
+          "code": "304100",
+          "sector": "AI·인터넷",
+          "changePct": 14.51
+        },
+        {
+          "name": "코난테크놀로지",
+          "code": "402030",
+          "sector": "AI·인터넷",
+          "changePct": 18.43
+        }
+      ]
+    },
     {
       "date": "2026-08-24",
       "sentiment": "bullish",
