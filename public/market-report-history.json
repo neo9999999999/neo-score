@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-08-27T13:10:34+09:00",
-    "count": 182,
+    "updatedAt": "2026-08-28T14:58:32+09:00",
+    "count": 183,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-08-28",
+      "sentiment": "bullish",
+      "title": "나스닥 +1.57% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +1.57%(큰 폭)으로 마감, S&P500은 +0.72%를 기록했습니다. 미 10년물 금리는 4.67% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,376원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 +2.36(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·WTI 유가 / 부담 요인: 미 10년물.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,541.35",
+          "change": "+411.15",
+          "changePct": "+1.57%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,730.99",
+          "change": "+55.29",
+          "changePct": "+0.72%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$83.19",
+          "change": "-0.34",
+          "changePct": "-0.41%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.2",
+          "change": "+0.04",
+          "changePct": "+0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,375.7원",
+          "change": "-7.81",
+          "changePct": "-0.56%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.67%",
+          "change": "+0.01%p",
+          "changePct": "+0.17%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "신한지주",
+          "code": "055550",
+          "sector": "금융",
+          "changePct": 0.55
+        },
+        {
+          "name": "알테오젠",
+          "code": "196170",
+          "sector": "바이오·제약",
+          "changePct": 2.57
+        },
+        {
+          "name": "유한양행",
+          "code": "000100",
+          "sector": "바이오·제약",
+          "changePct": 2.06
+        }
+      ]
+    },
     {
       "date": "2026-08-27",
       "sentiment": "neutral",
