@@ -1,6 +1,6 @@
 {
   "date": "2026-08-29",
-  "generatedAt": "2026-08-29T02:54:56+09:00",
+  "generatedAt": "2026-08-29T04:22:07+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bearish",
@@ -9,12 +9,12 @@
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "29,479.25",
-      "change": "-216.5",
+      "value": "29,478",
+      "change": "-217.75",
       "changePct": "-0.73%",
       "dir": "down",
       "_raw": {
-        "close": 29479.25,
+        "close": 29478,
         "prevClose": 29695.75,
         "chgPct": -0.73
       }
@@ -22,40 +22,40 @@
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,718.75",
-      "change": "-23.75",
-      "changePct": "-0.31%",
+      "value": "7,720.75",
+      "change": "-21.75",
+      "changePct": "-0.28%",
       "dir": "down",
       "_raw": {
-        "close": 7718.75,
+        "close": 7720.75,
         "prevClose": 7742.5,
-        "chgPct": -0.31
+        "chgPct": -0.28
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "53,562",
-      "change": "-59",
-      "changePct": "-0.11%",
+      "value": "53,592",
+      "change": "-29",
+      "changePct": "-0.05%",
       "dir": "down",
       "_raw": {
-        "close": 53562,
+        "close": 53592,
         "prevClose": 53621,
-        "chgPct": -0.11
+        "chgPct": -0.05
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "14.64",
-      "change": "+0.13",
-      "changePct": "+0.90%",
-      "dir": "up",
+      "value": "14.5",
+      "change": "-0.01",
+      "changePct": "-0.07%",
+      "dir": "down",
       "_raw": {
-        "close": 14.640000343322754,
+        "close": 14.5,
         "prevClose": 14.510000228881836,
-        "chgPct": 0.9
+        "chgPct": -0.07
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "4.73%",
+      "value": "4.72%",
       "change": "+0.05%p",
-      "changePct": "+1.16%",
+      "changePct": "+1.03%",
       "dir": "up",
       "_raw": {
-        "close": 4.72599983215332,
+        "close": 4.720000267028809,
         "prevClose": 4.671999931335449,
-        "chgPct": 1.16
+        "chgPct": 1.03
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,379.5원",
-      "change": "-3.99",
-      "changePct": "-0.29%",
+      "value": "1,378.6원",
+      "change": "-4.88",
+      "changePct": "-0.35%",
       "dir": "down",
       "_raw": {
-        "close": 1379.5,
+        "close": 1378.6099853515625,
         "prevClose": 1383.489990234375,
-        "chgPct": -0.29
+        "chgPct": -0.35
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$83.42",
-      "change": "-0.11",
-      "changePct": "-0.13%",
+      "value": "$83.31",
+      "change": "-0.22",
+      "changePct": "-0.26%",
       "dir": "down",
       "_raw": {
-        "close": 83.41999816894531,
+        "close": 83.30999755859375,
         "prevClose": 83.52999877929688,
-        "chgPct": -0.13
+        "chgPct": -0.26
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "99.71",
-      "change": "+0.55",
-      "changePct": "+0.56%",
+      "value": "99.68",
+      "change": "+0.52",
+      "changePct": "+0.53%",
       "dir": "up",
       "_raw": {
-        "close": 99.71299743652344,
+        "close": 99.68099975585938,
         "prevClose": 99.16000366210938,
-        "chgPct": 0.56
+        "chgPct": 0.53
       }
     }
   ],
