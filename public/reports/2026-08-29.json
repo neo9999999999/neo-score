@@ -1,6 +1,6 @@
 {
   "date": "2026-08-29",
-  "generatedAt": "2026-08-29T12:31:47+09:00",
+  "generatedAt": "2026-08-29T12:48:50+09:00",
   "source": "rule",
   "macroScore": -0.67,
   "signals": [
@@ -147,80 +147,39 @@
   },
   "sectors": [
     {
-      "name": "금융",
+      "name": "원자력·전력기기",
       "bias": "up",
-      "reason": "전일 주도주 평균 +1.72% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +10.34% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
-          "name": "하나금융지주",
-          "code": "086790",
+          "name": "LS ELECTRIC",
+          "code": "010120",
           "market": "KOSPI",
-          "reason": "전일 +1.8% · 거래대금 697억 · 신고가 근접 · 정배열",
-          "changePct": 1.8,
-          "value": 69729648000,
+          "reason": "전일 +8.93% · 거래대금 2,492억",
+          "changePct": 8.93,
+          "value": 249207130000,
           "breakout": false,
-          "nearHigh": true,
-          "aligned": true
-        },
-        {
-          "name": "신한지주",
-          "code": "055550",
-          "market": "KOSPI",
-          "reason": "전일 +0.83% · 거래대금 799억 · 신고가 근접 · 정배열",
-          "changePct": 0.83,
-          "value": 79948372700,
-          "breakout": false,
-          "nearHigh": true,
-          "aligned": true
-        },
-        {
-          "name": "메리츠금융지주",
-          "code": "138040",
-          "market": "KOSPI",
-          "reason": "전일 +2.52% · 거래대금 155억 · 신고가 근접",
-          "changePct": 2.52,
-          "value": 15515472000,
-          "breakout": false,
-          "nearHigh": true,
+          "nearHigh": false,
           "aligned": false
-        }
-      ],
-      "dataDriven": true
-    },
-    {
-      "name": "바이오·제약",
-      "bias": "up",
-      "reason": "전일 주도주 평균 +1.69% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
-      "stocks": [
-        {
-          "name": "유한양행",
-          "code": "000100",
-          "market": "KOSPI",
-          "reason": "전일 +2.66% · 거래대금 156억 · 정배열",
-          "changePct": 2.66,
-          "value": 15610817700,
-          "breakout": false,
-          "nearHigh": false,
-          "aligned": true
         },
         {
-          "name": "알테오젠",
-          "code": "196170",
-          "market": "KOSDAQ",
-          "reason": "전일 +2.73% · 거래대금 1,969억 · 정배열",
-          "changePct": 2.73,
-          "value": 196906560000,
+          "name": "HD현대일렉트릭",
+          "code": "267260",
+          "market": "KOSPI",
+          "reason": "전일 +12.01% · 거래대금 1,863억",
+          "changePct": 12.01,
+          "value": 186319382000,
           "breakout": false,
           "nearHigh": false,
-          "aligned": true
+          "aligned": false
         },
         {
-          "name": "셀트리온",
-          "code": "068270",
+          "name": "효성중공업",
+          "code": "298040",
           "market": "KOSPI",
-          "reason": "전일 -0.31% · 거래대금 717억",
-          "changePct": -0.31,
-          "value": 71687944000,
+          "reason": "전일 +10.08% · 거래대금 2,121억",
+          "changePct": 10.08,
+          "value": 212059967000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -231,37 +190,37 @@
     {
       "name": "2차전지",
       "bias": "up",
-      "reason": "전일 주도주 평균 +1.46% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +8.3% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
-          "name": "엘앤에프",
-          "code": "066970",
+          "name": "삼성SDI",
+          "code": "006400",
           "market": "KOSPI",
-          "reason": "전일 +3.85% · 거래대금 636억",
-          "changePct": 3.85,
-          "value": 63618590400,
+          "reason": "전일 +10.27% · 거래대금 5,352억 · 거래량 2.1배",
+          "changePct": 10.27,
+          "value": 535164415000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
         },
         {
-          "name": "삼성SDI",
-          "code": "006400",
+          "name": "포스코퓨처엠",
+          "code": "003670",
           "market": "KOSPI",
-          "reason": "전일 +0.35% · 거래대금 2,531억 · 정배열",
-          "changePct": 0.35,
-          "value": 253087185000,
+          "reason": "전일 +9.07% · 거래대금 1,214억",
+          "changePct": 9.07,
+          "value": 121396392000,
           "breakout": false,
           "nearHigh": false,
-          "aligned": true
+          "aligned": false
         },
         {
-          "name": "에코프로비엠",
-          "code": "247540",
-          "market": "KOSDAQ",
-          "reason": "전일 +0.17% · 거래대금 335억",
-          "changePct": 0.17,
-          "value": 33477195000,
+          "name": "LG에너지솔루션",
+          "code": "373220",
+          "market": "KOSPI",
+          "reason": "전일 +5.56% · 거래대금 1,602억",
+          "changePct": 5.56,
+          "value": 160164186000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -270,42 +229,83 @@
       "dataDriven": true
     },
     {
-      "name": "AI·인터넷",
+      "name": "반도체",
       "bias": "up",
-      "reason": "전일 주도주 평균 +2.37% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +3.89% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
-          "name": "한글과컴퓨터",
-          "code": "030520",
+          "name": "DB하이텍",
+          "code": "000990",
+          "market": "KOSPI",
+          "reason": "전일 +4.26% · 거래대금 226억",
+          "changePct": 4.26,
+          "value": 22629452400,
+          "breakout": false,
+          "nearHigh": false,
+          "aligned": false
+        },
+        {
+          "name": "HPSP",
+          "code": "403870",
           "market": "KOSDAQ",
-          "reason": "전일 +2.89% · 거래대금 24억",
-          "changePct": 2.89,
-          "value": 2429575200,
+          "reason": "전일 +4.12% · 거래대금 1,507억",
+          "changePct": 4.12,
+          "value": 150726542000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
         },
         {
-          "name": "카카오",
-          "code": "035720",
-          "market": "KOSPI",
-          "reason": "전일 +2.36% · 거래대금 549억",
-          "changePct": 2.36,
-          "value": 54898356150,
+          "name": "주성엔지니어링",
+          "code": "036930",
+          "market": "KOSDAQ",
+          "reason": "전일 +3.29% · 거래대금 1,522억",
+          "changePct": 3.29,
+          "value": 152204911200,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
-        },
+        }
+      ],
+      "dataDriven": true
+    },
+    {
+      "name": "방산·우주",
+      "bias": "up",
+      "reason": "전일 주도주 평균 +5.36% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "stocks": [
         {
-          "name": "NAVER",
-          "code": "035420",
+          "name": "한화에어로스페이스",
+          "code": "012450",
           "market": "KOSPI",
-          "reason": "전일 +1.85% · 거래대금 2,089억 · 정배열",
-          "changePct": 1.85,
-          "value": 208926837000,
+          "reason": "전일 +5.8% · 거래대금 1,605억 · 정배열",
+          "changePct": 5.8,
+          "value": 160499750000,
           "breakout": false,
           "nearHigh": false,
           "aligned": true
+        },
+        {
+          "name": "한화시스템",
+          "code": "272210",
+          "market": "KOSPI",
+          "reason": "전일 +6.13% · 거래대금 332억",
+          "changePct": 6.13,
+          "value": 33168417800,
+          "breakout": false,
+          "nearHigh": false,
+          "aligned": false
+        },
+        {
+          "name": "한국항공우주",
+          "code": "047810",
+          "market": "KOSPI",
+          "reason": "전일 +4.16% · 거래대금 321억",
+          "changePct": 4.16,
+          "value": 32068918400,
+          "breakout": false,
+          "nearHigh": false,
+          "aligned": false
         }
       ],
       "dataDriven": true
@@ -455,7 +455,7 @@
     {
       "emoji": "🎯",
       "title": "주목 섹터",
-      "body": "전일 실거래 기준 주도 섹터는 금융·바이오·제약·2차전지·AI·인터넷입니다. 대표주 하나금융지주·유한양행·엘앤에프·한글과컴퓨터 등 신고가·정배열·거래대금 상위 종목 위주로 관심."
+      "body": "전일 실거래 기준 주도 섹터는 원자력·전력기기·2차전지·반도체·방산·우주입니다. 대표주 LS ELECTRIC·삼성SDI·DB하이텍·한화에어로스페이스 등 신고가·정배열·거래대금 상위 종목 위주로 관심."
     }
   ],
   "detail": "[거시 신호 종합 분석]\n나스닥·S&P500·원/달러·미 10년물·유가 5개 지표 가중 합산 거시신호 점수: -0.67(범위 ±3). 거시 부담이 누적된 약세 구간입니다. 우호 요인: 원/달러·WTI 유가. 부담 요인: 나스닥·S&P500·미 10년물.\n\n[거시 연결고리 인과 분석]\n유가($83.4 — $75-85 박스권, OPEC+ 감산 이행 여부 핵심)는 에너지 비용·인플레 기대 경로로 미 금리에 하락 압력으로 작용합니다. 달러인덱스 상승는 신흥국 자본 흐름을 통해 원화에 영향을 주며, 현재 1,372원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 미 10년물(4.72% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박)은 성장주 할인율을 통해 나스닥 기술주 밸류에이션을 직접 좌우합니다.\n\n[나스닥 기술적 분석]\n간밤 나스닥 -0.52%(소폭) 마감, S&P500 -0.25%. 금리 4.72% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박와 유가 $83.4 — $75-85 박스권, OPEC+ 감산 이행 여부 핵심의 조합이 기술주 밸류에이션을 압박했습니다. 나스닥 변동이 제한적이어서 국내 영향도 소폭에 머물 가능성이 높습니다.\n\n[국내증시 시나리오]\n오늘 코스피는 갭하락 출발 후 방어주 중심 종목 장세로 압축될 가능성이 높습니다. 외국인 매도세와 환율 부담이 동반될 수 있습니다. 원/달러 1,372원은 외국인 수급에 중립적 수준입니다.\n\n[섹터 로테이션 전략]\n[금리 상승 + 고환율] → 방어주(통신·금융·필수소비) 비중 확대. 수주 잔고 탄탄한 조선·방산은 경기방어와 성장 교차점. 수출주는 환율 헤지 여부 확인 후 접근. 개별 종목에서는 신고가 돌파·정배열·거래대금 급증 세 가지 조건을 동시에 충족하는 종목 위주의 선별적 접근이 수익률을 극대화합니다.\n\n[리스크 요인 및 대응]\n• 미 10년물 금리 추가 상승 — 현재 4.72%에서 4.8% 돌파 시(고위험): 기술주·2차전지 고PER 성장주 급락, 코스닥 하방 가속\n• WTI 추가 급등 — 현재 $83.4에서 $90 돌파 시(저위험): 인플레 재점화 → 금리 상승 → 증시 전반 하방 압력 포트폴리오 손절선(매수가 -5~7%)을 명확히 설정하고, 다중 악재 발생 시 현금 비중 확대를 권고합니다.\n\n[글로벌 이슈 모니터링]\n전쟁·지정학 리스크(유가·안전자산 경로), 미 연준 통화정책(금리·달러 경로), 미-중 반도체 수출 규제(IT·장비주 직접 영향) 등 국제 이슈가 국내 증시에 직접 영향을 줍니다. 특히 주요 경제지표(CPI·고용·연준 발언) 발표 전후 단기 변동성 확대에 대비해야 합니다.\n\n※ 룰 기반 자동 분석(전일 거시지표 기준). ANTHROPIC_API_KEY 설정 시 실시간 뉴스·이벤트 반영 AI 분석으로 전환됩니다.",

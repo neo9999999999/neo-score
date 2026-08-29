@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-08-29T12:31:48+09:00",
+    "updatedAt": "2026-08-29T12:48:50+09:00",
     "count": 184,
     "backfilledFrom": "2026-01-01"
   },
@@ -80,15 +80,15 @@
       ],
       "topSectors": [
         {
-          "name": "금융",
-          "bias": "up"
-        },
-        {
-          "name": "바이오·제약",
+          "name": "원자력·전력기기",
           "bias": "up"
         },
         {
           "name": "2차전지",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
           "bias": "up"
         }
       ],
@@ -96,22 +96,22 @@
       "oos": null,
       "morningPicks": [
         {
-          "name": "하나금융지주",
-          "code": "086790",
-          "sector": "금융",
-          "changePct": 1.8
+          "name": "HD현대일렉트릭",
+          "code": "267260",
+          "sector": "원자력·전력기기",
+          "changePct": 12.01
         },
         {
-          "name": "신한지주",
-          "code": "055550",
-          "sector": "금융",
-          "changePct": 0.83
+          "name": "한화에어로스페이스",
+          "code": "012450",
+          "sector": "방산·우주",
+          "changePct": 5.8
         },
         {
-          "name": "알테오젠",
-          "code": "196170",
-          "sector": "바이오·제약",
-          "changePct": 2.73
+          "name": "삼성SDI",
+          "code": "006400",
+          "sector": "2차전지",
+          "changePct": 10.27
         }
       ]
     },
