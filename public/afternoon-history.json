@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-01T21:30:09+09:00",
-    "count": 1961,
+    "updatedAt": "2026-09-02T19:13:28+09:00",
+    "count": 1962,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,26 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-09-02",
+      "marketBias": "bearish",
+      "picks": [],
+      "marketContext": {
+        "sentiment": "bearish",
+        "topSectors": [
+          "엔터·미디어",
+          "금융",
+          "반도체"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": -0.58,
+      "es": -0.26
+    },
     {
       "date": "2026-09-01",
       "marketBias": "bearish",
