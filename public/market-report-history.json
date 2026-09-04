@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-04T09:36:39+09:00",
-    "count": 190,
+    "updatedAt": "2026-09-05T08:45:37+09:00",
+    "count": 191,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-09-05",
+      "sentiment": "neutral",
+      "title": "나스닥 -0.29% 혼조 — 종목 장세·차별화 전망",
+      "summary": "간밤 나스닥은 전일 대비 -0.29%(보합권)으로 마감, S&P500은 -0.38%를 기록했습니다. 미 10년물 금리는 4.78% — 4.5% 임계선 상회, 기술주·2차전지 PER 압박. 원/달러 1,346원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -0.2(범위 ±3)으로, 오늘 국내증시는 혼조 속 종목·섹터별 차별화가 예상됩니다. 우호 요인: 원/달러 / 부담 요인: 나스닥·S&P500·미 10년물.",
+      "kospiBias": "혼조·관망 — 종목·섹터 차별화",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,506.99",
+          "change": "-77.07",
+          "changePct": "-0.29%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,718.6",
+          "change": "-29.11",
+          "changePct": "-0.38%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$91.22",
+          "change": "-0.08",
+          "changePct": "-0.09%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.16",
+          "change": "+0.16",
+          "changePct": "+0.16%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,346원",
+          "change": "-9.42",
+          "changePct": "-0.69%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.78%",
+          "change": "+0.02%p",
+          "changePct": "+0.46%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "이오테크닉스",
+          "code": "039030",
+          "sector": "반도체",
+          "changePct": 5.98
+        },
+        {
+          "name": "에스엠",
+          "code": "041510",
+          "sector": "엔터·미디어",
+          "changePct": 4.91
+        },
+        {
+          "name": "원익IPS",
+          "code": "240810",
+          "sector": "반도체",
+          "changePct": 9.33
+        }
+      ]
+    },
     {
       "date": "2026-09-04",
       "sentiment": "bullish",
