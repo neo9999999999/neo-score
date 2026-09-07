@@ -1,6 +1,6 @@
 {
   "date": "2026-09-07",
-  "generatedAt": "2026-09-07T20:05:09+09:00",
+  "generatedAt": "2026-09-07T22:26:31+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "neutral",
@@ -48,14 +48,14 @@
     {
       "key": "vix",
       "label": "VIX",
-      "value": "15.06",
-      "change": "+0.53",
-      "changePct": "+3.65%",
+      "value": "15.16",
+      "change": "+0.63",
+      "changePct": "+4.34%",
       "dir": "up",
       "_raw": {
-        "close": 15.0600004196167,
+        "close": 15.15999984741211,
         "prevClose": 14.529999732971191,
-        "chgPct": 3.65
+        "chgPct": 4.34
       }
     }
   ],
@@ -76,14 +76,14 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,346.6원",
-      "change": "-8.82",
-      "changePct": "-0.65%",
+      "value": "1,347.2원",
+      "change": "-8.2",
+      "changePct": "-0.60%",
       "dir": "down",
       "_raw": {
-        "close": 1346.5899658203125,
+        "close": 1347.2099609375,
         "prevClose": 1355.4100341796875,
-        "chgPct": -0.65
+        "chgPct": -0.6
       }
     },
     {
@@ -102,14 +102,14 @@
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "98.93",
-      "change": "-0.23",
-      "changePct": "-0.23%",
+      "value": "98.91",
+      "change": "-0.25",
+      "changePct": "-0.25%",
       "dir": "down",
       "_raw": {
-        "close": 98.9280014038086,
+        "close": 98.91400146484375,
         "prevClose": 99.16000366210938,
-        "chgPct": -0.23
+        "chgPct": -0.25
       }
     }
   ],
