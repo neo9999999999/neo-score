@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-09-09T08:52:20+09:00",
+    "updatedAt": "2026-09-09T09:27:48+09:00",
     "count": 195,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,25 +48,25 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$94.53",
-          "change": "+3.05",
-          "changePct": "+3.33%",
+          "value": "$94.57",
+          "change": "+3.09",
+          "changePct": "+3.38%",
           "dir": "up"
         },
         {
           "key": "dxy",
           "label": "달러인덱스",
-          "value": "98.81",
-          "change": "-0.35",
-          "changePct": "-0.35%",
+          "value": "98.74",
+          "change": "-0.42",
+          "changePct": "-0.42%",
           "dir": "down"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,340.2원",
-          "change": "-3.36",
-          "changePct": "-0.25%",
+          "value": "1,340.3원",
+          "change": "-3.23",
+          "changePct": "-0.24%",
           "dir": "down"
         },
         {
@@ -84,34 +84,34 @@
           "bias": "up"
         },
         {
-          "name": "엔터·미디어",
+          "name": "원자력·전력기기",
           "bias": "up"
         },
         {
-          "name": "원자력·전력기기",
-          "bias": "down"
+          "name": "조선",
+          "bias": "up"
         }
       ],
       "source": "rule",
       "oos": null,
       "morningPicks": [
         {
-          "name": "신한지주",
-          "code": "055550",
-          "sector": "금융",
-          "changePct": -0.61
-        },
-        {
-          "name": "주성엔지니어링",
-          "code": "036930",
+          "name": "HPSP",
+          "code": "403870",
           "sector": "반도체",
-          "changePct": 3.95
+          "changePct": 6
         },
         {
-          "name": "에스엠",
-          "code": "041510",
-          "sector": "엔터·미디어",
-          "changePct": 3.5
+          "name": "두산에너빌리티",
+          "code": "034020",
+          "sector": "원자력·전력기기",
+          "changePct": 4.92
+        },
+        {
+          "name": "DB하이텍",
+          "code": "000990",
+          "sector": "반도체",
+          "changePct": 10.35
         }
       ]
     },
