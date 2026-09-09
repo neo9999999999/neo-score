@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-09T09:57:16+09:00",
-    "count": 195,
+    "updatedAt": "2026-09-10T08:51:11+09:00",
+    "count": 196,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-09-10",
+      "sentiment": "bearish",
+      "title": "나스닥 -0.64% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -0.64%(소폭)으로 마감, S&P500은 -0.48%를 기록했습니다. 미 10년물 금리는 4.84% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,340원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -1.83(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 없음 / 부담 요인: 나스닥·S&P500·미 10년물·WTI 유가.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,253.34",
+          "change": "-168.07",
+          "changePct": "-0.64%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,636.36",
+          "change": "-37.16",
+          "changePct": "-0.48%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$97.17",
+          "change": "+4.14",
+          "changePct": "+4.45%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "98.78",
+          "change": "-0.06",
+          "changePct": "-0.06%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,339.8원",
+          "change": "+0.56",
+          "changePct": "+0.04%",
+          "dir": "flat"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.84%",
+          "change": "+0.03%p",
+          "changePct": "+0.65%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "2차전지",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "엘앤에프",
+          "code": "066970",
+          "sector": "2차전지",
+          "changePct": 11.7
+        },
+        {
+          "name": "삼성SDI",
+          "code": "006400",
+          "sector": "2차전지",
+          "changePct": 8.3
+        },
+        {
+          "name": "LG에너지솔루션",
+          "code": "373220",
+          "sector": "2차전지",
+          "changePct": 6.46
+        }
+      ]
+    },
     {
       "date": "2026-09-09",
       "sentiment": "bearish",
