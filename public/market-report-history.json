@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-11T09:45:00+09:00",
-    "count": 197,
+    "updatedAt": "2026-09-12T08:54:17+09:00",
+    "count": 198,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-09-12",
+      "sentiment": "bullish",
+      "title": "나스닥 +0.96% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +0.96%(소폭)으로 마감, S&P500은 +0.86%를 기록했습니다. 미 10년물 금리는 4.97% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,341원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 +2.05(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·WTI 유가 / 부담 요인: 미 10년물.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,333.04",
+          "change": "+251.31",
+          "changePct": "+0.96%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,656.98",
+          "change": "+65.28",
+          "changePct": "+0.86%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$99.99",
+          "change": "-2.49",
+          "changePct": "-2.43%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "99.1",
+          "change": "+0.01",
+          "changePct": "+0.01%",
+          "dir": "flat"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,341.1원",
+          "change": "-7.12",
+          "changePct": "-0.53%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.97%",
+          "change": "+0.03%p",
+          "changePct": "+0.63%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "금융",
+          "bias": "up"
+        },
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        },
+        {
+          "name": "조선",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "신한지주",
+          "code": "055550",
+          "sector": "금융",
+          "changePct": 2.36
+        },
+        {
+          "name": "하나금융지주",
+          "code": "086790",
+          "sector": "금융",
+          "changePct": 1.85
+        },
+        {
+          "name": "에스엠",
+          "code": "041510",
+          "sector": "엔터·미디어",
+          "changePct": 3.83
+        }
+      ]
+    },
     {
       "date": "2026-09-11",
       "sentiment": "bearish",
