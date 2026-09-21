@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-18T21:10:13+09:00",
-    "count": 1974,
+    "updatedAt": "2026-09-21T20:29:56+09:00",
+    "count": 1975,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-09-21",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "디아이",
+          "code": "003160",
+          "score": 88.8,
+          "changePct": 12.74,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "neutral",
+        "topSectors": [
+          "반도체",
+          "금융",
+          "원자력·전력기기"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 2.11,
+      "es": 1.41
+    },
     {
       "date": "2026-09-18",
       "marketBias": "bullish",
