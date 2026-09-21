@@ -1,61 +1,61 @@
 {
   "date": "2026-09-21",
-  "generatedAt": "2026-09-21T20:29:56+09:00",
+  "generatedAt": "2026-09-21T22:52:01+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+2.11%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 디아이, 신고가 근접).",
+  "summary": "미 선물은 나스닥 상승(+2.35%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 디아이, 신고가 근접).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,239.25",
-      "change": "+625.57",
-      "changePct": "+2.11%",
+      "value": "30,310",
+      "change": "+696.32",
+      "changePct": "+2.35%",
       "dir": "up",
       "_raw": {
-        "close": 30239.25,
+        "close": 30310,
         "prevClose": 29613.6796875,
-        "chgPct": 2.11
+        "chgPct": 2.35
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,765.5",
-      "change": "+108.15",
-      "changePct": "+1.41%",
+      "value": "7,763.5",
+      "change": "+106.15",
+      "changePct": "+1.39%",
       "dir": "up",
       "_raw": {
-        "close": 7765.5,
+        "close": 7763.5,
         "prevClose": 7657.35009765625,
-        "chgPct": 1.41
+        "chgPct": 1.39
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,505",
-      "change": "+744",
-      "changePct": "+1.44%",
+      "value": "52,241",
+      "change": "+480",
+      "changePct": "+0.93%",
       "dir": "up",
       "_raw": {
-        "close": 52505,
+        "close": 52241,
         "prevClose": 51761,
-        "chgPct": 1.44
+        "chgPct": 0.93
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "14.87",
-      "change": "+0.06",
-      "changePct": "+0.41%",
+      "value": "14.89",
+      "change": "+0.08",
+      "changePct": "+0.54%",
       "dir": "up",
       "_raw": {
-        "close": 14.869999885559082,
+        "close": 14.890000343322754,
         "prevClose": 14.8100004196167,
-        "chgPct": 0.41
+        "chgPct": 0.54
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "5.00%",
-      "change": "+0.05%p",
-      "changePct": "+1.03%",
-      "dir": "up",
+      "value": "4.97%",
+      "change": "-0.03%p",
+      "changePct": "-0.66%",
+      "dir": "down",
       "_raw": {
-        "close": 4.998000144958496,
-        "prevClose": 4.947000026702881,
-        "chgPct": 1.03
+        "close": 4.965000152587891,
+        "prevClose": 4.998000144958496,
+        "chgPct": -0.66
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,372.5원",
-      "change": "-6.99",
-      "changePct": "-0.51%",
+      "value": "1,373.1원",
+      "change": "-6.45",
+      "changePct": "-0.47%",
       "dir": "down",
       "_raw": {
-        "close": 1372.5400390625,
+        "close": 1373.0799560546875,
         "prevClose": 1379.530029296875,
-        "chgPct": -0.51
+        "chgPct": -0.47
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$93.49",
-      "change": "-6.81",
-      "changePct": "-6.79%",
+      "value": "$92.61",
+      "change": "-7.69",
+      "changePct": "-7.67%",
       "dir": "down",
       "_raw": {
-        "close": 93.48999786376953,
+        "close": 92.61000061035156,
         "prevClose": 100.30000305175781,
-        "chgPct": -6.79
+        "chgPct": -7.67
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "100.28",
-      "change": "+0.06",
-      "changePct": "+0.06%",
+      "value": "100.31",
+      "change": "+0.09",
+      "changePct": "+0.09%",
       "dir": "up",
       "_raw": {
-        "close": 100.28399658203125,
+        "close": 100.30899810791016,
         "prevClose": 100.22000122070312,
-        "chgPct": 0.06
+        "chgPct": 0.09
       }
     }
   ],
@@ -151,13 +151,13 @@
       "score": 88.8,
       "changePct": 12.74,
       "rangePos": 0.82,
-      "volSurge": 3.8,
+      "volSurge": 3.81,
       "gapPct": 0.32,
       "aboveMA": true,
       "nearHighPct": -2.75,
       "breakout": false,
-      "value": 67911997200,
-      "valueText": "679억",
+      "value": 68122981200,
+      "valueText": "681억",
       "sector": null,
       "expRet": 0.05,
       "p3": 22.3,
