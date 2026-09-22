@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-21T22:52:01+09:00",
-    "count": 1975,
+    "updatedAt": "2026-09-22T19:37:09+09:00",
+    "count": 1976,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-09-22",
+      "marketBias": "neutral",
+      "picks": [
+        {
+          "name": "아시아나항공",
+          "code": "020560",
+          "score": 87.4,
+          "changePct": 8.7,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "반도체",
+          "원자력·전력기기",
+          "AI·인터넷"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 0.06,
+      "es": 0.03
+    },
     {
       "date": "2026-09-21",
       "marketBias": "bullish",
