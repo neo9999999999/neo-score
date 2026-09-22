@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-09-22T10:02:54+09:00",
+    "updatedAt": "2026-09-22T10:23:05+09:00",
     "count": 208,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,24 +48,24 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$92.72",
-          "change": "-7.58",
-          "changePct": "-7.56%",
+          "value": "$92.79",
+          "change": "-7.51",
+          "changePct": "-7.49%",
           "dir": "down"
         },
         {
           "key": "dxy",
           "label": "달러인덱스",
-          "value": "100.37",
-          "change": "+0.15",
-          "changePct": "+0.15%",
+          "value": "100.41",
+          "change": "+0.19",
+          "changePct": "+0.19%",
           "dir": "up"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
           "value": "1,362원",
-          "change": "-22.84",
+          "change": "-22.88",
           "changePct": "-1.65%",
           "dir": "down"
         },
@@ -99,19 +99,19 @@
           "name": "한미반도체",
           "code": "042700",
           "sector": "반도체",
-          "changePct": 4.23
+          "changePct": 3.81
         },
         {
           "name": "LS ELECTRIC",
           "code": "010120",
           "sector": "원자력·전력기기",
-          "changePct": 3.59
+          "changePct": 3.47
         },
         {
           "name": "효성중공업",
           "code": "298040",
           "sector": "원자력·전력기기",
-          "changePct": 2.37
+          "changePct": 2.64
         }
       ]
     },
