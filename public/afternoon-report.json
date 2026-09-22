@@ -1,61 +1,61 @@
 {
   "date": "2026-09-22",
-  "generatedAt": "2026-09-22T19:37:09+09:00",
+  "generatedAt": "2026-09-22T21:31:12+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "neutral",
-  "summary": "미 선물은 나스닥 보합(+0.06%)·S&P 보합 흐름으로, 익일 한국 증시는 혼조 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 아시아나항공, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 보합(-0.07%)·S&P 보합 흐름으로, 익일 한국 증시는 혼조 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 아시아나항공, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,802.75",
-      "change": "+18",
-      "changePct": "+0.06%",
-      "dir": "up",
+      "value": "30,763",
+      "change": "-21.75",
+      "changePct": "-0.07%",
+      "dir": "down",
       "_raw": {
-        "close": 30802.75,
+        "close": 30763,
         "prevClose": 30784.75,
-        "chgPct": 0.06
+        "chgPct": -0.07
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,836",
-      "change": "+2.5",
-      "changePct": "+0.03%",
+      "value": "7,837.25",
+      "change": "+3.75",
+      "changePct": "+0.05%",
       "dir": "flat",
       "_raw": {
-        "close": 7836,
+        "close": 7837.25,
         "prevClose": 7833.5,
-        "chgPct": 0.03
+        "chgPct": 0.05
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,578",
-      "change": "+103",
-      "changePct": "+0.20%",
+      "value": "52,669",
+      "change": "+194",
+      "changePct": "+0.37%",
       "dir": "up",
       "_raw": {
-        "close": 52578,
+        "close": 52669,
         "prevClose": 52475,
-        "chgPct": 0.2
+        "chgPct": 0.37
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "14.84",
-      "change": "-0.03",
-      "changePct": "-0.20%",
+      "value": "14.66",
+      "change": "-0.21",
+      "changePct": "-1.41%",
       "dir": "down",
       "_raw": {
-        "close": 14.84000015258789,
+        "close": 14.65999984741211,
         "prevClose": 14.869999885559082,
-        "chgPct": -0.2
+        "chgPct": -1.41
       }
     }
   ],
@@ -76,40 +76,40 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,355.5원",
-      "change": "-29.38",
-      "changePct": "-2.12%",
+      "value": "1,357.7원",
+      "change": "-27.14",
+      "changePct": "-1.96%",
       "dir": "down",
       "_raw": {
-        "close": 1355.47998046875,
+        "close": 1357.719970703125,
         "prevClose": 1384.8599853515625,
-        "chgPct": -2.12
+        "chgPct": -1.96
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$89.93",
-      "change": "-5.85",
-      "changePct": "-6.11%",
+      "value": "$90.54",
+      "change": "-5.24",
+      "changePct": "-5.47%",
       "dir": "down",
       "_raw": {
-        "close": 89.93000030517578,
+        "close": 90.54000091552734,
         "prevClose": 95.77999877929688,
-        "chgPct": -6.11
+        "chgPct": -5.47
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "100.4",
-      "change": "-0.03",
-      "changePct": "-0.03%",
+      "value": "100.39",
+      "change": "-0.04",
+      "changePct": "-0.04%",
       "dir": "flat",
       "_raw": {
-        "close": 100.39600372314453,
+        "close": 100.38899993896484,
         "prevClose": 100.43000030517578,
-        "chgPct": -0.03
+        "chgPct": -0.04
       }
     }
   ],
@@ -148,15 +148,15 @@
       "code": "020560",
       "market": "KOSPI",
       "price": 8370,
-      "score": 87.4,
+      "score": 87.2,
       "changePct": 8.7,
       "rangePos": 0.98,
-      "volSurge": 3.75,
+      "volSurge": 3.8,
       "gapPct": 0.78,
       "aboveMA": true,
       "nearHighPct": 1.33,
       "breakout": true,
-      "value": 5064812550,
+      "value": 5138820090,
       "valueText": "51억",
       "sector": null,
       "expRet": 0.02,
