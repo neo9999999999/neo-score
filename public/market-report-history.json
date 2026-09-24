@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-09-23T10:08:09+09:00",
-    "count": 209,
+    "updatedAt": "2026-09-24T09:15:46+09:00",
+    "count": 210,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-09-24",
+      "sentiment": "bearish",
+      "title": "나스닥 -0.69% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+      "summary": "간밤 나스닥은 전일 대비 -0.69%(소폭)으로 마감, S&P500은 -0.76%를 기록했습니다. 미 10년물 금리는 5.11% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,366원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -2.3(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: WTI 유가 / 부담 요인: 나스닥·S&P500·원/달러·미 10년물.",
+      "kospiBias": "약세 경계 — 방어주 중심 보수적 대응",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "26,936.04",
+          "change": "-186.05",
+          "changePct": "-0.69%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,706.03",
+          "change": "-58.67",
+          "changePct": "-0.76%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$92.02",
+          "change": "-2.57",
+          "changePct": "-2.72%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.12",
+          "change": "+0.69",
+          "changePct": "+0.69%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,366.5원",
+          "change": "+16.1",
+          "changePct": "+1.19%",
+          "dir": "up"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "5.11%",
+          "change": "+0.15%p",
+          "changePct": "+3.04%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        },
+        {
+          "name": "AI·인터넷",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "한미약품",
+          "code": "128940",
+          "sector": "바이오·제약",
+          "changePct": 3.59
+        },
+        {
+          "name": "원익IPS",
+          "code": "240810",
+          "sector": "반도체",
+          "changePct": 2.61
+        },
+        {
+          "name": "에스엠",
+          "code": "041510",
+          "sector": "엔터·미디어",
+          "changePct": 1.23
+        }
+      ]
+    },
     {
       "date": "2026-09-23",
       "sentiment": "bullish",
