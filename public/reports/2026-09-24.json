@@ -1,6 +1,6 @@
 {
   "date": "2026-09-24",
-  "generatedAt": "2026-09-24T09:45:23+09:00",
+  "generatedAt": "2026-09-24T09:59:29+09:00",
   "source": "rule",
   "macroScore": -2.6,
   "signals": [
@@ -23,7 +23,7 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "pct": 1.61,
+      "pct": 1.62,
       "score": -1.13,
       "fav": "bad",
       "note": "원화 약세 → 외국인 순매도 압력"
@@ -39,7 +39,7 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -3.26,
+      "pct": -3.27,
       "score": 0.6,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
@@ -65,25 +65,25 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$91.51",
-      "change": "-3.08",
-      "changePct": "-3.26%",
+      "value": "$91.50",
+      "change": "-3.09",
+      "changePct": "-3.27%",
       "dir": "down"
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "101.15",
-      "change": "+0.72",
-      "changePct": "+0.72%",
+      "value": "101.2",
+      "change": "+0.77",
+      "changePct": "+0.77%",
       "dir": "up"
     },
     {
       "key": "usdkrw",
       "label": "원/달러 환율",
-      "value": "1,372.1원",
-      "change": "+21.73",
-      "changePct": "+1.61%",
+      "value": "1,372.3원",
+      "change": "+21.9",
+      "changePct": "+1.62%",
       "dir": "up"
     },
     {
@@ -388,14 +388,14 @@
     {
       "date": "환율",
       "day": "원/달러",
-      "title": "원/달러 1,372.1원 (+1.61%)",
+      "title": "원/달러 1,372.3원 (+1.62%)",
       "detail": "고환율 구간 — 외국인 순매수/순매도 방향을 좌우. 환율 안정 시 외인 수급 개선.",
       "importance": "high"
     },
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $91.51 (-3.26%)",
+      "title": "WTI $91.50 (-3.27%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "high"
     },
@@ -409,7 +409,7 @@
     {
       "date": "달러",
       "day": "DXY",
-      "title": "달러인덱스 101.15 (+0.72%)",
+      "title": "달러인덱스 101.2 (+0.77%)",
       "detail": "달러 강세 시 신흥국·원화 약세 압력, 약세 시 위험자산 선호.",
       "importance": "low"
     }
