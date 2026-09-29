@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-09-29T00:14:51+09:00",
+    "updatedAt": "2026-09-29T20:50:10+09:00",
     "count": 1981,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,14 +1398,14 @@
   "reports": [
     {
       "date": "2026-09-29",
-      "marketBias": "bearish",
+      "marketBias": "neutral",
       "picks": [],
       "marketContext": {
-        "sentiment": "bullish",
+        "sentiment": "bearish",
         "topSectors": [
           "반도체",
-          "방산·우주",
-          "2차전지"
+          "바이오·제약",
+          "금융"
         ],
         "issues": [
           "전쟁·지정학 리스크 모니터링",
@@ -1413,8 +1413,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": -1.45,
-      "es": -0.87
+      "nq": 0.32,
+      "es": 0.17
     },
     {
       "date": "2026-09-28",
