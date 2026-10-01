@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-10-01T21:05:50+09:00",
+    "updatedAt": "2026-10-01T23:22:31+09:00",
     "count": 1983,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,12 +1398,12 @@
   "reports": [
     {
       "date": "2026-10-01",
-      "marketBias": "bullish",
+      "marketBias": "neutral",
       "picks": [
         {
           "name": "디아이",
           "code": "003160",
-          "score": 88.6,
+          "score": 85.5,
           "changePct": 13.08,
           "sector": null
         }
@@ -1421,8 +1421,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": 0.63,
-      "es": 0.36
+      "nq": -0.03,
+      "es": -0.22
     },
     {
       "date": "2026-09-30",
