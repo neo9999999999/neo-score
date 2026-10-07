@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-10-06T11:37:44+09:00",
-    "count": 222,
+    "updatedAt": "2026-10-07T10:13:38+09:00",
+    "count": 223,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-10-07",
+      "sentiment": "bullish",
+      "title": "나스닥 +0.45% 동조 — 반도체·AI 주도 강세 출발 기대",
+      "summary": "간밤 나스닥은 전일 대비 +0.45%(소폭)으로 마감, S&P500은 +0.58%를 기록했습니다. 미 10년물 금리는 5.27% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,338원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 +1.13(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·원/달러·미 10년물 / 부담 요인: WTI 유가.",
+      "kospiBias": "강세 출발 — 반도체·AI 주도 갭업 시도",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "27,599.89",
+          "change": "+122.58",
+          "changePct": "+0.45%",
+          "dir": "up"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,818.93",
+          "change": "+44.98",
+          "changePct": "+0.58%",
+          "dir": "up"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$90.33",
+          "change": "+0.9",
+          "changePct": "+1.01%",
+          "dir": "up"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.97",
+          "change": "+0.14",
+          "changePct": "+0.14%",
+          "dir": "up"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,338원",
+          "change": "-5.77",
+          "changePct": "-0.43%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "5.27%",
+          "change": "-0.04%p",
+          "changePct": "-0.79%",
+          "dir": "down"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "2차전지",
+          "bias": "down"
+        },
+        {
+          "name": "엔터·미디어",
+          "bias": "up"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "삼성전자",
+          "code": "005930",
+          "sector": "반도체",
+          "changePct": 2.21
+        },
+        {
+          "name": "DB하이텍",
+          "code": "000990",
+          "sector": "반도체",
+          "changePct": 0.72
+        },
+        {
+          "name": "하이브",
+          "code": "352820",
+          "sector": "엔터·미디어",
+          "changePct": 5.54
+        }
+      ]
+    },
     {
       "date": "2026-10-06",
       "sentiment": "bullish",
