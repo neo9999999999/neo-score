@@ -1,61 +1,61 @@
 {
   "date": "2026-10-13",
-  "generatedAt": "2026-10-13T22:13:01+09:00",
+  "generatedAt": "2026-10-13T23:55:40+09:00",
   "source": "quant",
   "type": "afternoon",
-  "marketBias": "bearish",
-  "summary": "미 선물은 나스닥 하락(-0.8%)·S&P 하락 흐름으로, 익일 한국 증시는 약세 경계 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 팬오션, 신고가 돌파).",
+  "marketBias": "neutral",
+  "summary": "미 선물은 나스닥 하락(-0.46%)·S&P 보합 흐름으로, 익일 한국 증시는 혼조 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 팬오션, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "30,651",
-      "change": "-247.25",
-      "changePct": "-0.80%",
+      "value": "30,755.75",
+      "change": "-142.5",
+      "changePct": "-0.46%",
       "dir": "down",
       "_raw": {
-        "close": 30651,
+        "close": 30755.75,
         "prevClose": 30898.25,
-        "chgPct": -0.8
+        "chgPct": -0.46
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,849.5",
-      "change": "-8.5",
-      "changePct": "-0.11%",
+      "value": "7,851.5",
+      "change": "-6.5",
+      "changePct": "-0.08%",
       "dir": "down",
       "_raw": {
-        "close": 7849.5,
+        "close": 7851.5,
         "prevClose": 7858,
-        "chgPct": -0.11
+        "chgPct": -0.08
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,542",
-      "change": "+432",
-      "changePct": "+0.83%",
-      "dir": "up",
+      "value": "52,113",
+      "change": "+3",
+      "changePct": "+0.01%",
+      "dir": "flat",
       "_raw": {
-        "close": 52542,
+        "close": 52113,
         "prevClose": 52110,
-        "chgPct": 0.83
+        "chgPct": 0.01
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "15.3",
-      "change": "+0.09",
-      "changePct": "+0.59%",
+      "value": "15.24",
+      "change": "+0.03",
+      "changePct": "+0.20%",
       "dir": "up",
       "_raw": {
-        "close": 15.300000190734863,
+        "close": 15.239999771118164,
         "prevClose": 15.210000038146973,
-        "chgPct": 0.59
+        "chgPct": 0.2
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "5.19%",
-      "change": "-0.05%p",
-      "changePct": "-0.88%",
+      "value": "5.22%",
+      "change": "-0.02%p",
+      "changePct": "-0.44%",
       "dir": "down",
       "_raw": {
-        "close": 5.193999767303467,
+        "close": 5.2170000076293945,
         "prevClose": 5.239999771118164,
-        "chgPct": -0.88
+        "chgPct": -0.44
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,341.2원",
-      "change": "-1.78",
-      "changePct": "-0.13%",
+      "value": "1,341.8원",
+      "change": "-1.16",
+      "changePct": "-0.09%",
       "dir": "down",
       "_raw": {
-        "close": 1341.2099609375,
+        "close": 1341.8299560546875,
         "prevClose": 1342.989990234375,
-        "chgPct": -0.13
+        "chgPct": -0.09
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$92.73",
-      "change": "-1.01",
-      "changePct": "-1.08%",
-      "dir": "down",
+      "value": "$93.78",
+      "change": "+0.04",
+      "changePct": "+0.04%",
+      "dir": "flat",
       "_raw": {
-        "close": 92.7300033569336,
+        "close": 93.77999877929688,
         "prevClose": 93.73999786376953,
-        "chgPct": -1.08
+        "chgPct": 0.04
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "102.25",
-      "change": "-0.33",
-      "changePct": "-0.32%",
+      "value": "102.29",
+      "change": "-0.29",
+      "changePct": "-0.28%",
       "dir": "down",
       "_raw": {
-        "close": 102.25299835205078,
+        "close": 102.28800201416016,
         "prevClose": 102.58000183105469,
-        "chgPct": -0.32
+        "chgPct": -0.28
       }
     }
   ],
@@ -148,7 +148,7 @@
       "code": "028670",
       "market": "KOSPI",
       "price": 6550,
-      "score": 86,
+      "score": 86.9,
       "changePct": 8.62,
       "rangePos": 0.84,
       "volSurge": 3.36,

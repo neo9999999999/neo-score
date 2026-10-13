@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-10-13T22:13:01+09:00",
+    "updatedAt": "2026-10-13T23:55:40+09:00",
     "count": 1991,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,12 +1398,12 @@
   "reports": [
     {
       "date": "2026-10-13",
-      "marketBias": "bearish",
+      "marketBias": "neutral",
       "picks": [
         {
           "name": "팬오션",
           "code": "028670",
-          "score": 86,
+          "score": 86.9,
           "changePct": 8.62,
           "sector": null
         }
@@ -1421,8 +1421,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": -0.8,
-      "es": -0.11
+      "nq": -0.46,
+      "es": -0.08
     },
     {
       "date": "2026-10-12",
