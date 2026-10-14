@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-10-14T19:52:45+09:00",
+    "updatedAt": "2026-10-14T21:47:37+09:00",
     "count": 1992,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,19 +1398,19 @@
   "reports": [
     {
       "date": "2026-10-14",
-      "marketBias": "neutral",
+      "marketBias": "bearish",
       "picks": [
         {
           "name": "팬오션",
           "code": "028670",
-          "score": 84.6,
+          "score": 81.9,
           "changePct": 10.53,
           "sector": null
         },
         {
           "name": "제주항공",
           "code": "089590",
-          "score": 82.1,
+          "score": 79.4,
           "changePct": 24.66,
           "sector": null
         }
@@ -1428,8 +1428,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": -0.1,
-      "es": 0.18
+      "nq": -0.65,
+      "es": -0.35
     },
     {
       "date": "2026-10-13",
