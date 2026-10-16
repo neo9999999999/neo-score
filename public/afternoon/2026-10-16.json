@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-16",
+  "generatedAt": "2026-10-16T19:22:01+09:00",
+  "source": "quant",
+  "type": "afternoon",
+  "marketBias": "neutral",
+  "summary": "미 선물은 나스닥 하락(-0.23%)·S&P 보합 흐름으로, 익일 한국 증시는 혼조 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 0개를 대장주 후보로 추렸습니다.",
+  "futures": [
+    {
+      "key": "nq",
+      "label": "나스닥 선물",
+      "value": "30,074",
+      "change": "-69.75",
+      "changePct": "-0.23%",
+      "dir": "down",
+      "_raw": {
+        "close": 30074,
+        "prevClose": 30143.75,
+        "chgPct": -0.23
+      }
+    },
+    {
+      "key": "es",
+      "label": "S&P500 선물",
+      "value": "7,796.75",
+      "change": "+5.75",
+      "changePct": "+0.07%",
+      "dir": "up",
+      "_raw": {
+        "close": 7796.75,
+        "prevClose": 7791,
+        "chgPct": 0.07
+      }
+    },
+    {
+      "key": "ym",
+      "label": "다우 선물",
+      "value": "52,578",
+      "change": "+148",
+      "changePct": "+0.28%",
+      "dir": "up",
+      "_raw": {
+        "close": 52578,
+        "prevClose": 52430,
+        "chgPct": 0.28
+      }
+    },
+    {
+      "key": "vix",
+      "label": "VIX",
+      "value": "16.19",
+      "change": "-0.27",
+      "changePct": "-1.64%",
+      "dir": "down",
+      "_raw": {
+        "close": 16.190000534057617,
+        "prevClose": 16.459999084472656,
+        "chgPct": -1.64
+      }
+    }
+  ],
+  "macro": [
+    {
+      "key": "ust10y",
+      "label": "미 10년물 금리",
+      "value": "5.09%",
+      "change": "-0.10%p",
+      "changePct": "-1.95%",
+      "dir": "down",
+      "_raw": {
+        "close": 5.089000225067139,
+        "prevClose": 5.190000057220459,
+        "chgPct": -1.95
+      }
+    },
+    {
+      "key": "usdkrw",
+      "label": "원/달러",
+      "value": "1,328.9원",
+      "change": "-10.4",
+      "changePct": "-0.78%",
+      "dir": "down",
+      "_raw": {
+        "close": 1328.949951171875,
+        "prevClose": 1339.3499755859375,
+        "chgPct": -0.78
+      }
+    },
+    {
+      "key": "wti",
+      "label": "WTI 유가",
+      "value": "$95.87",
+      "change": "-2.1",
+      "changePct": "-2.14%",
+      "dir": "down",
+      "_raw": {
+        "close": 95.87000274658203,
+        "prevClose": 97.97000122070312,
+        "chgPct": -2.14
+      }
+    },
+    {
+      "key": "dxy",
+      "label": "달러인덱스",
+      "value": "101.64",
+      "change": "-0.36",
+      "changePct": "-0.35%",
+      "dir": "down",
+      "_raw": {
+        "close": 101.63899993896484,
+        "prevClose": 102,
+        "chgPct": -0.35
+      }
+    }
+  ],
+  "indices": [
+    {
+      "key": "kospi",
+      "label": "코스피",
+      "value": "5,668.05",
+      "change": "+113.83",
+      "changePct": "+2.05%",
+      "dir": "up",
+      "_raw": {
+        "close": 5668.0498046875,
+        "prevClose": 5554.22021484375,
+        "chgPct": 2.05
+      }
+    },
+    {
+      "key": "kosdaq",
+      "label": "코스닥",
+      "value": "794.78",
+      "change": "+33.96",
+      "changePct": "+4.46%",
+      "dir": "up",
+      "_raw": {
+        "close": 794.780029296875,
+        "prevClose": 760.8200073242188,
+        "chgPct": 4.46
+      }
+    }
+  ],
+  "candidates": [],
+  "marketContext": {
+    "date": "2026-10-16",
+    "sentiment": "bullish",
+    "title": "나스닥 +0.08% 동조 — 반도체·AI 주도 강세 출발 기대",
+    "summary": "간밤 나스닥은 전일 대비 +0.08%(보합권)으로 마감, S&P500은 +0.33%를 기록했습니다. 미 10년물 금리는 5.09% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,346원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 +0.59(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·미 10년물 / 부담 요인: 원/달러·WTI 유가.",
+    "sectors": [
+      {
+        "name": "바이오·제약",
+        "bias": "up"
+      },
+      {
+        "name": "방산·우주",
+        "bias": "up"
+      },
+      {
+        "name": "엔터·미디어",
+        "bias": "up"
+      },
+      {
+        "name": "자동차",
+        "bias": "up"
+      }
+    ],
+    "issues": [
+      {
+        "category": "지정학",
+        "title": "전쟁·지정학 리스크 모니터링"
+      },
+      {
+        "category": "통화정책",
+        "title": "미 연준 금리 경로"
+      },
+      {
+        "category": "무역·규제",
+        "title": "미-중 반도체 수출규제"
+      },
+      {
+        "category": "나스닥 동조",
+        "title": "나스닥 +0.08% 국내 반도체 동조 여부"
+      },
+      {
+        "category": "환율",
+        "title": "원/달러 1,346원"
+      }
+    ]
+  },
+  "calibration": {
+    "n": 7297,
+    "expRet": -0.18,
+    "p3": 22.2,
+    "p5": 15.2,
+    "p3High": 55.8,
+    "p5High": 40.8,
+    "p5in5": 67,
+    "avgDays5": 1.7,
+    "hitRate": 43.5
+  },
+  "note": "미 선물·매크로 + 당일 종목 주가/거래량 정량 스코어 + 오늘 마켓리포트(섹터·이슈) 연동. 예상치는 과거 OOS 통계 기반 추정으로 보장값 아님. 투자 책임은 본인에게."
+}
