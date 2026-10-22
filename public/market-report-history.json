@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-10-22T09:49:52+09:00",
+    "updatedAt": "2026-10-22T10:08:02+09:00",
     "count": 238,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,25 +48,25 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$98.06",
-          "change": "-3.73",
-          "changePct": "-3.66%",
+          "value": "$98.01",
+          "change": "-3.78",
+          "changePct": "-3.71%",
           "dir": "down"
         },
         {
           "key": "dxy",
           "label": "달러인덱스",
-          "value": "101.7",
-          "change": "-0.03",
-          "changePct": "-0.03%",
+          "value": "101.69",
+          "change": "-0.04",
+          "changePct": "-0.04%",
           "dir": "flat"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,325.8원",
-          "change": "+1.84",
-          "changePct": "+0.14%",
+          "value": "1,325.7원",
+          "change": "+1.74",
+          "changePct": "+0.13%",
           "dir": "up"
         },
         {
@@ -80,16 +80,16 @@
       ],
       "topSectors": [
         {
-          "name": "바이오·제약",
-          "bias": "down"
-        },
-        {
           "name": "AI·인터넷",
           "bias": "up"
         },
         {
-          "name": "금융",
-          "bias": "neutral"
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "로봇",
+          "bias": "up"
         }
       ],
       "source": "rule",
@@ -99,19 +99,19 @@
           "name": "솔트룩스",
           "code": "304100",
           "sector": "AI·인터넷",
-          "changePct": 9.43
+          "changePct": 10.79
         },
         {
-          "name": "메리츠금융지주",
-          "code": "138040",
-          "sector": "금융",
-          "changePct": -0.08
+          "name": "레인보우로보틱스",
+          "code": "277810",
+          "sector": "로봇",
+          "changePct": 2.81
         },
         {
-          "name": "코난테크놀로지",
-          "code": "402030",
-          "sector": "AI·인터넷",
-          "changePct": 2.91
+          "name": "한화시스템",
+          "code": "272210",
+          "sector": "방산·우주",
+          "changePct": 2.42
         }
       ]
     },
