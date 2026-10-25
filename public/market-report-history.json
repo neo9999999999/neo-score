@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-10-25T09:43:23+09:00",
-    "count": 241,
+    "updatedAt": "2026-10-26T08:51:17+09:00",
+    "count": 242,
     "backfilledFrom": "2026-01-01"
   },
   "analysis": {
@@ -22,6 +22,99 @@
     "note": "예측 방향(강세/약세)과 실제 코스피 당일 등락 부호 일치율. 중립일은 방향 평가에서 제외."
   },
   "reports": [
+    {
+      "date": "2026-10-26",
+      "sentiment": "neutral",
+      "title": "나스닥 -0.21% 혼조 — 종목 장세·차별화 전망",
+      "summary": "간밤 나스닥은 전일 대비 -0.21%(보합권)으로 마감, S&P500은 -0.52%를 기록했습니다. 미 10년물 금리는 4.99% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,324원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -0.4(범위 ±3)으로, 오늘 국내증시는 혼조 속 종목·섹터별 차별화가 예상됩니다. 우호 요인: 원/달러·WTI 유가 / 부담 요인: 나스닥·S&P500·미 10년물.",
+      "kospiBias": "혼조·관망 — 종목·섹터 차별화",
+      "indicators": [
+        {
+          "key": "nasdaq",
+          "label": "나스닥",
+          "value": "25,955.34",
+          "change": "-53.52",
+          "changePct": "-0.21%",
+          "dir": "down"
+        },
+        {
+          "key": "sp500",
+          "label": "S&P 500",
+          "value": "7,623.68",
+          "change": "-39.75",
+          "changePct": "-0.52%",
+          "dir": "down"
+        },
+        {
+          "key": "wti",
+          "label": "WTI 유가",
+          "value": "$102.22",
+          "change": "-1.05",
+          "changePct": "-1.02%",
+          "dir": "down"
+        },
+        {
+          "key": "dxy",
+          "label": "달러인덱스",
+          "value": "101.71",
+          "change": "-0.1",
+          "changePct": "-0.09%",
+          "dir": "down"
+        },
+        {
+          "key": "usdkrw",
+          "label": "원/달러 환율",
+          "value": "1,323.7원",
+          "change": "-2.28",
+          "changePct": "-0.17%",
+          "dir": "down"
+        },
+        {
+          "key": "ust10y",
+          "label": "미 10년물 금리",
+          "value": "4.99%",
+          "change": "+0.03%p",
+          "changePct": "+0.71%",
+          "dir": "up"
+        }
+      ],
+      "topSectors": [
+        {
+          "name": "바이오·제약",
+          "bias": "up"
+        },
+        {
+          "name": "반도체",
+          "bias": "up"
+        },
+        {
+          "name": "원자력·전력기기",
+          "bias": "down"
+        }
+      ],
+      "source": "rule",
+      "oos": null,
+      "morningPicks": [
+        {
+          "name": "삼성바이오로직스",
+          "code": "207940",
+          "sector": "바이오·제약",
+          "changePct": 7.71
+        },
+        {
+          "name": "SK하이닉스",
+          "code": "000660",
+          "sector": "반도체",
+          "changePct": 4.42
+        },
+        {
+          "name": "유한양행",
+          "code": "000100",
+          "sector": "바이오·제약",
+          "changePct": 0.83
+        }
+      ]
+    },
     {
       "date": "2026-10-25",
       "sentiment": "bearish",
