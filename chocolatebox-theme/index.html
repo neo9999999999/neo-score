@@ -38,6 +38,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .panel { width: 270px; flex: none; position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #fff; border-radius: 20px; font-size: 14px; }
 .panel h1 { margin: 0; font-size: 17px; }
 .panel p { margin: 0; color: #5B5B5B; font-size: 13px; }
+.panel .guide-link { display: flex; align-items: center; min-height: 44px; color: #111; font-weight: 700; text-decoration: underline; }
 .panel .quarters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .panel .quarters button { min-height: 44px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font-weight: 700; }
 .panel .quarters button[aria-pressed="true"] { background: #111; color: #fff; border-color: #111; }
@@ -73,18 +74,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .rowbtn .ic { width: 26px; height: 26px; }
 
 /* 마이페이지 */
-.banner { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 136px; overflow: hidden; text-align: center; color: #fff;
-  background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.6), rgba(255,255,255,0) 55%), repeating-conic-gradient(from 0deg at 50% 60%, var(--banner-a) 0 9deg, var(--banner-b) 9deg 18deg); }
-.banner p { margin: 0; font-weight: 900; letter-spacing: -.02em; paint-order: stroke fill; -webkit-text-stroke: 5px var(--banner-ink); text-shadow: 0 3px 0 var(--banner-ink); }
-.banner__kicker { font-size: 22px; }
-.banner__title { font-size: 52px; line-height: 1.05; }
+.banner { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 136px; overflow: hidden; text-align: center; color: var(--banner-ink);
+  background: radial-gradient(ellipse at 50% 55%, rgba(255,255,255,.6), rgba(255,255,255,0) 62%), linear-gradient(135deg, var(--banner-a), var(--banner-b)); }
+.banner p { margin: 0; font-weight: 900; letter-spacing: -.02em; }
+.banner__kicker { font-size: 20px; font-weight: 700; }
+.banner__title { font-size: 50px; line-height: 1.05; }
 .rank { display: flex; align-items: center; gap: 12px; width: calc(100% - 40px); height: 56px; margin: 18px 20px 0; padding: 0 20px 0 24px; border: 0; border-radius: 18px; background: #000; color: #fff; text-align: left; }
 .rank .name { font-size: 15px; }
 .rank .pill { padding: 3px 12px; border-radius: 999px; background: var(--rank-pill); font-size: 14px; font-weight: 700; }
 .rank .ic { margin-left: auto; width: 28px; height: 28px; }
 .shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 22px 12px 8px; }
 .sc { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 44px; border: 0; background: none; font-size: 15px; }
-.sc__ic { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; color: var(--fg); background: linear-gradient(160deg, var(--a), var(--b)); box-shadow: 0 6px 12px rgba(0, 0, 0, .15); }
+.sc__ic { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; color: var(--fg); background: linear-gradient(160deg, var(--a), var(--b)); box-shadow: inset 0 3px 6px rgba(255, 255, 255, .35), inset 0 -4px 8px rgba(0, 0, 0, .12), 0 6px 12px rgba(0, 0, 0, .15); }
 .sc__ic .ic { width: 30px; height: 30px; }
 [data-shortcuts="tiles"] .shortcuts { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 20px 4px; }
 [data-shortcuts="tiles"] .sc { flex-direction: row; gap: 12px; padding: 12px; border-radius: 16px; background: #F4F4F4; text-align: left; font-weight: 500; }
@@ -290,6 +291,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
       <select id="sel-nav"><option value="auto">자동</option><option value="pill">pill</option><option value="line">line</option></select>
     </label>
     <p id="panel-name"></p>
+    <a class="guide-link" href="guide.html">분기 테마 시스템 가이드 보기 →</a>
   </aside>
   <div class="phone">
     <div class="app" id="app">
@@ -306,37 +308,65 @@ button { font: inherit; color: inherit; cursor: pointer; }
 <script type="application/json" id="themes">
 {
   "q1": {
-    "label": "Q1 · 1–3월 러브 에디션",
+    "label": "Q1 · 1–3월 로제",
     "tokens": {
-      "header-bg": "#FFC1D3", "accent": "#C8265A", "accent-soft": "#FFE6EE", "accent-soft-ink": "#B01E4F",
-      "cta-ink": "#FFC1D3", "progress": "#FF8DB0", "rank-pill": "#C8265A",
-      "banner-a": "#FFB3C6", "banner-b": "#E2557D", "banner-ink": "#7A1E3D",
-      "hero-a": "#FFE6EE", "hero-b": "#F5B3C8",
-      "gift": "#E23D62", "gift-lid": "#EE5778", "ribbon": "#F6D2A8", "ribbon-shade": "#D4A070",
-      "buy-bg": "#5A2033", "on-dark-accent": "#FF9DB8", "gold": "#E3B0A2"
+      "header-bg": "#FFD000",
+      "accent": "#B83A5E",
+      "accent-soft": "#FBE7EC",
+      "accent-soft-ink": "#A02C4E",
+      "cta-ink": "#FFD000",
+      "progress": "#FFC800",
+      "rank-pill": "#B83A5E",
+      "banner-a": "#F8D3DC",
+      "banner-b": "#EFA0B3",
+      "banner-ink": "#7A2340",
+      "hero-a": "#FDEBEF",
+      "hero-b": "#F2BFCB",
+      "gift": "#D94F6F",
+      "gift-lid": "#E56684",
+      "ribbon": "#F3D9B8",
+      "ribbon-shade": "#D2A872",
+      "buy-bg": "#5A2236",
+      "on-dark-accent": "#FFA9BF",
+      "gold": "#E3B4A6"
     },
     "pastels": [
-      { "bg": "#FFF0E3", "ink": "#8F4A00", "btn": "#F6C58E", "btnInk": "#3A1F00" },
-      { "bg": "#FFE9F0", "ink": "#B01E4F", "btn": "#D12A5F", "btnInk": "#FFFFFF" },
-      { "bg": "#F2E8FF", "ink": "#7A35C9", "btn": "#7A35C9", "btnInk": "#FFFFFF" },
+      { "bg": "#FFF1E4", "ink": "#8F4A00", "btn": "#F6C58E", "btnInk": "#3A1F00" },
+      { "bg": "#FDEAF0", "ink": "#A02C4E", "btn": "#B83A5E", "btnInk": "#FFFFFF" },
+      { "bg": "#F3EAFE", "ink": "#7438C2", "btn": "#7438C2", "btnInk": "#FFFFFF" },
       { "bg": "#FFEFEA", "ink": "#B3401F", "btn": "#C94A28", "btnInk": "#FFFFFF" }
     ],
     "icons": [
-      { "a": "#FF7C9C", "b": "#D9285A", "fg": "#FFFFFF" }, { "a": "#C58AF5", "b": "#7A35C9", "fg": "#FFFFFF" },
-      { "a": "#FFB38A", "b": "#E8683A", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#A04A5E" }
+      { "a": "#F28BA3", "b": "#C73D63", "fg": "#FFFFFF" },
+      { "a": "#B58AE6", "b": "#7A45C4", "fg": "#FFFFFF" },
+      { "a": "#F5AA84", "b": "#DD6F43", "fg": "#FFFFFF" },
+      { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#9A4A5E" }
     ],
-    "layout": { "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "pill" },
+    "layout": { "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "line" },
     "banner": { "kicker": "2월 러브 스페셜 이벤트!!", "title": "초코랭킹" }
   },
   "q2": {
-    "label": "Q2 · 4–6월 그린 에디션",
+    "label": "Q2 · 4–6월 프레시 그린",
     "tokens": {
-      "header-bg": "#BFE8A0", "accent": "#1B7A45", "accent-soft": "#E3F6E8", "accent-soft-ink": "#1B7A45",
-      "cta-ink": "#BFE8A0", "progress": "#7BCB6B", "rank-pill": "#1B7A45",
-      "banner-a": "#CDEBA5", "banner-b": "#4FA66C", "banner-ink": "#1F5A37",
-      "hero-a": "#E9F5DD", "hero-b": "#BFDFA9",
-      "gift": "#2F9E62", "gift-lid": "#3FB874", "ribbon": "#F2D06B", "ribbon-shade": "#C9A23A",
-      "buy-bg": "#1F4D36", "on-dark-accent": "#A8E08C", "gold": "#C8D98C"
+      "header-bg": "#FFD000",
+      "accent": "#2E7D52",
+      "accent-soft": "#E4F3EA",
+      "accent-soft-ink": "#25704A",
+      "cta-ink": "#FFD000",
+      "progress": "#FFC800",
+      "rank-pill": "#2E7D52",
+      "banner-a": "#D9EBD0",
+      "banner-b": "#A5D1A8",
+      "banner-ink": "#1F5A37",
+      "hero-a": "#EAF5E3",
+      "hero-b": "#C3DEB7",
+      "gift": "#35995F",
+      "gift-lid": "#45AD70",
+      "ribbon": "#F0D585",
+      "ribbon-shade": "#C7A648",
+      "buy-bg": "#1F4D36",
+      "on-dark-accent": "#A8DDB6",
+      "gold": "#C9D89B"
     },
     "pastels": [
       { "bg": "#FFF8DC", "ink": "#7A6100", "btn": "#F2D064", "btnInk": "#3A2F00" },
@@ -345,21 +375,36 @@ button { font: inherit; color: inherit; cursor: pointer; }
       { "bg": "#FFEEF0", "ink": "#B8274A", "btn": "#C4294F", "btnInk": "#FFFFFF" }
     ],
     "icons": [
-      { "a": "#7BD6A0", "b": "#1F9A58", "fg": "#FFFFFF" }, { "a": "#7FB0FF", "b": "#2F5FC8", "fg": "#FFFFFF" },
-      { "a": "#FFD36B", "b": "#E0A21C", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3F6B52" }
+      { "a": "#86D2A5", "b": "#2B9A5E", "fg": "#FFFFFF" },
+      { "a": "#8DB5F5", "b": "#3566C7", "fg": "#FFFFFF" },
+      { "a": "#F8D77A", "b": "#DDA82E", "fg": "#FFFFFF" },
+      { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3F6B52" }
     ],
-    "layout": { "games": "rail", "vault": "grid", "shortcuts": "tiles", "nav": "line" },
+    "layout": { "games": "rail", "vault": "grid", "shortcuts": "circles", "nav": "pill" },
     "banner": { "kicker": "5월 가정의 달 이벤트!!", "title": "초코랭킹" }
   },
   "q3": {
-    "label": "Q3 · 7–9월 블루 에디션",
+    "label": "Q3 · 7–9월 오션",
     "tokens": {
-      "header-bg": "#9BDDFB", "accent": "#0F6AB4", "accent-soft": "#E3F2FD", "accent-soft-ink": "#0F6AB4",
-      "cta-ink": "#9BDDFB", "progress": "#4FC3F7", "rank-pill": "#0F6AB4",
-      "banner-a": "#A9E0FA", "banner-b": "#2F86D1", "banner-ink": "#0D4272",
-      "hero-a": "#E1F3FC", "hero-b": "#A9D6EF",
-      "gift": "#1E88E5", "gift-lid": "#3A9BF0", "ribbon": "#FFD166", "ribbon-shade": "#D1A233",
-      "buy-bg": "#0F3A5F", "on-dark-accent": "#8ED3F5", "gold": "#A8D8F0"
+      "header-bg": "#FFD000",
+      "accent": "#2063A6",
+      "accent-soft": "#E4F0FA",
+      "accent-soft-ink": "#1B5A94",
+      "cta-ink": "#FFD000",
+      "progress": "#FFC800",
+      "rank-pill": "#2063A6",
+      "banner-a": "#CFE7F8",
+      "banner-b": "#93C5EA",
+      "banner-ink": "#12426F",
+      "hero-a": "#E6F3FB",
+      "hero-b": "#B7D8EE",
+      "gift": "#2B7DD1",
+      "gift-lid": "#4390DE",
+      "ribbon": "#F6D88A",
+      "ribbon-shade": "#CFA54A",
+      "buy-bg": "#123A5E",
+      "on-dark-accent": "#9CD3F2",
+      "gold": "#B7D9EE"
     },
     "pastels": [
       { "bg": "#FFF6D9", "ink": "#7A5B00", "btn": "#F6CB57", "btnInk": "#3A2A00" },
@@ -368,21 +413,36 @@ button { font: inherit; color: inherit; cursor: pointer; }
       { "bg": "#F0E9FF", "ink": "#6A3FCF", "btn": "#6A3FCF", "btnInk": "#FFFFFF" }
     ],
     "icons": [
-      { "a": "#6FD0FF", "b": "#1E88E5", "fg": "#FFFFFF" }, { "a": "#7FE3C4", "b": "#12A27F", "fg": "#FFFFFF" },
-      { "a": "#B79BFF", "b": "#6A3FCF", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#2D6A8E" }
+      { "a": "#7DC6F5", "b": "#2B7DD1", "fg": "#FFFFFF" },
+      { "a": "#86DCC2", "b": "#1B9A7B", "fg": "#FFFFFF" },
+      { "a": "#B9A4F5", "b": "#6F4BD0", "fg": "#FFFFFF" },
+      { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#2D6A8E" }
     ],
-    "layout": { "games": "list", "vault": "list", "shortcuts": "circles", "nav": "line" },
+    "layout": { "games": "list", "vault": "list", "shortcuts": "tiles", "nav": "pill" },
     "banner": { "kicker": "8월 서머 스페셜 이벤트!!", "title": "초코랭킹" }
   },
   "q4": {
     "label": "Q4 · 10–12월 홀리데이 (현재 서비스 룩)",
     "tokens": {
-      "header-bg": "#FFD000", "accent": "#D8343F", "accent-soft": "#FFE3E8", "accent-soft-ink": "#B3202D",
-      "cta-ink": "#FFD000", "progress": "#FFC800", "rank-pill": "#2D4BFF",
-      "banner-a": "#F7C948", "banner-b": "#E19A1C", "banner-ink": "#7A4300",
-      "hero-a": "#F6DADC", "hero-b": "#E7A9AE",
-      "gift": "#EE4A5C", "gift-lid": "#F4606F", "ribbon": "#EDB866", "ribbon-shade": "#C98F3E",
-      "buy-bg": "#4A2C28", "on-dark-accent": "#FF7A7A", "gold": "#C9A25B"
+      "header-bg": "#FFD000",
+      "accent": "#D8343F",
+      "accent-soft": "#FFE3E8",
+      "accent-soft-ink": "#B3202D",
+      "cta-ink": "#FFD000",
+      "progress": "#FFC800",
+      "rank-pill": "#2D4BFF",
+      "banner-a": "#F9D869",
+      "banner-b": "#EBB04A",
+      "banner-ink": "#6B3A00",
+      "hero-a": "#F6DADC",
+      "hero-b": "#E7A9AE",
+      "gift": "#EE4A5C",
+      "gift-lid": "#F4606F",
+      "ribbon": "#EDB866",
+      "ribbon-shade": "#C98F3E",
+      "buy-bg": "#4A2C28",
+      "on-dark-accent": "#FF7A7A",
+      "gold": "#C9A25B"
     },
     "pastels": [
       { "bg": "#FFF6DC", "ink": "#8F6200", "btn": "#F5C971", "btnInk": "#3A2A00" },
@@ -391,8 +451,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
       { "bg": "#FEEDEE", "ink": "#B3202D", "btn": "#D9303F", "btnInk": "#FFFFFF" }
     ],
     "icons": [
-      { "a": "#FF6B7A", "b": "#E02244", "fg": "#FFFFFF" }, { "a": "#C95CF2", "b": "#8A2FD6", "fg": "#FFFFFF" },
-      { "a": "#7BBBFF", "b": "#3B82F0", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3A6F80" }
+      { "a": "#FF6B7A", "b": "#E02244", "fg": "#FFFFFF" },
+      { "a": "#C95CF2", "b": "#8A2FD6", "fg": "#FFFFFF" },
+      { "a": "#7BBBFF", "b": "#3B82F0", "fg": "#FFFFFF" },
+      { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3A6F80" }
     ],
     "layout": { "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "pill" },
     "banner": { "kicker": "10월 4주차 스페셜이벤트!!", "title": "초코랭킹" }
@@ -446,7 +508,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
   /* ── 일러스트 (이미지 대신 테마 색을 따르는 SVG) ── */
   const ART = {
-    gift: `<svg viewBox="0 0 240 240" role="img" aria-label="선물 상자"><ellipse cx="120" cy="220" rx="74" ry="9" fill="rgba(0,0,0,.14)"/><rect class="g-body" x="40" y="104" width="160" height="108" rx="14"/><rect class="g-lid" x="30" y="78" width="180" height="40" rx="12"/><rect class="g-rib" x="102" y="78" width="36" height="134"/><path class="g-rib" d="M120 80C96 26 44 38 74 74c12 10 34 8 46 6z"/><path class="g-rib" d="M120 80C144 26 196 38 166 74c-12 10-34 8-46 6z"/><rect class="g-rib" x="104" y="66" width="32" height="24" rx="10"/></svg>`,
+    gift: `<svg viewBox="0 0 240 240" role="img" aria-label="선물 상자"><ellipse cx="120" cy="222" rx="80" ry="9" fill="rgba(0,0,0,.14)"/><rect class="g-body" x="40" y="104" width="160" height="112" rx="16"/><path d="M152 104h32a16 16 0 0 1 16 16v80a16 16 0 0 1-16 16h-32z" fill="rgba(0,0,0,.10)"/><rect class="g-lid" x="30" y="78" width="180" height="42" rx="14"/><rect x="38" y="82" width="164" height="10" rx="5" fill="rgba(255,255,255,.28)"/><rect x="40" y="118" width="160" height="8" fill="rgba(0,0,0,.12)"/><rect class="g-rib" x="102" y="78" width="36" height="138"/><rect x="114" y="78" width="7" height="138" fill="rgba(255,255,255,.32)"/><path class="g-rib" d="M120 80C96 24 42 36 72 74c13 11 36 9 48 6z"/><path class="g-rib" d="M120 80C144 24 198 36 168 74c-13 11-36 9-48 6z"/><path d="M104 62c-16-14-34-12-26 4M136 62c16-14 34-12 26 4" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/><rect class="g-rib" x="104" y="64" width="32" height="26" rx="11"/></svg>`,
     ads: `<svg viewBox="0 0 80 80" aria-hidden="true"><rect x="10" y="16" width="52" height="36" rx="6" fill="#5B5BE6"/><path d="M30 26l14 8-14 8z" fill="#fff"/><rect x="42" y="8" width="30" height="16" rx="8" fill="#F0508C"/><text x="57" y="20" font-size="10" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">ADS</text><path d="M8 52l14-8v18z" fill="#35B5E8"/></svg>`,
     quiz: `<svg viewBox="0 0 96 72" aria-hidden="true"><circle cx="52" cy="38" r="26" style="fill:var(--art-1)"/><text x="52" y="49" font-size="32" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">?</text><circle cx="22" cy="22" r="12" style="fill:var(--art-2)" opacity=".5"/><circle cx="78" cy="14" r="8" style="fill:var(--art-2)" opacity=".4"/></svg>`,
     scratch: `<svg viewBox="0 0 96 72" aria-hidden="true"><rect x="16" y="16" width="64" height="42" rx="8" transform="rotate(-8 48 37)" style="fill:var(--art-1)"/><rect x="26" y="26" width="44" height="22" rx="5" transform="rotate(-8 48 37)" fill="#fff" opacity=".7"/><path d="M62 14l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" style="fill:var(--art-2)"/></svg>`,
