@@ -1,376 +1,401 @@
 <!doctype html>
-<html lang="ko" data-theme="q4" data-hero="split" data-collection="bento" data-promo="first">
+<html lang="ko" data-theme="q4">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#17100C">
-<title>chocolatebox — 분기별 테마</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFD000">
+<title>chocolatebox — 분기별 테마 시안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* ──────────────────────────────────────────────────────────────
-   1. 토큰 — 기본값은 Q4. 분기 값은 themes JSON(아래)에서 읽어 덮어쓴다.
-   ────────────────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────
+   1. 토큰 — 기본값은 Q4(현재 서비스 룩). 분기 값은 themes JSON에서 덮어쓴다.
+   ──────────────────────────────────────────────────────────────── */
 :root {
-  --bg: #17100C; --surface: #211812; --ink: #F1E8DC; --muted: #B9A894; --line: #33261E;
-  --accent: #C8A46B; --accent-ink: #17100C; --accent-text: #C8A46B;
-  --banner-cta: #17100C; --banner-cta-ink: #C8A46B;
-  --tray: #2D2019; --slot: #1F1511; --tile-bg: #2A1E17;
-  --tray-r: 16px; --slot-r: 10px; --shape-r: 20%; --inner-r: 22%; --radius: 16px;
-  --font-display: 'Bricolage Grotesque', 'Noto Sans KR', sans-serif;
-  --font-body: 'Noto Sans KR', system-ui, sans-serif;
+  --header-bg: #FFD000; --accent: #D8343F; --accent-soft: #FFE3E8; --accent-soft-ink: #B3202D;
+  --cta-ink: #FFD000; --progress: #FFC800; --rank-pill: #2D4BFF;
+  --banner-a: #F7C948; --banner-b: #E19A1C; --banner-ink: #7A4300;
+  --hero-a: #F6DADC; --hero-b: #E7A9AE;
+  --gift: #EE4A5C; --gift-lid: #F4606F; --ribbon: #EDB866; --ribbon-shade: #C98F3E;
+  --buy-bg: #4A2C28; --on-dark-accent: #FF7A7A; --gold: #C9A25B;
+  --font: 'Noto Sans KR', system-ui, sans-serif;
 }
 
-/* ──────────────────────────────────────────────────────────────
-   2. 고정 레이어 — 분기가 바뀌어도 그대로인 뼈대와 컴포넌트
-   ────────────────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────
+   2. 고정 레이어 — 분기가 바뀌어도 그대로인 뼈대·컴포넌트
+   ──────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--font-body); word-break: keep-all; }
-a { color: inherit; text-decoration: none; }
-:focus-visible { outline: 3px solid var(--accent-text); outline-offset: 3px; }
-@media (prefers-reduced-motion: no-preference) {
-  body, .site-header, .card, .promo__box, .newsletter__box, .slot, .tray, .piece { transition: background-color .3s, color .3s, border-color .3s; }
-  .card { transition: transform .2s, background-color .3s, border-color .3s; }
-  .card:hover { transform: translateY(-2px); }
-}
-
-.page { display: flex; flex-direction: column; min-height: 100vh; }
-.has-switcher .page { padding-bottom: 96px; }
-.wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 40px; }
-@media (max-width: 640px) { .wrap { padding: 0 20px; } }
+body { margin: 0; background: #E7E4DF; color: #111; font: 400 15px/1.45 var(--font); word-break: keep-all; -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ic.glyph { fill: currentColor; stroke: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 28px; border: 1.5px solid transparent; border-radius: 999px; font: 700 16px var(--font-body); cursor: pointer; }
-.btn--sm { min-height: 44px; padding: 0 20px; font-size: 15px; }
-.btn--primary { background: var(--accent); color: var(--accent-ink); }
-.btn--ghost { border-color: var(--muted); color: var(--ink); background: transparent; }
+/* 미리보기 패널 (실서비스에는 들어가지 않는다) */
+.stage { display: flex; gap: 32px; justify-content: center; align-items: flex-start; padding: 24px; }
+.panel { width: 270px; flex: none; position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #fff; border-radius: 20px; font-size: 14px; }
+.panel h1 { margin: 0; font-size: 17px; }
+.panel p { margin: 0; color: #5B5B5B; font-size: 13px; }
+.panel .quarters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.panel .quarters button { min-height: 44px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font-weight: 700; }
+.panel .quarters button[aria-pressed="true"] { background: #111; color: #fff; border-color: #111; }
+.panel label { display: flex; flex-direction: column; gap: 4px; color: #3D3D3D; font-weight: 500; }
+.panel select { min-height: 44px; padding: 0 10px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font: inherit; }
+.no-panel .panel { display: none; }
 
-/* 헤더 */
-.site-header { order: 1; background: var(--bg); border-bottom: 1px solid var(--line); }
-.site-header .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 32px; padding-block: 14px; }
-.brand { display: flex; align-items: center; gap: 10px; min-height: 44px; font: 800 22px var(--font-display); letter-spacing: -.02em; }
-.brand svg .b-frame { fill: var(--ink); }
-.brand svg .b-dot { fill: var(--bg); }
-.brand svg .b-dot--accent { fill: var(--accent-text); }
-.nav { display: flex; flex-wrap: wrap; gap: 0 28px; flex: 1; }
-.nav a, .link { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 500; }
-.header-actions { display: flex; align-items: center; gap: 8px; }
-.link { color: var(--accent-text); font-weight: 700; }
-@media (max-width: 640px) {
-  .site-header .wrap { gap: 0 12px; }
-  .brand { order: 1; flex: 1; }
-  .header-actions { order: 2; }
-  .header-actions .nav-link { display: none; }
-  .nav { order: 3; flex: 1 0 100%; flex-wrap: nowrap; gap: 0 20px; overflow-x: auto; }
-  .nav a { white-space: nowrap; }
-  .has-switcher .page { padding-bottom: 180px; }
+.phone { flex: none; width: 390px; }
+.app { position: relative; display: flex; flex-direction: column; width: 390px; height: 844px; overflow: hidden; background: #fff; border-radius: 28px; box-shadow: 0 24px 60px rgba(0, 0, 0, .22); }
+.screens { flex: 1; min-height: 0; position: relative; }
+.screen { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; background: #fff; }
+.screen--gray { background: #F2F2F2; }
+.app.is-full { height: auto; }
+.app.is-full .screens { flex: none; }
+.app.is-full .screen { position: static; overflow: visible; }
+@media (max-width: 900px) {
+  .stage { flex-direction: column-reverse; align-items: center; padding: 12px; gap: 16px; }
+  .panel { position: static; width: min(100%, 390px); }
+}
+@media (max-width: 430px) {
+  .stage { padding: 0; gap: 0; }
+  .phone, .app { width: 100%; }
+  .app { height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; }
+  .panel { width: 100%; border-radius: 0; }
 }
 
-/* 히어로 */
-.hero { order: 2; }
-.hero__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 56px; padding-block: 72px; }
-.hero__text { flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
-.pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; font-weight: 700; }
-.pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-.hero h1 { margin: 0; font: 800 clamp(34px, 4.6vw, 56px)/1.15 var(--font-display); letter-spacing: -.02em; white-space: pre-line; }
-.lead { margin: 0; max-width: 520px; font-size: 18px; color: var(--muted); }
-.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.hero__art { flex: 1 1 360px; max-width: 460px; min-width: 0; }
+/* 상단바 */
+.topbar { position: relative; display: flex; align-items: center; height: 52px; padding: 0 16px; flex: none; background: #fff; }
+.topbar h1 { position: absolute; left: 0; right: 0; margin: 0; text-align: center; font-size: 17px; font-weight: 500; pointer-events: none; }
+.iconbtn { display: grid; place-items: center; width: 44px; height: 44px; margin-left: -12px; padding: 0; border: 0; background: none; }
+.iconbtn .ic { width: 26px; height: 26px; }
+.rowbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 52px; padding: 0 4px; border: 0; background: none; font-size: 17px; text-align: left; }
+.rowbtn .ic { width: 26px; height: 26px; }
 
-/* 초콜릿 트레이 / 조각 */
-.tray { --cols: 3; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 10px; padding: 14px; background: var(--tray); border-radius: var(--tray-r); }
-.slot { aspect-ratio: 1; display: grid; place-items: center; background: var(--slot); border-radius: var(--slot-r); }
-.slot .piece { width: 68%; height: 68%; }
-.piece { display: grid; place-items: center; width: var(--size, 76px); height: var(--size, 76px); border-radius: var(--shape-r); background: var(--body);
-  box-shadow: inset 3px 3px 0 rgba(255,255,255,.16), inset -3px -4px 0 rgba(0,0,0,.26), 0 5px 10px rgba(0,0,0,.3); }
-.piece::after { content: ""; width: 56%; height: 56%; border-radius: var(--inner-r); background: var(--inner);
-  box-shadow: inset 2px 2px 0 rgba(0,0,0,.2), inset -2px -2px 0 rgba(255,255,255,.12); }
+/* 마이페이지 */
+.banner { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 136px; overflow: hidden; text-align: center; color: #fff;
+  background: radial-gradient(circle at 50% 60%, rgba(255,255,255,.6), rgba(255,255,255,0) 55%), repeating-conic-gradient(from 0deg at 50% 60%, var(--banner-a) 0 9deg, var(--banner-b) 9deg 18deg); }
+.banner p { margin: 0; font-weight: 900; letter-spacing: -.02em; paint-order: stroke fill; -webkit-text-stroke: 5px var(--banner-ink); text-shadow: 0 3px 0 var(--banner-ink); }
+.banner__kicker { font-size: 22px; }
+.banner__title { font-size: 52px; line-height: 1.05; }
+.rank { display: flex; align-items: center; gap: 12px; width: calc(100% - 40px); height: 56px; margin: 18px 20px 0; padding: 0 20px 0 24px; border: 0; border-radius: 18px; background: #000; color: #fff; text-align: left; }
+.rank .name { font-size: 15px; }
+.rank .pill { padding: 3px 12px; border-radius: 999px; background: var(--rank-pill); font-size: 14px; font-weight: 700; }
+.rank .ic { margin-left: auto; width: 28px; height: 28px; }
+.shortcuts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 22px 12px 8px; }
+.sc { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 44px; border: 0; background: none; font-size: 15px; }
+.sc__ic { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 50%; color: var(--fg); background: linear-gradient(160deg, var(--a), var(--b)); box-shadow: 0 6px 12px rgba(0, 0, 0, .15); }
+.sc__ic .ic { width: 30px; height: 30px; }
+[data-shortcuts="tiles"] .shortcuts { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 20px 4px; }
+[data-shortcuts="tiles"] .sc { flex-direction: row; gap: 12px; padding: 12px; border-radius: 16px; background: #F4F4F4; text-align: left; font-weight: 500; }
+[data-shortcuts="tiles"] .sc__ic { width: 42px; height: 42px; box-shadow: none; }
+[data-shortcuts="tiles"] .sc__ic .ic { width: 22px; height: 22px; }
+.notice { margin: 14px 20px 12px; padding: 16px; border-radius: 12px; background: var(--accent-soft); color: var(--accent-soft-ink); text-align: center; font-size: 14px; }
+.menu { margin: 0 20px; padding-bottom: 28px; }
+.menu__group { border-top: 1px solid #E3E3E3; }
+.menu__group:last-child { border-bottom: 1px solid #E3E3E3; }
 
-/* 프로모 */
-.promo { order: 5; }
-.promo .wrap { padding-top: 8px; padding-bottom: 72px; }
-.promo__box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px; padding: 28px 32px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.promo__text { flex: 1 1 360px; min-width: 0; }
-.promo__box h2 { margin: 0; font: 800 24px/1.3 var(--font-display); }
-.promo__box p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
+/* 박스 상세 */
+.hero { position: relative; display: grid; place-items: center; height: 372px; background: linear-gradient(180deg, var(--hero-a), var(--hero-b)); }
+.hero .iconbtn { position: absolute; top: 8px; left: 16px; margin: 0; }
+.hero .art { width: 250px; height: 250px; }
+.g-body { fill: var(--gift); } .g-lid { fill: var(--gift-lid); }
+.g-rib { fill: var(--ribbon); stroke: var(--ribbon-shade); stroke-width: 2; }
+.info { padding: 20px; }
+.info h2 { margin: 0 0 4px; font-size: 19px; font-weight: 700; }
+.info p { margin: 0 0 8px; font-size: 16px; }
+.price { font-size: 20px; font-weight: 700; }
+.spec { display: grid; grid-template-columns: 84px 1fr; gap: 8px 14px; margin: 0 20px; padding: 18px 0; border-top: 1px solid #E3E3E3; border-bottom: 1px solid #E3E3E3; font-size: 14px; }
+.spec dt { color: #6E6E6E; }
+.spec dd { margin: 0; }
+.bean { margin: 18px 20px 0; padding: 16px; background: #000; color: #fff; text-align: center; font-size: 17px; font-weight: 700; }
+.bean span { display: block; font-size: 14px; font-weight: 500; color: var(--on-dark-accent); }
+.section-title { margin: 28px 0 16px; text-align: center; font-size: 20px; font-weight: 700; }
+.prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 14px; }
+.prize__img { display: grid; place-items: center; height: 100px; border-radius: 12px; background: radial-gradient(circle at 50% 60%, rgba(255, 150, 60, .6), rgba(255, 150, 60, 0) 62%), #15110F; }
+.prize__img .art { width: 76px; height: 76px; }
+.prize b { display: block; margin-top: 8px; font-size: 18px; }
+.prize span { font-size: 17px; font-weight: 700; }
+.buy { position: sticky; bottom: 0; display: block; width: 100%; height: 60px; margin-top: 12px; border: 0; background: var(--buy-bg); color: #fff; font-size: 20px; font-weight: 700; }
 
-/* 컬렉션 */
-.collection { order: 4; }
-.collection .wrap { padding-block: 72px 56px; }
-.section-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 28px; }
-.section-head h2 { margin: 0; font: 800 32px/1.2 var(--font-display); letter-spacing: -.01em; }
-.section-head p { margin: 4px 0 0; color: var(--muted); }
-.cards { display: flex; flex-wrap: wrap; gap: 20px; }
-.card { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.card__tile { flex: 1 0 150px; min-height: 150px; display: grid; place-items: center; background: var(--tile-bg); }
-.card .piece { box-shadow: inset 3px 3px 0 rgba(255,255,255,.18), inset -3px -4px 0 rgba(0,0,0,.22), 0 8px 14px rgba(0,0,0,.18); }
-.card__body { padding: 20px 22px 22px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
-.card h3 { margin: 0; font-size: 18px; line-height: 1.35; }
-.card p { margin: 0; font-size: 14px; color: var(--muted); }
-.card__more { margin-top: 6px; font-size: 14px; font-weight: 700; color: var(--accent-text); }
-.card__more::after { content: " →"; }
+/* 앱테크 */
+.hbar { display: flex; align-items: center; justify-content: space-between; height: 54px; padding: 0 14px 0 16px; background: var(--header-bg); font-weight: 700; }
+.hbar__group { display: flex; align-items: center; gap: 12px; }
+.hitem { display: flex; align-items: center; gap: 4px; min-height: 44px; padding: 0; border: 0; background: none; font-size: 16px; font-weight: 700; }
+.hitem .ic { width: 18px; height: 18px; }
+.coin { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #111; color: var(--header-bg); font-size: 13px; font-weight: 900; }
+.coin--bean { background: #7A4A1E; color: #fff; }
+.coin--tag { border-radius: 6px; background: #E0343F; color: #fff; }
+.card { margin: 14px; padding: 18px; border-radius: 22px; background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .04); }
+.ads { display: flex; align-items: center; gap: 12px; margin: 14px; padding: 14px; border-radius: 22px; background: #EAEAEA; }
+.ads .art { width: 82px; height: 82px; flex: none; }
+.btn-black { flex: 1; padding: 14px 10px; border: 0; border-radius: 14px; background: #000; color: #fff; text-align: center; font-size: 15px; line-height: 1.35; }
+.btn-black strong { color: var(--cta-ink); font-size: 17px; }
+.card h2 { margin: 0 0 12px; font-size: 18px; font-weight: 700; }
+.share-banner { margin-bottom: 14px; padding: 14px; border-radius: 12px; background: #F1EAFE; color: #6B2FD0; text-align: center; font-size: 16px; font-weight: 700; }
+.bar { height: 12px; overflow: hidden; border-radius: 999px; background: #E8E8E8; }
+.bar i { display: block; width: 47.5%; height: 100%; border-radius: 999px; background: var(--progress); }
+.bar-meta { display: flex; justify-content: space-between; margin: 8px 0 14px; font-size: 13px; color: #555; }
+.bar-meta b { color: var(--accent); font-weight: 500; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-dark { min-height: 52px; border: 0; border-radius: 14px; background: #000; color: var(--cta-ink); font-size: 16px; font-weight: 700; }
+.btn-line { min-height: 52px; border: 1.5px solid #D3D3D3; border-radius: 14px; background: #fff; font-size: 16px; font-weight: 700; }
+.freebox { display: flex; align-items: center; gap: 12px; margin: 14px; padding: 14px 16px; border-radius: 22px; background: #fff; }
+.freebox__thumb { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 12px; background: #FFF4CC; }
+.freebox__thumb .art { width: 40px; height: 40px; }
+.freebox__txt { flex: 1; min-width: 0; font-size: 14px; line-height: 1.4; }
+.freebox__txt b { display: block; font-size: 17px; }
+.freebox__txt em { font-style: normal; font-weight: 700; color: var(--accent); }
+.btn-pill { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #000; color: #fff; font-size: 14px; font-weight: 700; }
+.games { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 14px; }
+.game { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 6px; border: 0; border-radius: 22px; background: var(--g-bg); text-align: center; }
+.game .art { width: 96px; height: 72px; }
+.game .txt { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.game .txt b { font-size: 18px; }
+.game .desc { font-size: 12.5px; line-height: 1.4; letter-spacing: -.02em; color: var(--g-ink); }
+.game .timer { position: absolute; top: 12px; right: 12px; padding: 1px 10px; border-radius: 999px; background: #fff; font-size: 13px; }
+[data-games="list"] .games { grid-template-columns: 1fr; }
+[data-games="list"] .game { flex-direction: row; gap: 14px; padding: 14px 16px; text-align: left; }
+[data-games="list"] .game .art { width: 84px; flex: none; }
+[data-games="list"] .game .txt { align-items: flex-start; }
+[data-games="rail"] .games { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
+[data-games="rail"] .game { flex: 0 0 224px; scroll-snap-align: start; }
+.partners { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 14px 24px; }
+.partner { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 22px 10px; border-radius: 22px; background: #fff; text-align: center; }
+.partner .logo { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 6px; border-radius: 18px; background: #F1F1F1; font-size: 24px; font-weight: 900; }
+.partner b { font-size: 18px; }
+.partner span { font-size: 13px; color: #6A6A6A; }
 
-/* 뉴스레터 · 푸터 */
-.newsletter { order: 6; }
-.newsletter .wrap { padding-bottom: 72px; }
-.newsletter__box { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding: 36px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.newsletter__text { flex: 1 1 320px; min-width: 0; }
-.newsletter h2 { margin: 0; font: 800 24px/1.3 var(--font-display); }
-.newsletter p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
-.newsletter form { flex: 1 1 360px; min-width: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-.newsletter input { flex: 1 1 220px; min-width: 0; min-height: 52px; padding: 0 20px; border-radius: 999px; border: 1.5px solid var(--muted); background: var(--bg); color: var(--ink); font: inherit; font-size: 16px; }
-.site-footer { order: 7; margin-top: auto; border-top: 1px solid var(--line); }
-.site-footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 24px; padding-block: 20px; font-size: 14px; color: var(--muted); }
-.site-footer nav { display: flex; flex-wrap: wrap; gap: 0 20px; }
-.site-footer a { display: inline-flex; align-items: center; min-height: 44px; }
+/* 내보관함 */
+.vhead { position: relative; display: flex; align-items: center; justify-content: flex-end; height: 52px; padding: 0 16px; background: #fff; }
+.vhead h1 { position: absolute; left: 0; right: 0; margin: 0; text-align: center; font-size: 17px; font-weight: 500; pointer-events: none; }
+.vhead button { display: flex; align-items: center; gap: 6px; min-height: 44px; border: 0; background: none; color: #6E6E6E; font-size: 14px; }
+.vhead .ic { width: 22px; height: 22px; fill: #111; stroke: #fff; }
+.subtabs { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #E3E3E3; background: #fff; }
+.subtabs button { min-height: 48px; border: 0; border-bottom: 2px solid transparent; background: none; color: #6E6E6E; font-size: 16px; }
+.subtabs button[aria-current="page"] { border-bottom-color: #111; color: #111; font-weight: 500; }
+.howto { display: flex; align-items: center; justify-content: center; gap: 2px; width: 100%; min-height: 56px; margin-top: 6px; border: 0; background: none; color: #6B2FD0; font-size: 16px; font-weight: 500; }
+.howto .ic { width: 20px; height: 20px; }
+.synth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 16px 24px; }
+.synth { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 16px 14px 16px; border-radius: 22px; background: var(--p-bg); text-align: center; }
+.synth .left { position: absolute; top: 14px; left: 14px; padding: 2px 10px; border-radius: 10px; background: #fff; font-size: 13px; }
+.synth .ic-big { width: 82px; height: 82px; margin: 14px 0 6px; color: var(--p-btn); fill: currentColor; stroke: none; }
+.synth h3 { margin: 0; font-size: 20px; }
+.synth .gauge { font-size: 15px; color: var(--p-ink); }
+.synth .cost { font-size: 18px; font-weight: 700; color: var(--p-ink); }
+.synth button { width: 100%; min-height: 46px; margin-top: 12px; border: 0; border-radius: 12px; background: var(--p-btn); color: var(--p-btn-ink); font-size: 17px; font-weight: 700; }
+.synth--dark { grid-column: 1 / -1; overflow: hidden; padding: 64px 16px 16px; background: #000; color: var(--gold); }
+.synth--dark .left { z-index: 1; background: #3A3A3A; color: #DADADA; }
+.synth--dark .stars { position: absolute; left: 0; top: 28px; width: 100%; height: 120px; color: var(--gold); opacity: .4; }
+.synth--dark .stars svg { width: 100%; height: 100%; }
+.synth--dark h3, .synth--dark .gauge, .synth--dark .cost, .synth--dark button { position: relative; }
+.synth--dark h3 { font-size: 20px; }
+.synth--dark .gauge, .synth--dark .cost { color: var(--gold); }
+.synth--dark button { background: var(--gold); color: #1A1208; }
+.chips { display: flex; gap: 8px; padding: 14px 16px; overflow-x: auto; background: #fff; }
+.chip { flex: none; min-height: 44px; padding: 0 18px; border: 1px solid #CFCFCF; border-radius: 999px; background: #fff; color: #6E6E6E; font-size: 15px; }
+.chip[aria-pressed="true"] { border-color: #000; background: #000; color: #fff; }
+.chip--plus { display: grid; place-items: center; width: 44px; padding: 0; }
+.search { display: flex; align-items: center; gap: 10px; height: 50px; margin: 0 16px; padding: 0 18px; border: 1.5px solid #DADADA; border-radius: 999px; background: #fff; }
+.search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; }
+.search input:focus-visible { outline: none; }
+.search:focus-within { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.search .ic { color: #333; }
+.sortbar { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 14px; background: #fff; }
+.sortbar .left { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+.sortbar .left button { min-height: 44px; border: 0; background: none; }
+.sortbar .count b { color: var(--accent); font-weight: 500; }
+.checkall { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; }
+.chk { flex: none; width: 26px; height: 26px; margin: 0; accent-color: #000; }
+.items { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 20px; background: #fff; }
+.item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid #D6D6D6; border-radius: 6px; background: #fff; }
+.thumb { display: grid; place-items: center; flex: none; width: 60px; height: 60px; border-radius: 6px; background: var(--t, #EEE); color: rgba(0, 0, 0, .35); }
+.thumb .ic { width: 26px; height: 26px; }
+.item__txt { min-width: 0; font-size: 15px; line-height: 1.45; }
+.item__tag { display: block; font-size: 14px; color: var(--accent); }
+.item__tag--muted { color: #6E6E6E; }
+.item__price { display: block; margin-top: 2px; }
+[data-vault="grid"] .items { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+[data-vault="grid"] .item { position: relative; flex-direction: column; align-items: stretch; gap: 8px; padding: 12px; border-radius: 14px; }
+[data-vault="grid"] .item .chk { position: absolute; top: 18px; left: 18px; z-index: 1; }
+[data-vault="grid"] .thumb { width: 100%; height: auto; aspect-ratio: 1; }
+[data-vault="grid"] .thumb .ic { width: 38px; height: 38px; }
+.placeholder { display: grid; place-items: center; min-height: 480px; padding: 24px; color: #6E6E6E; text-align: center; }
 
-/* ──────────────────────────────────────────────────────────────
-   3. 구조 프리셋 — <html data-hero / data-collection / data-promo> 로 선택
-   ────────────────────────────────────────────────────────────── */
-[data-hero="center"] .hero__inner { flex-direction: column; gap: 48px; }
-[data-hero="center"] .hero__text { flex: 0 1 auto; max-width: 720px; align-items: center; text-align: center; }
-[data-hero="center"] .hero__actions { justify-content: center; }
-[data-hero="center"] .hero__art { flex: 0 1 auto; width: 100%; max-width: 720px; }
-[data-hero="center"] .tray { --cols: 6; }
-@media (max-width: 560px) { [data-hero="center"] .tray { --cols: 3; } }
-
-[data-hero="banner"] .hero { background: var(--accent); color: var(--accent-ink); }
-[data-hero="banner"] .hero__inner { padding-block: 88px; }
-[data-hero="banner"] .lead { color: var(--accent-ink); }
-[data-hero="banner"] .pill { background: rgba(0,0,0,.16); border-color: transparent; }
-[data-hero="banner"] .pill i { background: var(--accent-ink); }
-[data-hero="banner"] .hero .btn--primary { background: var(--banner-cta); color: var(--banner-cta-ink); }
-[data-hero="banner"] .hero .btn--ghost { border-color: var(--accent-ink); color: var(--accent-ink); }
-
-[data-promo="first"] .promo { order: 3; }
-[data-promo="first"] .promo .wrap { padding-top: 48px; padding-bottom: 0; }
-
-[data-collection="rail"] .cards { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 12px; }
-[data-collection="rail"] .card { flex: 0 0 280px; }
-[data-collection="bento"] .card:nth-child(1) { flex: 2 1 520px; }
-[data-collection="bento"] .card:nth-child(1) .card__tile { min-height: 280px; }
-[data-collection="bento"] .card:nth-child(1) .piece { --size: 120px; }
-[data-collection="bento"] .card:nth-child(4) { flex: 1 1 100%; flex-direction: row; flex-wrap: wrap; }
-[data-collection="bento"] .card:nth-child(4) .card__tile { flex: 1 1 200px; }
-[data-collection="bento"] .card:nth-child(4) .card__body { flex: 3 1 260px; }
-
-/* 분기 미리보기 바 — 실서비스에서는 ?preview=0 이거나 이 블록을 제거 */
-.switcher { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px;
-  max-width: calc(100% - 24px); padding: 8px 12px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 28px; box-shadow: 0 8px 24px rgba(0,0,0,.28); font-size: 13px; }
-.switcher[hidden] { display: none; }
-.switcher .group { display: flex; align-items: center; gap: 4px; }
-.switcher button { min-width: 44px; min-height: 44px; padding: 0 14px; border: 1.5px solid transparent; border-radius: 999px; background: transparent; color: var(--ink); font: 700 13px var(--font-body); cursor: pointer; }
-.switcher button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.switcher label { display: flex; align-items: center; gap: 6px; color: var(--muted); }
-.switcher select { min-height: 44px; padding: 0 12px; border: 1.5px solid var(--muted); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; }
+/* 하단 탭 */
+.tabbar { display: grid; grid-template-columns: repeat(5, 1fr); flex: none; gap: 2px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid #EDEDED; background: #fff; }
+.tabbar[hidden] { display: none; }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 56px; padding: 6px 0 4px; border: 0; border-radius: 16px; background: none; color: #222; font-size: 12px; }
+.tab .ic { width: 26px; height: 26px; }
+.tab[aria-current="page"] { background: var(--accent-soft); font-weight: 700; }
+.tab[aria-current="page"] .ic { fill: currentColor; }
+.tab .dot { position: absolute; top: 6px; left: calc(50% + 6px); width: 8px; height: 8px; border-radius: 50%; background: #E0343F; }
+[data-nav="line"] .tab { border-radius: 0; }
+[data-nav="line"] .tab[aria-current="page"] { background: none; color: var(--accent); box-shadow: inset 0 3px 0 var(--accent); }
+[data-nav="line"] .tab[aria-current="page"] .ic { fill: none; }
 </style>
 </head>
 <body>
-<div class="page">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M21 12H4M10 5l-7 7 7 7"/></symbol>
+  <symbol id="i-forward" viewBox="0 0 24 24"><path d="M3 12h17M14 5l7 7-7 7"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="none"/><path d="M12 11v6M12 7.5v.2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v11h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8.5 8h7M8.5 12h7M8.5 16h4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9C9 4 5 6 7 8.5c1 1 3.500.8 5 .5zM12 9c3-5 7-3 5 -.5-1 1-3.500.8-5 .5z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 4h16v5H4zM5 9v11h14V9M9.500 13h5"/></symbol>
+  <symbol id="i-diamond" viewBox="0 0 24 24"><path d="M7 4h10l4 5-9 11L3 9zM3 9h18M9 4l3 5 3-5M12 9v11"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7.500A3.500 3.500 0 016.500 4H17v3H6.500a1 1 0 000 2H19a2 2 0 012 2v7.500a3 3 0 01-3 3H6.500A3.500 3.500 0 013 16.500z"/><circle cx="16.500" cy="14" r="1.500" fill="#0003"/></symbol>
+  <symbol id="i-basket" viewBox="0 0 24 24"><path d="M3 9h18l-2 11H5zM8 9l3-6M16 9l-3-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 12v5M12 12v5M15 12v5" stroke="#0003" stroke-width="1.600" stroke-linecap="round"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 6c3-1.500 6-1.500 9 0v14c-3-1.500-6-1.500-9 0zM12 6c3-1.500 6-1.500 9 0v14c-3-1.500-6-1.500-9 0z"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 9h4l4 4v3h-8z"/><circle cx="7" cy="18" r="2.200" stroke="#fff" stroke-width="1.200"/><circle cx="17" cy="18" r="2.200" stroke="#fff" stroke-width="1.200"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C7 17.200 3 13.900 3 9.600 3 6.800 5.200 4.800 7.700 4.800c1.700 0 3.300.9 4.300 2.300 1-1.400 2.600-2.300 4.300-2.300 2.500 0 4.700 2 4.700 4.800 0 4.300-4 7.600-9 11.400z"/></symbol>
+  <symbol id="i-star4" viewBox="0 0 24 24"><path d="M12 2l2.400 7.600L22 12l-7.600 2.400L12 22l-2.400-7.600L2 12l7.600-2.400z"/></symbol>
+  <symbol id="i-gift-fill" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 14h6v7H5zM13 14h6v7h-6zM11 9h2v12h-2z"/><path d="M12 9C9.500 4 6 5.500 7.500 7.800 8.500 9 10.500 9 12 9zM12 9c2.500-5 6-3.500 4.500-1.200C15.500 9 13.500 9 12 9z"/></symbol>
+</svg>
 
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="#" aria-label="chocolatebox 홈">
-        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
-          <rect class="b-frame" x="1" y="1" width="26" height="26" rx="7"/>
-          <circle class="b-dot" cx="9.5" cy="9.5" r="3.5"/><circle class="b-dot" cx="18.5" cy="9.5" r="3.5"/>
-          <circle class="b-dot" cx="9.5" cy="18.5" r="3.5"/><circle class="b-dot b-dot--accent" cx="18.5" cy="18.5" r="3.5"/>
-        </svg>
-        <span>chocolatebox</span>
-      </a>
-      <nav class="nav" aria-label="주요 메뉴">
-        <a href="#">둘러보기</a><a href="#">컬렉션</a><a href="#">소개</a><a href="#">문의</a>
-      </nav>
-      <div class="header-actions">
-        <a class="nav-link link" href="#" style="color: inherit; font-weight: 500; padding: 0 14px;">로그인</a>
-        <a class="btn btn--primary btn--sm" href="#">시작하기</a>
-      </div>
+<div class="stage" id="stage">
+  <aside class="panel" aria-label="테마 미리보기">
+    <h1>chocolatebox 분기 테마</h1>
+    <p>전달받은 화면 5장을 기준으로 재구성한 시안입니다. 색과 구조는 분기 설정 한 블록으로 바뀝니다.</p>
+    <div class="quarters" id="quarters" role="group" aria-label="분기">
+      <button type="button" data-q="q1" aria-pressed="false">Q1</button>
+      <button type="button" data-q="q2" aria-pressed="false">Q2</button>
+      <button type="button" data-q="q3" aria-pressed="false">Q3</button>
+      <button type="button" data-q="q4" aria-pressed="false">Q4</button>
     </div>
-  </header>
-
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="wrap hero__inner">
-      <div class="hero__text">
-        <span class="pill"><i></i><span id="kicker"></span></span>
-        <h1 id="hero-title"></h1>
-        <p class="lead" id="lead"></p>
-        <div class="hero__actions">
-          <a class="btn btn--primary" href="#">에디션 둘러보기</a>
-          <a class="btn btn--ghost" href="#">전체 보기</a>
-        </div>
-      </div>
-      <div class="hero__art">
-        <div class="tray" id="tray" role="img" aria-label="초콜릿 박스 트레이 일러스트"></div>
-      </div>
+    <label>화면
+      <select id="sel-screen">
+        <option value="apptech">앱테크</option>
+        <option value="mypage">마이페이지</option>
+        <option value="box">박스 상세</option>
+        <option value="vault-synth">내보관함 · 합성존</option>
+        <option value="vault-items">내보관함 · 목록</option>
+      </select>
+    </label>
+    <label>앱테크 게임 카드
+      <select id="sel-games"><option value="auto">자동</option><option value="grid">grid</option><option value="list">list</option><option value="rail">rail</option></select>
+    </label>
+    <label>보관함 목록
+      <select id="sel-vault"><option value="auto">자동</option><option value="list">list</option><option value="grid">grid</option></select>
+    </label>
+    <label>마이페이지 바로가기
+      <select id="sel-shortcuts"><option value="auto">자동</option><option value="circles">circles</option><option value="tiles">tiles</option></select>
+    </label>
+    <label>하단 탭
+      <select id="sel-nav"><option value="auto">자동</option><option value="pill">pill</option><option value="line">line</option></select>
+    </label>
+    <p id="panel-name"></p>
+  </aside>
+  <div class="phone">
+    <div class="app" id="app">
+      <div class="screens" id="screens"></div>
+      <nav class="tabbar" id="tabbar" aria-label="하단 메뉴"></nav>
     </div>
-  </section>
-
-  <section class="promo" aria-labelledby="promo-title">
-    <div class="wrap">
-      <div class="promo__box">
-        <div class="promo__text">
-          <h2 id="promo-title"></h2>
-          <p id="promo-text"></p>
-        </div>
-        <a class="btn btn--primary btn--sm" id="promo-cta" href="#"></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="collection" aria-labelledby="collection-title">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 id="collection-title">이번 분기 컬렉션</h2>
-          <p>분기마다 새롭게 채워지는 박스예요.</p>
-        </div>
-        <a class="link" href="#">전체 보기</a>
-      </div>
-      <div class="cards" id="cards"></div>
-    </div>
-  </section>
-
-  <section class="newsletter" aria-labelledby="newsletter-title">
-    <div class="wrap">
-      <div class="newsletter__box">
-        <div class="newsletter__text">
-          <h2 id="newsletter-title">다음 에디션 소식을 먼저 받아보세요</h2>
-          <p>새 분기가 시작될 때 가장 먼저 알려드릴게요.</p>
-        </div>
-        <form onsubmit="return false">
-          <label class="sr-only" for="email">이메일 주소</label>
-          <input id="email" type="email" placeholder="name@example.com" autocomplete="email">
-          <button class="btn btn--primary" type="submit">알림 받기</button>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div class="wrap">
-      <span>© chocolatebox</span>
-      <nav aria-label="약관"><a href="#">이용약관</a><a href="#">개인정보처리방침</a></nav>
-    </div>
-  </footer>
-</div>
-
-<div class="switcher" id="switcher" role="group" aria-label="분기 테마 미리보기">
-  <div class="group" id="quarter-buttons">
-    <button type="button" data-q="q1" aria-pressed="false">Q1</button>
-    <button type="button" data-q="q2" aria-pressed="false">Q2</button>
-    <button type="button" data-q="q3" aria-pressed="false">Q3</button>
-    <button type="button" data-q="q4" aria-pressed="false">Q4</button>
   </div>
-  <label>히어로
-    <select id="hero-select"><option value="auto">자동</option><option value="split">split</option><option value="center">center</option><option value="banner">banner</option></select>
-  </label>
-  <label>컬렉션
-    <select id="collection-select"><option value="auto">자동</option><option value="grid">grid</option><option value="bento">bento</option><option value="rail">rail</option></select>
-  </label>
 </div>
 
-<!-- ──────────────────────────────────────────────────────────────
-     4. 분기 설정 — 분기 1개 = 블록 1개 (tokens / layout / pieces / content)
-     새 분기·새 시즌은 블록 하나를 복사해 값만 바꾼다.
-     ────────────────────────────────────────────────────────────── -->
+<!-- ────────────────────────────────────────────────────────────────
+     3. 분기 설정 — 분기 1개 = 블록 1개 (tokens / pastels / icons / layout / banner)
+     새 시즌은 블록 하나를 복사해 값만 바꾼다. 글자색은 배경 대비 4.5:1 이상으로 맞춰 둠.
+     ──────────────────────────────────────────────────────────────── -->
 <script type="application/json" id="themes">
 {
   "q1": {
+    "label": "Q1 · 1–3월 러브 에디션",
     "tokens": {
-      "bg": "#F6F0EA", "surface": "#FFFFFF", "ink": "#2A1519", "muted": "#6F5A5C", "line": "#E5D9D1",
-      "accent": "#8F2D44", "accent-ink": "#FFFFFF", "accent-text": "#8F2D44",
-      "banner-cta": "#F3E3DB", "banner-cta-ink": "#3A1620",
-      "tray": "#43232C", "slot": "#2E1820", "tile-bg": "#EDE0D8",
-      "tray-r": "24px", "slot-r": "16px", "shape-r": "26%", "inner-r": "30%", "radius": "20px"
+      "header-bg": "#FFC1D3", "accent": "#C8265A", "accent-soft": "#FFE6EE", "accent-soft-ink": "#B01E4F",
+      "cta-ink": "#FFC1D3", "progress": "#FF8DB0", "rank-pill": "#C8265A",
+      "banner-a": "#FFB3C6", "banner-b": "#E2557D", "banner-ink": "#7A1E3D",
+      "hero-a": "#FFE6EE", "hero-b": "#F5B3C8",
+      "gift": "#E23D62", "gift-lid": "#EE5778", "ribbon": "#F6D2A8", "ribbon-shade": "#D4A070",
+      "buy-bg": "#5A2033", "on-dark-accent": "#FF9DB8", "gold": "#E3B0A2"
     },
-    "layout": { "hero": "split", "collection": "grid", "sections": ["hero", "collection", "promo"] },
-    "pieces": ["ruby", "dark", "cream", "milk", "ruby", "dark"],
-    "cardPieces": ["ruby", "dark", "milk", "ruby"],
-    "content": {
-      "kicker": "Q1 · 1–3월 러브 에디션",
-      "headline": "마음을 건네는 계절,\n달콤하게 시작해요",
-      "lead": "새해의 첫 분기, 소중한 사람에게 전하는 한 조각을 골라보세요.",
-      "promo": { "title": "마음을 담은 선물 가이드", "text": "받는 사람에 어울리는 구성을 골라 드려요.", "cta": "가이드 보기" },
-      "cards": [
-        { "title": "마음을 전하는 선물", "desc": "받는 사람에 맞춰 고르는 러브 에디션" },
-        { "title": "처음 만나는 신상", "desc": "새해 첫 분기에 합류한 한정 라인" },
-        { "title": "이번 달 인기", "desc": "가장 많이 담긴 조합을 모았어요" },
-        { "title": "나를 위한 한 조각", "desc": "수고한 나에게 건네는 작은 보상" }
-      ]
-    }
+    "pastels": [
+      { "bg": "#FFF0E3", "ink": "#8F4A00", "btn": "#F6C58E", "btnInk": "#3A1F00" },
+      { "bg": "#FFE9F0", "ink": "#B01E4F", "btn": "#D12A5F", "btnInk": "#FFFFFF" },
+      { "bg": "#F2E8FF", "ink": "#7A35C9", "btn": "#7A35C9", "btnInk": "#FFFFFF" },
+      { "bg": "#FFEFEA", "ink": "#B3401F", "btn": "#C94A28", "btnInk": "#FFFFFF" }
+    ],
+    "icons": [
+      { "a": "#FF7C9C", "b": "#D9285A", "fg": "#FFFFFF" }, { "a": "#C58AF5", "b": "#7A35C9", "fg": "#FFFFFF" },
+      { "a": "#FFB38A", "b": "#E8683A", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#A04A5E" }
+    ],
+    "layout": { "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "pill" },
+    "banner": { "kicker": "2월 러브 스페셜 이벤트!!", "title": "초코랭킹" }
   },
   "q2": {
+    "label": "Q2 · 4–6월 그린 에디션",
     "tokens": {
-      "bg": "#F4F1E8", "surface": "#FFFFFF", "ink": "#232819", "muted": "#5E6350", "line": "#E1DCCB",
-      "accent": "#5D6B2E", "accent-ink": "#FFFFFF", "accent-text": "#5D6B2E",
-      "banner-cta": "#ECEBD6", "banner-cta-ink": "#2A3320",
-      "tray": "#363D22", "slot": "#272D17", "tile-bg": "#E8E6D2",
-      "tray-r": "28px", "slot-r": "50%", "shape-r": "50%", "inner-r": "50%", "radius": "24px"
+      "header-bg": "#BFE8A0", "accent": "#1B7A45", "accent-soft": "#E3F6E8", "accent-soft-ink": "#1B7A45",
+      "cta-ink": "#BFE8A0", "progress": "#7BCB6B", "rank-pill": "#1B7A45",
+      "banner-a": "#CDEBA5", "banner-b": "#4FA66C", "banner-ink": "#1F5A37",
+      "hero-a": "#E9F5DD", "hero-b": "#BFDFA9",
+      "gift": "#2F9E62", "gift-lid": "#3FB874", "ribbon": "#F2D06B", "ribbon-shade": "#C9A23A",
+      "buy-bg": "#1F4D36", "on-dark-accent": "#A8E08C", "gold": "#C8D98C"
     },
-    "layout": { "hero": "center", "collection": "rail", "sections": ["hero", "collection", "promo"] },
-    "pieces": ["matcha", "dark", "cream", "milk", "matcha", "dark"],
-    "cardPieces": ["matcha", "dark", "milk", "matcha"],
-    "content": {
-      "kicker": "Q2 · 4–6월 말차 에디션",
-      "headline": "새잎처럼 산뜻하게,\n가볍게 즐기는 한 입",
-      "lead": "봄에서 초여름까지, 산뜻한 맛과 향으로 채운 에디션이에요.",
-      "promo": { "title": "소풍 가기 좋은 큐레이션", "text": "가볍게 들고 나가기 좋은 구성만 모았어요.", "cta": "큐레이션 보기" },
-      "cards": [
-        { "title": "산뜻한 신상", "desc": "봄 향을 담은 가벼운 라인" },
-        { "title": "피크닉 추천", "desc": "나들이에 챙기기 좋은 구성" },
-        { "title": "가벼운 한 입", "desc": "부담 없이 즐기는 작은 사이즈" },
-        { "title": "이달의 큐레이션", "desc": "에디터가 고른 이번 분기 조합" }
-      ]
-    }
+    "pastels": [
+      { "bg": "#FFF8DC", "ink": "#7A6100", "btn": "#F2D064", "btnInk": "#3A2F00" },
+      { "bg": "#E6F7EE", "ink": "#1B7A45", "btn": "#1B7A45", "btnInk": "#FFFFFF" },
+      { "bg": "#EAF1FF", "ink": "#2F5FC8", "btn": "#2F5FC8", "btnInk": "#FFFFFF" },
+      { "bg": "#FFEEF0", "ink": "#B8274A", "btn": "#C4294F", "btnInk": "#FFFFFF" }
+    ],
+    "icons": [
+      { "a": "#7BD6A0", "b": "#1F9A58", "fg": "#FFFFFF" }, { "a": "#7FB0FF", "b": "#2F5FC8", "fg": "#FFFFFF" },
+      { "a": "#FFD36B", "b": "#E0A21C", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3F6B52" }
+    ],
+    "layout": { "games": "rail", "vault": "grid", "shortcuts": "tiles", "nav": "line" },
+    "banner": { "kicker": "5월 가정의 달 이벤트!!", "title": "초코랭킹" }
   },
   "q3": {
+    "label": "Q3 · 7–9월 블루 에디션",
     "tokens": {
-      "bg": "#F3F1EC", "surface": "#FFFFFF", "ink": "#162231", "muted": "#566474", "line": "#DFDCD3",
-      "accent": "#2D4A6B", "accent-ink": "#FFFFFF", "accent-text": "#2D4A6B",
-      "banner-cta": "#EFE5CF", "banner-cta-ink": "#1B2C42",
-      "tray": "#22384F", "slot": "#182A3D", "tile-bg": "#E3E7EA",
-      "tray-r": "16px", "slot-r": "8px", "shape-r": "12%", "inner-r": "14%", "radius": "12px"
+      "header-bg": "#9BDDFB", "accent": "#0F6AB4", "accent-soft": "#E3F2FD", "accent-soft-ink": "#0F6AB4",
+      "cta-ink": "#9BDDFB", "progress": "#4FC3F7", "rank-pill": "#0F6AB4",
+      "banner-a": "#A9E0FA", "banner-b": "#2F86D1", "banner-ink": "#0D4272",
+      "hero-a": "#E1F3FC", "hero-b": "#A9D6EF",
+      "gift": "#1E88E5", "gift-lid": "#3A9BF0", "ribbon": "#FFD166", "ribbon-shade": "#D1A233",
+      "buy-bg": "#0F3A5F", "on-dark-accent": "#8ED3F5", "gold": "#A8D8F0"
     },
-    "layout": { "hero": "banner", "collection": "bento", "sections": ["hero", "promo", "collection"] },
-    "pieces": ["cream", "milk", "sand", "dark", "cream", "milk"],
-    "cardPieces": ["blue", "dark", "milk", "blue"],
-    "content": {
-      "kicker": "Q3 · 7–9월 네이비 에디션",
-      "headline": "한여름에도\n시원하게 달콤하게",
-      "lead": "더위를 식혀 줄 상쾌한 조합을 이번 분기 박스에 담았어요.",
-      "promo": { "title": "휴가 전에 미리 준비해요", "text": "여행 가방에 쏙 들어가는 구성을 모았어요.", "cta": "구성 보기" },
-      "cards": [
-        { "title": "시원한 추천", "desc": "더위를 잊게 하는 상쾌한 조합" },
-        { "title": "휴가 동행", "desc": "여행 가방에 쏙 들어가는 구성" },
-        { "title": "얼음처럼 가벼운", "desc": "차갑게 즐기기 좋은 라인" },
-        { "title": "여름 한정", "desc": "이번 분기에만 만나는 에디션" }
-      ]
-    }
+    "pastels": [
+      { "bg": "#FFF6D9", "ink": "#7A5B00", "btn": "#F6CB57", "btnInk": "#3A2A00" },
+      { "bg": "#E2F5FD", "ink": "#0F6AB4", "btn": "#0F6AB4", "btnInk": "#FFFFFF" },
+      { "bg": "#E8FBF4", "ink": "#0E7A5E", "btn": "#0E7A5E", "btnInk": "#FFFFFF" },
+      { "bg": "#F0E9FF", "ink": "#6A3FCF", "btn": "#6A3FCF", "btnInk": "#FFFFFF" }
+    ],
+    "icons": [
+      { "a": "#6FD0FF", "b": "#1E88E5", "fg": "#FFFFFF" }, { "a": "#7FE3C4", "b": "#12A27F", "fg": "#FFFFFF" },
+      { "a": "#B79BFF", "b": "#6A3FCF", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#2D6A8E" }
+    ],
+    "layout": { "games": "list", "vault": "list", "shortcuts": "circles", "nav": "line" },
+    "banner": { "kicker": "8월 서머 스페셜 이벤트!!", "title": "초코랭킹" }
   },
   "q4": {
+    "label": "Q4 · 10–12월 홀리데이 (현재 서비스 룩)",
     "tokens": {
-      "bg": "#17100C", "surface": "#211812", "ink": "#F1E8DC", "muted": "#B9A894", "line": "#33261E",
-      "accent": "#C8A46B", "accent-ink": "#17100C", "accent-text": "#C8A46B",
-      "banner-cta": "#17100C", "banner-cta-ink": "#C8A46B",
-      "tray": "#2D2019", "slot": "#1F1511", "tile-bg": "#2A1E17",
-      "tray-r": "16px", "slot-r": "10px", "shape-r": "20%", "inner-r": "22%", "radius": "16px"
+      "header-bg": "#FFD000", "accent": "#D8343F", "accent-soft": "#FFE3E8", "accent-soft-ink": "#B3202D",
+      "cta-ink": "#FFD000", "progress": "#FFC800", "rank-pill": "#2D4BFF",
+      "banner-a": "#F7C948", "banner-b": "#E19A1C", "banner-ink": "#7A4300",
+      "hero-a": "#F6DADC", "hero-b": "#E7A9AE",
+      "gift": "#EE4A5C", "gift-lid": "#F4606F", "ribbon": "#EDB866", "ribbon-shade": "#C98F3E",
+      "buy-bg": "#4A2C28", "on-dark-accent": "#FF7A7A", "gold": "#C9A25B"
     },
-    "layout": { "hero": "split", "collection": "bento", "sections": ["hero", "promo", "collection"] },
-    "pieces": ["gold", "dark", "milk", "milk", "gold", "dark"],
-    "cardPieces": ["gold", "milk", "cream", "gold"],
-    "content": {
-      "kicker": "Q4 · 10–12월 홀리데이 에디션",
-      "headline": "한 해의 끝,\n가장 진한 달콤함",
-      "lead": "따뜻한 향신료와 깊은 카카오로 채운 연말 한정 에디션을 만나보세요.",
-      "promo": { "title": "연말 선물, 지금 준비하세요", "text": "한 해의 마음을 담는 홀리데이 박스를 만나보세요.", "cta": "선물 가이드 보기" },
-      "cards": [
-        { "title": "연말 선물 세트", "desc": "한 해의 마음을 담는 홀리데이 박스" },
-        { "title": "겨울 한정", "desc": "따뜻한 향신료를 더한 시즌 라인" },
-        { "title": "함께 나누는 박스", "desc": "여럿이 나눠 먹기 좋은 대용량 구성" },
-        { "title": "올해의 베스트", "desc": "한 해 동안 사랑받은 조합 모음" }
-      ]
-    }
+    "pastels": [
+      { "bg": "#FFF6DC", "ink": "#8F6200", "btn": "#F5C971", "btnInk": "#3A2A00" },
+      { "bg": "#E8F4FE", "ink": "#1565A8", "btn": "#41A2F0", "btnInk": "#0A2540" },
+      { "bg": "#F1E5FD", "ink": "#8A2FBF", "btn": "#9B34D0", "btnInk": "#FFFFFF" },
+      { "bg": "#FEEDEE", "ink": "#B3202D", "btn": "#D9303F", "btnInk": "#FFFFFF" }
+    ],
+    "icons": [
+      { "a": "#FF6B7A", "b": "#E02244", "fg": "#FFFFFF" }, { "a": "#C95CF2", "b": "#8A2FD6", "fg": "#FFFFFF" },
+      { "a": "#7BBBFF", "b": "#3B82F0", "fg": "#FFFFFF" }, { "a": "#F6F6F6", "b": "#D2D2D2", "fg": "#3A6F80" }
+    ],
+    "layout": { "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "pill" },
+    "banner": { "kicker": "10월 4주차 스페셜이벤트!!", "title": "초코랭킹" }
   }
 }
 </script>
@@ -378,113 +403,258 @@ a { color: inherit; text-decoration: none; }
 <script>
 (() => {
   const THEMES = JSON.parse(document.getElementById('themes').textContent);
-
-  // 초콜릿 조각 한 개의 [본체, 안쪽] 색
-  const TONES = {
-    dark:   ['#5A3626', '#6B4330'],
-    milk:   ['#9A6A47', '#AB7A56'],
-    cream:  ['#EADBC5', '#F3E8D6'],
-    sand:   ['#D9C7A0', '#E6D6B3'],
-    ruby:   ['#C25468', '#D26A7D'],
-    matcha: ['#8A9A52', '#9BAB63'],
-    blue:   ['#3E5F86', '#4F7199'],
-    gold:   ['#C8A46B', '#D8B67E']
-  };
-
+  const NS = 'http://www.w3.org/2000/svg';
   const root = document.documentElement;
   const $ = (sel) => document.querySelector(sel);
   const params = new URLSearchParams(location.search);
-  const HEROES = ['split', 'center', 'banner'];
-  const COLLECTIONS = ['grid', 'bento', 'rail'];
 
-  // 분기 시작일 0시(KST)에 자동 전환. ?theme=q1 이면 그 분기를 미리본다.
-  const quarterNow = () => {
-    const kst = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
-    return 'q' + (Math.floor(kst.getMonth() / 3) + 1);
+  /* ── 화면에 들어가는 문구 (서비스 화면 기준) ── */
+  const CONTENT = {
+    shortcuts: [
+      { label: '내 지갑', icon: 'wallet' }, { label: '포인트샵', icon: 'basket' },
+      { label: '내 후기', icon: 'book' }, { label: '배송현황', icon: 'truck' }
+    ],
+    menu: [
+      ['결제내역', '이용내역', '친구 초대코드'],
+      ['공지사항', '기록탐색기', '이벤트'],
+      ['고객센터', '이용약관', '개인정보처리방침'],
+      ['설정', '로그아웃']
+    ],
+    games: [
+      { title: '행운퀴즈', desc: '매일매일 새로운 행운퀴즈\n맞추고 포인트 받아가세요~', set: 1, art: 'quiz', timer: '20:28:54' },
+      { title: '초코 스크래치', desc: '매일매일 쌓이는 달콤한\n포인트 보상혜택', set: 0, art: 'scratch' },
+      { title: '초코룰렛', desc: '이번주 1등은 누구에게?\n행운의 1등 주인공이 되세요', set: 2, art: 'roulette' },
+      { title: '초코로또', desc: '이번주 1등은 누구에게?\n행운의 1등 주인공이 되세요', set: 1, art: 'lotto' }
+    ],
+    steps: [
+      { name: '스텝1', left: 30, cost: '18,000P', icon: 'heart' },
+      { name: '스텝2', left: 15, cost: '38,000P', icon: 'gift-fill' },
+      { name: '스텝3', left: 15, cost: '68,000P', icon: 'star4' },
+      { name: '스텝4', left: 15, cost: '148,000P', icon: 'gift-fill' }
+    ],
+    items: [
+      { tag: '#찬스업', name: '[이니스프리] 그린티 세라마이드 버터 보습 크림 / 수분 속건조 장벽 화잘먹 30ml, 1개', price: '18,000원', tone: '#DDEBDD' },
+      { tag: '#받은 선물', name: '[오아시스] 우리돼지 명품 꽃삼겹 (300g)', price: '12,900원', tone: '#F4DCDC' },
+      { tag: '#받은 선물', name: '[청정원] 소불고기 양념 840g, 2개', price: '12,760원', tone: '#E6DCD2' },
+      { tag: '#찬스업', name: '[하이디라오] 마라탕 소스 집밥, 220g, 4개', price: '12,710원', tone: '#F1D9D5' },
+      { tag: '#찬스업', name: '[오리온] 예감 오리지널 32g x 24입', price: '17,900원', tone: '#F6E7B8' },
+      { tag: '#찬스업', name: '[청정원] 호밍스 김치어묵 우동전골 950g 1개', price: '13,900원', tone: '#EBDDCB' },
+      { tag: '#초콜릿박스', muted: true, name: '[천일] 낙지볶음밥 300g X 5개', price: '14,500원', tone: '#E9D6C6' }
+    ],
+    chips: ['전체', '배송대기중', '6천갈포이벤트용', '현금화']
   };
 
-  const state = {
-    quarter: THEMES[params.get('theme')] ? params.get('theme') : quarterNow(),
-    hero: HEROES.includes(params.get('hero')) ? params.get('hero') : 'auto',
-    collection: COLLECTIONS.includes(params.get('collection')) ? params.get('collection') : 'auto'
+  /* ── 일러스트 (이미지 대신 테마 색을 따르는 SVG) ── */
+  const ART = {
+    gift: `<svg viewBox="0 0 240 240" role="img" aria-label="선물 상자"><ellipse cx="120" cy="220" rx="74" ry="9" fill="rgba(0,0,0,.14)"/><rect class="g-body" x="40" y="104" width="160" height="108" rx="14"/><rect class="g-lid" x="30" y="78" width="180" height="40" rx="12"/><rect class="g-rib" x="102" y="78" width="36" height="134"/><path class="g-rib" d="M120 80C96 26 44 38 74 74c12 10 34 8 46 6z"/><path class="g-rib" d="M120 80C144 26 196 38 166 74c-12 10-34 8-46 6z"/><rect class="g-rib" x="104" y="66" width="32" height="24" rx="10"/></svg>`,
+    ads: `<svg viewBox="0 0 80 80" aria-hidden="true"><rect x="10" y="16" width="52" height="36" rx="6" fill="#5B5BE6"/><path d="M30 26l14 8-14 8z" fill="#fff"/><rect x="42" y="8" width="30" height="16" rx="8" fill="#F0508C"/><text x="57" y="20" font-size="10" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">ADS</text><path d="M8 52l14-8v18z" fill="#35B5E8"/></svg>`,
+    quiz: `<svg viewBox="0 0 96 72" aria-hidden="true"><circle cx="52" cy="38" r="26" style="fill:var(--art-1)"/><text x="52" y="49" font-size="32" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">?</text><circle cx="22" cy="22" r="12" style="fill:var(--art-2)" opacity=".5"/><circle cx="78" cy="14" r="8" style="fill:var(--art-2)" opacity=".4"/></svg>`,
+    scratch: `<svg viewBox="0 0 96 72" aria-hidden="true"><rect x="16" y="16" width="64" height="42" rx="8" transform="rotate(-8 48 37)" style="fill:var(--art-1)"/><rect x="26" y="26" width="44" height="22" rx="5" transform="rotate(-8 48 37)" fill="#fff" opacity=".7"/><path d="M62 14l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" style="fill:var(--art-2)"/></svg>`,
+    roulette: `<svg viewBox="0 0 96 72" aria-hidden="true"><circle cx="48" cy="38" r="30" style="fill:var(--art-1)"/><path d="M48 8v60M18 38h60M27 17l42 42M69 17L27 59" stroke="#fff" stroke-width="2" opacity=".7"/><circle cx="48" cy="38" r="9" fill="#fff"/><path d="M48 2l6 10H42z" style="fill:var(--art-2)"/></svg>`,
+    lotto: `<svg viewBox="0 0 96 72" aria-hidden="true"><circle cx="30" cy="30" r="16" style="fill:var(--art-1)"/><circle cx="64" cy="22" r="14" style="fill:var(--art-2)"/><circle cx="52" cy="50" r="18" style="fill:var(--art-1)" opacity=".85"/><g font-family="sans-serif" font-weight="900" fill="#fff" text-anchor="middle"><text x="30" y="36" font-size="16">6</text><text x="64" y="28" font-size="15">3</text><text x="52" y="57" font-size="18">9</text></g></svg>`,
+    stars: `<svg viewBox="0 0 300 96" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="currentColor"><path d="M30 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M92 54l1.500 4 4 1.500-4 1.500-1.500 4-1.500-4-4-1.500 4-1.500z"/><path d="M220 24l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M262 62l1.500 4 4 1.500-4 1.500-1.500 4-1.500-4-4-1.500 4-1.500z"/><circle cx="150" cy="14" r="2"/><circle cx="58" cy="76" r="2"/><circle cx="196" cy="78" r="2.500"/><circle cx="276" cy="20" r="2"/></g></svg>`
   };
 
-  const el = (tag, className, text) => {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text !== undefined) node.textContent = text;
-    return node;
-  };
-
-  const piece = (tone) => {
-    const node = el('span', 'piece');
-    node.style.setProperty('--body', TONES[tone][0]);
-    node.style.setProperty('--inner', TONES[tone][1]);
-    return node;
-  };
-
-  function apply() {
-    const t = THEMES[state.quarter];
-    const sections = t.layout.sections;
-
-    root.dataset.theme = state.quarter;
-    root.dataset.hero = state.hero === 'auto' ? t.layout.hero : state.hero;
-    root.dataset.collection = state.collection === 'auto' ? t.layout.collection : state.collection;
-    root.dataset.promo = sections.indexOf('promo') < sections.indexOf('collection') ? 'first' : 'last';
-
-    Object.entries(t.tokens).forEach(([name, value]) => root.style.setProperty('--' + name, value));
-    $('meta[name="theme-color"]').setAttribute('content', t.tokens.bg);
-
-    const c = t.content;
-    $('#kicker').textContent = c.kicker;
-    $('#hero-title').textContent = c.headline;
-    $('#lead').textContent = c.lead;
-    $('#promo-title').textContent = c.promo.title;
-    $('#promo-text').textContent = c.promo.text;
-    $('#promo-cta').textContent = c.promo.cta;
-
-    $('#tray').replaceChildren(...t.pieces.map((tone) => {
-      const slot = el('div', 'slot');
-      slot.append(piece(tone));
-      return slot;
-    }));
-
-    $('#cards').replaceChildren(...c.cards.map((card, i) => {
-      const a = el('a', 'card');
-      a.href = '#';
-      const tile = el('div', 'card__tile');
-      tile.append(piece(t.cardPieces[i]));
-      const body = el('div', 'card__body');
-      body.append(el('h3', '', card.title), el('p', '', card.desc), el('span', 'card__more', '자세히 보기'));
-      a.append(tile, body);
-      return a;
-    }));
-
-    document.querySelectorAll('#quarter-buttons button').forEach((btn) => {
-      btn.setAttribute('aria-pressed', String(btn.dataset.q === state.quarter));
+  /* ── 작은 DOM 헬퍼 ── */
+  const h = (tag, props, ...kids) => {
+    const el = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v == null || v === false) return;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k === 'style') el.style.cssText = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+      else el.setAttribute(k, v === true ? '' : v);
     });
-    $('#hero-select').value = state.hero;
-    $('#collection-select').value = state.collection;
+    kids.flat().forEach((c) => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c)); });
+    return el;
+  };
+  const icon = (name, cls = '') => {
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', ('ic ' + cls).trim());
+    s.setAttribute('aria-hidden', 'true');
+    const u = document.createElementNS(NS, 'use');
+    u.setAttribute('href', '#i-' + name);
+    s.append(u);
+    return s;
+  };
+  const art = (name, cls = 'art', style = '') => { const s = h('span', { class: cls, style, 'aria-hidden': 'true' }); s.innerHTML = ART[name]; return s; };
+
+  /* ── 상태 ── */
+  const SCREENS = ['apptech', 'mypage', 'box', 'vault-synth', 'vault-items', 'home', 'news'];
+  const TABBED = (s) => ['home', 'news', 'apptech', 'vault-synth', 'vault-items'].includes(s);
+  const state = {
+    quarter: THEMES[params.get('theme')] ? params.get('theme') : 'q4',
+    screen: SCREENS.includes(params.get('screen')) ? params.get('screen') : 'apptech',
+    games: params.get('games') || 'auto', vault: params.get('vault') || 'auto',
+    shortcuts: params.get('shortcuts') || 'auto', nav: params.get('nav') || 'auto'
+  };
+  const go = (screen) => { state.screen = screen; render(); sync(); };
+  const theme = () => THEMES[state.quarter];
+
+  /* ── 화면 ── */
+  const back = (to) => h('button', { class: 'iconbtn', type: 'button', 'aria-label': '뒤로', onClick: () => go(to) }, icon('back'));
+
+  function mypage() {
+    const t = theme(), ic = t.icons;
+    return h('div', { class: 'screen' },
+      h('header', { class: 'topbar' }, back('apptech'), h('h1', { text: '마이페이지' })),
+      h('section', { class: 'banner', 'aria-label': '이벤트 배너' }, h('p', { class: 'banner__kicker', text: t.banner.kicker }), h('p', { class: 'banner__title', text: t.banner.title })),
+      h('button', { class: 'rank', type: 'button' }, h('span', { class: 'name', text: 'ㅂㅂ' }), h('span', { class: 'pill', text: '33위' }), icon('forward')),
+      h('div', { class: 'shortcuts' }, CONTENT.shortcuts.map((s, i) =>
+        h('button', { class: 'sc', type: 'button', style: `--a:${ic[i].a};--b:${ic[i].b};--fg:${ic[i].fg}` },
+          h('span', { class: 'sc__ic' }, icon(s.icon, 'glyph')), h('span', { text: s.label })))),
+      h('div', { class: 'notice', text: '배송지 정보 업데이트 안내' }),
+      h('nav', { class: 'menu', 'aria-label': '마이페이지 메뉴' }, CONTENT.menu.map((group) =>
+        h('div', { class: 'menu__group' }, group.map((label) => h('button', { class: 'rowbtn', type: 'button' }, h('span', { text: label }), icon('forward'))))))
+    );
   }
 
-  function syncUrl() {
+  function boxDetail() {
+    const prize = (rank, text) => h('div', { class: 'prize' }, h('div', { class: 'prize__img' }, art('gift')), h('b', { text: rank }), h('span', { text: text }));
+    return h('div', { class: 'screen' },
+      h('section', { class: 'hero' }, back('apptech'), art('gift')),
+      h('div', { class: 'info' },
+        h('h2', { text: '찬스업 1877회차' }),
+        h('p', { text: '최대 50만원대 상품이 지급됩니다. 단 100박스 한정! 더 좋은 상품을 받으세요!' }),
+        h('div', { class: 'price', text: '10,000원' })),
+      h('dl', { class: 'spec' },
+        h('dt', { text: '상품명' }), h('dd', { text: '찬스업 박스' }),
+        h('dt', { text: '결제조건' }), h('dd', {}, '기본 구매: 박스 1개당 카카오빈 100개 차감', h('br'), '추가 구매: 박스 1개당 카카오빈 200개 차감'),
+        h('dt', { text: '최대구매가능' }), h('dd', {}, '기본 구매: 최대 10개(회차 오픈 시)', h('br'), '추가 구매: 최대 4개(회차 오픈 1시간 후)', h('br'), '총 14개 박스까지 구매 가능'),
+        h('dt', { text: '상품정보' }), h('dd', { text: '하단의 상세설명 참조' }),
+        h('dt', { text: '배송비' }), h('dd', { text: '초콜릿박스 배송정책에 따름' })),
+      h('div', { class: 'bean' }, '내 보유 카카오빈 : 5개', h('span', { text: '(최대 10개까지 구매가능)' })),
+      h('h2', { class: 'section-title', text: '상품구성' }),
+      h('div', { class: 'prizes' }, prize('1등', '50~60만원 미만의 상품'), prize('2등', '10~11만원 미만의 상품')),
+      h('button', { class: 'buy', type: 'button', text: '1877회차 구매하기' })
+    );
+  }
+
+  function appTech() {
+    const t = theme(), p = t.pastels;
+    const hitem = (mark, text, cls) => h('button', { class: 'hitem', type: 'button' }, h('span', { class: 'coin ' + (cls || ''), text: mark }), text, icon('chev'));
+    return h('div', { class: 'screen screen--gray' },
+      h('header', { class: 'hbar' },
+        h('div', { class: 'hbar__group' }, h('span', { class: 'hitem' }, h('span', { class: 'coin', text: 'P' }), '100,209'), hitem('B', '5', 'coin--bean'), hitem('%', '7', 'coin--tag')),
+        h('button', { class: 'hitem', type: 'button', onClick: () => go('mypage'), 'aria-label': '마이페이지' }, 'ㅂㅂ', icon('chev'))),
+      h('section', { class: 'ads' }, art('ads'), h('button', { class: 'btn-black', type: 'button' }, '무제한참여가능', h('br'), h('strong', { text: '광고보고 카카오빈 1개 받기' }))),
+      h('section', { class: 'card' },
+        h('h2', { text: '카카오빈 나눔현황' }),
+        h('div', { class: 'share-banner', text: '어메이징초박님이 카카오빈 나눔중!' }),
+        h('div', { class: 'bar', role: 'img', 'aria-label': '950개 남음, 2000개 중' }, h('i')),
+        h('div', { class: 'bar-meta' }, h('span', {}, h('b', { text: '950개' }), ' 남음 / 2000개 나눔'), h('span', { text: '총 13,869,000개 나눔완료' })),
+        h('div', { class: 'btn-row' }, h('button', { class: 'btn-dark', type: 'button', text: '나눔하기' }), h('button', { class: 'btn-line', type: 'button', text: '광고보고 나눔받기' }))),
+      h('section', { class: 'freebox' },
+        h('span', { class: 'freebox__thumb' }, art('gift')),
+        h('div', { class: 'freebox__txt' }, h('b', { text: '무료박스' }), '남은시간 01:28:54', h('br'), h('em', { text: '최대 1,000 포인트' })),
+        h('button', { class: 'btn-pill', type: 'button', text: '무료박스 받기' })),
+      h('div', { class: 'games' }, CONTENT.games.map((g) => {
+        const s = p[g.set];
+        return h('button', { class: 'game', type: 'button', style: `--g-bg:${s.bg};--g-ink:${s.ink};--art-1:${s.btn};--art-2:${s.ink}` },
+          g.timer ? h('span', { class: 'timer', text: g.timer }) : null,
+          art(g.art),
+          h('span', { class: 'txt' }, h('b', { text: g.title }), h('span', { class: 'desc', style: 'white-space:pre-line', text: g.desc })));
+      })),
+      h('div', { class: 'partners' },
+        h('div', { class: 'partner' }, h('span', { class: 'logo', text: 'A' }), h('b', { text: '에디슨' }), h('span', { text: '다양한 미션을 통한 적립' })),
+        h('div', { class: 'partner' }, h('span', { class: 'logo', text: 'R' }), h('b', { text: '리워드롭' }), h('span', { text: '다양한 미션을 통한 적립' })))
+    );
+  }
+
+  function vault(kind) {
+    const t = theme(), p = t.pastels;
+    const tab = (label, key) => h('button', { type: 'button', 'aria-current': key === kind ? 'page' : null, onClick: () => go(key === 'synth' ? 'vault-synth' : 'vault-items') }, label);
+    const head = [
+      h('header', { class: 'vhead' }, h('h1', { text: '내 보관함' }), h('button', { type: 'button' }, '교환포인트', icon('info'))),
+      h('nav', { class: 'subtabs', 'aria-label': '보관함 구분' }, tab('보유상품', 'own'), tab('선물함', 'gift'), tab('내보관함', 'items'), tab('합성존', 'synth'))
+    ];
+    if (kind === 'synth') {
+      const cards = CONTENT.steps.map((s, i) => {
+        const c = p[i];
+        return h('section', { class: 'synth', style: `--p-bg:${c.bg};--p-ink:${c.ink};--p-btn:${c.btn};--p-btn-ink:${c.btnInk}` },
+          h('span', { class: 'left', text: '남은 합성 : ' + s.left }), icon(s.icon, 'ic-big'),
+          h('h3', { text: s.name }), h('span', { class: 'gauge', text: '합성 충족 게이지' }), h('span', { class: 'cost', text: s.cost }),
+          h('button', { type: 'button', text: '합성하기' }));
+      });
+      cards.push(h('section', { class: 'synth synth--dark' },
+        h('span', { class: 'left', text: '남은 합성 : 10' }), art('stars', 'stars'),
+        h('h3', { text: '스텝5' }), h('span', { class: 'gauge', text: '합성 충족 게이지' }), h('span', { class: 'cost', text: '298,000P' }),
+        h('button', { type: 'button', text: '합성하기' })));
+      return h('div', { class: 'screen' }, head,
+        h('button', { class: 'howto', type: 'button' }, '쇼케이스 합성존 사용방법', icon('chev')),
+        h('div', { class: 'synth-grid' }, cards));
+    }
+    return h('div', { class: 'screen' }, head,
+      h('div', { class: 'chips' }, CONTENT.chips.map((c, i) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(i === 0), text: c })),
+        h('button', { class: 'chip chip--plus', type: 'button', 'aria-label': '필터 추가' }, icon('plus'))),
+      h('label', { class: 'search' }, icon('search'), h('span', { class: 'sr-only', text: '상품검색' }), h('input', { type: 'search', placeholder: '상품검색' })),
+      h('div', { class: 'sortbar' },
+        h('div', { class: 'left' }, h('button', { type: 'button' }, '최신 순 ▾'), h('span', { class: 'count' }, '전체 ', h('b', { text: '407개' }))),
+        h('label', { class: 'checkall' }, h('input', { class: 'chk', type: 'checkbox' }), '전체선택')),
+      h('div', { class: 'items' }, CONTENT.items.map((it) =>
+        h('div', { class: 'item' },
+          h('input', { class: 'chk', type: 'checkbox', 'aria-label': it.name + ' 선택' }),
+          h('span', { class: 'thumb', style: `--t:${it.tone}` }, icon('gift')),
+          h('div', { class: 'item__txt' }, h('span', { class: 'item__tag' + (it.muted ? ' item__tag--muted' : ''), text: it.tag }), it.name, h('span', { class: 'item__price', text: it.price })))))
+    );
+  }
+
+  const placeholder = (label) => h('div', { class: 'screen' }, h('div', { class: 'placeholder', text: label + ' 화면은 전달받은 스크린샷에 없어 시안에서 제외했어요.' }));
+
+  const BUILD = {
+    apptech: appTech, mypage, box: boxDetail, 'vault-synth': () => vault('synth'), 'vault-items': () => vault('items'),
+    home: () => placeholder('Home'), news: () => placeholder('뉴스룸')
+  };
+
+  const TABS = [
+    { label: 'Home', icon: 'home', to: 'home' },
+    { label: '뉴스룸', icon: 'news', to: 'news', dot: true },
+    { label: '박스구매', icon: 'gift', to: 'box' },
+    { label: '내보관함', icon: 'box', to: 'vault-items', on: (s) => s.startsWith('vault') },
+    { label: '앱테크', icon: 'diamond', to: 'apptech' }
+  ];
+
+  function render() {
+    const t = theme();
+    Object.entries(t.tokens).forEach(([k, v]) => root.style.setProperty('--' + k, v));
+    root.dataset.theme = state.quarter;
+    $('meta[name="theme-color"]').setAttribute('content', t.tokens['header-bg']);
+
+    ['games', 'vault', 'shortcuts', 'nav'].forEach((k) => {
+      $('#app').dataset[k] = state[k] === 'auto' ? t.layout[k] : state[k];
+      $('#sel-' + k).value = state[k];
+    });
+
+    $('#screens').replaceChildren(BUILD[state.screen]());
+    const tabbar = $('#tabbar');
+    tabbar.hidden = !TABBED(state.screen);
+    tabbar.replaceChildren(...TABS.map((tab) => {
+      const on = tab.on ? tab.on(state.screen) : state.screen === tab.to;
+      return h('button', { class: 'tab', type: 'button', 'aria-current': on ? 'page' : null, onClick: () => go(tab.to) }, icon(tab.icon), tab.dot ? h('span', { class: 'dot' }) : null, tab.label);
+    }));
+
+    document.querySelectorAll('#quarters button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.q === state.quarter)));
+    const sel = $('#sel-screen');
+    sel.value = ['apptech', 'mypage', 'box', 'vault-synth', 'vault-items'].includes(state.screen) ? state.screen : 'apptech';
+    $('#panel-name').textContent = t.label;
+  }
+
+  function sync() {
     const next = new URLSearchParams(location.search);
     next.set('theme', state.quarter);
-    state.hero === 'auto' ? next.delete('hero') : next.set('hero', state.hero);
-    state.collection === 'auto' ? next.delete('collection') : next.set('collection', state.collection);
+    next.set('screen', state.screen);
+    ['games', 'vault', 'shortcuts', 'nav'].forEach((k) => (state[k] === 'auto' ? next.delete(k) : next.set(k, state[k])));
     try { history.replaceState(null, '', '?' + next.toString()); } catch (e) { /* file:// 등에서는 건너뜀 */ }
   }
 
-  document.querySelectorAll('#quarter-buttons button').forEach((btn) => {
-    btn.addEventListener('click', () => { state.quarter = btn.dataset.q; apply(); syncUrl(); });
-  });
-  $('#hero-select').addEventListener('change', (e) => { state.hero = e.target.value; apply(); syncUrl(); });
-  $('#collection-select').addEventListener('change', (e) => { state.collection = e.target.value; apply(); syncUrl(); });
+  document.querySelectorAll('#quarters button').forEach((b) => b.addEventListener('click', () => { state.quarter = b.dataset.q; render(); sync(); }));
+  $('#sel-screen').addEventListener('change', (e) => go(e.target.value));
+  ['games', 'vault', 'shortcuts', 'nav'].forEach((k) => $('#sel-' + k).addEventListener('change', (e) => { state[k] = e.target.value; render(); sync(); }));
 
-  if (params.get('preview') === '0') $('#switcher').hidden = true;
-  else document.body.classList.add('has-switcher');
-
-  apply();
+  if (params.get('preview') === '0') $('#stage').classList.add('no-panel');
+  if (params.get('full') === '1') $('#app').classList.add('is-full');
+  render();
 })();
 </script>
 </body>
