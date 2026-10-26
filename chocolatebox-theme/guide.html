@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chocolatebox 개편 · 분기 테마 시스템 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #F6F5F2; color: #161616; font: 400 16px/1.7 'Noto Sans KR', system-ui, sans-serif; word-break: keep-all; }
+a { color: #1B4FD6; }
+:focus-visible { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.top { background: #FFD000; }
+.top .wrap { padding-block: 36px 32px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+h1 { margin: 0 0 6px; font-size: 32px; line-height: 1.25; font-weight: 900; letter-spacing: -.02em; }
+.top p { margin: 0; max-width: 700px; font-size: 17px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; margin-top: 18px; padding: 0 22px; border-radius: 999px; background: #000; color: #FFD000; font-weight: 700; text-decoration: none; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 4px 6px; padding: 14px 0 0; }
+nav.toc a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; background: #fff; color: #161616; font-size: 14px; text-decoration: none; }
+section { padding-top: 44px; }
+h2 { margin: 0 0 6px; font-size: 24px; line-height: 1.3; font-weight: 900; letter-spacing: -.01em; }
+h3 { margin: 24px 0 8px; font-size: 18px; }
+p.lead { margin: 0 0 16px; color: #4A4A4A; }
+.card { padding: 20px 22px; border-radius: 16px; background: #fff; }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.layer b { display: block; margin-bottom: 4px; font-size: 17px; }
+.layer small { color: #5C5C5C; }
+.pill { display: inline-block; margin-bottom: 8px; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.pill.fixed { background: #111; color: #FFD000; } .pill.swap { background: #FFE9A8; color: #5B4300; } .pill.asset { background: #E3F0FF; color: #14487F; } .pill.layout { background: #EDE5FF; color: #4B2E99; }
+.tablewrap { overflow-x: auto; border-radius: 16px; background: #fff; }
+table.t { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14px; }
+.t th, .t td { padding: 10px 12px; border-bottom: 1px solid #EEE9E2; text-align: left; vertical-align: middle; }
+.t th { background: #FAF8F4; font-size: 13px; color: #4A4A4A; }
+.t tr:last-child td { border-bottom: 0; }
+.t small { display: block; color: #6A6A6A; font-size: 12px; }
+code { font: 500 12.5px 'JetBrains Mono', ui-monospace, monospace; }
+.sw { display: inline-block; width: 18px; height: 18px; margin-right: 6px; vertical-align: -4px; border: 1px solid rgba(0,0,0,.18); border-radius: 5px; }
+.grad { display: inline-block; width: 44px; height: 18px; margin-right: 6px; vertical-align: -4px; border-radius: 5px; }
+.chip { display: inline-block; margin: 2px 4px 2px 0; padding: 3px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 700; }
+.tag { padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.tag.core { background: #FFE9A8; color: #5B4300; } .tag.ext { background: #EDEDED; color: #333; } .tag.fixed { background: #111; color: #FFD000; }
+td.ok { color: #1A6B3A; font-weight: 500; } td.bad { color: #B3202D; font-weight: 700; } td.chg { background: #FFF6D6; font-weight: 700; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.two ul { margin: 6px 0 0; padding-left: 20px; }
+.two li { margin: 4px 0; }
+.do { border-top: 4px solid #1A8F4A; } .dont { border-top: 4px solid #D8343F; }
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+ol.steps li { position: relative; padding: 12px 0 12px 56px; border-bottom: 1px solid #EEE9E2; counter-increment: s; }
+ol.steps li:last-child { border-bottom: 0; }
+ol.steps li::before { content: counter(s); position: absolute; left: 0; top: 12px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #111; color: #FFD000; font-weight: 700; }
+ol.steps b { display: block; }
+pre { margin: 0; padding: 18px 20px; overflow-x: auto; border-radius: 14px; background: #1A1A1A; color: #F2EEE6; font: 400 13px/1.65 'JetBrains Mono', ui-monospace, monospace; }
+.check { margin: 0; padding: 0; list-style: none; columns: 2 300px; }
+.check li { break-inside: avoid; padding: 6px 0 6px 28px; position: relative; }
+.check li::before { content: ""; position: absolute; left: 0; top: 11px; width: 16px; height: 16px; border: 1.5px solid #8A8A8A; border-radius: 4px; }
+footer { padding: 48px 0 64px; color: #5C5C5C; font-size: 14px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>chocolatebox 개편 · 분기 테마 시스템 가이드</h1>
+    <p>주요 5개 화면(앱테크·마이페이지·박스 상세·합성존·내보관함)을 새로 디자인했고, 분기마다 <b>색·장면·구조 프리셋·문구</b>를 설정 한 블록으로 바꿉니다. 브랜드(노랑·검정·선물상자·초콜릿)는 고정입니다.</p>
+    <a class="btn" href="index.html">개편 시안 열기 →</a>
+  </div>
+</header>
+<div class="wrap">
+  <nav class="toc" aria-label="목차">
+    <a href="#redesign">0. 개편 요약</a><a href="#layers">1. 4개 레이어</a><a href="#concepts">2. 분기 컨셉</a><a href="#tokens">3. 시즌 토큰</a><a href="#contrast">4. 대비 검증</a><a href="#assets">5. 이미지 슬롯</a><a href="#presets">6. 구조 프리셋</a><a href="#rules">7. 규칙</a><a href="#ops">8. 분기 운영</a><a href="#qa">9. QA</a><a href="#dev">10. 개발 적용</a>
+  </nav>
+
+  <section id="redesign">
+    <h2>0. 개편 요약</h2>
+    <p class="lead">현재 화면에서 읽은 문제와 이번 개편의 의도입니다. 아래 "의도"는 디자인 가설이며, 지표로 검증된 효과가 아닙니다.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>화면</th><th>현재 화면에서 보이는 점</th><th>개편</th><th>의도</th></tr></thead>
+      <tbody>
+        <tr><td><b>앱테크</b></td><td>회색 바탕에 같은 무게의 카드가 길게 나열되고, 노란 상단바에 숫자만 있음</td><td>지갑 히어로 카드(포인트 크게) → 무료박스 → 나눔 → 게임 → 제휴 순으로 재배열</td><td>첫 화면에서 "내 자산과 지금 할 행동"이 보이게</td></tr>
+        <tr><td><b>마이페이지</b></td><td>배너·순위·아이콘·공지·메뉴가 모두 비슷한 비중</td><td>프로필+순위 카드, 시즌 이벤트 카드, 바로가기 타일, 그룹 카드 메뉴</td><td>정보 위계 정리, 이벤트는 시즌 장면 활용</td></tr>
+        <tr><td><b>박스 상세</b></td><td>표 형태 스펙이 길고, 수량 선택 없이 회차 구매 버튼만 있음</td><td>히어로 → 가격 → 보유 카카오빈 → 접이식 구매 정보 → 상품 구성, 하단에 수량 스테퍼 + 총 카카오빈 구매 바</td><td>구매 전 확인 단계를 줄이고 실수 방지</td></tr>
+        <tr><td><b>합성존</b></td><td>2열 카드, "합성 충족 게이지"가 글자뿐</td><td>스텝 사다리 목록, 단계별 진행 바, 스텝5는 프리미엄 카드</td><td>진행 상태를 눈으로 확인</td></tr>
+        <tr><td><b>내보관함</b></td><td>테두리 상자 목록, 선택해도 다음 행동이 보이지 않음</td><td>카드 목록, 선택 시 하단 액션바(배송 신청·현금화), 목록/그리드 전환</td><td>선택 → 행동 흐름 단축</td></tr>
+        <tr><td><b>공통</b></td><td>색 면과 테두리 위주, 하단 탭이 화면 끝에 고정</td><td>타입 스케일·그림자·모서리 통일, 계절 틴트 바탕, 플로팅 탭, 장면은 초콜릿 조각·선물상자 모티프</td><td>일관성과 브랜드 모티프</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="layers">
+    <h2>1. 4개 레이어</h2>
+    <p class="lead">한 분기 = <b>설정 블록 1개 + 이미지 몇 장</b>. 아래로 갈수록 바꾸는 범위가 넓어지고 위험도도 올라갑니다.</p>
+    <div class="grid4">
+      <div class="card layer"><span class="pill fixed">고정</span><b>브랜드</b><small>노랑 #FFD000 CTA, 잉크 #14110D, 하단 탭 구성, 타입 스케일, 모서리·그림자 규칙, 선물상자·초콜릿 모티프.</small></div>
+      <div class="card layer"><span class="pill swap">교체</span><b>시즌 토큰</b><small>바탕 틴트, 시즌색, 히어로 그라데이션, 파스텔 4세트, 선물상자·조각 색.</small></div>
+      <div class="card layer"><span class="pill asset">교체</span><b>장면·이미지</b><small>지갑 카드·이벤트·박스 히어로의 계절 장면. 모티프 + 색 토큰으로 생성하거나 이미지로 교체.</small></div>
+      <div class="card layer"><span class="pill layout">선택</span><b>구조 프리셋</b><small>상단·게임 카드·보관함·바로가기·탭의 배치. 분기당 1~2개만 변경.</small></div>
+    </div>
+  </section>
+
+  <section id="concepts">
+    <h2>2. 분기 컨셉</h2>
+    <p class="lead">컨셉은 "초콜릿의 맛"에서 출발합니다. 박스 안 초콜릿 조각 색과 계절 모티프가 장면의 중심입니다.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th></th><th>컨셉</th><th>모티프</th><th>히어로·시즌색</th><th>이벤트 예시 · 홈 문구</th></tr></thead>
+      <tbody><tr><td><b>Q1</b></td><td>Ruby Valentine<small>Q1 · 1–3월 루비 발렌타인</small></td><td>하트</td><td><span class="grad" style="background:linear-gradient(150deg,#7A1B3A,#C23A5E)"></span> <span class="sw" style="background:#B3294F"></span><code>#B3294F</code></td><td>2월 러브 스페셜 이벤트<small>달콤한 시작을 응원해요</small></td></tr><tr><td><b>Q2</b></td><td>Matcha Picnic<small>Q2 · 4–6월 말차 피크닉</small></td><td>잎사귀</td><td><span class="grad" style="background:linear-gradient(150deg,#1B5236,#357A52)"></span> <span class="sw" style="background:#2F7A4F"></span><code>#2F7A4F</code></td><td>5월 가정의 달 이벤트<small>산뜻한 봄 나들이 어때요?</small></td></tr><tr><td><b>Q3</b></td><td>Mint Splash<small>Q3 · 7–9월 민트 스플래시</small></td><td>물방울</td><td><span class="grad" style="background:linear-gradient(150deg,#0A5560,#12808A)"></span> <span class="sw" style="background:#0E7C86"></span><code>#0E7C86</code></td><td>8월 서머 스페셜 이벤트<small>시원하게 달콤한 오후예요</small></td></tr><tr><td><b>Q4</b></td><td>Golden Holiday<small>Q4 · 10–12월 골든 홀리데이</small></td><td>눈꽃·별</td><td><span class="grad" style="background:linear-gradient(150deg,#2B1710,#5B3322)"></span> <span class="sw" style="background:#8A4B1F"></span><code>#8A4B1F</code></td><td>10월 4주차 스페셜 이벤트<small>한 해의 끝, 달콤하게</small></td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section id="tokens">
+    <h2>3. 시즌 토큰</h2>
+    <p class="lead"><span class="tag core">필수</span> 토큰은 분기마다 반드시 정하고, <span class="tag ext">선택</span> 토큰은 비워 두면 기본값(Q1)으로 폴백합니다. 시즌색 hue는 분기당 <b>1개</b>만 씁니다. 초콜릿 기본색(다크·밀크·크림)은 모든 분기에서 공유합니다.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>토큰</th><th>쓰이는 곳</th><th></th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead>
+      <tbody><tr><td><code>bg</code></td><td>화면 바탕 (회색 대신 계절 틴트)</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#FFF7F5"></span><code>#FFF7F5</code></td><td><span class="sw" style="background:#F6F9F2"></span><code>#F6F9F2</code></td><td><span class="sw" style="background:#F3FAF9"></span><code>#F3FAF9</code></td><td><span class="sw" style="background:#FBF6EC"></span><code>#FBF6EC</code></td></tr><tr><td><code>line</code></td><td>구분선·진행바 바탕</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#F0E3E0"></span><code>#F0E3E0</code></td><td><span class="sw" style="background:#E3EADB"></span><code>#E3EADB</code></td><td><span class="sw" style="background:#DCECE9"></span><code>#DCECE9</code></td><td><span class="sw" style="background:#EBE2D2"></span><code>#EBE2D2</code></td></tr><tr><td><code>season</code></td><td>시즌 대표색: 버튼 배경, 선택 체크, 건수 강조</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#B3294F"></span><code>#B3294F</code></td><td><span class="sw" style="background:#2F7A4F"></span><code>#2F7A4F</code></td><td><span class="sw" style="background:#0E7C86"></span><code>#0E7C86</code></td><td><span class="sw" style="background:#8A4B1F"></span><code>#8A4B1F</code></td></tr><tr><td><code>season-soft</code></td><td>칩·공지 바·활성 탭 필 배경</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#FFE8EE"></span><code>#FFE8EE</code></td><td><span class="sw" style="background:#E6F4EA"></span><code>#E6F4EA</code></td><td><span class="sw" style="background:#E0F5F3"></span><code>#E0F5F3</code></td><td><span class="sw" style="background:#FFF0D6"></span><code>#FFF0D6</code></td></tr><tr><td><code>season-ink</code></td><td>칩·공지·링크 글씨</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#8F1F3E"></span><code>#8F1F3E</code></td><td><span class="sw" style="background:#1F6B43"></span><code>#1F6B43</code></td><td><span class="sw" style="background:#0B6168"></span><code>#0B6168</code></td><td><span class="sw" style="background:#7A4300"></span><code>#7A4300</code></td></tr><tr><td><code>hero-a</code></td><td>지갑 카드·이벤트·박스 히어로 그라데이션 시작(어두운 쪽)</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#7A1B3A"></span><code>#7A1B3A</code></td><td><span class="sw" style="background:#1B5236"></span><code>#1B5236</code></td><td><span class="sw" style="background:#0A5560"></span><code>#0A5560</code></td><td><span class="sw" style="background:#2B1710"></span><code>#2B1710</code></td></tr><tr><td><code>hero-b</code></td><td>그라데이션 끝(밝은 쪽)</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#C23A5E"></span><code>#C23A5E</code></td><td><span class="sw" style="background:#357A52"></span><code>#357A52</code></td><td><span class="sw" style="background:#12808A"></span><code>#12808A</code></td><td><span class="sw" style="background:#5B3322"></span><code>#5B3322</code></td></tr><tr><td><code>glow</code></td><td>장면의 빛 번짐·원</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#FF9DB5"></span><code>#FF9DB5</code></td><td><span class="sw" style="background:#B9E3C4"></span><code>#B9E3C4</code></td><td><span class="sw" style="background:#8FE3DC"></span><code>#8FE3DC</code></td><td><span class="sw" style="background:#F2C46D"></span><code>#F2C46D</code></td></tr><tr><td><code>gold</code></td><td>합성 스텝5·1등 메달 포인트</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#E3B4A6"></span><code>#E3B4A6</code></td><td><span class="sw" style="background:#C9D89B"></span><code>#C9D89B</code></td><td><span class="sw" style="background:#A8E0DA"></span><code>#A8E0DA</code></td><td><span class="sw" style="background:#D9B26A"></span><code>#D9B26A</code></td></tr><tr><td><code>gift</code></td><td>선물상자 본체</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#D64A6B"></span><code>#D64A6B</code></td><td><span class="sw" style="background:#35995F"></span><code>#35995F</code></td><td><span class="sw" style="background:#14A0A6"></span><code>#14A0A6</code></td><td><span class="sw" style="background:#B8322F"></span><code>#B8322F</code></td></tr><tr><td><code>gift-lid</code></td><td>선물상자 뚜껑</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#E8647F"></span><code>#E8647F</code></td><td><span class="sw" style="background:#45AD70"></span><code>#45AD70</code></td><td><span class="sw" style="background:#2DB5BA"></span><code>#2DB5BA</code></td><td><span class="sw" style="background:#CC4540"></span><code>#CC4540</code></td></tr><tr><td><code>ribbon</code></td><td>리본</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#F6DDB8"></span><code>#F6DDB8</code></td><td><span class="sw" style="background:#F0D585"></span><code>#F0D585</code></td><td><span class="sw" style="background:#FFE08A"></span><code>#FFE08A</code></td><td><span class="sw" style="background:#E9C46A"></span><code>#E9C46A</code></td></tr><tr><td><code>ribbon-shade</code></td><td>리본 테두리</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#D2A872"></span><code>#D2A872</code></td><td><span class="sw" style="background:#C7A648"></span><code>#C7A648</code></td><td><span class="sw" style="background:#D1AE45"></span><code>#D1AE45</code></td><td><span class="sw" style="background:#B8912F"></span><code>#B8912F</code></td></tr><tr><td><code>piece-a</code></td><td>시즌 초콜릿 조각(맛 색) 본체</td><td><span class="tag core">필수</span></td><td><span class="sw" style="background:#C25468"></span><code>#C25468</code></td><td><span class="sw" style="background:#8A9A52"></span><code>#8A9A52</code></td><td><span class="sw" style="background:#5CB8AE"></span><code>#5CB8AE</code></td><td><span class="sw" style="background:#C8A46B"></span><code>#C8A46B</code></td></tr><tr><td><code>piece-a-in</code></td><td>시즌 초콜릿 조각 안쪽</td><td><span class="tag ext">선택</span></td><td><span class="sw" style="background:#D26A7D"></span><code>#D26A7D</code></td><td><span class="sw" style="background:#9BAB63"></span><code>#9BAB63</code></td><td><span class="sw" style="background:#74CBC1"></span><code>#74CBC1</code></td><td><span class="sw" style="background:#D8B67E"></span><code>#D8B67E</code></td></tr></tbody>
+    </table></div>
+    <h3>파스텔 4세트</h3>
+    <p class="lead">게임 타일, 합성 스텝 1~4, 마이페이지 바로가기 아이콘이 같은 세트를 씁니다. 세트마다 <code>bg · ink · btn · btnInk</code> 4값입니다.</p>
+    <div class="tablewrap"><table class="t"><thead><tr><th>세트</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead><tbody><tr><td>세트 1<small>스크래치 · 스텝1 · 바로가기 1</small></td><td><span class="chip" style="background:#FFF1E4;color:#8F4A00">합성 충족 게이지</span><span class="chip" style="background:#F6C58E;color:#3A1F00">합성하기</span></td><td><span class="chip" style="background:#FFF8DC;color:#7A6100">합성 충족 게이지</span><span class="chip" style="background:#F2D064;color:#3A2F00">합성하기</span></td><td><span class="chip" style="background:#FFF6D9;color:#7A5B00">합성 충족 게이지</span><span class="chip" style="background:#F6CB57;color:#3A2A00">합성하기</span></td><td><span class="chip" style="background:#FFF3DC;color:#7A4B00">합성 충족 게이지</span><span class="chip" style="background:#F2C46D;color:#3A2400">합성하기</span></td></tr><tr><td>세트 2<small>퀴즈·로또 · 스텝2 · 바로가기 2</small></td><td><span class="chip" style="background:#FDEAF0;color:#A02C4E">합성 충족 게이지</span><span class="chip" style="background:#B83A5E;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#E6F7EE;color:#1B7A45">합성 충족 게이지</span><span class="chip" style="background:#1B7A45;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#E2F5FD;color:#0F6AB4">합성 충족 게이지</span><span class="chip" style="background:#0F6AB4;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#F6EBDD;color:#6B3F1D">합성 충족 게이지</span><span class="chip" style="background:#8A4B1F;color:#FFFFFF">합성하기</span></td></tr><tr><td>세트 3<small>룰렛 · 스텝3 · 바로가기 3</small></td><td><span class="chip" style="background:#F3EAFE;color:#7438C2">합성 충족 게이지</span><span class="chip" style="background:#7438C2;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#EAF1FF;color:#2F5FC8">합성 충족 게이지</span><span class="chip" style="background:#2F5FC8;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#E8FBF4;color:#0E7A5E">합성 충족 게이지</span><span class="chip" style="background:#0E7A5E;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#F1E6F5;color:#6E2F86">합성 충족 게이지</span><span class="chip" style="background:#6E2F86;color:#FFFFFF">합성하기</span></td></tr><tr><td>세트 4<small>스텝4 · 바로가기 4</small></td><td><span class="chip" style="background:#FFEFEA;color:#B3401F">합성 충족 게이지</span><span class="chip" style="background:#C94A28;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#FFEEF0;color:#B8274A">합성 충족 게이지</span><span class="chip" style="background:#C4294F;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#F0E9FF;color:#6A3FCF">합성 충족 게이지</span><span class="chip" style="background:#6A3FCF;color:#FFFFFF">합성하기</span></td><td><span class="chip" style="background:#FDE9E7;color:#A52A2A">합성 충족 게이지</span><span class="chip" style="background:#B8322F;color:#FFFFFF">합성하기</span></td></tr></tbody></table></div>
+  </section>
+
+  <section id="contrast">
+    <h2>4. 대비 검증</h2>
+    <p class="lead">새 값을 넣을 때마다 아래 쌍을 확인합니다. 모든 글씨 4.5:1 이상이어야 합니다. 이 표는 설정 JSON에서 계산해 만든 것입니다.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>검사 대상</th><th>기준</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead>
+      <tbody><tr><td>기본 CTA · 노랑 #FFD000 위 잉크</td><td>4.5:1</td><td class="ok" colspan="4">12.8:1 ✓ (모든 분기 공통)</td></tr><tr><td>보유 카카오빈 바 · 검정 위 노랑</td><td>4.5:1</td><td class="ok" colspan="4">12.8:1 ✓ (모든 분기 공통)</td></tr><tr><td>본문 잉크 · 흰 카드</td><td>4.5:1</td><td class="ok" colspan="4">18.8:1 ✓ (모든 분기 공통)</td></tr><tr><td>보조 글씨 · 흰 카드</td><td>4.5:1</td><td class="ok" colspan="4">5.8:1 ✓ (모든 분기 공통)</td></tr><tr><td>시즌색 글씨 · 흰 카드<small>버튼·건수·활성 탭</small></td><td>4.5:1</td><td class="ok">6.3:1 ✓</td><td class="ok">5.2:1 ✓</td><td class="ok">4.9:1 ✓</td><td class="ok">6.8:1 ✓</td></tr><tr><td>시즌 잉크 · 시즌 소프트<small>칩·공지·활성 탭 필</small></td><td>4.5:1</td><td class="ok">7.4:1 ✓</td><td class="ok">5.7:1 ✓</td><td class="ok">6.3:1 ✓</td><td class="ok">7.1:1 ✓</td></tr><tr><td>시즌 잉크 · 바탕색<small>섹션 링크</small></td><td>4.5:1</td><td class="ok">8.2:1 ✓</td><td class="ok">6.1:1 ✓</td><td class="ok">6.8:1 ✓</td><td class="ok">7.4:1 ✓</td></tr><tr><td>보조 글씨 · 바탕색<small>캡션·설명</small></td><td>4.5:1</td><td class="ok">5.5:1 ✓</td><td class="ok">5.4:1 ✓</td><td class="ok">5.5:1 ✓</td><td class="ok">5.4:1 ✓</td></tr><tr><td>히어로 글씨(밝은 쪽 hero-b) · 흰 글씨</td><td>4.5:1</td><td class="ok">5.2:1 ✓</td><td class="ok">5.2:1 ✓</td><td class="ok">4.7:1 ✓</td><td class="ok">10.8:1 ✓</td></tr><tr><td>히어로 글씨(어두운 쪽 hero-a) · 흰 글씨</td><td>4.5:1</td><td class="ok">10.3:1 ✓</td><td class="ok">9.1:1 ✓</td><td class="ok">8.5:1 ✓</td><td class="ok">17.0:1 ✓</td></tr><tr><td>스텝5 글씨 · 검정 카드</td><td>4.5:1</td><td class="ok">10.2:1 ✓</td><td class="ok">12.3:1 ✓</td><td class="ok">12.9:1 ✓</td><td class="ok">9.4:1 ✓</td></tr><tr><td>스텝5 버튼 · 골드 배경</td><td>4.5:1</td><td class="ok">10.0:1 ✓</td><td class="ok">12.2:1 ✓</td><td class="ok">12.6:1 ✓</td><td class="ok">9.3:1 ✓</td></tr><tr><td>파스텔 1 · 글씨</td><td>4.5:1</td><td class="ok">6.0:1 ✓</td><td class="ok">5.6:1 ✓</td><td class="ok">5.8:1 ✓</td><td class="ok">6.7:1 ✓</td></tr><tr><td>파스텔 2 · 글씨</td><td>4.5:1</td><td class="ok">6.1:1 ✓</td><td class="ok">4.8:1 ✓</td><td class="ok">5.0:1 ✓</td><td class="ok">7.6:1 ✓</td></tr><tr><td>파스텔 3 · 글씨</td><td>4.5:1</td><td class="ok">5.8:1 ✓</td><td class="ok">5.2:1 ✓</td><td class="ok">4.9:1 ✓</td><td class="ok">7.2:1 ✓</td></tr><tr><td>파스텔 4 · 글씨</td><td>4.5:1</td><td class="ok">5.1:1 ✓</td><td class="ok">5.5:1 ✓</td><td class="ok">5.5:1 ✓</td><td class="ok">6.1:1 ✓</td></tr><tr><td>파스텔 1 · 버튼</td><td>4.5:1</td><td class="ok">9.7:1 ✓</td><td class="ok">8.8:1 ✓</td><td class="ok">9.0:1 ✓</td><td class="ok">9.0:1 ✓</td></tr><tr><td>파스텔 2 · 버튼</td><td>4.5:1</td><td class="ok">5.5:1 ✓</td><td class="ok">5.4:1 ✓</td><td class="ok">5.6:1 ✓</td><td class="ok">6.8:1 ✓</td></tr><tr><td>파스텔 3 · 버튼</td><td>4.5:1</td><td class="ok">6.8:1 ✓</td><td class="ok">5.8:1 ✓</td><td class="ok">5.3:1 ✓</td><td class="ok">8.7:1 ✓</td></tr><tr><td>파스텔 4 · 버튼</td><td>4.5:1</td><td class="ok">4.7:1 ✓</td><td class="ok">5.6:1 ✓</td><td class="ok">6.5:1 ✓</td><td class="ok">5.9:1 ✓</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section id="assets">
+    <h2>5. 이미지 슬롯</h2>
+    <p class="lead">시안은 장면과 일러스트를 코드(SVG)로 그렸습니다. 실서비스에서 이미지로 바꿀 때의 규격입니다. 파일 경로는 <code>theme/{분기}/{슬롯}.{확장자}</code>, 제작 크기는 표시 크기의 3배(@3x)입니다. <b>글자는 이미지에 굽지 않고</b> 설정 JSON의 <code>copy</code>를 씁니다.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>슬롯</th><th>화면</th><th>표시 크기(px)</th><th>제작 크기(@3x)</th><th>포맷</th><th>파일명</th></tr></thead>
+      <tbody>
+        <tr><td>박스 히어로 장면</td><td>박스 상세</td><td>390 × 336</td><td>1170 × 1008</td><td>WebP</td><td><code>hero-scene.webp</code></td></tr>
+        <tr><td>선물상자(3D)</td><td>박스 상세·상품 구성·무료박스</td><td>240 × 240</td><td>720 × 720</td><td>PNG 투명</td><td><code>gift.png</code></td></tr>
+        <tr><td>지갑 카드 장면</td><td>앱테크</td><td>236 × 190</td><td>708 × 570</td><td>PNG 투명</td><td><code>wallet-scene.png</code></td></tr>
+        <tr><td>이벤트 카드 장면</td><td>마이페이지</td><td>200 × 160</td><td>600 × 480</td><td>PNG 투명</td><td><code>event-scene.png</code></td></tr>
+        <tr><td>게임 일러스트 ×4</td><td>앱테크</td><td>76 × 64</td><td>228 × 192</td><td>PNG 투명</td><td><code>game-quiz.png</code> 외 3</td></tr>
+        <tr><td>상품 썸네일</td><td>내보관함</td><td>68 × 68 (그리드 160 × 160)</td><td>480 × 480</td><td>WebP</td><td>상품 이미지 사용</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="presets">
+    <h2>6. 구조 프리셋</h2>
+    <p class="lead">색과 별개로 구조를 바꿀 수 있습니다. 표의 ● 는 기본(Q1)과 다른 값입니다. 이번 설정의 변경 수: Q1 0개 · Q2 2개 · Q3 2개 · Q4 2개.</p>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>프리셋</th><th>화면</th><th>옵션</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead>
+      <tbody><tr><td><code>hero</code><small>앱테크 상단</small></td><td>앱테크</td><td>card = 지갑 히어로 카드(기본) · bar = 노란 컴팩트 바 + 광고 카드</td><td class="">card</td><td class="">card</td><td class="chg">bar ●</td><td class="">card</td></tr><tr><td><code>games</code><small>게임 카드</small></td><td>앱테크</td><td>grid = 2열 타일(기본) · list = 1열 가로형 · rail = 가로 스와이프</td><td class="">grid</td><td class="chg">rail ●</td><td class="chg">list ●</td><td class="">grid</td></tr><tr><td><code>vault</code><small>보관함 목록</small></td><td>내보관함</td><td>list = 한 줄 카드(기본) · grid = 2열 카드</td><td class="">list</td><td class="chg">grid ●</td><td class="">list</td><td class="">list</td></tr><tr><td><code>shortcuts</code><small>마이페이지 바로가기</small></td><td>마이페이지</td><td>tiles = 2×2 타일(기본) · circles = 원형 4열</td><td class="">tiles</td><td class="">tiles</td><td class="">tiles</td><td class="chg">circles ●</td></tr><tr><td><code>nav</code><small>하단 탭</small></td><td>전체</td><td>float = 플로팅 알약(기본) · dock = 하단 고정 바</td><td class="">float</td><td class="">float</td><td class="">float</td><td class="chg">dock ●</td></tr></tbody>
+    </table></div>
+    <p class="lead" style="margin-top:12px">프리셋은 HTML을 바꾸지 않고 <code>data-hero</code> 같은 속성 값으로만 전환됩니다. 새 프리셋은 CSS 블록 하나로 추가합니다. 한 분기에 바꾸는 프리셋은 최대 2개로 제한했습니다.</p>
+  </section>
+
+  <section id="rules">
+    <h2>7. 규칙</h2>
+    <div class="two">
+      <div class="card do"><b>이렇게 합니다</b><ul>
+        <li>새 분기는 직전 분기 블록을 복사해서 시작합니다.</li>
+        <li>시즌색 hue는 분기당 1개. 나머지는 중립색·파스텔·초콜릿 색으로 받칩니다.</li>
+        <li>값을 바꾸면 4번 대비 표부터 다시 확인합니다.</li>
+        <li>구조 프리셋 변경은 분기당 1~2개로 제한합니다.</li>
+        <li>이미지에는 대체 텍스트를 달고, 글자는 이미지에 굽지 않습니다.</li>
+        <li>선택 토큰을 비우면 기본값으로 폴백됨을 확인합니다.</li>
+      </ul></div>
+      <div class="card dont"><b>이렇게 하지 않습니다</b><ul>
+        <li>기본 CTA 노랑·하단 탭 순서·타입 스케일을 바꾸지 않습니다.</li>
+        <li>한 화면에 시즌색을 2개 이상 쓰지 않습니다.</li>
+        <li>분기 시작 당일에 에셋을 처음 교체하지 않습니다.</li>
+        <li>화면 전체를 채도 높은 한 색으로 칠하지 않습니다.</li>
+        <li>색만으로 의미를 구분하지 않습니다(명도·아이콘·라벨도 다르게).</li>
+        <li>미출시 테마가 노출되는 <code>?theme=</code> 를 운영에서 열어 두지 않습니다.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section id="ops">
+    <h2>8. 분기 운영</h2>
+    <div class="card"><ol class="steps">
+      <li><b>D-30 · 시즌 브리프</b>컨셉명, 모티프, 시즌색, 대표 이벤트명을 정합니다. (기획·디자인)</li>
+      <li><b>D-21 · 에셋 제작</b>5번 슬롯 표 기준으로 장면·선물상자·게임 일러스트를 제작합니다. (디자인)</li>
+      <li><b>D-10 · 설정 작성</b>직전 분기 블록을 복사해 토큰·프리셋·문구를 채우고 에셋을 올립니다. (디자인·개발)</li>
+      <li><b>D-7 · 프리뷰 QA</b>내부 빌드에서 <code>?theme=</code> 로 5개 화면을 확인합니다. 9번 체크리스트를 사용합니다. (QA)</li>
+      <li><b>D-3 · 승인</b>대비 표와 스크린샷으로 최종 승인을 받습니다. (기획)</li>
+      <li><b>D-day 0시(KST) · 자동 전환</b>날짜 기준으로 새 분기 블록이 적용됩니다.</li>
+      <li><b>D+7 · 점검과 롤백</b>이상이 있으면 원격 설정으로 직전 분기를 고정합니다. 문제 없으면 종료합니다.</li>
+    </ol></div>
+  </section>
+
+  <section id="qa">
+    <h2>9. QA 체크리스트</h2>
+    <div class="card"><ul class="check">
+      <li>5개 화면 모두 새 분기 색·장면으로 보인다</li>
+      <li>기본 CTA 노랑과 하단 탭 구성이 그대로다</li>
+      <li>4번 대비 표가 모두 ✓ 이다</li>
+      <li>360px 폭에서 가로 스크롤이 생기지 않는다</li>
+      <li>이벤트 문구가 길어도 두 줄 안에 들어간다</li>
+      <li>이미지가 없을 때 코드로 그린 장면으로 대체된다</li>
+      <li>선택 토큰을 비운 분기에서도 깨지지 않는다</li>
+      <li>하단 탭 활성 표시가 색 외에도 구분된다</li>
+      <li>보관함에서 선택 시 액션바가 나타난다</li>
+      <li>박스 상세 수량 스테퍼의 최소·최대(1~10)가 동작한다</li>
+      <li>iOS Safari · Android Chrome에서 확인했다</li>
+      <li>분기 경계(31일 → 1일 0시)에 전환된다</li>
+    </ul></div>
+  </section>
+
+  <section id="dev">
+    <h2>10. 개발 적용</h2>
+    <p class="lead">분기 1개는 설정 JSON 블록 1개입니다. 토큰은 CSS 변수로, 구조는 <code>data-*</code> 속성으로 적용합니다.</p>
+    <pre>{
+  "q1": {
+    "name": "Ruby Valentine",
+    "motif": "heart",
+    "tokens": {
+      "bg": "#FFF7F5",
+      "season": "#B3294F",
+      "hero-a": "#7A1B3A",
+      "...": "..."
+    },
+    "pastels": [
+      {
+        "bg": "#FFF1E4",
+        "ink": "#8F4A00",
+        "btn": "#F6C58E",
+        "btnInk": "#3A1F00"
+      },
+      "..."
+    ],
+    "layout": {
+      "hero": "card",
+      "games": "grid",
+      "vault": "list",
+      "shortcuts": "tiles",
+      "nav": "float"
+    },
+    "copy": {
+      "hello": "달콤한 시작을 응원해요",
+      "event": {
+        "kicker": "2월 러브 스페셜 이벤트",
+        "title": "초코랭킹",
+        "cta": "참여하기"
+      }
+    }
+  }
+}</pre>
+    <h3>선택 순서</h3>
+    <div class="card"><ol class="steps">
+      <li><b>?theme=q1 (내부·스테이징만)</b>미출시 분기를 미리 봅니다. 시안은 이 방식을 열어 두었습니다.</li>
+      <li><b>원격 설정 오버라이드</b>롤백이나 긴급 고정용입니다. 시안에는 구현하지 않았습니다.</li>
+      <li><b>KST 날짜</b>분기 시작일 0시에 자동 전환합니다. 시안에 구현되어 있고, ?theme= 가 없으면 오늘 날짜의 분기를 보여 줍니다.</li>
+    </ol></div>
+    <h3>적용 계약</h3>
+    <pre>&lt;html data-theme="q1"&gt;                        토큰: :root { --season: #B3294F; ... }
+&lt;div class="app" data-hero="card" ...&gt;       구조: [data-hero="bar"] .hero-card { ... }
+  data-hero · data-games · data-vault · data-shortcuts · data-nav</pre>
+  </section>
+
+  <footer>
+    <p>시안(<code>index.html</code>)은 전달받은 스크린샷의 5개 화면을 기준으로 새로 디자인한 것이며, 이미지·로고·서체는 대체물입니다. 이 가이드의 표는 시안의 분기 설정 JSON에서 생성했습니다.</p>
+  </footer>
+</div>
+</body>
+</html>
