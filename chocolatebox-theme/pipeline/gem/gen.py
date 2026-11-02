@@ -1,7 +1,8 @@
 """Gemini image generation for chocolatebox season key visuals.
 
 usage: python3 gen.py models
-       python3 gen.py gen <model> <season|all> [kind=banner|charm] [n=1]
+       python3 gen.py gen <model> <season|all> <slot[,slot]|all> [n=1] [screenshot.png ...]
+       slots: see prompts_data.SLOTS (screen needs screenshots)
 Reads GEMINI_API_KEY from env (never printed). Uses curl so the proxy CA is honored.
 Each banner request sends the current 3D layout render as a composition reference.
 """
@@ -35,30 +36,8 @@ def curl(method, url, body=None):
         return {'raw': r.stdout[:500], 'err': r.stderr[:500]}
 
 
-STYLE = ('premium 3D render, Cinema 4D / Octane style, soft studio lighting with gentle rim light, glossy clearcoat '
-         'and satin materials, subtle depth of field, rich but tasteful colors, very high detail, polished commercial '
-         'key visual for a Korean mobile shopping app. No text, no letters, no numbers, no logos, no watermark.')
-LAYOUT = ('Wide 2:1 banner. Props frame the LEFT and RIGHT edges and may be slightly cropped by the frame; the CENTER '
-          'area (middle 55% of the width) stays clean and calm for a title that will be added later. Keep the '
-          'composition of the reference image (same props, same positions) but upgrade it to photoreal premium quality.')
-SEASON = {
-    'christmas': 'Christmas. Deep emerald-green night background, soft warm spotlight in the center, gentle golden bokeh, light snow particles. Left: stylized glossy Christmas tree with gold star, red-and-white candy cane, red ornament. Right: red gift box with gold satin ribbon, small white gift box with green ribbon, metallic gold and blue ornaments.',
-    'newyear': 'Korean Lunar New Year. Deep navy background with a golden radial glow and tiny gold sparkles. Left: red silk Korean lucky pouch (bokjumeoni) with gold cord and pleated top, antique gold Korean coins (round with square hole). Right: navy silk bokjumeoni with gold cord, more gold coins, small gold stars.',
-    'valentine': "Valentine's Day for a chocolate gift brand. Deep plum / wine background with a soft pink spotlight. Left: large glossy red 3D heart, small pink heart, dark chocolate truffle. Right: glossy milk-chocolate heart, white and cocoa-dusted chocolate truffles, rose-gold sparkles.",
-    'spring': 'Spring cherry blossom. Soft rose-pink gradient background, bright airy center. Cherry blossom branches entering from the top-left and top-right, clusters of 3D sakura flowers with translucent petals and yellow stamens, petals gently falling.',
-    'family': "Korean Family Month (May, Parents' Day). Warm rose / coral background with a soft cream spotlight. Left: bouquet of red and pink carnations tied with a yellow satin ribbon, small gold heart. Right: cream envelope sealed with a red heart, small glossy red and pink hearts.",
-    'summer': 'Summer. Bright ocean-blue gradient background with sunlight caustics. Left: glossy striped beach ball, pastel blue-pink popsicle. Right: pink-and-white striped swim ring, yellow popsicle, watermelon slice. Water droplets and small sparkles.',
-    'autumn': 'Autumn. Warm burnt-orange to brown background with a golden afternoon glow. Left: large red maple leaf, yellow maple leaf, acorns. Right: glossy Korean persimmon with green calyx, orange maple leaf, small acorn. A few falling leaves.',
-}
-CHARM = {
-    'christmas': 'a single glossy metallic red Christmas ornament ball with a gold cap',
-    'newyear': 'a single red silk Korean lucky pouch (bokjumeoni) with gold cord',
-    'valentine': 'a single glossy red 3D heart',
-    'spring': 'a single pink cherry blossom flower with yellow stamens',
-    'family': 'a single red carnation flower head with a short green calyx',
-    'summer': 'a single glossy striped beach ball',
-    'autumn': 'a single glossy red maple leaf',
-}
+from prompts_data import SEASONS as SEASON, SLOTS, ASPECT, prompt as build_prompt
+
 BG = {'christmas': (14, 70, 45), 'newyear': (16, 28, 64), 'valentine': (70, 18, 45), 'spring': (214, 92, 140),
       'family': (190, 60, 90), 'summer': (10, 100, 170), 'autumn': (130, 55, 20)}
 
@@ -72,30 +51,34 @@ def ref_png(season):
     return p
 
 
-def generate(model, season, kind='banner', n=1):
+def generate(model, season, kind='banner', n=1, screen=None):
+    """kind: any key of prompts_data.SLOTS. 'banner' also sends the 3D layout render as a composition reference;
+    'screen' needs a screenshot path (screen=...), e.g. design/phones/default-boxes.png."""
     parts = []
     if kind == 'banner':
-        prompt = f'{SEASON[season]} {LAYOUT} {STYLE}'
         with open(ref_png(season), 'rb') as f:
             parts.append({'inline_data': {'mime_type': 'image/png', 'data': base64.b64encode(f.read()).decode()}})
-        aspect = '16:9'
+        text = build_prompt(season, kind) + ' Keep the composition of the reference image (same props, same positions) but upgrade it to photoreal premium quality.'
+    elif kind == 'screen':
+        with open(screen, 'rb') as f:
+            parts.append({'inline_data': {'mime_type': 'image/png', 'data': base64.b64encode(f.read()).decode()}})
+        text = build_prompt(season, kind)
     else:
-        prompt = f'{CHARM[season]}, centered, isolated on a pure flat white background, soft contact shadow only, {STYLE}'
-        aspect = '1:1'
-    parts.append({'text': prompt})
+        text = build_prompt(season, kind)
+    parts.append({'text': text})
     body = {'contents': [{'role': 'user', 'parts': parts}],
-            'generationConfig': {'responseModalities': ['IMAGE', 'TEXT'], 'imageConfig': {'aspectRatio': aspect}}}
+            'generationConfig': {'responseModalities': ['IMAGE', 'TEXT'], 'imageConfig': {'aspectRatio': ASPECT[kind]}}}
+    tag = kind if kind != 'screen' else 'screen-' + os.path.basename(screen).rsplit('.', 1)[0]
     saved = []
     for i in range(n):
         r = curl('POST', f'{API}/models/{model}:generateContent', body)
-        cands = r.get('candidates') or []
         got = False
-        for c in cands:
+        for c in r.get('candidates') or []:
             for p in (c.get('content') or {}).get('parts', []):
                 d = p.get('inlineData') or p.get('inline_data')
                 if d and d.get('data'):
                     ext = 'png' if 'png' in d.get('mimeType', d.get('mime_type', 'png')) else 'jpg'
-                    fp = os.path.join(OUT, f'{kind}-{season}-{i}.{ext}')
+                    fp = os.path.join(OUT, f'{tag}-{season}-{i}.{ext}')
                     with open(fp, 'wb') as f: f.write(base64.b64decode(d['data']))
                     saved.append(fp); got = True
         if not got:
@@ -111,8 +94,14 @@ if __name__ == '__main__':
                 print(m['name'], m.get('supportedGenerationMethods'))
         if 'models' not in r: print(json.dumps(r)[:500])
     else:
+        # gen <model> <season|all> <slot|all> [n] [screenshot.png ...]
         model, which = sys.argv[2], sys.argv[3]
-        kind = sys.argv[4] if len(sys.argv) > 4 else 'banner'
+        kinds = sys.argv[4] if len(sys.argv) > 4 else 'banner'
         n = int(sys.argv[5]) if len(sys.argv) > 5 else 1
+        shots = sys.argv[6:]
         for s in (SEASON if which == 'all' else [which]):
-            print(s, generate(model, s, kind, n))
+            for k in (list(SLOTS) if kinds == 'all' else kinds.split(',')):
+                if k == 'screen':
+                    for sh in shots: print(s, k, generate(model, s, k, n, sh))
+                else:
+                    print(s, k, generate(model, s, k, n))

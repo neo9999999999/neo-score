@@ -3,3 +3,4 @@ design/boards/
 r3d/node_modules/
 r3d/package-lock.json
 gem/out/
+__pycache__/
