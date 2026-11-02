@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="ko" data-theme="q1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF7F5">
+<title>chocolatebox 개편 시안 — 분기 테마</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ────────────────────────────────────────────────────────────────
+   1. 토큰 — 기본값은 Q1. 분기 값은 themes JSON에서 덮어쓴다.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* 브랜드(고정) */
+  --brand: #FFD000; --brand-ink: #14110D; --ink: #14110D; --muted: #6B655C; --surface: #FFFFFF;
+  --font: 'Noto Sans KR', system-ui, sans-serif;
+  --shadow: 0 1px 2px rgba(30, 20, 10, .05), 0 8px 24px rgba(30, 20, 10, .07);
+  /* 시즌(교체) */
+  --bg: #FFF7F5; --line: #F0E3E0;
+  --season: #B3294F; --season-soft: #FFE8EE; --season-ink: #8F1F3E;
+  --hero-a: #7A1B3A; --hero-b: #C23A5E; --glow: #FF9DB5; --gold: #E3B4A6;
+  --gift: #D64A6B; --gift-lid: #E8647F; --ribbon: #F6DDB8; --ribbon-shade: #D2A872;
+  --piece-a: #C25468; --piece-a-in: #D26A7D; --piece-b: #5A3626; --piece-b-in: #6B4330; --piece-c: #EADBC5; --piece-c-in: #F3E8D6;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   2. 고정 레이어 — 타입 스케일, 버튼, 카드, 하단 탭
+   ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #E4E1DC; color: var(--ink); font: 400 15px/1.5 var(--font); word-break: keep-all; -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ic.fill { fill: currentColor; stroke: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.art svg { display: block; width: 100%; height: 100%; }
+.pc-a { fill: var(--piece-a); } .pc-a-in { fill: var(--piece-a-in); }
+.pc-b { fill: var(--piece-b); } .pc-b-in { fill: var(--piece-b-in); }
+.pc-c { fill: var(--piece-c); } .pc-c-in { fill: var(--piece-c-in); }
+.g-body { fill: var(--gift); } .g-lid { fill: var(--gift-lid); }
+.g-rib { fill: var(--ribbon); stroke: var(--ribbon-shade); stroke-width: 2; }
+
+/* 미리보기 패널 (실서비스에는 들어가지 않는다) */
+.stage { display: flex; gap: 32px; justify-content: center; align-items: flex-start; padding: 24px; }
+.panel { position: sticky; top: 24px; display: flex; flex-direction: column; flex: none; gap: 12px; width: 270px; padding: 18px; border-radius: 20px; background: #fff; font-size: 14px; }
+.panel h1 { margin: 0; font-size: 17px; }
+.panel p { margin: 0; color: #5B5B5B; font-size: 13px; }
+.panel .quarters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.panel .quarters button { min-height: 44px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font-weight: 700; }
+.panel .quarters button[aria-pressed="true"] { border-color: #111; background: #111; color: #fff; }
+.panel label { display: flex; flex-direction: column; gap: 4px; color: #3D3D3D; font-weight: 500; }
+.panel select { min-height: 44px; padding: 0 10px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font: inherit; }
+.panel .guide-link { display: flex; align-items: center; min-height: 44px; color: #111; font-weight: 700; text-decoration: underline; }
+.no-panel .panel { display: none; }
+.phone { flex: none; width: 390px; }
+.app { position: relative; width: 390px; height: 844px; overflow: hidden; border-radius: 32px; background: var(--bg); box-shadow: 0 24px 60px rgba(0, 0, 0, .22); }
+.screens { position: absolute; inset: 0; }
+.screen { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); transition: background-color .3s; }
+.app.has-tabs .screen { padding-bottom: 104px; }
+.app.is-full { height: auto; }
+.app.is-full .screens { position: static; }
+.app.is-full .screen { position: static; overflow: visible; }
+@media (max-width: 900px) { .stage { flex-direction: column-reverse; align-items: center; padding: 12px; gap: 16px; } .panel { position: static; width: min(100%, 390px); } }
+@media (max-width: 430px) { .stage { padding: 0; gap: 0; } .phone, .app { width: 100%; } .app { height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; } .panel { width: 100%; border-radius: 0; } }
+
+/* 타이포 */
+.h1 { margin: 0; font-size: 24px; line-height: 1.3; font-weight: 900; letter-spacing: -.02em; }
+.h2 { margin: 0; font-size: 20px; line-height: 1.35; font-weight: 800; letter-spacing: -.01em; }
+.h3 { margin: 0; font-size: 17px; line-height: 1.4; font-weight: 700; }
+.cap { font-size: 13px; color: var(--muted); }
+.section { margin: 28px 16px 0; }
+.section__head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 12px; }
+.section__head a, .section__head button { min-height: 44px; padding: 0; border: 0; background: none; color: var(--season-ink); font-size: 14px; font-weight: 700; text-decoration: none; }
+
+/* 버튼 · 카드 */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 52px; padding: 0 22px; border: 0; border-radius: 999px; font-size: 16px; font-weight: 800; }
+.btn--primary { background: var(--brand); color: var(--brand-ink); }
+.btn--dark { background: var(--ink); color: var(--brand); }
+.btn--soft { background: var(--season-soft); color: var(--season-ink); }
+.btn--sm { min-height: 44px; padding: 0 18px; font-size: 14px; }
+.btn--block { width: 100%; }
+.card { margin: 0 16px; padding: 18px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+.chipx { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; background: var(--season-soft); color: var(--season-ink); font-size: 12px; font-weight: 700; }
+.iconbtn { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; }
+.iconbtn .ic { width: 26px; height: 26px; }
+.topbar { position: relative; display: flex; align-items: center; height: 56px; padding: 0 8px; }
+.topbar h1 { position: absolute; left: 0; right: 0; margin: 0; text-align: center; font-size: 17px; font-weight: 700; pointer-events: none; }
+.avatar { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--season-soft); color: var(--season-ink); font-size: 15px; font-weight: 800; }
+
+/* ── 앱테크 ── */
+.top { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 6px; }
+.top .hello { font-size: 13px; color: var(--muted); }
+.top .name { font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.hero-card { position: relative; margin: 8px 16px 0; padding: 22px 20px 20px; overflow: hidden; border-radius: 30px; color: #fff; background: linear-gradient(150deg, var(--hero-a), var(--hero-b)); }
+.hero-card .scene { position: absolute; right: -14px; top: -8px; width: 236px; height: 190px; pointer-events: none; }
+.hero-card .scene svg { width: 100%; height: 100%; }
+.hero-card .body { position: relative; }
+.hero-card .label { font-size: 14px; font-weight: 500; }
+.hero-card .points { margin-top: 2px; font-size: 38px; line-height: 1.15; font-weight: 900; letter-spacing: -.02em; }
+.hero-card .points small { margin-left: 4px; font-size: 20px; font-weight: 700; }
+.mini { display: flex; gap: 8px; margin-top: 14px; }
+.mini button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, .25); border-radius: 14px; background: rgba(0, 0, 0, .2); color: #fff; font-size: 14px; font-weight: 700; }
+.mini .ic { width: 16px; height: 16px; }
+.hero-card .cta { position: relative; margin-top: 16px; }
+.hc-avatar { display: none; }
+.ads-card { display: none; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 16px 0; padding: 14px 16px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+.ads-card b { display: block; font-size: 16px; }
+[data-hero="bar"] .top { display: none; }
+[data-hero="bar"] .hero-card { display: flex; align-items: center; justify-content: space-between; margin: 0; padding: 10px 16px; border-radius: 0; background: var(--brand); color: var(--brand-ink); }
+[data-hero="bar"] .hero-card .scene, [data-hero="bar"] .hero-card .label, [data-hero="bar"] .hero-card .cta { display: none; }
+[data-hero="bar"] .hero-card .points { margin: 0; font-size: 22px; }
+[data-hero="bar"] .hero-card .points small { font-size: 14px; }
+[data-hero="bar"] .mini { margin: 0; }
+[data-hero="bar"] .mini button { background: rgba(0, 0, 0, .08); border-color: transparent; color: var(--brand-ink); }
+[data-hero="bar"] .hc-avatar { display: grid; }
+[data-hero="bar"] .ads-card { display: flex; }
+.row-card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
+.row-card .thumb { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 18px; background: var(--season-soft); }
+.row-card .thumb .art { width: 40px; height: 40px; }
+.row-card .txt { flex: 1; min-width: 0; }
+.row-card .txt b { display: block; font-size: 17px; }
+.row-card .txt span { font-size: 13px; color: var(--muted); }
+.row-card .txt em { font-style: normal; font-weight: 700; color: var(--season); }
+.share .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.share p { margin: 0 0 12px; font-size: 14px; color: var(--muted); }
+.share p b { color: var(--season-ink); }
+.bar { height: 12px; overflow: hidden; border-radius: 999px; background: var(--line); }
+.bar i { display: block; height: 100%; border-radius: inherit; background: var(--brand); }
+.bar-meta { display: flex; justify-content: space-between; margin: 8px 0 14px; font-size: 13px; color: var(--muted); }
+.bar-meta b { color: var(--season); font-weight: 700; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.games { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.game { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 176px; padding: 16px; border: 0; border-radius: 26px; background: var(--g-bg); color: var(--ink); text-align: left; }
+.game .art { width: 76px; height: 64px; margin-bottom: auto; }
+.game .txt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.game b { margin-top: 10px; font-size: 18px; font-weight: 800; }
+.game .desc { font-size: 12.5px; line-height: 1.4; letter-spacing: -.02em; color: var(--g-ink); }
+.game .timer { position: absolute; top: 14px; right: 14px; padding: 1px 10px; border-radius: 999px; background: rgba(255, 255, 255, .85); font-size: 12px; font-weight: 700; }
+[data-games="list"] .games { grid-template-columns: 1fr; }
+[data-games="list"] .game { flex-direction: row; align-items: center; gap: 14px; min-height: 0; padding: 14px 18px; }
+[data-games="list"] .game .art { width: 64px; margin: 0; }
+[data-games="list"] .game b { margin: 0; }
+[data-games="list"] .game .txt { display: flex; flex-direction: column; }
+[data-games="rail"] .games { display: flex; margin: 0 -16px; padding: 0 16px 6px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 16px; }
+[data-games="rail"] .game { flex: 0 0 200px; scroll-snap-align: start; }
+.plist { padding: 4px 6px; }
+.prow { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 64px; padding: 8px 10px; border: 0; background: none; text-align: left; }
+.prow + .prow { border-top: 1px solid var(--line); }
+.prow .logo { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 14px; background: var(--season-soft); color: var(--season-ink); font-size: 18px; font-weight: 900; }
+.prow .txt { flex: 1; }
+.prow .txt b { display: block; font-size: 16px; }
+.prow .txt span { font-size: 13px; color: var(--muted); }
+
+/* ── 마이페이지 ── */
+.profile { display: flex; align-items: center; gap: 14px; padding: 16px 18px; }
+.profile .avatar { width: 52px; height: 52px; font-size: 20px; }
+.profile .who { flex: 1; }
+.profile .who b { display: block; font-size: 19px; font-weight: 900; }
+.rank { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; background: var(--ink); color: var(--brand); font-size: 12px; font-weight: 800; }
+.event { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 132px; margin: 12px 16px 0; padding: 20px; overflow: hidden; border-radius: 26px; color: #fff; background: linear-gradient(120deg, var(--hero-a), var(--hero-b)); }
+.event .scene { position: absolute; right: -20px; bottom: -30px; width: 200px; height: 160px; pointer-events: none; }
+.event .scene svg { width: 100%; height: 100%; }
+.event > *:not(.scene) { position: relative; }
+.event .k { font-size: 13px; font-weight: 700; }
+.event .t { font-size: 26px; line-height: 1.2; font-weight: 900; letter-spacing: -.02em; }
+.event .btn { margin-top: 10px; }
+.shortcuts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 16px 0; }
+.sc { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 14px; border: 0; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow); text-align: left; font-size: 15px; font-weight: 700; }
+.sc__ic { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 14px; background: var(--sc-bg); color: var(--sc-ink); }
+.sc__ic .ic { width: 22px; height: 22px; }
+[data-shortcuts="circles"] .shortcuts { grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 16px 4px 8px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+[data-shortcuts="circles"] .sc { flex-direction: column; gap: 8px; min-height: 0; padding: 6px 0; background: none; box-shadow: none; text-align: center; font-size: 13px; }
+[data-shortcuts="circles"] .sc__ic { width: 56px; height: 56px; border-radius: 50%; }
+[data-shortcuts="circles"] .sc__ic .ic { width: 26px; height: 26px; }
+.notice { display: flex; align-items: center; gap: 12px; margin: 12px 16px 0; padding: 14px 16px; border-radius: 20px; background: var(--season-soft); color: var(--season-ink); font-size: 14px; font-weight: 500; }
+.notice span { flex: 1; }
+.notice button { min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--season-ink); font-weight: 800; text-decoration: underline; }
+.menu { margin: 12px 16px 0; padding: 4px 6px; border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+.menu .prow { min-height: 54px; font-size: 16px; font-weight: 500; }
+.menu .prow .ic { width: 22px; height: 22px; color: #9A948A; }
+.menu .prow span { flex: 1; }
+.menu-end { display: block; width: calc(100% - 32px); min-height: 52px; margin: 12px 16px 28px; border: 0; background: none; color: var(--muted); font-size: 14px; text-decoration: underline; }
+
+/* ── 박스 상세 ── */
+.hero { position: relative; height: 336px; overflow: hidden; background: linear-gradient(170deg, var(--hero-a), var(--hero-b)); }
+.hero .scene { position: absolute; inset: 0; }
+.hero .scene svg { width: 100%; height: 100%; }
+.hero .back { position: absolute; top: 10px; left: 10px; background: rgba(255, 255, 255, .92); color: var(--ink); }
+.sheet { position: relative; margin-top: -28px; padding: 24px 20px 4px; border-radius: 28px 28px 0 0; background: var(--bg); }
+.sheet .h1 { margin-bottom: 6px; }
+.sheet .desc { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+.price-row { display: flex; align-items: center; justify-content: space-between; }
+.price { font-size: 28px; font-weight: 900; letter-spacing: -.02em; }
+.balance { display: flex; align-items: center; gap: 12px; margin: 16px 0 0; padding: 14px 16px; border-radius: 20px; background: var(--ink); color: #fff; }
+.balance .coin { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: var(--brand-ink); font-size: 15px; font-weight: 900; }
+.balance b { display: block; font-size: 16px; }
+.balance span { font-size: 13px; color: var(--brand); }
+.info { margin: 16px 0 0; padding: 4px 18px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow); }
+.info details { border-bottom: 1px solid var(--line); }
+.info details:last-child { border-bottom: 0; }
+.info summary { display: flex; align-items: center; justify-content: space-between; min-height: 52px; font-size: 15px; font-weight: 700; cursor: pointer; list-style: none; }
+.info summary::-webkit-details-marker { display: none; }
+.info summary .ic { width: 20px; height: 20px; transition: transform .2s; }
+.info details[open] summary .ic { transform: rotate(180deg); }
+.info .dd { padding: 0 0 14px; font-size: 14px; color: var(--muted); line-height: 1.65; }
+.prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.prize { overflow: hidden; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow); }
+.prize__img { position: relative; display: grid; place-items: center; height: 104px; background: radial-gradient(circle at 50% 60%, var(--glow), rgba(0, 0, 0, 0) 70%), var(--hero-a); }
+.prize__img .art { width: 70px; height: 70px; }
+.prize__img .medal { position: absolute; top: 10px; left: 10px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--m, var(--gold)); color: #1A1208; font-size: 13px; font-weight: 900; }
+.prize__t { padding: 12px 14px 14px; }
+.prize__t b { display: block; font-size: 16px; }
+.prize__t span { font-size: 13px; color: var(--muted); }
+.buybar { position: sticky; bottom: 0; display: flex; align-items: center; gap: 12px; margin-top: 18px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: var(--surface); box-shadow: 0 -8px 24px rgba(30, 20, 10, .08); }
+.stepper { display: flex; align-items: center; flex: none; border: 1.5px solid var(--line); border-radius: 999px; }
+.stepper button { display: grid; place-items: center; width: 44px; height: 48px; border: 0; background: none; font-size: 20px; font-weight: 700; }
+.stepper button:disabled { color: #B9B3A9; cursor: default; }
+.stepper output { min-width: 24px; text-align: center; font-size: 17px; font-weight: 800; }
+.buybar .btn { flex: 1; min-height: 52px; padding: 0 12px; font-size: 16px; }
+
+/* ── 내보관함 ── */
+.vhead { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 4px; }
+.vhead .h1 { font-size: 24px; }
+.vhead .pt { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--muted); font-size: 13px; font-weight: 500; }
+.vhead .pt .ic { width: 18px; height: 18px; fill: var(--muted); stroke: var(--bg); }
+.seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 10px 16px 0; padding: 4px; border-radius: 999px; background: var(--line); }
+.seg button { min-height: 40px; border: 0; border-radius: 999px; background: none; color: var(--muted); font-size: 14px; font-weight: 500; }
+.seg button[aria-current="page"] { background: var(--surface); color: var(--ink); font-weight: 800; box-shadow: 0 1px 4px rgba(30, 20, 10, .12); }
+.synth-banner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 16px 0; padding: 18px 20px; overflow: hidden; border-radius: 24px; color: #fff; background: linear-gradient(120deg, var(--hero-a), var(--hero-b)); }
+.synth-banner b { display: block; font-size: 18px; font-weight: 900; }
+.synth-banner span { font-size: 13px; }
+.synth-banner button { position: relative; min-height: 44px; padding: 0 14px; border: 1px solid rgba(255, 255, 255, .3); border-radius: 999px; background: rgba(0, 0, 0, .2); color: #fff; font-size: 13px; font-weight: 700; }
+.ladder { display: flex; flex-direction: column; gap: 12px; margin: 14px 16px 0; }
+.step { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 4px 14px; padding: 16px; border-radius: 24px; background: var(--p-bg); }
+.step .ticon { display: grid; place-items: center; grid-row: span 2; width: 64px; height: 64px; border-radius: 20px; background: var(--p-btn); color: var(--p-btn-ink); box-shadow: inset 0 3px 6px rgba(255, 255, 255, .35), inset 0 -4px 8px rgba(0, 0, 0, .12); }
+.step .ticon .ic { width: 32px; height: 32px; }
+.step .tt { align-self: end; }
+.step .tt b { font-size: 18px; font-weight: 800; }
+.step .tt span { margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: rgba(255, 255, 255, .7); color: var(--ink); font-size: 12px; font-weight: 700; }
+.step .cost { align-self: end; font-size: 18px; font-weight: 900; color: var(--p-ink); }
+.step .gauge { grid-column: 2; align-self: start; }
+.step .gauge small { display: block; margin-bottom: 4px; font-size: 12px; color: var(--p-ink); }
+.step .gauge .bar { height: 8px; background: rgba(255, 255, 255, .7); }
+.step .gauge .bar i { background: var(--p-btn); }
+.step .go { grid-column: 3; align-self: start; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--p-btn); color: var(--p-btn-ink); font-size: 14px; font-weight: 800; }
+.step--final { position: relative; overflow: hidden; color: var(--gold); background: var(--ink); }
+.step--final .ticon { background: var(--gold); color: #1A1208; }
+.step--final .tt b, .step--final .cost { color: var(--gold); }
+.step--final .tt span { background: rgba(255, 255, 255, .14); color: #E8E2D6; }
+.step--final .gauge small { color: var(--gold); }
+.step--final .gauge .bar { background: rgba(255, 255, 255, .16); }
+.step--final .gauge .bar i { background: var(--gold); }
+.step--final .go { background: var(--gold); color: #1A1208; }
+.chips { display: flex; gap: 8px; margin: 14px 0 0; padding: 0 16px; overflow-x: auto; }
+.chip { flex: none; min-height: 40px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: 14px; font-weight: 500; }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: #fff; font-weight: 700; }
+.search { display: flex; align-items: center; gap: 10px; height: 50px; margin: 12px 16px 0; padding: 0 18px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); }
+.search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; }
+.search input:focus-visible { outline: none; }
+.search:focus-within { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.search .ic { color: var(--muted); }
+.sortbar { display: flex; align-items: center; justify-content: space-between; margin: 12px 20px 8px; }
+.sortbar .left { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.sortbar .left button { min-height: 44px; padding: 0; border: 0; background: none; font-weight: 700; }
+.sortbar .count b { color: var(--season); }
+.chk { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; }
+.chk input { position: absolute; opacity: 0; width: 44px; height: 44px; margin: -10px; cursor: pointer; }
+.chk .box { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border: 2px solid #CFC9BF; border-radius: 8px; background: var(--surface); color: transparent; }
+.chk .box .ic { width: 16px; height: 16px; stroke-width: 3; }
+.chk input:checked + .box { border-color: var(--season); background: var(--season); color: #fff; }
+.chk input:focus-visible + .box { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.items { display: flex; flex-direction: column; gap: 10px; margin: 0 16px; }
+.item { display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid transparent; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow); }
+.item.is-sel { border-color: var(--season); }
+.item .th { display: grid; place-items: center; flex: none; width: 68px; height: 68px; border-radius: 16px; background: var(--t, #EEE); color: rgba(0, 0, 0, .3); }
+.item .th .ic { width: 28px; height: 28px; }
+.item .tx { flex: 1; min-width: 0; font-size: 14px; line-height: 1.45; }
+.tag { display: inline-block; margin-bottom: 2px; padding: 0 8px; border-radius: 999px; background: var(--tg-bg); color: var(--tg-ink); font-size: 12px; font-weight: 700; }
+.item .nm { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.item .pr { display: block; margin-top: 2px; font-size: 16px; font-weight: 800; }
+.actionbar { position: sticky; bottom: 92px; z-index: 3; display: none; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 16px 0; padding: 10px 10px 10px 18px; border-radius: 999px; background: var(--ink); color: #fff; box-shadow: 0 10px 28px rgba(20, 12, 4, .3); }
+.actionbar.is-on { display: flex; }
+.actionbar b { font-size: 14px; }
+.actionbar .btns { display: flex; gap: 6px; }
+.actionbar .btn { min-height: 44px; padding: 0 16px; font-size: 14px; }
+[data-vault="grid"] .items { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+[data-vault="grid"] .item { flex-direction: column; align-items: stretch; gap: 10px; padding: 12px; }
+[data-vault="grid"] .item .th { width: 100%; height: auto; aspect-ratio: 1; }
+[data-vault="grid"] .item .th .ic { width: 38px; height: 38px; }
+.placeholder { display: grid; place-items: center; min-height: 520px; padding: 24px; color: var(--muted); text-align: center; }
+
+/* ── 하단 탭 ── */
+.tabbar { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 5; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; height: 66px; padding: 6px; border-radius: 33px; background: var(--surface); box-shadow: 0 12px 32px rgba(20, 12, 4, .18), 0 0 0 1px rgba(20, 12, 4, .04); }
+.tabbar[hidden] { display: none; }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 27px; background: none; color: #4D4840; font-size: 11.5px; }
+.tab .ic { width: 24px; height: 24px; }
+.tab[aria-current="page"] { background: var(--season-soft); color: var(--season-ink); font-weight: 800; }
+.tab .dot { position: absolute; top: 8px; left: calc(50% + 6px); width: 8px; height: 8px; border-radius: 50%; background: #E0343F; }
+[data-nav="dock"] .tabbar { left: 0; right: 0; bottom: 0; height: 72px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); border-radius: 0; box-shadow: 0 -1px 0 var(--line); }
+[data-nav="dock"] .tab { border-radius: 0; }
+[data-nav="dock"] .tab[aria-current="page"] { background: none; color: var(--season); box-shadow: inset 0 3px 0 var(--season); }
+[data-nav="dock"] .actionbar { bottom: 82px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+  </defs>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.500 4.500L19 7.500"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.500 16.500L21 21"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="none"/><path d="M12 11v6M12 7.500v.2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v11h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8.500 8h7M8.500 12h7M8.500 16h4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9C9 4 5 6 7 8.500c1 1 3.500.8 5 .5zM12 9c3-5 7-3 5-.5-1 1-3.500.8-5 .5z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 4h16v5H4zM5 9v11h14V9M9.500 13h5"/></symbol>
+  <symbol id="i-diamond" viewBox="0 0 24 24"><path d="M7 4h10l4 5-9 11L3 9zM3 9h18M9 4l3 5 3-5M12 9v11"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3 7.500A3.500 3.500 0 016.500 4H17v3H6.500a1 1 0 000 2H19a2 2 0 012 2v7.500a3 3 0 01-3 3H6.500A3.500 3.500 0 013 16.500z"/><circle cx="16.500" cy="14" r="1.500" fill="#0003"/></symbol>
+  <symbol id="i-basket" viewBox="0 0 24 24"><path d="M3 9h18l-2 11H5zM8 9l3-6M16 9l-3-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 12v5M12 12v5M15 12v5" stroke="currentColor" stroke-width="1.600" stroke-linecap="round" opacity=".55"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M3 6c3-1.500 6-1.500 9 0v14c-3-1.500-6-1.500-9 0zM12 6c3-1.500 6-1.500 9 0v14c-3-1.500-6-1.500-9 0z"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 9h4l4 4v3h-8z"/><circle cx="7" cy="18" r="2.200" stroke="#fff" stroke-width="1.200"/><circle cx="17" cy="18" r="2.200" stroke="#fff" stroke-width="1.200"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C7 17.200 3 13.900 3 9.600 3 6.800 5.200 4.800 7.700 4.800c1.700 0 3.300.9 4.300 2.300 1-1.400 2.600-2.300 4.300-2.300 2.500 0 4.700 2 4.700 4.800 0 4.300-4 7.600-9 11.400z"/></symbol>
+  <symbol id="i-star4" viewBox="0 0 24 24"><path d="M12 2l2.400 7.600L22 12l-7.600 2.400L12 22l-2.400-7.600L2 12l7.600-2.400z"/></symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9zM2 9h20M8.500 3L12 9l3.500-6M12 9v12" fill="none" stroke="currentColor" stroke-width="1.600" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bean" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="7" ry="9.500" transform="rotate(30 12 12)"/></symbol>
+</svg>
+
+<div class="stage" id="stage">
+  <aside class="panel" aria-label="테마 미리보기">
+    <h1>chocolatebox 개편 시안</h1>
+    <p>주요 5개 화면을 새로 디자인한 시안입니다. 색·장면·구조는 분기 설정 한 블록으로 바뀝니다.</p>
+    <div class="quarters" id="quarters" role="group" aria-label="분기">
+      <button type="button" data-q="q1" aria-pressed="false">Q1</button>
+      <button type="button" data-q="q2" aria-pressed="false">Q2</button>
+      <button type="button" data-q="q3" aria-pressed="false">Q3</button>
+      <button type="button" data-q="q4" aria-pressed="false">Q4</button>
+    </div>
+    <label>화면
+      <select id="sel-screen">
+        <option value="apptech">앱테크</option>
+        <option value="mypage">마이페이지</option>
+        <option value="box">박스 상세</option>
+        <option value="vault-synth">내보관함 · 합성존</option>
+        <option value="vault-items">내보관함 · 목록</option>
+      </select>
+    </label>
+    <label>앱테크 상단
+      <select id="sel-hero"><option value="auto">자동</option><option value="card">card</option><option value="bar">bar</option></select>
+    </label>
+    <label>게임 카드
+      <select id="sel-games"><option value="auto">자동</option><option value="grid">grid</option><option value="list">list</option><option value="rail">rail</option></select>
+    </label>
+    <label>보관함 목록
+      <select id="sel-vault"><option value="auto">자동</option><option value="list">list</option><option value="grid">grid</option></select>
+    </label>
+    <label>마이페이지 바로가기
+      <select id="sel-shortcuts"><option value="auto">자동</option><option value="tiles">tiles</option><option value="circles">circles</option></select>
+    </label>
+    <label>하단 탭
+      <select id="sel-nav"><option value="auto">자동</option><option value="float">float</option><option value="dock">dock</option></select>
+    </label>
+    <p id="panel-name"></p>
+    <a class="guide-link" href="guide.html">분기 테마 시스템 가이드 보기 →</a>
+  </aside>
+  <div class="phone">
+    <div class="app" id="app">
+      <div class="screens" id="screens"></div>
+      <nav class="tabbar" id="tabbar" aria-label="하단 메뉴"></nav>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────
+     3. 분기 설정 — 분기 1개 = 블록 1개 (tokens / pastels / motif / layout / copy)
+     새 시즌은 블록 하나를 복사해 값만 바꾼다. 글자색은 배경 대비 4.5:1 이상으로 맞춰 둠.
+     ──────────────────────────────────────────────────────────────── -->
+<script type="application/json" id="themes">
+{
+  "baseline": "q1",
+  "q1": {
+    "name": "Ruby Valentine",
+    "label": "Q1 · 1–3월 루비 발렌타인",
+    "motif": "heart",
+    "tokens": {
+      "bg": "#FFF7F5",
+      "line": "#F0E3E0",
+      "season": "#B3294F",
+      "season-soft": "#FFE8EE",
+      "season-ink": "#8F1F3E",
+      "hero-a": "#7A1B3A",
+      "hero-b": "#C23A5E",
+      "glow": "#FF9DB5",
+      "gold": "#E3B4A6",
+      "gift": "#D64A6B",
+      "gift-lid": "#E8647F",
+      "ribbon": "#F6DDB8",
+      "ribbon-shade": "#D2A872",
+      "piece-a": "#C25468",
+      "piece-a-in": "#D26A7D",
+      "piece-b": "#5A3626",
+      "piece-b-in": "#6B4330",
+      "piece-c": "#EADBC5",
+      "piece-c-in": "#F3E8D6"
+    },
+    "pastels": [
+      { "bg": "#FFF1E4", "ink": "#8F4A00", "btn": "#F6C58E", "btnInk": "#3A1F00" },
+      { "bg": "#FDEAF0", "ink": "#A02C4E", "btn": "#B83A5E", "btnInk": "#FFFFFF" },
+      { "bg": "#F3EAFE", "ink": "#7438C2", "btn": "#7438C2", "btnInk": "#FFFFFF" },
+      { "bg": "#FFEFEA", "ink": "#B3401F", "btn": "#C94A28", "btnInk": "#FFFFFF" }
+    ],
+    "layout": { "hero": "card", "games": "grid", "vault": "list", "shortcuts": "tiles", "nav": "float" },
+    "copy": {
+      "hello": "달콤한 시작을 응원해요",
+      "event": { "kicker": "2월 러브 스페셜 이벤트", "title": "초코랭킹", "cta": "참여하기" }
+    }
+  },
+  "q2": {
+    "name": "Matcha Picnic",
+    "label": "Q2 · 4–6월 말차 피크닉",
+    "motif": "leaf",
+    "tokens": {
+      "bg": "#F6F9F2",
+      "line": "#E3EADB",
+      "season": "#2F7A4F",
+      "season-soft": "#E6F4EA",
+      "season-ink": "#1F6B43",
+      "hero-a": "#1B5236",
+      "hero-b": "#357A52",
+      "glow": "#B9E3C4",
+      "gold": "#C9D89B",
+      "gift": "#35995F",
+      "gift-lid": "#45AD70",
+      "ribbon": "#F0D585",
+      "ribbon-shade": "#C7A648",
+      "piece-a": "#8A9A52",
+      "piece-a-in": "#9BAB63",
+      "piece-b": "#5A3626",
+      "piece-b-in": "#6B4330",
+      "piece-c": "#EADBC5",
+      "piece-c-in": "#F3E8D6"
+    },
+    "pastels": [
+      { "bg": "#FFF8DC", "ink": "#7A6100", "btn": "#F2D064", "btnInk": "#3A2F00" },
+      { "bg": "#E6F7EE", "ink": "#1B7A45", "btn": "#1B7A45", "btnInk": "#FFFFFF" },
+      { "bg": "#EAF1FF", "ink": "#2F5FC8", "btn": "#2F5FC8", "btnInk": "#FFFFFF" },
+      { "bg": "#FFEEF0", "ink": "#B8274A", "btn": "#C4294F", "btnInk": "#FFFFFF" }
+    ],
+    "layout": { "hero": "card", "games": "rail", "vault": "grid", "shortcuts": "tiles", "nav": "float" },
+    "copy": {
+      "hello": "산뜻한 봄 나들이 어때요?",
+      "event": { "kicker": "5월 가정의 달 이벤트", "title": "초코랭킹", "cta": "참여하기" }
+    }
+  },
+  "q3": {
+    "name": "Mint Splash",
+    "label": "Q3 · 7–9월 민트 스플래시",
+    "motif": "bubble",
+    "tokens": {
+      "bg": "#F3FAF9",
+      "line": "#DCECE9",
+      "season": "#0E7C86",
+      "season-soft": "#E0F5F3",
+      "season-ink": "#0B6168",
+      "hero-a": "#0A5560",
+      "hero-b": "#12808A",
+      "glow": "#8FE3DC",
+      "gold": "#A8E0DA",
+      "gift": "#14A0A6",
+      "gift-lid": "#2DB5BA",
+      "ribbon": "#FFE08A",
+      "ribbon-shade": "#D1AE45",
+      "piece-a": "#5CB8AE",
+      "piece-a-in": "#74CBC1",
+      "piece-b": "#5A3626",
+      "piece-b-in": "#6B4330",
+      "piece-c": "#EADBC5",
+      "piece-c-in": "#F3E8D6"
+    },
+    "pastels": [
+      { "bg": "#FFF6D9", "ink": "#7A5B00", "btn": "#F6CB57", "btnInk": "#3A2A00" },
+      { "bg": "#E2F5FD", "ink": "#0F6AB4", "btn": "#0F6AB4", "btnInk": "#FFFFFF" },
+      { "bg": "#E8FBF4", "ink": "#0E7A5E", "btn": "#0E7A5E", "btnInk": "#FFFFFF" },
+      { "bg": "#F0E9FF", "ink": "#6A3FCF", "btn": "#6A3FCF", "btnInk": "#FFFFFF" }
+    ],
+    "layout": { "hero": "bar", "games": "list", "vault": "list", "shortcuts": "tiles", "nav": "float" },
+    "copy": {
+      "hello": "시원하게 달콤한 오후예요",
+      "event": { "kicker": "8월 서머 스페셜 이벤트", "title": "초코랭킹", "cta": "참여하기" }
+    }
+  },
+  "q4": {
+    "name": "Golden Holiday",
+    "label": "Q4 · 10–12월 골든 홀리데이",
+    "motif": "flake",
+    "tokens": {
+      "bg": "#FBF6EC",
+      "line": "#EBE2D2",
+      "season": "#8A4B1F",
+      "season-soft": "#FFF0D6",
+      "season-ink": "#7A4300",
+      "hero-a": "#2B1710",
+      "hero-b": "#5B3322",
+      "glow": "#F2C46D",
+      "gold": "#D9B26A",
+      "gift": "#B8322F",
+      "gift-lid": "#CC4540",
+      "ribbon": "#E9C46A",
+      "ribbon-shade": "#B8912F",
+      "piece-a": "#C8A46B",
+      "piece-a-in": "#D8B67E",
+      "piece-b": "#5A3626",
+      "piece-b-in": "#6B4330",
+      "piece-c": "#EADBC5",
+      "piece-c-in": "#F3E8D6"
+    },
+    "pastels": [
+      { "bg": "#FFF3DC", "ink": "#7A4B00", "btn": "#F2C46D", "btnInk": "#3A2400" },
+      { "bg": "#F6EBDD", "ink": "#6B3F1D", "btn": "#8A4B1F", "btnInk": "#FFFFFF" },
+      { "bg": "#F1E6F5", "ink": "#6E2F86", "btn": "#6E2F86", "btnInk": "#FFFFFF" },
+      { "bg": "#FDE9E7", "ink": "#A52A2A", "btn": "#B8322F", "btnInk": "#FFFFFF" }
+    ],
+    "layout": { "hero": "card", "games": "grid", "vault": "list", "shortcuts": "circles", "nav": "dock" },
+    "copy": {
+      "hello": "한 해의 끝, 달콤하게",
+      "event": { "kicker": "10월 4주차 스페셜 이벤트", "title": "초코랭킹", "cta": "참여하기" }
+    }
+  }
+}
+</script>
+
+<script>
+(() => {
+  const THEMES = JSON.parse(document.getElementById('themes').textContent);
+  const NS = 'http://www.w3.org/2000/svg';
+  const root = document.documentElement;
+  const $ = (sel) => document.querySelector(sel);
+  const params = new URLSearchParams(location.search);
+
+  /* ── 화면에 들어가는 문구 ── */
+  const CONTENT = {
+    shortcuts: [
+      { label: '내 지갑', icon: 'wallet' }, { label: '포인트샵', icon: 'basket' },
+      { label: '내 후기', icon: 'book' }, { label: '배송현황', icon: 'truck' }
+    ],
+    menu: [
+      ['결제내역', '이용내역', '친구 초대코드'],
+      ['공지사항', '기록탐색기', '이벤트'],
+      ['고객센터', '이용약관', '개인정보처리방침'],
+      ['설정']
+    ],
+    games: [
+      { title: '행운퀴즈', desc: '매일 새로운 퀴즈를 맞추고\n포인트 받기', set: 1, art: 'quiz', timer: '20:28:54' },
+      { title: '초코 스크래치', desc: '긁을 때마다 쌓이는\n달콤한 보상', set: 0, art: 'scratch' },
+      { title: '초코룰렛', desc: '이번 주 1등은 누구?\n행운의 주인공 되기', set: 2, art: 'roulette' },
+      { title: '초코로또', desc: '이번 주 1등은 누구?\n행운의 주인공 되기', set: 1, art: 'lotto' }
+    ],
+    steps: [
+      { name: '스텝1', left: 30, cost: '18,000P', icon: 'heart' },
+      { name: '스텝2', left: 15, cost: '38,000P', icon: 'gift' },
+      { name: '스텝3', left: 15, cost: '68,000P', icon: 'star4' },
+      { name: '스텝4', left: 15, cost: '148,000P', icon: 'gem' }
+    ],
+    items: [
+      { tag: 0, name: '[이니스프리] 그린티 세라마이드 버터 보습 크림 / 수분 속건조 장벽 화잘먹 30ml, 1개', price: '18,000원', tone: '#DCEBDD' },
+      { tag: 1, name: '[오아시스] 우리돼지 명품 꽃삼겹 (300g)', price: '12,900원', tone: '#F4DCDC' },
+      { tag: 1, name: '[청정원] 소불고기 양념 840g, 2개', price: '12,760원', tone: '#E8DDD2' },
+      { tag: 0, name: '[하이디라오] 마라탕 소스 집밥, 220g, 4개', price: '12,710원', tone: '#F1D9D5' },
+      { tag: 0, name: '[오리온] 예감 오리지널 32g x 24입', price: '17,900원', tone: '#F6E7B8' },
+      { tag: 0, name: '[청정원] 호밍스 김치어묵 우동전골 950g 1개', price: '13,900원', tone: '#EBDDCB' },
+      { tag: 2, name: '[천일] 낙지볶음밥 300g X 5개', price: '14,500원', tone: '#E9D6C6' }
+    ],
+    tags: [
+      { label: '#찬스업', bg: 'var(--season-soft)', ink: 'var(--season-ink)' },
+      { label: '#받은 선물', bg: '#EFE6FA', ink: '#5E2A9A' },
+      { label: '#초콜릿박스', bg: '#ECE8E1', ink: '#4A453D' }
+    ],
+    chips: ['전체', '배송대기중', '6천갈포이벤트용', '현금화']
+  };
+
+  /* ── 일러스트: 초콜릿 조각 · 선물상자 · 계절 장면 (색은 모두 테마 변수) ── */
+  const svg = (vb, inner, label) => `<svg viewBox="${vb}" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}>${inner}</svg>`;
+  const piece = (x, y, s, tone, rot = 0) => `<g transform="translate(${x} ${y}) rotate(${rot} ${s / 2} ${s / 2})"><rect x="2" y="5" width="${s}" height="${s}" rx="${s * .26}" fill="rgba(0,0,0,.28)"/><rect class="pc-${tone}" width="${s}" height="${s}" rx="${s * .26}"/><rect width="${s}" height="${s}" rx="${s * .26}" fill="url(#sheen)"/><rect class="pc-${tone}-in" x="${s * .22}" y="${s * .22}" width="${s * .56}" height="${s * .56}" rx="${s * .14}"/><rect x="${s * .22}" y="${s * .22}" width="${s * .56}" height="${s * .56}" rx="${s * .14}" fill="url(#shade)"/></g>`;
+  const MOTIF = {
+    heart: 'M12 21C7 17.2 3 13.9 3 9.6 3 6.8 5.2 4.8 7.7 4.8c1.7 0 3.3.9 4.3 2.3 1-1.4 2.6-2.3 4.3-2.3 2.5 0 4.7 2 4.7 4.8 0 4.3-4 7.6-9 11.4z',
+    leaf: 'M4 20C4 11 9 4 20 4 20 15 14 20 4 20Z',
+    bubble: 'M12 3a9 9 0 100 18 9 9 0 000-18z',
+    flake: 'M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z'
+  };
+  const motifAt = (d, x, y, s, rot, op) => `<path d="${d}" transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" fill="#fff" opacity="${op}"/>`;
+  const sceneArt = (motif, kind) => {
+    const d = MOTIF[motif];
+    if (kind === 'card') return svg('0 0 236 190', `<circle cx="170" cy="70" r="86" fill="var(--glow)" opacity=".30"/><circle cx="110" cy="150" r="52" fill="var(--glow)" opacity=".2"/>${piece(120, 62, 58, 'a', -10)}${piece(168, 18, 46, 'b', 12)}${piece(176, 104, 52, 'c', 6)}${motifAt(d, 86, 24, 1, -12, .55)}${motifAt(d, 206, 150, 1.2, 14, .6)}${motifAt(d, 70, 128, .8, 8, .4)}${motifAt(d, 150, 168, .7, -6, .5)}`);
+    if (kind === 'event') return svg('0 0 200 160', `<circle cx="130" cy="80" r="70" fill="var(--glow)" opacity=".28"/>${piece(96, 44, 52, 'a', -8)}${piece(140, 78, 44, 'c', 10)}${motifAt(d, 70, 30, 1, -10, .55)}${motifAt(d, 170, 40, .9, 10, .5)}${motifAt(d, 60, 100, .8, 6, .4)}`);
+    return svg('0 0 390 336', `<circle cx="195" cy="170" r="150" fill="var(--glow)" opacity=".28"/><circle cx="195" cy="170" r="96" fill="var(--glow)" opacity=".22"/>${piece(36, 70, 46, 'a', -12)}${piece(316, 54, 40, 'b', 14)}${piece(300, 196, 44, 'c', -8)}${piece(44, 206, 40, 'b', 10)}${motifAt(d, 98, 40, 1.2, -10, .55)}${motifAt(d, 280, 120, 1, 12, .55)}${motifAt(d, 340, 260, .9, -6, .45)}${motifAt(d, 24, 150, .8, 8, .45)}${motifAt(d, 120, 280, .8, -12, .4)}`);
+  };
+  const GIFT = `<ellipse cx="120" cy="222" rx="80" ry="9" fill="rgba(0,0,0,.18)"/><rect class="g-body" x="40" y="104" width="160" height="112" rx="16"/><path d="M152 104h32a16 16 0 0 1 16 16v80a16 16 0 0 1-16 16h-32z" fill="rgba(0,0,0,.10)"/><rect class="g-lid" x="30" y="78" width="180" height="42" rx="14"/><rect x="38" y="82" width="164" height="10" rx="5" fill="rgba(255,255,255,.28)"/><rect x="40" y="118" width="160" height="8" fill="rgba(0,0,0,.12)"/><rect class="g-rib" x="102" y="78" width="36" height="138"/><rect x="114" y="78" width="7" height="138" fill="rgba(255,255,255,.32)"/><path class="g-rib" d="M120 80C96 24 42 36 72 74c13 11 36 9 48 6z"/><path class="g-rib" d="M120 80C144 24 198 36 168 74c-13 11-36 9-48 6z"/><path d="M104 62c-16-14-34-12-26 4M136 62c16-14 34-12 26 4" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/><rect class="g-rib" x="104" y="64" width="32" height="26" rx="11"/>`;
+  const wheel = () => { let s = ''; for (let i = 0; i < 6; i++) { const a0 = (i * 60 - 90) * Math.PI / 180, a1 = ((i + 1) * 60 - 90) * Math.PI / 180; const p = (a) => `${(48 + 30 * Math.cos(a)).toFixed(1)} ${(40 + 30 * Math.sin(a)).toFixed(1)}`; s += `<path d="M48 40L${p(a0)}A30 30 0 0 1 ${p(a1)}Z" style="fill:var(${i % 2 ? '--g-b' : '--g-a'})"/>`; } return s; };
+  const ART = {
+    gift: svg('0 0 240 240', GIFT, '선물 상자'),
+    quiz: svg('0 0 96 80', `<circle cx="50" cy="42" r="30" style="fill:var(--g-a)"/><circle cx="50" cy="42" r="30" fill="url(#sheen)"/><circle cx="78" cy="16" r="10" style="fill:var(--g-b)" opacity=".5"/><circle cx="18" cy="24" r="7" style="fill:var(--g-b)" opacity=".35"/><text x="50" y="54" font-size="34" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">?</text>`),
+    scratch: svg('0 0 96 80', `<g transform="rotate(-9 48 42)"><rect x="12" y="16" width="72" height="48" rx="10" style="fill:var(--g-a)"/><rect x="12" y="16" width="72" height="48" rx="10" fill="url(#sheen)"/><rect x="22" y="28" width="52" height="24" rx="6" fill="#fff" opacity=".8"/><circle cx="12" cy="40" r="5" fill="#fff" opacity=".9"/><circle cx="84" cy="40" r="5" fill="#fff" opacity=".9"/></g><path d="M74 10l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" style="fill:var(--g-b)"/>`),
+    roulette: svg('0 0 96 80', `<circle cx="48" cy="40" r="33" fill="#fff" opacity=".7"/>${wheel()}<circle cx="48" cy="40" r="30" fill="url(#sheen)"/><circle cx="48" cy="40" r="8" fill="#fff"/><path d="M48 3l6 11H42z" style="fill:var(--g-b)"/>`),
+    lotto: svg('0 0 96 80', `<circle cx="30" cy="30" r="17" style="fill:var(--g-a)"/><circle cx="66" cy="26" r="15" style="fill:var(--g-b)"/><circle cx="52" cy="54" r="19" style="fill:var(--g-a)" opacity=".92"/><circle cx="30" cy="30" r="17" fill="url(#sheen)"/><circle cx="66" cy="26" r="15" fill="url(#sheen)"/><circle cx="52" cy="54" r="19" fill="url(#sheen)"/><g font-family="sans-serif" font-weight="900" fill="#fff" text-anchor="middle"><text x="30" y="36" font-size="17">6</text><text x="66" y="32" font-size="16">3</text><text x="52" y="61" font-size="19">9</text></g>`),
+    ads: svg('0 0 80 80', `<rect x="10" y="14" width="54" height="38" rx="8" fill="#5B5BE6"/><path d="M30 25l15 8-15 8z" fill="#fff"/><rect x="42" y="6" width="30" height="16" rx="8" fill="#F0508C"/><text x="57" y="18" font-size="10" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">ADS</text>`)
+  };
+
+  /* ── 작은 DOM 헬퍼 ── */
+  const h = (tag, props, ...kids) => {
+    const el = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v == null || v === false) return;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k === 'style') el.style.cssText = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    });
+    kids.flat().forEach((c) => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c)); });
+    return el;
+  };
+  const icon = (name, cls = '') => {
+    const s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', ('ic ' + cls).trim());
+    s.setAttribute('aria-hidden', 'true');
+    const u = document.createElementNS(NS, 'use');
+    u.setAttribute('href', '#i-' + name);
+    s.append(u);
+    return s;
+  };
+  const art = (markup, cls = 'art') => { const s = h('span', { class: cls, 'aria-hidden': 'true' }); s.innerHTML = markup; return s; };
+
+  /* ── 상태 ── */
+  const KEYS = ['hero', 'games', 'vault', 'shortcuts', 'nav'];
+  const SCREENS = ['apptech', 'mypage', 'box', 'vault-synth', 'vault-items', 'home', 'news'];
+  const TABBED = (s) => ['home', 'news', 'apptech', 'vault-synth', 'vault-items'].includes(s);
+  const qParam = params.get('theme');
+  // 분기 시작일 0시(KST)에 자동 전환. ?theme=q1 이면 그 분기를 미리본다.
+  const quarterNow = () => 'q' + (Math.floor(new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' })).getMonth() / 3) + 1);
+  const state = {
+    quarter: THEMES[qParam] ? qParam : quarterNow(),
+    screen: SCREENS.includes(params.get('screen')) ? params.get('screen') : 'apptech',
+    hero: params.get('hero') || 'auto', games: params.get('games') || 'auto', vault: params.get('vault') || 'auto',
+    shortcuts: params.get('shortcuts') || 'auto', nav: params.get('nav') || 'auto'
+  };
+  const go = (screen) => { state.screen = screen; render(); sync(); };
+  const theme = () => THEMES[state.quarter];
+  const back = (to, cls = '') => h('button', { class: ('iconbtn ' + cls).trim(), type: 'button', 'aria-label': '뒤로', onClick: () => go(to) }, icon('back'));
+
+  /* ── 앱테크 ── */
+  function appTech() {
+    const t = theme(), p = t.pastels;
+    const miniBtn = (label, value) => h('button', { type: 'button' }, label, h('b', { text: value }), icon('chev'));
+    const adsBtn = (cls) => h('button', { class: 'btn btn--primary ' + cls, type: 'button' }, '광고보고 카카오빈 1개 받기');
+    return h('div', { class: 'screen' },
+      h('header', { class: 'top' },
+        h('div', {}, h('div', { class: 'hello', text: t.copy.hello }), h('div', { class: 'name', text: 'ㅂㅂ님' })),
+        h('button', { class: 'avatar', type: 'button', onClick: () => go('mypage'), 'aria-label': '마이페이지' }, 'ㅂ')),
+      h('section', { class: 'hero-card', 'aria-label': '내 지갑' },
+        h('div', { class: 'scene', 'aria-hidden': 'true' }, art(sceneArt(t.motif, 'card'), 'art')),
+        h('div', { class: 'body' },
+          h('div', { class: 'label', text: '내 포인트' }),
+          h('div', { class: 'points' }, '100,209', h('small', { text: 'P' })),
+          h('div', { class: 'mini' }, miniBtn('카카오빈 ', '5'), miniBtn('쿠폰 ', '7'))),
+        h('button', { class: 'avatar hc-avatar', type: 'button', onClick: () => go('mypage'), 'aria-label': '마이페이지' }, 'ㅂ'),
+        adsBtn('cta btn--block')),
+      h('section', { class: 'ads-card' }, h('div', {}, h('span', { class: 'cap', text: '무제한 참여 가능' }), h('b', { text: '광고보고 카카오빈 받기' })), h('button', { class: 'btn btn--dark btn--sm', type: 'button', text: '받기' })),
+      h('section', { class: 'section' },
+        h('div', { class: 'card row-card', style: 'margin:0' },
+          h('span', { class: 'thumb' }, art(ART.gift)),
+          h('div', { class: 'txt' }, h('b', { text: '무료박스' }), h('span', {}, '남은시간 01:28:54'), h('br'), h('em', { text: '최대 1,000 포인트' })),
+          h('button', { class: 'btn btn--dark btn--sm', type: 'button', text: '받기' }))),
+      h('section', { class: 'section' },
+        h('div', { class: 'card share', style: 'margin:0' },
+          h('div', { class: 'head' }, h('h2', { class: 'h3', text: '카카오빈 나눔현황' }), h('span', { class: 'chipx', text: '나눔중' })),
+          h('p', {}, h('b', { text: '어메이징초박' }), '님이 카카오빈 나눔중!'),
+          h('div', { class: 'bar', role: 'img', 'aria-label': '2000개 중 950개 남음' }, h('i', { style: 'width:47.5%' })),
+          h('div', { class: 'bar-meta' }, h('span', {}, h('b', { text: '950개' }), ' 남음 / 2000개'), h('span', { text: '총 13,869,000개 나눔완료' })),
+          h('div', { class: 'btn-row' }, h('button', { class: 'btn btn--dark btn--sm', type: 'button', text: '나눔하기' }), h('button', { class: 'btn btn--soft btn--sm', type: 'button', text: '광고보고 나눔받기' })))),
+      h('section', { class: 'section' },
+        h('div', { class: 'section__head' }, h('h2', { class: 'h2', text: '오늘의 게임' })),
+        h('div', { class: 'games' }, CONTENT.games.map((g) => {
+          const s = p[g.set];
+          return h('button', { class: 'game', type: 'button', style: `--g-bg:${s.bg};--g-ink:${s.ink};--g-a:${s.btn};--g-b:${s.ink}` },
+            g.timer ? h('span', { class: 'timer', text: g.timer }) : null,
+            art(ART[g.art]),
+            h('span', { class: 'txt' }, h('b', { text: g.title }), h('span', { class: 'desc', style: 'white-space:pre-line', text: g.desc })));
+        }))),
+      h('section', { class: 'section' },
+        h('div', { class: 'section__head' }, h('h2', { class: 'h2', text: '제휴 미션' })),
+        h('div', { class: 'card plist', style: 'margin:0' },
+          h('button', { class: 'prow', type: 'button' }, h('span', { class: 'logo', text: 'A' }), h('span', { class: 'txt' }, h('b', { text: '에디슨' }), h('span', { text: '다양한 미션을 통한 포인트 적립' })), icon('chev')),
+          h('button', { class: 'prow', type: 'button' }, h('span', { class: 'logo', text: 'R' }), h('span', { class: 'txt' }, h('b', { text: '리워드롭' }), h('span', { text: '다양한 미션을 통한 포인트 적립' })), icon('chev'))))
+    );
+  }
+
+  /* ── 마이페이지 ── */
+  function mypage() {
+    const t = theme(), p = t.pastels;
+    return h('div', { class: 'screen' },
+      h('header', { class: 'topbar' }, back('apptech'), h('h1', { text: '마이페이지' })),
+      h('section', { class: 'card profile' },
+        h('span', { class: 'avatar', text: 'ㅂ' }),
+        h('div', { class: 'who' }, h('b', { text: 'ㅂㅂ' }), h('span', { class: 'rank' }, '33위 · 이번 주 초코랭킹')),
+        icon('chev')),
+      h('section', { class: 'event', 'aria-label': '이벤트' },
+        h('div', { class: 'scene', 'aria-hidden': 'true' }, art(sceneArt(t.motif, 'event'), 'art')),
+        h('span', { class: 'k', text: t.copy.event.kicker }),
+        h('span', { class: 't', text: t.copy.event.title }),
+        h('button', { class: 'btn btn--primary btn--sm', type: 'button', text: t.copy.event.cta })),
+      h('div', { class: 'shortcuts' }, CONTENT.shortcuts.map((s, i) =>
+        h('button', { class: 'sc', type: 'button', style: `--sc-bg:${p[i].bg};--sc-ink:${p[i].ink}` }, h('span', { class: 'sc__ic' }, icon(s.icon, 'fill')), h('span', { text: s.label })))),
+      h('div', { class: 'notice' }, h('span', { text: '배송지 정보 업데이트 안내' }), h('button', { type: 'button', text: '확인' })),
+      CONTENT.menu.map((group) => h('nav', { class: 'menu', 'aria-label': '마이페이지 메뉴' }, group.map((label) => h('button', { class: 'prow', type: 'button' }, h('span', { text: label }), icon('chev'))))),
+      h('button', { class: 'menu-end', type: 'button', text: '로그아웃' })
+    );
+  }
+
+  /* ── 박스 상세 ── */
+  function boxDetail() {
+    const t = theme();
+    let qty = 1;
+    const out = h('output', { 'aria-live': 'polite', text: '1' });
+    const minus = h('button', { type: 'button', 'aria-label': '수량 줄이기', text: '−' });
+    const plus = h('button', { type: 'button', 'aria-label': '수량 늘리기', text: '+' });
+    const buy = h('button', { class: 'btn btn--primary', type: 'button' });
+    const sync = () => { out.textContent = String(qty); minus.disabled = qty <= 1; plus.disabled = qty >= 10; buy.textContent = `${qty}박스 구매 · 카카오빈 ${(qty * 100).toLocaleString('ko-KR')}개`; };
+    minus.addEventListener('click', () => { qty = Math.max(1, qty - 1); sync(); });
+    plus.addEventListener('click', () => { qty = Math.min(10, qty + 1); sync(); });
+    sync();
+    const prize = (rank, text, medal, color) => h('div', { class: 'prize' },
+      h('div', { class: 'prize__img' }, h('span', { class: 'medal', style: `--m:${color}`, text: medal }), art(ART.gift)),
+      h('div', { class: 'prize__t' }, h('b', { text: rank }), h('span', { text: text })));
+    const acc = (title, body, open) => h('details', { open: open || null }, h('summary', {}, title, icon('down')), h('div', { class: 'dd' }, body));
+    return h('div', { class: 'screen' },
+      h('section', { class: 'hero' },
+        h('div', { class: 'scene', 'aria-hidden': 'true' }, art(sceneArt(t.motif, 'hero'), 'art')),
+        h('div', { class: 'scene', style: 'display:grid;place-items:center' }, art(ART.gift, 'art'), ),
+        back('apptech', 'back')),
+      h('div', { class: 'sheet' },
+        h('h1', { class: 'h1', text: '찬스업 1877회차' }),
+        h('p', { class: 'desc', text: '최대 50만원대 상품이 지급됩니다. 단 100박스 한정! 더 좋은 상품을 받으세요!' }),
+        h('div', { class: 'price-row' }, h('span', { class: 'price', text: '10,000원' }), h('span', { class: 'chipx', text: '100박스 한정' })),
+        h('div', { class: 'balance' }, h('span', { class: 'coin', text: 'B' }), h('div', {}, h('b', { text: '내 보유 카카오빈 5개' }), h('span', { text: '최대 10개까지 구매 가능' }))),
+        h('div', { class: 'info' },
+          acc('결제 조건', h('div', {}, '기본 구매: 박스 1개당 카카오빈 100개 차감', h('br'), '추가 구매: 박스 1개당 카카오빈 200개 차감'), true),
+          acc('최대 구매 수량', h('div', {}, '기본 구매: 최대 10개(회차 오픈 시)', h('br'), '추가 구매: 최대 4개(회차 오픈 1시간 후)', h('br'), '총 14개 박스까지 구매 가능'), true),
+          acc('상품 정보 · 배송비', h('div', {}, '상품정보: 하단의 상세설명 참조', h('br'), '배송비: 초콜릿박스 배송정책에 따름'))),
+        h('h2', { class: 'h2', style: 'margin:28px 4px 12px', text: '상품 구성' }),
+        h('div', { class: 'prizes' }, prize('1등', '50~60만원 미만의 상품', '1', 'var(--gold)'), prize('2등', '10~11만원 미만의 상품', '2', '#D8D8D8'))),
+      h('div', { class: 'buybar' }, h('div', { class: 'stepper' }, minus, out, plus), buy)
+    );
+  }
+
+  /* ── 내보관함 ── */
+  function vault(kind) {
+    const t = theme(), p = t.pastels;
+    const tab = (label, key, to) => h('button', { type: 'button', 'aria-current': key === kind ? 'page' : null, onClick: () => go(to) }, label);
+    const head = [
+      h('header', { class: 'vhead' }, h('h1', { class: 'h1', text: '내 보관함' }), h('button', { class: 'pt', type: 'button' }, '교환포인트', icon('info'))),
+      h('nav', { class: 'seg', 'aria-label': '보관함 구분' }, tab('보유상품', 'own', 'vault-items'), tab('선물함', 'gift', 'vault-items'), tab('내보관함', 'items', 'vault-items'), tab('합성존', 'synth', 'vault-synth'))
+    ];
+    if (kind === 'synth') {
+      const steps = CONTENT.steps.map((s, i) => {
+        const c = p[i];
+        return h('section', { class: 'step', style: `--p-bg:${c.bg};--p-ink:${c.ink};--p-btn:${c.btn};--p-btn-ink:${c.btnInk}` },
+          h('span', { class: 'ticon' }, icon(s.icon, 'fill')),
+          h('div', { class: 'tt' }, h('b', { text: s.name }), h('span', { text: '남은 합성 ' + s.left })),
+          h('span', { class: 'cost', text: s.cost }),
+          h('div', { class: 'gauge' }, h('small', { text: '합성 충족 게이지' }), h('div', { class: 'bar', role: 'img', 'aria-label': '충족 게이지' }, h('i', { style: `width:${[62, 38, 24, 12][i]}%` }))),
+          h('button', { class: 'go', type: 'button', text: '합성하기' }));
+      });
+      steps.push(h('section', { class: 'step step--final' },
+        h('span', { class: 'ticon' }, icon('gem', 'fill')),
+        h('div', { class: 'tt' }, h('b', { text: '스텝5' }), h('span', { text: '남은 합성 10' })),
+        h('span', { class: 'cost', text: '298,000P' }),
+        h('div', { class: 'gauge' }, h('small', { text: '합성 충족 게이지' }), h('div', { class: 'bar', role: 'img', 'aria-label': '충족 게이지' }, h('i', { style: 'width:6%' }))),
+        h('button', { class: 'go', type: 'button', text: '합성하기' })));
+      return h('div', { class: 'screen' }, head,
+        h('section', { class: 'synth-banner' }, h('div', {}, h('b', { text: '스텝을 모아 더 큰 상품으로' }), h('span', { text: '합성 충족 게이지를 채우면 합성할 수 있어요' })), h('button', { type: 'button', text: '사용방법' })),
+        h('div', { class: 'ladder' }, steps));
+    }
+    const selected = new Set();
+    const bar = h('div', { class: 'actionbar', role: 'region', 'aria-label': '선택한 상품 작업' });
+    const barCount = h('b');
+    const refresh = () => { bar.classList.toggle('is-on', selected.size > 0); barCount.textContent = `${selected.size}개 선택`; };
+    bar.append(barCount, h('div', { class: 'btns' }, h('button', { class: 'btn btn--primary', type: 'button', text: '배송 신청' }), h('button', { class: 'btn btn--soft', type: 'button', text: '현금화' })));
+    const checks = [];
+    const items = CONTENT.items.map((it, i) => {
+      const tg = CONTENT.tags[it.tag];
+      const input = h('input', { type: 'checkbox', 'aria-label': it.name + ' 선택' });
+      const card = h('div', { class: 'item' },
+        h('label', { class: 'chk' }, input, h('span', { class: 'box' }, icon('check'))),
+        h('span', { class: 'th', style: `--t:${it.tone}` }, icon('gift')),
+        h('div', { class: 'tx' }, h('span', { class: 'tag', style: `--tg-bg:${tg.bg};--tg-ink:${tg.ink}`, text: tg.label }), h('span', { class: 'nm', text: it.name }), h('span', { class: 'pr', text: it.price })));
+      input.addEventListener('change', () => { card.classList.toggle('is-sel', input.checked); input.checked ? selected.add(i) : selected.delete(i); refresh(); });
+      checks.push(input);
+      return card;
+    });
+    const all = h('input', { type: 'checkbox' });
+    all.addEventListener('change', () => checks.forEach((c, i) => { c.checked = all.checked; c.dispatchEvent(new Event('change')); }));
+    refresh();
+    return h('div', { class: 'screen' }, head,
+      h('div', { class: 'chips' }, CONTENT.chips.map((c, i) => h('button', { class: 'chip', type: 'button', 'aria-pressed': String(i === 0), text: c }))),
+      h('label', { class: 'search' }, icon('search'), h('span', { class: 'sr-only', text: '상품검색' }), h('input', { type: 'search', placeholder: '상품검색' })),
+      h('div', { class: 'sortbar' },
+        h('div', { class: 'left' }, h('button', { type: 'button' }, '최신 순 ▾'), h('span', { class: 'count' }, '전체 ', h('b', { text: '407개' }))),
+        h('label', { class: 'chk' }, all, h('span', { class: 'box' }, icon('check')), '전체선택')),
+      h('div', { class: 'items' }, items),
+      bar);
+  }
+
+  const placeholder = (label) => h('div', { class: 'screen' }, h('div', { class: 'placeholder', text: label + ' 화면은 전달받은 스크린샷에 없어 시안에서 제외했어요.' }));
+  const BUILD = { apptech: appTech, mypage, box: boxDetail, 'vault-synth': () => vault('synth'), 'vault-items': () => vault('items'), home: () => placeholder('Home'), news: () => placeholder('뉴스룸') };
+  const TABS = [
+    { label: 'Home', icon: 'home', to: 'home' },
+    { label: '뉴스룸', icon: 'news', to: 'news', dot: true },
+    { label: '박스구매', icon: 'gift', to: 'box' },
+    { label: '내보관함', icon: 'box', to: 'vault-items', on: (s) => s.startsWith('vault') },
+    { label: '앱테크', icon: 'diamond', to: 'apptech' }
+  ];
+
+  function render() {
+    const t = theme();
+    Object.entries(t.tokens).forEach(([k, v]) => root.style.setProperty('--' + k, v));
+    root.dataset.theme = state.quarter;
+    $('meta[name="theme-color"]').setAttribute('content', t.tokens.bg);
+    KEYS.forEach((k) => { $('#app').dataset[k] = state[k] === 'auto' ? t.layout[k] : state[k]; $('#sel-' + k).value = state[k]; });
+    $('#screens').replaceChildren(BUILD[state.screen]());
+    const tabbed = TABBED(state.screen);
+    $('#app').classList.toggle('has-tabs', tabbed);
+    const tabbar = $('#tabbar');
+    tabbar.hidden = !tabbed;
+    tabbar.replaceChildren(...TABS.map((tab) => {
+      const on = tab.on ? tab.on(state.screen) : state.screen === tab.to;
+      return h('button', { class: 'tab', type: 'button', 'aria-current': on ? 'page' : null, onClick: () => go(tab.to) }, icon(tab.icon), tab.dot ? h('span', { class: 'dot' }) : null, tab.label);
+    }));
+    document.querySelectorAll('#quarters button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.q === state.quarter)));
+    $('#sel-screen').value = ['apptech', 'mypage', 'box', 'vault-synth', 'vault-items'].includes(state.screen) ? state.screen : 'apptech';
+    $('#panel-name').textContent = t.label;
+  }
+
+  function sync() {
+    const next = new URLSearchParams(location.search);
+    next.set('theme', state.quarter);
+    next.set('screen', state.screen);
+    KEYS.forEach((k) => (state[k] === 'auto' ? next.delete(k) : next.set(k, state[k])));
+    try { history.replaceState(null, '', '?' + next.toString()); } catch (e) { /* file:// 등에서는 건너뜀 */ }
+  }
+
+  document.querySelectorAll('#quarters button').forEach((b) => b.addEventListener('click', () => { state.quarter = b.dataset.q; render(); sync(); }));
+  $('#sel-screen').addEventListener('change', (e) => go(e.target.value));
+  KEYS.forEach((k) => $('#sel-' + k).addEventListener('change', (e) => { state[k] = e.target.value; render(); sync(); }));
+
+  if (params.get('preview') === '0') $('#stage').classList.add('no-panel');
+  if (params.get('full') === '1') $('#app').classList.add('is-full');
+  render();
+})();
+</script>
+</body>
+</html>
