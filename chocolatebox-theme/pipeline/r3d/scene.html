@@ -1,0 +1,427 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:transparent}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const P = new URLSearchParams(location.search);
+const THEME = P.get('theme') || 'christmas';
+const W = +(P.get('w') || 1600), H = +(P.get('h') || 1000);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x000000, 0);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+
+const cam = new THREE.PerspectiveCamera(26, W / H, 0.1, 100);
+cam.position.set(0, 0.6, 14);
+cam.lookAt(0, 0, 0);
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x886655, 0.7); scene.add(hemi);
+const key = new THREE.DirectionalLight(0xfff1e0, 2.0); key.position.set(-4, 7, 8); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 8; key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left: -8, right: 8, top: 6, bottom: -6, near: 1, far: 30 });
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xcfe3ff, 1.6); rim.position.set(6, 3, -6); scene.add(rim);
+const fill = new THREE.PointLight(0xffffff, 18, 30); fill.position.set(3, -2, 7); scene.add(fill);
+
+// ---------- materials ----------
+const gloss = (c, o = {}) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.32, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.18, ...o });
+const satin = (c, o = {}) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.55, sheen: 1, sheenRoughness: 0.4, sheenColor: new THREE.Color(0xffffff), ...o });
+const metal = (c, o = {}) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.26, metalness: 1, clearcoat: 0.5, clearcoatRoughness: 0.1, envMapIntensity: 1.9, ...o });
+const GOLD = 0xF2C14E, ROSEG = 0xF0B7A0, SILVER = 0xE8EEF4;
+
+let XS = 1;
+const add = (m, p = [0, 0, 0], r = [0, 0, 0], s = 1) => {
+  m.position.set(p[0] * XS, p[1], p[2]); m.rotation.set(...r.map((d) => d * Math.PI / 180));
+  if (typeof s === 'number') m.scale.setScalar(s); else m.scale.set(...s);
+  m.traverse((c) => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+  scene.add(m); return m;
+};
+const mesh = (g, m) => new THREE.Mesh(g, m);
+const group = (...ch) => { const g = new THREE.Group(); ch.forEach((c) => c && g.add(c)); return g; };
+
+const extrude = (shape, depth, bevel, mat, seg = 10) => {
+  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel * 0.9, bevelSegments: seg, curveSegments: 64 });
+  g.center(); g.computeVertexNormals();
+  return mesh(g, mat);
+};
+
+// ---------- shapes ----------
+function heartShape(s = 1) {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, -1.0 * s);
+  sh.bezierCurveTo(-0.35 * s, -0.68 * s, -1.05 * s, -0.25 * s, -1.0 * s, 0.32 * s);
+  sh.bezierCurveTo(-0.96 * s, 0.82 * s, -0.36 * s, 1.0 * s, 0, 0.55 * s);
+  sh.bezierCurveTo(0.36 * s, 1.0 * s, 0.96 * s, 0.82 * s, 1.0 * s, 0.32 * s);
+  sh.bezierCurveTo(1.05 * s, -0.25 * s, 0.35 * s, -0.68 * s, 0, -1.0 * s);
+  return sh;
+}
+function starShape(R = 1, r = 0.48, n = 5) {
+  const sh = new THREE.Shape();
+  for (let i = 0; i <= n * 2; i++) {
+    const a = Math.PI / 2 + i * Math.PI / n, rr = i % 2 ? r : R;
+    const x = Math.cos(a) * rr, y = Math.sin(a) * rr;
+    i ? sh.lineTo(x, y) : sh.moveTo(x, y);
+  }
+  return sh;
+}
+function sparkleShape(R = 1, r = 0.16) {
+  const sh = new THREE.Shape();
+  for (let i = 0; i < 4; i++) {
+    const a = Math.PI / 2 + i * Math.PI / 2, b = a + Math.PI / 4, c = a + Math.PI / 2;
+    const p = [Math.cos(a) * R, Math.sin(a) * R];
+    if (!i) sh.moveTo(...p);
+    sh.quadraticCurveTo(Math.cos(b) * r, Math.sin(b) * r, Math.cos(c) * R, Math.sin(c) * R);
+  }
+  return sh;
+}
+function petalShape(L = 1, w = 0.62) {
+  const sh = new THREE.Shape();
+  sh.moveTo(0, 0);
+  sh.bezierCurveTo(w * 0.9, L * 0.22, w * 0.95, L * 0.78, w * 0.32, L * 0.98);
+  sh.quadraticCurveTo(w * 0.12, L * 1.02, 0, L * 0.86);
+  sh.quadraticCurveTo(-w * 0.12, L * 1.02, -w * 0.32, L * 0.98);
+  sh.bezierCurveTo(-w * 0.95, L * 0.78, -w * 0.9, L * 0.22, 0, 0);
+  return sh;
+}
+function mapleShape(s = 1) {
+  // classic 5-lobed maple leaf, symmetric
+  const half = [[0, 1.0], [0.1, 0.72], [0.28, 0.82], [0.22, 0.46], [0.62, 0.66], [0.56, 0.5], [0.9, 0.46], [0.74, 0.26], [0.86, 0.12], [0.46, 0.02], [0.52, -0.2], [0.2, -0.12], [0.06, -0.36], [0.03, -0.36]];
+  const pts = [...half, ...half.slice().reverse().map(([x, y]) => [-x, y])];
+  const sh = new THREE.Shape();
+  pts.forEach(([x, y], i) => (i ? sh.lineTo(x * s, y * s) : sh.moveTo(x * s, y * s)));
+  return sh;
+}
+function coinShape(R = 1, hole = 0.28) {
+  const sh = new THREE.Shape(); sh.absarc(0, 0, R, 0, Math.PI * 2, false);
+  const h = new THREE.Path(); h.moveTo(-hole, -hole); h.lineTo(-hole, hole); h.lineTo(hole, hole); h.lineTo(hole, -hole); h.lineTo(-hole, -hole);
+  if (hole > 0) sh.holes.push(h); return sh;
+}
+
+// ---------- props ----------
+function ornament(color, r = 1, matFn = gloss, o = {}) {
+  const ball = mesh(new THREE.SphereGeometry(r, 96, 64), matFn(color, o));
+  const cap = mesh(new THREE.CylinderGeometry(r * 0.24, r * 0.26, r * 0.26, 48), metal(GOLD));
+  cap.position.y = r * 0.98;
+  const loop = mesh(new THREE.TorusGeometry(r * 0.12, r * 0.035, 16, 48), metal(GOLD));
+  loop.position.y = r * 1.2;
+  return group(ball, cap, loop);
+}
+function stripedTex(cols, n = 10, angle = 0.9) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 64; const x = c.getContext('2d'); x.fillStyle = cols[0]; x.fillRect(0, 0, 512, 64);
+  const w = 512 / n;
+  for (let i = 0; i < n + 2; i++) { x.fillStyle = cols[i % cols.length]; x.beginPath(); x.moveTo(i * w - 32 * angle, 0); x.lineTo((i + 1) * w - 32 * angle, 0); x.lineTo((i + 1) * w + 32 * angle, 64); x.lineTo(i * w + 32 * angle, 64); x.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t;
+}
+function candyCane(len = 3, r = 0.2) {
+  const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(0, -len / 2, 0), new THREE.Vector3(0, len / 2 - 0.4, 0), new THREE.Vector3(0.1, len / 2, 0), new THREE.Vector3(0.45, len / 2 + 0.25, 0), new THREE.Vector3(0.8, len / 2, 0), new THREE.Vector3(0.88, len / 2 - 0.35, 0)]);
+  const g = new THREE.TubeGeometry(curve, 200, r, 48, false);
+  const t = stripedTex(['#FFFFFF', '#E3263B'], 2); t.repeat.set(9, 1);
+  const m = mesh(g, gloss(0xffffff, { map: t }));
+  const capA = mesh(new THREE.SphereGeometry(r, 32, 16), gloss(0xffffff)); capA.position.copy(curve.getPoint(0));
+  const capB = mesh(new THREE.SphereGeometry(r, 32, 16), gloss(0xE3263B)); capB.position.copy(curve.getPoint(1));
+  return group(m, capA, capB);
+}
+function giftBox(body, ribbon, s = 1) {
+  const b = mesh(new RoundedBoxGeometry(2 * s, 1.7 * s, 2 * s, 6, 0.14 * s), gloss(body, { roughness: 0.35 }));
+  const lid = mesh(new RoundedBoxGeometry(2.18 * s, 0.42 * s, 2.18 * s, 6, 0.12 * s), gloss(body, { roughness: 0.35 })); lid.position.y = 0.9 * s;
+  const rm = satin(ribbon, { roughness: 0.35, clearcoat: 0.6 });
+  const r1 = mesh(new RoundedBoxGeometry(0.42 * s, 2.16 * s, 2.06 * s, 4, 0.05 * s), rm); r1.position.y = 0.06 * s;
+  const r2 = mesh(new RoundedBoxGeometry(2.06 * s, 2.16 * s, 0.42 * s, 4, 0.05 * s), rm); r2.position.y = 0.06 * s;
+  const bowL = mesh(new THREE.TorusGeometry(0.42 * s, 0.13 * s, 24, 64), rm); bowL.scale.set(1, 0.62, 0.8); bowL.position.set(-0.4 * s, 1.38 * s, 0); bowL.rotation.set(0.2, 0.5, 0.5);
+  const bowR = bowL.clone(); bowR.position.x = 0.4 * s; bowR.rotation.set(0.2, -0.5, -0.5);
+  const knot = mesh(new THREE.SphereGeometry(0.2 * s, 32, 24), rm); knot.position.y = 1.2 * s; knot.scale.set(1, 0.8, 1);
+  return group(b, lid, r1, r2, bowL, bowR, knot);
+}
+function tree(s = 1) {
+  const g = new THREE.Group();
+  const greenA = gloss(0x0F7A44, { roughness: 0.45, clearcoat: 0.25 }), snow = satin(0xffffff, { roughness: 0.6 });
+  const tiers = [[1.55, 1.25, -0.9], [1.22, 1.15, 0.05], [0.86, 1.05, 0.95]];
+  tiers.forEach(([rb, ht, y], i) => {
+    const prof = [];
+    for (let k = 0; k <= 24; k++) { const t = k / 24; prof.push(new THREE.Vector2(rb * (1 - t) * (1 - 0.06 * Math.sin(t * Math.PI)), ht * t)); }
+    prof.unshift(new THREE.Vector2(0, -0.06), new THREE.Vector2(rb * 0.92, -0.1));
+    const lathe = mesh(new THREE.LatheGeometry(prof, 96), greenA);
+    lathe.position.y = y * s; lathe.scale.setScalar(s); g.add(lathe);
+    const rim = mesh(new THREE.TorusGeometry(rb * 0.95, 0.1, 24, 96), snow); rim.rotation.x = Math.PI / 2; rim.position.y = (y - 0.06) * s; rim.scale.setScalar(s); g.add(rim);
+    const baubles = [[0xE3263B, 0.6], [0xF2C14E, 2.3], [0x4FA3FF, 4.1], [0xE3263B, 5.3]];
+    baubles.slice(0, 4 - i).forEach(([c, a]) => { const r = rb * 0.62; const bb = mesh(new THREE.SphereGeometry(0.13 * s, 32, 24), c === 0xF2C14E ? metal(c) : gloss(c)); bb.position.set(Math.cos(a) * r * s, (y + ht * 0.3) * s, Math.sin(a) * r * s); g.add(bb); });
+  });
+  const trunk = mesh(new THREE.CylinderGeometry(0.28 * s, 0.32 * s, 0.6 * s, 32), gloss(0x8A5532, { roughness: 0.5 })); trunk.position.y = -1.2 * s; g.add(trunk);
+  const st = extrude(starShape(0.5, 0.22), 0.12, 0.08, metal(GOLD)); st.position.y = 2.15 * s; st.scale.setScalar(s); g.add(st);
+  return g;
+}
+function pouch(color, band = GOLD, s = 1) {
+  // 복주머니: belly + gathered neck + frilled top
+  const prof = [];
+  const P = [[0, -1.25], [0.55, -1.2], [1.05, -0.9], [1.28, -0.35], [1.25, 0.15], [1.05, 0.55], [0.62, 0.86], [0.42, 0.98], [0.46, 1.1], [0.72, 1.32], [0.86, 1.52], [0.74, 1.6], [0.5, 1.5], [0.3, 1.45], [0, 1.42]];
+  const curve = new THREE.SplineCurve(P.map(([x, y]) => new THREE.Vector2(x, y)));
+  curve.getPoints(80).forEach((p) => prof.push(new THREE.Vector2(Math.max(0, p.x), p.y)));
+  const geo = new THREE.LatheGeometry(prof, 128);
+  // gather pleats near neck/top
+  const pos = geo.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i); const a = Math.atan2(v.z, v.x); const k = THREE.MathUtils.smoothstep(v.y, 0.3, 1.0) * 0.06 + THREE.MathUtils.smoothstep(v.y, 1.05, 1.5) * 0.08;
+    const f = 1 + k * Math.sin(a * 14); pos.setXYZ(i, v.x * f, v.y, v.z * f);
+  }
+  geo.computeVertexNormals();
+  const body = mesh(geo, satin(color, { roughness: 0.42, clearcoat: 0.35, sheenColor: new THREE.Color(0xffd6d6) }));
+  const cord = mesh(new THREE.TorusGeometry(0.47, 0.07, 24, 96), metal(band)); cord.rotation.x = Math.PI / 2; cord.position.y = 0.96;
+  const tA = mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.7, 16), metal(band)); tA.position.set(0.32, 0.62, 0.42); tA.rotation.z = 0.3;
+  const tB = tA.clone(); tB.position.set(0.48, 0.58, 0.32); tB.rotation.z = 0.12;
+  const knotA = mesh(new THREE.SphereGeometry(0.09, 24, 16), metal(band)); knotA.position.set(0.22, 0.95, 0.44);
+  const medal = extrude(coinShape(0.36, 0.0), 0.06, 0.04, metal(band)); medal.position.set(0, -0.15, 1.27); medal.rotation.x = -0.1;
+  const flower = extrude(starShape(0.24, 0.12, 6), 0.04, 0.03, gloss(0xffffff)); flower.position.set(0, -0.15, 1.36);
+  const g = group(body, cord, tA, tB, knotA, medal, flower); g.scale.setScalar(s); return g;
+}
+function yeopjeon(s = 1) { const c = extrude(coinShape(0.62, 0.17), 0.1, 0.06, metal(GOLD, { roughness: 0.18 })); c.scale.setScalar(s); return c; }
+function truffle(c = 0x4A2516, s = 1, dust = false) {
+  const geo = new THREE.SphereGeometry(0.6, 96, 64); const pos = geo.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); const n = 1 + 0.025 * Math.sin(v.x * 17) * Math.sin(v.y * 13) * Math.sin(v.z * 19); pos.setXYZ(i, v.x * n, v.y * n * 0.92, v.z * n); }
+  geo.computeVertexNormals();
+  const m = mesh(geo, dust ? satin(c, { roughness: 0.9 }) : gloss(c, { roughness: 0.32 }));
+  const g = group(m);
+  if (!dust) { const dr = mesh(new THREE.TorusGeometry(0.42, 0.045, 16, 96), gloss(0xF6E4D0, { roughness: 0.3 })); dr.rotation.x = Math.PI / 2 - 0.2; dr.position.y = 0.32; g.add(dr); }
+  g.scale.setScalar(s); return g;
+}
+function blossom(s = 1, col = 0xF7A8C4, deep = 0xE0507F) {
+  const g = new THREE.Group();
+  for (let i = 0; i < 5; i++) {
+    const pg = new THREE.ExtrudeGeometry(petalShape(1, 0.66), { depth: 0.04, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 6, curveSegments: 48 });
+    const pos = pg.attributes.position, v = new THREE.Vector3(), colors = [], cA = new THREE.Color(deep), cB = new THREE.Color(col), cW = new THREE.Color(0xFFF2F6);
+    for (let k = 0; k < pos.count; k++) { v.fromBufferAttribute(pos, k); const t = THREE.MathUtils.clamp(v.y, 0, 1); pos.setZ(k, v.z + 0.28 * t * t - 0.05 * Math.abs(v.x)); const c = t < 0.35 ? cA.clone().lerp(cB, t / 0.35) : cB.clone().lerp(cW, (t - 0.35) / 0.65 * 0.55); colors.push(c.r, c.g, c.b); }
+    pg.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3)); pg.computeVertexNormals();
+    const p = mesh(pg, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.45, sheen: 1, sheenColor: new THREE.Color(0xffffff), sheenRoughness: 0.35, clearcoat: 0.4 }));
+    p.rotation.z = i * Math.PI * 2 / 5; g.add(p);
+  }
+  const ctr = mesh(new THREE.SphereGeometry(0.16, 32, 16), gloss(0xD43D6A)); ctr.position.z = 0.08; g.add(ctr);
+  for (let i = 0; i < 9; i++) { const a = i * Math.PI * 2 / 9; const st = mesh(new THREE.SphereGeometry(0.055, 16, 12), gloss(0xFFD84D)); st.position.set(Math.cos(a) * 0.3, Math.sin(a) * 0.3, 0.2); g.add(st); }
+  g.scale.setScalar(s); return g;
+}
+function branch(points, r = 0.09) { const c = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p))); return mesh(new THREE.TubeGeometry(c, 120, r, 24, false), gloss(0x6B3B2A, { roughness: 0.6, clearcoat: 0.2 })); }
+function carnation(col = 0xE8344F, s = 1, o = {}) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshPhysicalMaterial({ color: col, roughness: 0.5, sheen: 1, sheenColor: new THREE.Color(0xffc2cc), sheenRoughness: 0.3, side: THREE.DoubleSide, clearcoat: 0.2 });
+  const N = 64;
+  for (let i = 0; i < N; i++) {
+    const geo = new THREE.CircleGeometry(0.42, 72); const pos = geo.attributes.position, v = new THREE.Vector3();
+    for (let k = 0; k < pos.count; k++) { v.fromBufferAttribute(pos, k); const a = Math.atan2(v.y, v.x), r = Math.hypot(v.x, v.y) / 0.42; pos.setZ(k, 0.045 * r * Math.sin(a * 9 + i) + 0.14 * r * r); const f = 1 + 0.03 * r * Math.sin(a * 19 + i * 1.7); pos.setX(k, v.x * f); pos.setY(k, v.y * f); }
+    geo.computeVertexNormals();
+    const p = mesh(geo, mat);
+    const t = i / N, phi = Math.acos(1 - t * 0.9), th = i * 2.399;
+    const dir = new THREE.Vector3(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th));
+    p.position.copy(dir.clone().multiplyScalar(0.32));
+    p.lookAt(p.position.clone().add(dir)); g.add(p);
+  }
+  const cal = mesh(new THREE.CylinderGeometry(0.26, 0.12, 0.6, 32), gloss(0x3C9A58, { roughness: 0.5 })); cal.position.y = -0.42; g.add(cal);
+  const stem = mesh(new THREE.CylinderGeometry(0.05, 0.05, o.stem ?? 2.4, 16), gloss(0x3C9A58, { roughness: 0.5 })); stem.position.y = -0.7 - (o.stem ?? 2.4) / 2; g.add(stem);
+  g.scale.setScalar(s); return g;
+}
+function envelope(s = 1) {
+  const b = mesh(new RoundedBoxGeometry(2.4, 1.6, 0.16, 6, 0.06), satin(0xFFF8F1, { roughness: 0.6 }));
+  const flapS = new THREE.Shape(); flapS.moveTo(-1.18, 0.78); flapS.lineTo(0, -0.05); flapS.lineTo(1.18, 0.78); flapS.lineTo(-1.18, 0.78);
+  const flap = extrude(flapS, 0.02, 0.02, satin(0xFBE9E4, { roughness: 0.6 })); flap.position.set(0, 0.36, 0.1);
+  const seal = extrude(heartShape(0.26), 0.06, 0.05, gloss(0xE23A5A)); seal.position.set(0, -0.02, 0.16);
+  const g = group(b, flap, seal); g.scale.setScalar(s); return g;
+}
+function beachBall(s = 1) {
+  const geo = new THREE.SphereGeometry(1, 128, 96); const pos = geo.attributes.position, v = new THREE.Vector3(), cols = [];
+  const pal = [0xFFFFFF, 0xFF5A4E, 0xFFFFFF, 0xFFC93C, 0xFFFFFF, 0x2FA6F2].map((c) => new THREE.Color(c));
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); let a = Math.atan2(v.z, v.x); a = (a + Math.PI) / (Math.PI * 2); const c = Math.abs(v.y) > 0.93 ? new THREE.Color(0xFFFFFF) : pal[Math.floor(a * 6) % 6]; cols.push(c.r, c.g, c.b); }
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  const m = mesh(geo, new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08 }));
+  m.scale.setScalar(s); return m;
+}
+function floatRing(s = 1) {
+  const t = stripedTex(['#FF6B8B', '#FFFFFF'], 2, 0); t.repeat.set(4, 1);
+  const m = mesh(new THREE.TorusGeometry(1, 0.42, 64, 160), gloss(0xffffff, { map: t, roughness: 0.22 })); m.scale.setScalar(s); return m;
+}
+function watermelon(s = 1) {
+  const mk = (r, d, mat, z) => { const sh = new THREE.Shape(); sh.absarc(0, 0, r, Math.PI, Math.PI * 2, false); sh.lineTo(-r, 0); const g = new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.06, bevelSegments: 8, curveSegments: 96 }); g.translate(0, 0, -d / 2 + z); return mesh(g, mat); };
+  const g = group(mk(1.42, 0.42, gloss(0x2E9B4F, { roughness: 0.35 }), 0), mk(1.3, 0.46, gloss(0xF3FBE9, { roughness: 0.4 }), 0), mk(1.18, 0.5, gloss(0xFF4D5E, { roughness: 0.32 }), 0));
+  [[-0.5, -0.45], [0, -0.7], [0.5, -0.45], [-0.25, -0.25], [0.25, -0.25], [0, -0.42]].forEach(([x, y]) => { const sd = mesh(new THREE.SphereGeometry(0.07, 16, 12), gloss(0x2A1A16)); sd.scale.set(0.7, 1.2, 0.5); sd.position.set(x, y, 0.33); g.add(sd); });
+  g.scale.setScalar(s); return g;
+}
+function sunBall(s = 1) {
+  const core = mesh(new THREE.SphereGeometry(0.8, 96, 64), gloss(0xFFC93C, { emissive: 0xFF9F0A, emissiveIntensity: 0.25 }));
+  const g = group(core);
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; const r = extrude(petalShape(0.5, 0.3), 0.08, 0.06, gloss(0xFFB020)); r.position.set(Math.cos(a) * 1.15, Math.sin(a) * 1.15, -0.1); r.rotation.z = a - Math.PI / 2; g.add(r); }
+  g.scale.setScalar(s); return g;
+}
+function persimmon(s = 1) {
+  const geo = new THREE.SphereGeometry(1, 96, 64); const pos = geo.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); const a = Math.atan2(v.z, v.x); const f = 1 + 0.035 * Math.cos(a * 4) * (1 - Math.abs(v.y)); pos.setXYZ(i, v.x * f, v.y * 0.78, v.z * f); }
+  geo.computeVertexNormals();
+  const body = mesh(geo, gloss(0xF4791F, { roughness: 0.22 }));
+  const g = group(body);
+  for (let i = 0; i < 4; i++) { const lf = extrude(petalShape(0.55, 0.42), 0.03, 0.03, gloss(0x4E7A2A, { roughness: 0.5 })); lf.rotation.set(-Math.PI / 2 + 0.25, 0, i * Math.PI / 2); lf.position.y = 0.8; const wrap = group(lf); wrap.rotation.y = i * Math.PI / 2; g.add(wrap); }
+  const stem = mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.3, 16), gloss(0x5A3A22)); stem.position.y = 0.9; g.add(stem);
+  g.scale.setScalar(s); return g;
+}
+function acorn(s = 1) {
+  const nut = mesh(new THREE.SphereGeometry(0.5, 64, 48), gloss(0xB5682F, { roughness: 0.25 })); nut.scale.set(1, 1.25, 1); nut.position.y = -0.15;
+  const cap = mesh(new THREE.SphereGeometry(0.56, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), satin(0x7A4A28, { roughness: 0.8 })); cap.scale.set(1, 0.62, 1); cap.position.y = 0.18;
+  const st = mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.25, 12), satin(0x5A3A22)); st.position.y = 0.6;
+  const g = group(nut, cap, st); g.scale.setScalar(s); return g;
+}
+function leaf(col, s = 1) { const l = extrude(mapleShape(1), 0.05, 0.05, gloss(col, { roughness: 0.38 })); const st = mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.6, 12), gloss(col)); st.position.y = -0.55; const g = group(l, st); g.scale.setScalar(s); return g; }
+
+function popsicle(c1 = 0x4FC3F7, c2 = 0xFF7AA8, s = 1) {
+  const body = mesh(new RoundedBoxGeometry(1.1, 1.9, 0.5, 8, 0.45), gloss(c1, { roughness: 0.25 }));
+  const dip = mesh(new RoundedBoxGeometry(1.14, 0.8, 0.54, 8, 0.4), gloss(c2, { roughness: 0.25 })); dip.position.y = 0.6;
+  const stick = mesh(new RoundedBoxGeometry(0.28, 1.1, 0.12, 4, 0.06), satin(0xE7C38F, { roughness: 0.7 })); stick.position.y = -1.3;
+  const g = group(body, dip, stick); g.scale.setScalar(s); return g;
+}
+function bow(col, s = 1) {
+  const rm = satin(col, { roughness: 0.32, clearcoat: 0.7 });
+  const l = mesh(new THREE.TorusGeometry(0.42, 0.14, 32, 96), rm); l.scale.set(1, 0.58, 0.7); l.position.x = -0.42; l.rotation.z = 0.35;
+  const r = l.clone(); r.position.x = 0.42; r.rotation.z = -0.35;
+  const k = mesh(new THREE.SphereGeometry(0.2, 32, 24), rm); k.scale.set(1, 0.9, 0.8);
+  const tl = mesh(new RoundedBoxGeometry(0.22, 0.9, 0.06, 4, 0.03), rm); tl.position.set(-0.2, -0.5, 0); tl.rotation.z = -0.35;
+  const tr = tl.clone(); tr.position.x = 0.2; tr.rotation.z = 0.35;
+  const g = group(l, r, k, tl, tr); g.scale.setScalar(s); return g;
+}
+function bouquet(s = 1) {
+  const g = new THREE.Group();
+  const a = carnation(0xE8344F, 1.15, { stem: 2.2 }); a.position.set(0, 0.5, 0.2); a.rotation.z = 0.02; g.add(a);
+  const b = carnation(0xFF8FA6, 0.95, { stem: 2.3 }); b.position.set(-0.85, 0.15, -0.2); b.rotation.z = 0.32; g.add(b);
+  const c = carnation(0xF2557A, 0.95, { stem: 2.3 }); c.position.set(0.85, 0.1, -0.3); c.rotation.z = -0.32; g.add(c);
+  const w = bow(0xFFD84D, 0.75); w.position.set(0, -1.65, 0.6); g.add(w);
+  g.scale.setScalar(s); return g;
+}
+
+// charms: single hero object per theme (used on box-card frames)
+const CHARM = {
+  christmas: () => ornament(0xE3263B, 1.4, metal),
+  newyear: () => pouch(0xD7263D, GOLD, 1.25),
+  valentine: () => extrude(heartShape(1.5), 0.6, 0.4, gloss(0xE5294F)),
+  spring: () => blossom(1.9),
+  family: () => carnation(0xE8344F, 2.2, { stem: 0.01 }),
+  summer: () => beachBall(1.6),
+  autumn: () => leaf(0xE2471E, 2.4),
+};
+// stage: left / right clusters for the buy-screen hero (center kept clear for the title)
+const STAGE = {
+  christmas: [() => tree(0.95), () => giftBox(0xE3263B, 0xF2C14E, 0.62), () => ornament(GOLD, 0.45, metal), () => ornament(0xE3263B, 0.4, metal)],
+  newyear: [() => pouch(0xD7263D, GOLD, 1.1), () => pouch(0x1F3E8C, GOLD, 1.0), () => yeopjeon(0.8), () => yeopjeon(0.7)],
+  valentine: [() => extrude(heartShape(1.0), 0.45, 0.3, gloss(0xE5294F)), () => extrude(heartShape(0.85), 0.36, 0.25, metal(ROSEG)), () => truffle(0x4A2516, 0.8), () => truffle(0xF2E3D3, 0.7)],
+  spring: [() => blossom(1.1), () => blossom(1.0), () => blossom(0.6, 0xFFFFFF, 0xF28DB0), () => blossom(0.55, 0xFFC4D6, 0xEC6A93)],
+  family: [() => carnation(0xE8344F, 1.1, { stem: 1.4 }), () => carnation(0xFF8FA6, 1.0, { stem: 1.4 }), () => extrude(heartShape(0.45), 0.2, 0.15, gloss(0xE23A5A)), () => extrude(heartShape(0.4), 0.2, 0.14, metal(GOLD))],
+  summer: [() => beachBall(1.0), () => floatRing(0.85), () => popsicle(0x4FC3F7, 0xFF7AA8, 0.55), () => watermelon(0.55)],
+  autumn: [() => leaf(0xE2471E, 1.4), () => leaf(0xF29A1F, 1.3), () => persimmon(0.6), () => acorn(0.6)],
+};
+
+// ---------- scenes (x: -5.6..5.6, y: -3.4..3.4 at z=0) ----------
+const S = {
+  christmas() {
+    add(tree(0.98), [-4.9, -0.5, -0.4], [6, 16, 0]);
+    add(candyCane(2.4, 0.16), [-2.9, -1.5, 0.6], [0, 0, 16]);
+    add(ornament(0xE3263B, 0.42, metal), [-3.0, 2.0, 0.2], [0, 0, -10]);
+    add(giftBox(0xE3263B, 0xF2C14E, 0.72), [4.7, -1.0, 0], [10, -30, 0]);
+    add(giftBox(0xF4F1EA, 0x1E9E5A, 0.45), [3.0, -2.0, 0.8], [12, 24, 0]);
+    add(ornament(GOLD, 0.48, metal), [3.4, 1.8, 0.2], [0, 0, 10]);
+    add(ornament(0x2B6CD6, 0.34, metal), [5.6, 1.6, -0.6], [0, 0, -8]);
+    add(extrude(starShape(0.34, 0.17), 0.1, 0.07, metal(GOLD)), [-1.9, 2.7, -0.4], [10, 20, 14]);
+    add(extrude(sparkleShape(0.26), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [-1.8, 2.6, 0.4]);
+    add(extrude(sparkleShape(0.2), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [1.9, 2.7, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [2.3, -0.4, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [-2.2, -0.6, 0.4]);
+  },
+  newyear() {
+    add(pouch(0xD7263D, GOLD), [-4.7, -0.5, 0], [6, 18, -4], 1.12);
+    add(yeopjeon(0.85), [-2.8, 2.1, 0.2], [30, -30, -20]);
+    add(yeopjeon(0.75), [-2.9, -2.2, 0.8], [-20, 25, 15]);
+    add(pouch(0x1F3E8C, GOLD), [4.8, -0.7, -0.2], [4, -24, 6], 1.0);
+    add(yeopjeon(0.8), [3.0, 2.1, -0.2], [-10, 40, 25]);
+    add(extrude(starShape(0.34, 0.17), 0.08, 0.06, metal(GOLD)), [2.9, -2.1, 0.4], [0, 20, 15]);
+    add(extrude(sparkleShape(0.26), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [-1.8, 2.6, 0.4]);
+    add(extrude(sparkleShape(0.2), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [1.9, 2.7, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [2.3, -0.4, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [-2.2, -0.6, 0.4]);
+  },
+  valentine() {
+    add(extrude(heartShape(1.15), 0.5, 0.32, gloss(0xE5294F)), [-4.6, 0.1, 0], [8, 22, 10]);
+    add(truffle(0x4A2516, 0.95), [-3.0, -2.0, 1.0]);
+    add(extrude(heartShape(0.5), 0.24, 0.17, gloss(0xFF9DB8)), [-2.9, 2.3, -0.2], [0, 24, -14]);
+    add(extrude(heartShape(0.95), 0.4, 0.28, metal(ROSEG)), [4.8, 0.3, -0.4], [0, -26, -12]);
+    add(truffle(0xF2E3D3, 0.8), [3.1, -2.0, 0.8]);
+    add(truffle(0x6E3B22, 0.75, true), [5.5, -2.3, 0.4]);
+    add(extrude(sparkleShape(0.26), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [-1.8, 2.6, 0.4]);
+    add(extrude(sparkleShape(0.2), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [1.9, 2.7, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [2.3, -0.4, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [-2.2, -0.6, 0.4]);
+  },
+  spring() {
+    add(branch([[-7.5, 2.0, -1], [-4.8, 1.2, 0], [-3, 2.4, 0], [-1.6, 3.6, 0]], 0.1));
+    add(branch([[7.5, 1.6, -1], [4.6, 0.9, 0], [3, 2.2, 0], [2, 3.6, 0]], 0.1));
+    add(blossom(1.1), [-4.6, 0.6, 0.8], [12, 14, 8]);
+    add(blossom(0.7), [-3.0, 2.3, 0.4], [10, 22, -10]);
+    add(blossom(0.75, 0xFFC4D6, 0xEC6A93), [-5.7, -1.5, 0], [20, -10, 30]);
+    add(blossom(1.0), [4.7, 0.5, 0.6], [-8, -18, 24]);
+    add(blossom(0.6, 0xFFFFFF, 0xF28DB0), [3.1, 2.4, 0], [0, 0, 20]);
+    add(blossom(0.7), [5.7, -1.6, 0], [10, -20, -10]);
+    [[-2.6, -1.4, 20], [2.4, -1.2, -40], [3.3, -2.5, 70], [-3.6, -2.6, 10], [1.8, 2.9, -30], [-1.9, 3.0, 40]].forEach(([x, y, r]) => add(extrude(petalShape(0.36, 0.26), 0.02, 0.03, gloss(0xF7A8C4, { roughness: 0.4 })), [x, y, 0.4], [30, 20, r]));
+  },
+  family() {
+    add(bouquet(0.92), [-4.6, 0.3, 0], [6, 10, 8]);
+    add(extrude(heartShape(0.42), 0.2, 0.14, metal(GOLD)), [-2.8, 2.3, 0], [0, 20, -12]);
+    add(envelope(0.85), [4.6, -0.9, 0.4], [-8, -20, -8]);
+    add(extrude(heartShape(0.55), 0.26, 0.18, gloss(0xE23A5A)), [3.3, 1.9, 0], [0, -20, 12]);
+    add(extrude(heartShape(0.34), 0.16, 0.12, gloss(0xFF9DB8)), [5.7, 1.5, -0.4], [0, -10, -16]);
+    add(extrude(sparkleShape(0.26), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [-1.8, 2.6, 0.4]);
+    add(extrude(sparkleShape(0.2), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [1.9, 2.7, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [2.3, -0.4, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [-2.2, -0.6, 0.4]);
+  },
+  summer() {
+    add(beachBall(1.05), [-4.8, -0.4, 0], [20, 30, 10]);
+    add(popsicle(0x4FC3F7, 0xFF7AA8, 0.62), [-2.9, 1.9, 0], [0, 0, 18]);
+    add(floatRing(0.92), [4.8, 0.0, -0.6], [55, -10, 20]);
+    add(watermelon(0.62), [3.0, -2.0, 0.8], [10, -20, 14]);
+    add(popsicle(0xFFD84D, 0xFF8A4C, 0.45), [3.0, 2.2, -0.4], [0, 0, -16]);
+    add(extrude(sparkleShape(0.26), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [-1.8, 2.6, 0.4]);
+    add(extrude(sparkleShape(0.2), 0.04, 0.04, gloss(0xffffff, { emissive: 0xffffff, emissiveIntensity: 0.55 })), [1.9, 2.7, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [2.3, -0.4, 0.4]);
+    add(extrude(sparkleShape(0.16), 0.04, 0.04, metal(GOLD)), [-2.2, -0.6, 0.4]);
+  },
+  autumn() {
+    add(leaf(0xE2471E, 1.45), [-4.7, 0.5, 0], [14, 20, 12]);
+    add(acorn(0.75), [-3.0, -2.0, 0.8], [0, 0, 14]);
+    add(leaf(0xF7C531, 0.75), [-2.8, 2.4, -0.4], [20, 10, -30]);
+    add(persimmon(0.82), [4.7, -1.0, 0.4], [8, -20, 0]);
+    add(leaf(0xF29A1F, 1.05), [4.0, 1.9, -0.6], [-10, -24, 22]);
+    add(acorn(0.6), [6.0, 0.9, -0.4], [0, 0, -20]);
+    add(leaf(0xC8371C, 0.6), [2.8, -2.4, 0.4], [30, 0, 40]);
+  },
+};
+const MODE = P.get('mode') || 'banner';
+if (MODE === 'charm') {
+  cam.fov = 22; cam.position.set(0, 0.4, 14); cam.lookAt(0, 0, 0); cam.updateProjectionMatrix();
+  const ch = CHARM[THEME](); add(ch, [0, THEME === 'family' ? -0.2 : -0.1, 0], [8, -18, 6], THEME === 'family' ? 1.6 : 1);
+} else if (MODE === 'stage') {
+  const [a, b, c, d] = STAGE[THEME];
+  add(a(), [-4.6, -0.9, 0], [6, 24, 8]);
+  add(b(), [4.6, -1.0, 0], [6, -24, -8]);
+  add(c(), [-3.2, 2.0, -0.6], [0, 20, 14]);
+  add(d(), [3.4, 2.1, -0.6], [0, -20, -14]);
+} else { cam.position.set(0, 0.5, +(P.get('cz') || 16.5)); cam.lookAt(0, 0, 0); XS = +(P.get('xs') || 1.3); (S[THEME] || S.christmas)(); }
+renderer.render(scene, cam);
+window.__done = true;
+</script>
+</body></html>

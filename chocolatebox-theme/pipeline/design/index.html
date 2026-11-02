@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="ko" data-theme="default">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#DC3328">
+<title>chocolatebox 시즌 스킨 시스템</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ────────────────────────────────────────────────────────────────
+   1. 토큰 — 기본값은 '기본' 테마. 시즌 값은 themes JSON에서 derive()로 계산해 덮어쓴다.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --ink: #111111; --muted: #6E6E6E; --line: #E6E6E6; --font: 'Noto Sans KR', system-ui, sans-serif;
+  --page: #F5F5F5; --header-bg: #DC3328; --cta-bg: #DC3328; --accent: #D82B3A; --accent-soft: #FFE3E0; --accent-soft-ink: #A82020;
+  --info-bg: #EAF6FF; --info-ink: #1668C4; --banner-a: #150B2E; --banner-b: #33196F; --banner-ink: #FFFFFF; --mission: #D23750;
+  --g-a: #1B0B4D; --g-b: #3A1796; --cell: #5A22D4; --cell-hi: #7440F0; --cell-dim: #260D5E; --taken: #0E6B73; --mine: #22E5FF; --mine-ink: #111111; --stroke: #2B3FD6; --glow: #6E8BFF;
+  --rib: #EDB866; --rib-shade: #C98F3E;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   2. 고정 레이어 — 화면 구조·간격·타입. 시즌이 바뀌어도 그대로다.
+   ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #E4E1DC; color: var(--ink); font: 400 15px/1.5 var(--font); word-break: keep-all; -webkit-text-size-adjust: 100%; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.ic { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.art { display: block; }
+.art svg { display: block; width: 100%; height: 100%; }
+.g-body { fill: var(--gift); } .g-lid { fill: var(--lid); }
+.g-rib { fill: var(--rib); stroke: var(--rib-shade); stroke-width: 2; }
+
+/* 미리보기 패널 (실서비스에는 들어가지 않는다) */
+.stage { display: flex; gap: 32px; justify-content: center; align-items: flex-start; padding: 24px; }
+.panel { position: sticky; top: 24px; display: flex; flex-direction: column; flex: none; gap: 12px; width: 290px; padding: 18px; border-radius: 20px; background: #fff; font-size: 14px; }
+.panel h1 { margin: 0; font-size: 17px; }
+.panel p { margin: 0; color: #5B5B5B; font-size: 13px; }
+.panel .tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.panel .tgrid button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border: 1.5px solid #D2D2D2; border-radius: 12px; background: #fff; font-size: 13px; font-weight: 700; text-align: left; }
+.panel .tgrid button[aria-pressed="true"] { border-color: #111; box-shadow: inset 0 0 0 1px #111; }
+.panel .tgrid i { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
+.panel label { display: flex; flex-direction: column; gap: 4px; color: #3D3D3D; font-weight: 500; }
+.panel select, .panel input[type="date"] { min-height: 44px; padding: 0 10px; border: 1.5px solid #CFCFCF; border-radius: 12px; background: #fff; font: inherit; }
+.panel .guide-link { display: flex; align-items: center; min-height: 44px; color: #111; font-weight: 700; text-decoration: underline; }
+.no-panel .panel { display: none; }
+.phone { flex: none; width: 390px; }
+.app { position: relative; width: 390px; height: 844px; overflow: hidden; border-radius: 32px; background: #fff; box-shadow: 0 24px 60px rgba(0, 0, 0, .22); }
+.screens { position: absolute; inset: 0; }
+.screen { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; background: #fff; }
+.screen.gray { background: var(--page); }
+.screen.has-tabs { padding-bottom: 84px; }
+.app.is-full { height: auto; }
+.app.is-full .screens { position: static; }
+.app.is-full .screen { position: static; overflow: visible; }
+@media (max-width: 900px) { .stage { flex-direction: column-reverse; align-items: center; padding: 12px; gap: 16px; } .panel { position: static; width: min(100%, 390px); } }
+@media (max-width: 430px) { .stage { padding: 0; gap: 0; } .phone, .app { width: 100%; } .app { height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none; } .panel { width: 100%; border-radius: 0; } }
+
+/* 시즌 장식 애니메이션 — 모션 줄이기 설정이면 멈춘다 */
+@media (prefers-reduced-motion: no-preference) {
+  .fl { animation: fl 6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .tw { animation: tw 2.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+}
+@keyframes fl { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+@keyframes tw { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+.orn { position: absolute; pointer-events: none; }
+.orn svg { display: block; width: 100%; height: 100%; }
+
+/* 공통 컴포넌트 */
+.topbar { position: relative; display: flex; align-items: center; height: 56px; padding: 0 16px 0 4px; background: #fff; border-bottom: 1px solid var(--line); }
+.topbar h1 { position: absolute; left: 0; right: 0; margin: 0; font-size: 17px; font-weight: 500; text-align: center; pointer-events: none; }
+.iconbtn { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; }
+.iconbtn .ic { width: 26px; height: 26px; }
+.pbal { display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: 17px; font-weight: 800; }
+.pcoin { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #111; color: #fff; font-size: 13px; font-weight: 900; }
+.garland { position: absolute; left: 0; right: 0; z-index: 2; height: 26px; pointer-events: none; }
+.garland svg { display: block; width: 100%; height: 100%; }
+
+/* ── 포인트샵 ── */
+.info { margin: 16px 16px 0; padding: 14px 12px; border-radius: 14px; background: var(--info-bg); color: var(--info-ink); font-size: 13.5px; line-height: 1.55; text-align: center; }
+.cats { display: flex; gap: 8px; padding: 20px 16px 0; overflow-x: auto; }
+.cat { flex: none; width: 60px; padding: 0; border: 0; background: none; font-size: 13px; color: #4A4A4A; text-align: center; }
+.cat .ci { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 8px; border-radius: 50%; background: #F3F3F3; }
+.cat .ci svg { width: 34px; height: 34px; }
+.cat[aria-pressed="true"] { color: #111; font-weight: 800; }
+.cat[aria-pressed="true"] .ci { background: #111; }
+.search { display: flex; align-items: center; gap: 10px; height: 46px; margin: 18px 16px 0; padding: 0 16px; border: 1.5px solid #D6D6D6; border-radius: 999px; background: #fff; }
+.search input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 16px; }
+.search input::placeholder { color: #767676; }
+.search input:focus-visible { outline: none; }
+.search:focus-within { outline: 3px solid #1B64F2; outline-offset: 2px; }
+.search .ic { color: #333; }
+.sort { display: flex; align-items: center; gap: 14px; margin: 22px 16px 14px; font-size: 15px; }
+.sort button { min-height: 44px; padding: 0; border: 0; background: none; }
+.sort b { color: var(--accent); font-weight: 500; }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 12px; padding: 0 14px 28px; }
+.prod { display: block; padding: 0; border: 0; background: none; text-align: left; }
+.prod .tile { aspect-ratio: 176 / 116; overflow: hidden; border-radius: 12px; background: #F2F2F2; }
+.prod .tt { margin-top: 10px; font-size: 15px; font-weight: 800; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.prod .st { font-size: 13px; color: var(--muted); }
+.prod .pr { font-size: 15px; font-weight: 800; color: var(--accent); }
+.prod .sold { font-size: 15px; font-weight: 800; color: var(--c2-tag); }
+
+/* ── 박스구매 홈 ── */
+.hbar { position: relative; display: flex; align-items: center; gap: 14px; height: 56px; padding: 0 16px; overflow: hidden; background: var(--header-bg); color: #fff; font-size: 16px; font-weight: 800; }
+.hbar > * { position: relative; z-index: 1; }
+.hbar .orn { inset: 0; z-index: 0; }
+.hbar .hi { display: flex; align-items: center; gap: 5px; min-height: 44px; padding: 0; border: 0; background: none; font-weight: 800; }
+.hbar .hi .ic { width: 16px; height: 16px; stroke-width: 2.4; }
+.hcoin { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #fff; color: var(--header-bg); font-size: 13px; font-weight: 900; }
+.hcoin.bean { background: #4B241A; color: #fff; }
+.hcoin.tag { border-radius: 6px; background: #fff; color: var(--header-bg); font-size: 12px; }
+.hbar .right { margin-left: auto; }
+.banner { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 172px; margin: 16px 16px 0; padding: 18px 16px 16px; overflow: hidden; border-radius: 24px; color: var(--banner-ink); background: linear-gradient(160deg, var(--banner-a), var(--banner-b)); }
+.banner .orn { inset: 0; }
+.banner .bt { position: relative; margin: 10px 0 0; font-size: 26px; font-weight: 900; line-height: 1.2; letter-spacing: -.02em; text-align: center; text-shadow: 0 3px 0 rgba(0, 0, 0, .28); }
+.banner .btn { position: relative; display: block; width: 100%; min-height: 48px; border: 0; border-radius: 14px; background: #fff; color: var(--accent); font-size: 18px; font-weight: 800; }
+.boxgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 12px; padding: 16px 16px 28px; }
+.bcard { display: block; padding: 0; border: 0; background: none; text-align: left; }
+.bimg { position: relative; aspect-ratio: 172 / 188; overflow: hidden; border-radius: 24px; background: linear-gradient(160deg, var(--ca), var(--cb)); }
+.bimg .gift { position: absolute; inset: 14% 12% 8%; }
+.bimg .orn { inset: 0; }
+.pill { position: absolute; left: 12px; right: 12px; top: 50%; transform: translateY(-50%); padding: 8px 6px; border-radius: 999px; background: rgba(255, 255, 255, .86); color: #111; font-size: 15px; font-weight: 800; text-align: center; }
+.bcard .lb { margin-top: 10px; font-size: 16px; font-weight: 500; color: var(--ctag); }
+.bcard .ds { font-size: 14.5px; line-height: 1.45; color: #222; }
+
+/* ── 상품상세 ── */
+.hero { position: relative; height: 300px; overflow: hidden; background: linear-gradient(180deg, #CFCFCF, #8F8F8F); }
+.hero .back { position: absolute; top: 8px; left: 4px; z-index: 3; color: #fff; }
+.hero .art { position: absolute; inset: 0; }
+.hero .orn { right: 0; bottom: 0; width: 220px; height: 120px; z-index: 2; }
+.dtitle { margin: 0; padding: 22px 16px 0; font-size: 16px; font-weight: 400; line-height: 1.45; }
+.dtitle em { font-style: normal; color: var(--accent); }
+.dprice { padding: 8px 16px 18px; font-size: 20px; font-weight: 900; }
+.dtabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+.dtabs button { min-height: 48px; border: 0; border-bottom: 3px solid transparent; background: none; color: #767676; font-size: 16px; }
+.dtabs button[aria-current="true"] { border-bottom-color: #111; color: #111; font-weight: 500; }
+.notice { margin: 16px; padding: 16px; border-radius: 12px; background: #F6F6F6; }
+.notice b { display: block; margin-bottom: 8px; color: #4A1F1F; font-size: 16px; font-weight: 900; letter-spacing: .06em; }
+.notice p { margin: 0; font-size: 14px; line-height: 1.6; color: #333; }
+.dimg { display: grid; place-items: center; height: 260px; margin: 20px 40px; overflow: hidden; background: #F4F4F4; }
+.dimg svg { width: 70%; height: 90%; }
+.dtext { margin: 0 24px 24px; font-size: 13.5px; color: #555; line-height: 1.7; }
+.cta { position: sticky; bottom: 0; z-index: 3; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 58px; overflow: hidden; border: 0; background: var(--cta-bg); color: #fff; font-size: 20px; font-weight: 800; }
+.cta .orn { inset: 0; }
+.cta span { position: relative; }
+
+/* ── 뉴스룸 ── */
+.ntabs { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); background: #fff; }
+.ntabs button { position: relative; min-height: 48px; border: 0; border-bottom: 3px solid transparent; background: none; color: #767676; font-size: 14.5px; }
+.ntabs button[aria-current="true"] { border-bottom-color: #111; color: #111; font-weight: 800; }
+.ntabs .dot { position: absolute; top: 12px; right: 12px; width: 6px; height: 6px; border-radius: 50%; background: #E0343F; }
+.has-garland .ntabs { margin-top: 22px; }
+.banner.has-emblem .bt { padding-right: 76px; text-align: left; }
+.mission.has-emblem b { padding-right: 40px; }
+.car { position: relative; height: 330px; margin-top: 14px; overflow: hidden; }
+.ncard { position: absolute; top: 8px; width: 300px; height: 300px; padding: 20px; border-radius: 26px; color: #fff; text-align: center; box-shadow: 0 10px 28px rgba(0, 0, 0, .16); }
+.ncard.c0 { left: 45px; background: var(--n0); } .ncard.c1 { left: -267px; background: var(--n1); } .ncard.c2 { left: 357px; background: var(--n2); }
+.ncard .blob { width: 190px; height: 170px; margin: 0 auto 10px; }
+.ncard .who { font-size: 12px; font-weight: 500; }
+.ncard .nm { margin: 2px 0; font-size: 17px; font-weight: 800; line-height: 1.35; }
+.ncard .rp { font-size: 14px; font-weight: 500; }
+.dots { display: flex; justify-content: center; gap: 4px; margin-top: 4px; }
+.dots i { width: 5px; height: 5px; border-radius: 50%; background: #CFCFCF; }
+.dots i:first-child { width: 18px; border-radius: 3px; background: #111; }
+.nh { margin: 22px 16px 12px; font-size: 16px; font-weight: 800; }
+.rows { display: flex; flex-direction: column; gap: 10px; padding: 0 16px; }
+.row { position: relative; display: flex; align-items: center; gap: 12px; min-height: 92px; padding: 12px; border: 1.5px solid #E4E4E4; border-radius: 14px; background: #fff; }
+.row .th { flex: none; width: 66px; height: 66px; overflow: hidden; border-radius: 6px; background: #D5D5D5; }
+.row .tx { min-width: 0; font-size: 13.5px; line-height: 1.4; }
+.row .tx small { display: block; font-size: 12px; font-weight: 700; }
+.row .tx b { display: block; margin-top: 2px; font-size: 16px; }
+.row .when { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: var(--muted); }
+.row.fill { border-color: transparent; background: var(--tc); color: #fff; }
+.row.fill .when { color: #fff; }
+.row.line { border: 2px solid var(--tc); }
+.nnote { margin: 14px 16px 0; padding: 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-soft-ink); font-size: 13px; text-align: center; }
+.mission { position: relative; margin: 16px 16px 0; padding: 16px 14px 14px; overflow: hidden; border-radius: 20px; background: var(--mission); color: #fff; text-align: center; }
+.mission .orn { inset: 0; }
+.mission b { position: relative; display: block; margin-bottom: 12px; font-size: 18px; font-weight: 900; }
+.mission button { position: relative; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: #fff; color: var(--accent); font-size: 18px; font-weight: 800; }
+
+/* ── 구매하기(번호 선택) ── */
+.buy { background: linear-gradient(180deg, var(--g-a), var(--g-b)); color: #fff; }
+.btop { position: relative; display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 16px 0 4px; }
+.btop h1 { position: absolute; left: 0; right: 0; margin: 0; font-size: 16px; font-weight: 500; text-align: center; pointer-events: none; }
+.btop .iconbtn { color: #fff; }
+.bbal { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 800; color: #D8C8FF; }
+.bbal i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #4B241A; color: #fff; font-size: 12px; font-style: normal; font-weight: 900; }
+.bhero { position: relative; height: 196px; }
+.bhero svg { display: block; width: 100%; height: 100%; }
+.bsub { margin: -8px 0 14px; font-size: 16px; font-weight: 800; text-align: center; }
+.ngrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 0 20px 20px; }
+.nc { height: 58px; border: 0; border-radius: 10px; background: linear-gradient(180deg, var(--cell-hi), var(--cell)); box-shadow: 0 3px 0 rgba(0, 0, 0, .28); color: #fff; font-size: 20px; font-weight: 500; }
+.nc:disabled { background: var(--cell-dim); box-shadow: none; color: rgba(255, 255, 255, .22); cursor: default; }
+.nc.taken { background: var(--taken); color: rgba(255, 255, 255, .45); box-shadow: none; }
+.nc[aria-pressed="true"] { background: var(--mine); color: var(--mine-ink); font-weight: 900; box-shadow: 0 0 0 2px #fff inset, 0 0 16px var(--mine); }
+.sheet { position: sticky; bottom: 0; z-index: 4; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; background: #fff; color: #111; box-shadow: 0 -10px 30px rgba(0, 0, 0, .3); }
+.sheet .sh { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.sheet .sh b { font-size: 16px; font-weight: 800; }
+.sheet .sh em { margin-left: 4px; font-style: normal; font-size: 12px; color: var(--accent); }
+.sheet .sh span { font-size: 13px; color: var(--muted); }
+.slots { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 14px; }
+.slot { display: grid; place-items: center; height: 36px; border-radius: 8px; border: 1.5px dashed #C9C9C9; font-size: 15px; font-weight: 800; color: #999; }
+.slot.on { border: 0; background: #FFC800; color: #111; }
+.slot.old { border: 0; background: #FFF0B8; color: #6A5000; }
+.sheet .next { width: 100%; height: 54px; border: 0; border-radius: 999px; background: #000; color: #fff; font-size: 17px; font-weight: 800; }
+.floatpill { position: sticky; bottom: 92px; z-index: 3; width: max-content; margin: -40px auto 6px; padding: 8px 18px; border-radius: 999px; background: rgba(255, 255, 255, .88); color: #111; font-size: 13px; font-weight: 800; }
+
+.prod .tile { display: block; }
+.prod .tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cat .ci.img { overflow: hidden; background: none; }
+.cat .ci img { display: block; width: 56px; height: 56px; }
+.bimg .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bimg .pill { background: rgba(255, 255, 255, .97); box-shadow: 0 4px 14px rgba(0, 0, 0, .08); }
+.sticker { position: absolute; top: 10px; left: 10px; z-index: 2; width: 34px; height: 34px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .2)); }
+.sticker svg { display: block; width: 100%; height: 100%; }
+.row img.th { object-fit: cover; }
+.hero .back { color: #111; }
+.banner.img { min-height: 0; padding: 0; background: #150B2E; }
+.banner.img img { display: block; width: 100%; height: auto; }
+.banner .ghostbtn { position: absolute; left: 3%; right: 3%; bottom: 6%; height: 29%; border: 0; border-radius: 14px; background: transparent; }
+.sb { min-height: 184px; }
+.sb .bokeh { position: absolute; inset: 0; background: radial-gradient(circle at 84% 34%, var(--glow) 0, rgba(0, 0, 0, 0) 46%), radial-gradient(circle at 8% 100%, rgba(255, 255, 255, .18), rgba(255, 255, 255, 0) 40%); opacity: .55; }
+.bt3d { position: relative; display: flex; flex-direction: column; align-items: flex-start; margin: 6px 0 14px; font-size: 30px; line-height: 1.1; font-weight: 900; letter-spacing: -.03em; color: #fff; transform: rotate(-3deg); transform-origin: left center; text-shadow: 0 2px 0 rgba(0, 0, 0, .2), 0 4px 0 rgba(0, 0, 0, .2), 0 6px 0 rgba(0, 0, 0, .16), 0 12px 18px rgba(0, 0, 0, .35); }
+.bt3d .hl { color: var(--hl, #FFD84D); }
+.placeholder { display: grid; place-items: center; min-height: 560px; padding: 24px; color: var(--muted); text-align: center; }
+
+/* ── premium season layer ── */
+.bframe { position: relative; border-radius: 24px; }
+.bframe.on { padding: 3px; border-radius: 27px; background: var(--foil); box-shadow: 0 14px 26px -14px var(--foil-sh), 0 2px 5px rgba(0, 0, 0, .06); }
+.bframe.on::after { content: ''; position: absolute; inset: 3px; z-index: 2; border-radius: 24px; box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .7), inset 0 1px 10px rgba(255, 255, 255, .25); pointer-events: none; }
+.bframe .charm { position: absolute; top: -16px; left: -12px; z-index: 3; width: 56px; height: 56px; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .28)); transform: rotate(-8deg); }
+.bframe .charm.r { left: auto; right: -12px; transform: rotate(8deg) scaleX(-1); }
+.sb3 { min-height: 196px; padding: 0 16px 16px; justify-content: flex-end; background: radial-gradient(120% 90% at 50% 0%, var(--banner-b) 0%, var(--banner-a) 70%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(255, 255, 255, .07), 0 14px 30px -16px var(--banner-a); }
+.sb3 .spot { position: absolute; inset: 0; background: radial-gradient(46% 52% at 50% 34%, rgba(255, 255, 255, .26), rgba(255, 255, 255, 0) 70%), radial-gradient(60% 40% at 50% 100%, rgba(0, 0, 0, .28), rgba(0, 0, 0, 0)); }
+.sb3 .r3d { position: absolute; left: -2%; top: -4%; width: 104%; height: auto; pointer-events: none; }
+.sb3 .grain, .buy .grain { position: absolute; inset: 0; opacity: .16; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); pointer-events: none; }
+.sb3 .bt3d { align-items: center; align-self: center; margin: 0 0 16px; font-size: 30px; text-align: center; transform: none; text-shadow: 0 1px 0 rgba(0, 0, 0, .18), 0 2px 0 rgba(0, 0, 0, .18), 0 3px 0 rgba(0, 0, 0, .18), 0 4px 0 rgba(0, 0, 0, .16), 0 10px 18px rgba(0, 0, 0, .38); }
+.sb3 .btn { box-shadow: 0 6px 16px -6px rgba(0, 0, 0, .45), inset 0 -2px 0 rgba(0, 0, 0, .06); }
+.bhero { overflow: hidden; }
+.bhero svg { position: absolute; inset: 0; }
+.bhero .r3d { position: absolute; left: -11%; top: -2%; width: 122%; height: auto; }
+.bhero svg.ttl { z-index: 2; }
+.cta .charm-s { position: relative; width: 38px; height: 38px; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .3)); }
+.mission.has-charm { padding-top: 18px; }
+.mission .charm-m { position: absolute; top: -6px; right: 4px; width: 64px; height: 64px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, .3)); transform: rotate(10deg); }
+.mission.has-charm b { padding: 0 52px; }
+
+/* ── 하단 탭 ── */
+.tabbar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; height: 76px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #fff; }
+.tabbar[hidden] { display: none; }
+.tab { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 0; border-radius: 18px; background: none; color: #333; font-size: 12px; }
+.tab .ic { width: 26px; height: 26px; }
+.tab[aria-current="page"] { background: var(--accent-soft); color: var(--accent-soft-ink); font-weight: 800; }
+.tab .dot { position: absolute; top: 8px; left: calc(50% + 6px); width: 8px; height: 8px; border-radius: 50%; background: #E0343F; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6B0"/><stop offset=".55" stop-color="#FFC928"/><stop offset="1" stop-color="#FF9F0A"/></linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  </defs>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M21 12H4M10 5l-7 7 7 7"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.500 16.500L21 21"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v11h5v-6h4v6h5V10"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8.500 8h7M8.500 12h7M8.500 16h4"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 13v8h14v-8M12 9v12M12 9C9 4 5 6 7 8.500c1 1 3.500.8 5 .5zM12 9c3-5 7-3 5-.5-1 1-3.500.8-5 .5z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M4 4h16v5H4zM5 9v11h14V9M9.500 13h5"/></symbol>
+  <symbol id="i-diamond" viewBox="0 0 24 24"><path d="M7 4h10l4 5-9 11L3 9zM3 9h18M9 4l3 5 3-5M12 9v11"/></symbol>
+</svg>
+
+<div class="stage" id="stage">
+  <aside class="panel" aria-label="시즌 스킨 미리보기">
+    <h1>chocolatebox 시즌 스킨</h1>
+    <p>실제 화면 5장의 구조는 그대로 두고, 시즌마다 색·장식·문구가 바뀝니다.</p>
+    <div class="tgrid" id="tgrid" role="group" aria-label="테마"></div>
+    <label>화면
+      <select id="sel-screen">
+        <option value="boxes">박스구매 홈</option>
+        <option value="shop">포인트샵</option>
+        <option value="detail">상품상세</option>
+        <option value="news">뉴스룸</option>
+        <option value="buy">구매하기(번호 선택)</option>
+      </select>
+    </label>
+    <label>날짜 (자동 선택 기준)
+      <input type="date" id="inp-date">
+    </label>
+    <p id="panel-info"></p>
+    <a class="guide-link" href="guide.html">시즌 스킨 시스템 가이드 보기 →</a>
+  </aside>
+  <div class="phone">
+    <div class="app" id="app">
+      <div class="screens" id="screens"></div>
+      <nav class="tabbar" id="tabbar" aria-label="하단 메뉴"></nav>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────────
+     3. 시즌 설정 — 테마 1개 = 블록 1개 (window / seeds / orn / copy)
+     seeds만 정하면 derive()가 대비를 맞춰 모든 토큰을 계산한다.
+     ──────────────────────────────────────────────────────────────── -->
+<script type="application/json" id="themes">
+{
+  "default": "default",
+  "order": [
+    "christmas",
+    "newyear",
+    "valentine",
+    "spring",
+    "family",
+    "summer",
+    "autumn"
+  ],
+  "themes": {
+    "default": {
+      "name": "기본",
+      "label": "기본 (현재 서비스 룩)",
+      "window": null,
+      "seeds": {
+        "header": "#DC3328",
+        "cta": "#DC3328",
+        "accent": "#D82B3A",
+        "info": "#1668C4",
+        "banner": [
+          "#150B2E",
+          "#33196F"
+        ],
+        "mission": "#D23750",
+        "cards": [
+          "#F06A93",
+          "#EE4A5C",
+          "#6B3FE0",
+          "#F2C84B"
+        ],
+        "news": [
+          "#0A7E58",
+          "#6A35D8",
+          "#D6288E"
+        ],
+        "tiers": [
+          "#D6288E",
+          "#0DA9D1",
+          "#0A9A62",
+          "#6A35D8"
+        ],
+        "grid": [
+          "#1B0B4D",
+          "#3A1796"
+        ],
+        "cell": "#5A22D4",
+        "mine": "#22E5FF",
+        "taken": "#0E6B73",
+        "stroke": "#2B3FD6",
+        "glow": "#6E8BFF",
+        "ribbon": "#EDB866"
+      },
+      "orn": {
+        "scatter": [
+          "coin",
+          "star",
+          "coin"
+        ],
+        "colors": [
+          "#7B4DE0",
+          "#FFD84D",
+          "#9B6BFF"
+        ],
+        "bannerOnly": true,
+        "emblem": null,
+        "ecolors": [],
+        "garland": null
+      },
+      "copy": {
+        "banner": "쇼핑의 즐거움이 가득!!",
+        "mission": "101번째 신규유저 초코미션빙고"
+      },
+      "bannerImg": "banner-default"
+    },
+    "christmas": {
+      "name": "크리스마스",
+      "label": "크리스마스",
+      "window": [
+        "12-01",
+        "12-26"
+      ],
+      "seeds": {
+        "header": "#C0262D",
+        "cta": "#1F7A44",
+        "accent": "#C0262D",
+        "info": "#1F7A44",
+        "banner": [
+          "#0F2A1D",
+          "#1F5B3A"
+        ],
+        "mission": "#C0262D",
+        "cards": [
+          "#E0505E",
+          "#2E9E5B",
+          "#3A6FD8",
+          "#E8B33A"
+        ],
+        "news": [
+          "#1F7A44",
+          "#C0262D",
+          "#1F5FBF"
+        ],
+        "tiers": [
+          "#C0262D",
+          "#1F9AC9",
+          "#1F7A44",
+          "#7A3FB0"
+        ],
+        "grid": [
+          "#0B1F3A",
+          "#16407A"
+        ],
+        "cell": "#1F5FBF",
+        "mine": "#FFD84D",
+        "taken": "#1E7A4F",
+        "stroke": "#C0262D",
+        "glow": "#9CC8FF",
+        "ribbon": "#F0D27A"
+      },
+      "orn": {
+        "scatter": [
+          "flake",
+          "star",
+          "dot"
+        ],
+        "colors": [
+          "#FFFFFF",
+          "#CFE8FF",
+          "#FFD84D"
+        ],
+        "emblem": "tree",
+        "ecolors": [],
+        "garland": "lights",
+        "gcolors": [
+          "#FF4A4A",
+          "#FFD84D",
+          "#4ADE80",
+          "#5AB4FF"
+        ],
+        "hl": "#FFD84D",
+        "sticker": "flake"
+      },
+      "copy": {
+        "banner": "메리 크리스마스!|선물이 가득!!",
+        "mission": "크리스마스 초코미션빙고"
+      },
+      "boxFilters": [
+        "hue-rotate(12deg) saturate(1.25)",
+        "none",
+        "hue-rotate(-118deg) saturate(.95)",
+        "none"
+      ]
+    },
+    "newyear": {
+      "name": "신년",
+      "label": "신년",
+      "window": [
+        "12-27",
+        "01-19"
+      ],
+      "seeds": {
+        "header": "#14233F",
+        "cta": "#8A5F10",
+        "accent": "#9A6A12",
+        "info": "#14233F",
+        "banner": [
+          "#0A1228",
+          "#26345E"
+        ],
+        "mission": "#9A6A12",
+        "cards": [
+          "#E8B84A",
+          "#E85A6B",
+          "#4A78E0",
+          "#9B6BE0"
+        ],
+        "news": [
+          "#1F2F66",
+          "#8A5F10",
+          "#B0243A"
+        ],
+        "tiers": [
+          "#B0243A",
+          "#1E9CC4",
+          "#2B7A4B",
+          "#4A3FB0"
+        ],
+        "grid": [
+          "#0A1228",
+          "#1F2F66"
+        ],
+        "cell": "#3347A8",
+        "mine": "#FFD84D",
+        "taken": "#0E5C73",
+        "stroke": "#E0B040",
+        "glow": "#E8C86A",
+        "ribbon": "#F2D27A"
+      },
+      "orn": {
+        "scatter": [
+          "burst",
+          "confetti",
+          "star"
+        ],
+        "colors": [
+          "#FFD84D",
+          "#FF7A8A",
+          "#7AD8FF",
+          "#FFFFFF"
+        ],
+        "emblem": "firework",
+        "ecolors": [],
+        "garland": "stars",
+        "gcolors": [
+          "#FFD84D",
+          "#FFE9A0",
+          "#FFFFFF"
+        ],
+        "hl": "#FFD84D",
+        "sticker": "star"
+      },
+      "copy": {
+        "banner": "새해 복|많이 받으세요!!",
+        "mission": "신년 초코미션빙고"
+      },
+      "boxFilters": [
+        "hue-rotate(55deg) saturate(1.1)",
+        "none",
+        "hue-rotate(-25deg) brightness(.9)",
+        "none"
+      ]
+    },
+    "valentine": {
+      "name": "발렌타인",
+      "label": "발렌타인데이",
+      "window": [
+        "01-20",
+        "02-20"
+      ],
+      "seeds": {
+        "header": "#C2284E",
+        "cta": "#C2284E",
+        "accent": "#C2284E",
+        "info": "#C2284E",
+        "banner": [
+          "#3A0F2A",
+          "#8E1F4F"
+        ],
+        "mission": "#B5214D",
+        "cards": [
+          "#F06A93",
+          "#E84A5F",
+          "#B5379A",
+          "#F29B7F"
+        ],
+        "news": [
+          "#B5214D",
+          "#7A2E8E",
+          "#D6288E"
+        ],
+        "tiers": [
+          "#D6288E",
+          "#E0566B",
+          "#8A3FD0",
+          "#B5214D"
+        ],
+        "grid": [
+          "#33082A",
+          "#7A1B55"
+        ],
+        "cell": "#A02A78",
+        "mine": "#FF9EC4",
+        "taken": "#5C2A7A",
+        "stroke": "#FF4F8B",
+        "glow": "#FF8FB1",
+        "ribbon": "#FDE3CF"
+      },
+      "orn": {
+        "scatter": [
+          "heart",
+          "star",
+          "piece"
+        ],
+        "colors": [
+          "#FFB3D1",
+          "#FFFFFF",
+          "#FF6F9C",
+          "#FFD6A5"
+        ],
+        "emblem": "heart",
+        "ecolors": [
+          "#FF6F9C",
+          "#FFB3D1",
+          "#FFD6A5"
+        ],
+        "garland": "hearts",
+        "gcolors": [
+          "#FF6F9C",
+          "#FFB3D1",
+          "#FFFFFF",
+          "#FF8FB1"
+        ],
+        "hl": "#FFC2D8",
+        "sticker": "heart"
+      },
+      "copy": {
+        "banner": "달콤한 마음을|전해요!!",
+        "mission": "발렌타인 초코미션빙고"
+      },
+      "boxFilters": [
+        "none",
+        "hue-rotate(-12deg) saturate(1.05)",
+        "hue-rotate(55deg)",
+        "hue-rotate(-38deg) saturate(1.05)"
+      ]
+    },
+    "spring": {
+      "name": "봄",
+      "label": "봄",
+      "window": [
+        "02-21",
+        "04-30"
+      ],
+      "seeds": {
+        "header": "#CC4B73",
+        "cta": "#3F8F63",
+        "accent": "#C23A6A",
+        "info": "#3F8F63",
+        "banner": [
+          "#C93A6B",
+          "#F28DB0"
+        ],
+        "mission": "#3F8F63",
+        "cards": [
+          "#F59AB8",
+          "#8FCB8A",
+          "#F2C14E",
+          "#9BB8F0"
+        ],
+        "news": [
+          "#3F8F63",
+          "#CC4B73",
+          "#7A5BC0"
+        ],
+        "tiers": [
+          "#CC4B73",
+          "#2E9CC0",
+          "#3F8F63",
+          "#7A5BC0"
+        ],
+        "grid": [
+          "#10301F",
+          "#20603F"
+        ],
+        "cell": "#2F8F5F",
+        "mine": "#FFB6D0",
+        "taken": "#7A3A5C",
+        "stroke": "#FF7AA8",
+        "glow": "#9BE0B5",
+        "ribbon": "#FFFFFF"
+      },
+      "orn": {
+        "scatter": [
+          "blossom",
+          "petal"
+        ],
+        "colors": [
+          "#FFC1D6",
+          "#FFFFFF",
+          "#FF8FB3",
+          "#BFE8C0"
+        ],
+        "emblem": "branch",
+        "ecolors": [
+          "#F28BB0",
+          "#FFFFFF",
+          "#E86A98"
+        ],
+        "garland": "blossoms",
+        "gcolors": [
+          "#FFC1D6",
+          "#FFFFFF",
+          "#FF8FB3"
+        ],
+        "hl": "#FFF3B0",
+        "sticker": "blossom"
+      },
+      "copy": {
+        "banner": "봄맞이 쇼핑의|즐거움이 가득!!",
+        "mission": "봄맞이 초코미션빙고"
+      },
+      "boxFilters": [
+        "none",
+        "hue-rotate(-22deg) saturate(.75) brightness(1.06)",
+        "hue-rotate(-55deg) saturate(.85)",
+        "hue-rotate(45deg) saturate(.9)"
+      ]
+    },
+    "family": {
+      "name": "가정의 달",
+      "label": "가정의 달",
+      "window": [
+        "05-01",
+        "05-31"
+      ],
+      "seeds": {
+        "header": "#C0344F",
+        "cta": "#2E7D52",
+        "accent": "#B8334F",
+        "info": "#2E7D52",
+        "banner": [
+          "#B32B52",
+          "#EE6F86"
+        ],
+        "mission": "#2E7D52",
+        "cards": [
+          "#F28FA5",
+          "#F5B35A",
+          "#6FB58A",
+          "#8FA6E8"
+        ],
+        "news": [
+          "#B8334F",
+          "#2E7D52",
+          "#B8691F"
+        ],
+        "tiers": [
+          "#B8334F",
+          "#2E9CC0",
+          "#2E7D52",
+          "#9B5BC0"
+        ],
+        "grid": [
+          "#2A0F24",
+          "#6A2350"
+        ],
+        "cell": "#9B3070",
+        "mine": "#FFE08A",
+        "taken": "#2E6B5C",
+        "stroke": "#FF7A9C",
+        "glow": "#FF9FB5",
+        "ribbon": "#FFE3C0"
+      },
+      "orn": {
+        "scatter": [
+          "carnation",
+          "heart",
+          "petal"
+        ],
+        "colors": [
+          "#FF8FA5",
+          "#FFFFFF",
+          "#FFC1CD",
+          "#9BD6A8"
+        ],
+        "emblem": "carnation",
+        "ecolors": [
+          "#E8607F",
+          "#B8334F"
+        ],
+        "garland": "carnations",
+        "gcolors": [
+          "#FF8FA5",
+          "#FFC1CD",
+          "#FFFFFF"
+        ],
+        "hl": "#FFE08A",
+        "sticker": "carnation"
+      },
+      "copy": {
+        "banner": "가정의 달,|감사를 전해요!!",
+        "mission": "가정의 달 초코미션빙고"
+      },
+      "boxFilters": [
+        "none",
+        "none",
+        "hue-rotate(78deg) saturate(1.05)",
+        "none"
+      ]
+    },
+    "summer": {
+      "name": "여름",
+      "label": "여름",
+      "window": [
+        "06-01",
+        "08-31"
+      ],
+      "seeds": {
+        "header": "#0E7FB5",
+        "cta": "#E4572E",
+        "accent": "#0E6FA5",
+        "info": "#0E7FB5",
+        "banner": [
+          "#085E9C",
+          "#22AEE3"
+        ],
+        "mission": "#E4572E",
+        "cards": [
+          "#4CC3F0",
+          "#FF8A5B",
+          "#43C59E",
+          "#FFD34D"
+        ],
+        "news": [
+          "#0E7FB5",
+          "#E4572E",
+          "#1FA37A"
+        ],
+        "tiers": [
+          "#E4572E",
+          "#1FA3D0",
+          "#1FA37A",
+          "#6A5BD0"
+        ],
+        "grid": [
+          "#06284A",
+          "#0E5A8C"
+        ],
+        "cell": "#1A78B8",
+        "mine": "#FFE45C",
+        "taken": "#0E7A6A",
+        "stroke": "#27C2F0",
+        "glow": "#7AD8F0",
+        "ribbon": "#FFFFFF"
+      },
+      "orn": {
+        "scatter": [
+          "bubble",
+          "sun",
+          "wave"
+        ],
+        "colors": [
+          "#FFFFFF",
+          "#BDEBFF",
+          "#FFE45C",
+          "#7AD8F0"
+        ],
+        "emblem": "sun",
+        "ecolors": [],
+        "garland": "waves",
+        "gcolors": [
+          "#FFFFFF",
+          "#BDEBFF"
+        ],
+        "hl": "#FFE45C",
+        "sticker": "sun"
+      },
+      "copy": {
+        "banner": "시원한 여름,|쇼핑의 즐거움!!",
+        "mission": "서머 초코미션빙고"
+      },
+      "boxFilters": [
+        "hue-rotate(165deg) saturate(.95)",
+        "hue-rotate(14deg) saturate(1.1)",
+        "hue-rotate(-48deg)",
+        "none"
+      ]
+    },
+    "autumn": {
+      "name": "가을",
+      "label": "가을",
+      "window": [
+        "09-01",
+        "11-30"
+      ],
+      "seeds": {
+        "header": "#B5561F",
+        "cta": "#7A3E16",
+        "accent": "#B5481A",
+        "info": "#B5561F",
+        "banner": [
+          "#4A1F0C",
+          "#A8481A"
+        ],
+        "mission": "#A6361E",
+        "cards": [
+          "#E8793A",
+          "#C4472D",
+          "#D9A441",
+          "#8A9A3F"
+        ],
+        "news": [
+          "#B5561F",
+          "#7A5A12",
+          "#A6361E"
+        ],
+        "tiers": [
+          "#A6361E",
+          "#2A9CB0",
+          "#6F8A2A",
+          "#7A4BB0"
+        ],
+        "grid": [
+          "#2A1208",
+          "#6B2E14"
+        ],
+        "cell": "#9A4A22",
+        "mine": "#FFC247",
+        "taken": "#5C5A1E",
+        "stroke": "#F0902E",
+        "glow": "#F2A65A",
+        "ribbon": "#F0D79A"
+      },
+      "orn": {
+        "scatter": [
+          "maple",
+          "acorn",
+          "dot"
+        ],
+        "colors": [
+          "#F0902E",
+          "#C4472D",
+          "#FFC247",
+          "#B5651D"
+        ],
+        "emblem": "maple",
+        "ecolors": [
+          "#F0902E",
+          "#C4472D",
+          "#8A4B1C"
+        ],
+        "garland": "leaves",
+        "gcolors": [
+          "#F0902E",
+          "#C4472D",
+          "#FFC247",
+          "#B5651D"
+        ],
+        "hl": "#FFC247",
+        "sticker": "maple"
+      },
+      "copy": {
+        "banner": "가을 맞이|쇼핑의 즐거움!!",
+        "mission": "가을 초코미션빙고"
+      },
+      "boxFilters": [
+        "hue-rotate(38deg) saturate(1.15)",
+        "hue-rotate(14deg) saturate(.95) brightness(.96)",
+        "hue-rotate(-205deg) saturate(.75) brightness(.95)",
+        "hue-rotate(-14deg) saturate(1.1)"
+      ]
+    }
+  }
+}
+</script>
+
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById('themes').textContent);
+  const THEMES = DATA.themes;
+  const NS = 'http://www.w3.org/2000/svg';
+  const root = document.documentElement;
+  const $ = (sel) => document.querySelector(sel);
+  const params = new URLSearchParams(location.search);
+
+  /* DERIVE:START */
+  const hex2rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const rgb2hex = (r, g, b) => '#' + [r, g, b].map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('').toUpperCase();
+  const rgb2hsl = ([r, g, b]) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, l = (mx + mn) / 2; let h = 0, s = 0; if (d) { s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; } return [h, s * 100, l * 100]; };
+  const hsl2hex = (h, s, l) => { h = ((h % 360) + 360) % 360; s /= 100; l /= 100; const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l), f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return rgb2hex(f(0) * 255, f(8) * 255, f(4) * 255); };
+  const lum = (hex) => { const c = hex2rgb(hex).map((v) => v / 255).map((v) => (v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + .05) / (y + .05); };
+  const tint = (hex, s, l) => hsl2hex(rgb2hsl(hex2rgb(hex))[0], s, l);
+  const shift = (hex, dl) => { const [h, s, l] = rgb2hsl(hex2rgb(hex)); return hsl2hex(h, s, Math.max(2, Math.min(98, l + dl))); };
+  // 배경 위 글씨(또는 색 배경 위 흰 글씨)가 min 대비를 넘을 때까지 명도를 조정
+  const fit = (hex, bg, min = 4.5) => { let [h, s, l] = rgb2hsl(hex2rgb(hex)); let out = hex, n = 0; const step = lum(bg) > .4 ? -1.5 : 1.5; while (ratio(out, bg) < min && n++ < 90) { l = Math.max(2, Math.min(98, l + step)); out = hsl2hex(h, s, l); } return out; };
+  function derive(s) {
+    const W = '#FFFFFF', o = {};
+    o['--header-bg'] = fit(s.header, W); o['--cta-bg'] = fit(s.cta, W); o['--accent'] = fit(s.accent, W);
+    o['--accent-soft'] = tint(s.accent, 88, 94); o['--accent-soft-ink'] = fit(s.accent, o['--accent-soft']);
+    o['--info-bg'] = tint(s.info, 90, 95); o['--info-ink'] = fit(s.info, o['--info-bg']);
+    o['--banner-a'] = s.banner[0]; o['--banner-b'] = s.banner[1]; o['--banner-ink'] = s.bannerInk || W;
+    o['--page'] = s.page || '#F5F5F5'; o['--mission'] = fit(s.mission || s.accent, W);
+    s.cards.forEach((c, i) => { o['--c' + i + '-a'] = tint(c, 85, 95); o['--c' + i + '-b'] = tint(c, 75, 84); o['--c' + i + '-tag'] = fit(tint(c, 70, 40), W); o['--c' + i + '-gift'] = c; o['--c' + i + '-lid'] = shift(c, 9); });
+    s.news.forEach((c, i) => { o['--n' + i] = fit(c, W); });
+    s.tiers.forEach((c, i) => { o['--t' + i] = fit(c, W); });
+    o['--g-a'] = s.grid[0]; o['--g-b'] = s.grid[1];
+    o['--cell'] = fit(s.cell, W); o['--cell-hi'] = shift(o['--cell'], 9);
+    const [ch, cs] = rgb2hsl(hex2rgb(o['--cell'])); o['--cell-dim'] = hsl2hex(ch, cs * .6, 14);
+    o['--taken'] = fit(s.taken, W); o['--mine'] = s.mine; o['--mine-ink'] = '#111111'; o['--stroke'] = s.stroke; o['--glow'] = s.glow || s.stroke;
+    o['--rib'] = s.ribbon; o['--rib-shade'] = shift(s.ribbon, -22);
+    return o;
+  }
+  /* DERIVE:END */
+
+  /* ── 시즌 선택: 날짜 구간(MM-DD)에 맞는 테마. 연말~연초처럼 해를 넘는 구간도 처리 ── */
+  const inWindow = (md, [a, b]) => (a <= b ? md >= a && md <= b : md >= a || md <= b);
+  const pickTheme = (dateStr) => {
+    const md = dateStr.slice(5);
+    const hit = DATA.order.find((id) => THEMES[id].window && inWindow(md, THEMES[id].window));
+    return hit || DATA.default;
+  };
+  const todayKst = () => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date());
+
+  /* ── 시즌 장식: 모든 도형은 중심(0,0) 기준 약 16 단위 ── */
+  const rng = (seed) => () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const MAPLE = 'M0-9L2.2-4 7-6 5.2-1 9.5 0 5 2.4 6.2 7 1.6 5.2 0 9.5-1.6 5.2-6.2 7-5 2.4-9.5 0-5.2-1-7-6-2.2-4Z';
+  const HEART = 'M0 8C-6 3.6-9 .6-9-3.2c0-2.6 2-4.4 4.4-4.4 1.8 0 3.4 1 4.600 2.600 1.200-1.600 2.800-2.600 4.600-2.600 2.400 0 4.400 1.800 4.400 4.400C9 .6 6 3.600 0 8z';
+  const STAR = 'M0-8L2.200-2.400 8 0 2.200 2.400 0 8-2.200 2.400-8 0-2.200-2.400Z';
+  const scalloped = (c1, c2, r) => { let s = ''; for (let i = 0; i < 9; i++) { const a = i * 40 * Math.PI / 180; s += `<circle cx="${(Math.sin(a) * r * .62).toFixed(2)}" cy="${(-Math.cos(a) * r * .62).toFixed(2)}" r="${(r * .42).toFixed(2)}" fill="${c1}"/>`; } s += `<circle r="${(r * .7).toFixed(2)}" fill="${c1}"/>`; for (let i = 0; i < 6; i++) { const a = i * 60 * Math.PI / 180; s += `<circle cx="${(Math.sin(a) * r * .32).toFixed(2)}" cy="${(-Math.cos(a) * r * .32).toFixed(2)}" r="${(r * .2).toFixed(2)}" fill="${c2}" opacity=".55"/>`; } return s; };
+  const SHAPES = {
+    flake: (c) => `<g fill="none" stroke="${c}" stroke-width="1.5" stroke-linecap="round"><path d="M0-8V8M-6.9-4L6.9 4M-6.9 4L6.9-4"/><path d="M-2.4-6L0-3.6 2.4-6M-2.4 6L0 3.6 2.4 6"/></g>`,
+    dot: (c) => `<circle r="2.2" fill="${c}"/>`,
+    star: (c) => `<path d="${STAR}" fill="${c}"/>`,
+    heart: (c) => `<path d="${HEART}" fill="${c}"/>`,
+    piece: (c) => `<rect x="-6.5" y="-6.5" width="13" height="13" rx="3.5" fill="${c}"/><rect x="-3.8" y="-3.8" width="7.6" height="7.6" rx="2" fill="rgba(0,0,0,.2)"/>`,
+    petal: (c) => `<path d="M0-8C5-8 6-1 0 6-6-1-5-8 0-8Z" fill="${c}"/>`,
+    blossom: (c, c2) => `<g fill="${c}">${[0, 72, 144, 216, 288].map((a) => `<ellipse cx="0" cy="-4.4" rx="3.2" ry="4.6" transform="rotate(${a})"/>`).join('')}</g><circle r="1.7" fill="${c2 === c ? '#FFE08A' : '#FFE08A'}"/>`,
+    carnation: (c, c2) => scalloped(c, c2, 8),
+    maple: (c) => `<path d="${MAPLE}" fill="${c}" stroke="${c}" stroke-width="1.2" stroke-linejoin="round"/><path d="M0 9V-3" stroke="rgba(0,0,0,.25)" stroke-width="1"/>`,
+    acorn: (c) => `<path d="M-4.200-1Q-4.200 7 0 8.500Q4.200 7 4.200-1Z" fill="${c}"/><path d="M-5.400-1Q0-8 5.400-1Z" fill="rgba(0,0,0,.45)"/>`,
+    bubble: (c) => `<circle r="6" fill="none" stroke="${c}" stroke-width="1.6"/><circle cx="-2.200" cy="-2.200" r="1.300" fill="${c}"/>`,
+    sun: (c) => `<circle r="4" fill="${c}"/>${Array.from({ length: 8 }, (_, i) => `<path d="M0-6.500V-9" stroke="${c}" stroke-width="1.8" stroke-linecap="round" transform="rotate(${i * 45})"/>`).join('')}`,
+    wave: (c) => `<path d="M-8 0q2-4 4 0t4 0t4 0t4 0" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round"/>`,
+    burst: (c) => `<g stroke="${c}" stroke-width="1.6" stroke-linecap="round">${Array.from({ length: 10 }, (_, i) => `<path d="M0-3.500V-8" transform="rotate(${i * 36})"/>`).join('')}</g><circle r="1.600" fill="${c}"/>`,
+    confetti: (c) => `<rect x="-1.200" y="-3.200" width="2.400" height="6.400" rx=".6" fill="${c}"/>`,
+    coin: (c) => `<circle r="7.200" fill="${c}"/><circle r="5.200" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/><text y="3.300" font-size="8.500" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">P</text>`
+  };
+  // 격자에 흩뿌리되 약간씩 흔들어 자연스럽게
+  function scatter(types, w, h, n, seed, colors, opt = {}) {
+    const r = rng(seed), [x0, x1] = opt.zone || [0, 1], [smin, smax] = opt.size || [.8, 1.4];
+    const rows = Math.max(1, Math.round(Math.sqrt(n * h / ((x1 - x0) * w)))), cols = Math.ceil(n / rows);
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      let cx = (x0 + ((i % cols) + .2 + r() * .6) / cols * (x1 - x0)) * w;
+      const cy = ((Math.floor(i / cols) + .2 + r() * .6) / rows) * h;
+      // 글씨가 놓이는 영역(avoid)을 피해 양옆으로 밀어낸다
+      if (opt.avoid) { const [a0, a1, b0, b1] = opt.avoid; if (cx / w > a0 && cx / w < a1 && cy / h > b0 && cy / h < b1) cx = cx / w < (a0 + a1) / 2 ? Math.max(6, a0 * w - 8) : Math.min(w - 6, a1 * w + 8); }
+      const t = types[i % types.length], c = colors[i % colors.length], c2 = colors[(i + 1) % colors.length];
+      const sc = smin + r() * (smax - smin), rot = Math.round(r() * 60 - 30), op = (.55 + r() * .4).toFixed(2);
+      const twink = ['star', 'dot', 'burst', 'confetti'].includes(t) ? 'tw' : 'fl';
+      out += `<g transform="translate(${cx.toFixed(1)} ${cy.toFixed(1)}) rotate(${rot}) scale(${sc.toFixed(2)})" opacity="${op}"><g class="${twink}" style="--d:${(r() * 3).toFixed(1)}s">${SHAPES[t](c, c2)}</g></g>`;
+    }
+    return out;
+  }
+  const EMBLEMS = {
+    tree: () => '<defs><linearGradient id="eTree" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FD18A"/><stop offset="1" stop-color="#136B3A"/></linearGradient><radialGradient id="eBallR" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#FFB3B3"/><stop offset=".45" stop-color="#E23B3B"/><stop offset="1" stop-color="#8A1220"/></radialGradient><radialGradient id="eBallG" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#FFF6C0"/><stop offset=".45" stop-color="#F2C230"/><stop offset="1" stop-color="#A8740C"/></radialGradient><filter id="eGlow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter></defs>'
+      + '<circle cx="60" cy="10" r="14" fill="#FFE27A" filter="url(#eGlow)" opacity=".9"/>'
+      + '<path d="M60 12L84 44H36Z" fill="url(#eTree)"/><path d="M60 30L90 70H30Z" fill="url(#eTree)"/><path d="M60 52L98 102H22Z" fill="url(#eTree)"/>'
+      + '<path d="M36 44q12 7 24 0t24 0M30 70q15 8 30 0t30 0M22 102q19 8 38 0t38 0" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".85"/>'
+      + '<rect x="53" y="100" width="14" height="13" rx="2" fill="#7A4A26"/><path d="M60 -1l3.8 7.7 8.5 1.3-6.2 6 1.5 8.4L60 18.400 52.400 22.400l1.500-8.400-6.200-6 8.500-1.300z" fill="#FFD84D" stroke="#F2A900" stroke-width="1"/>'
+      + '<circle cx="50" cy="52" r="4.6" fill="url(#eBallR)"/><circle cx="72" cy="62" r="4.6" fill="url(#eBallG)"/><circle cx="42" cy="84" r="5" fill="url(#eBallG)"/><circle cx="78" cy="88" r="5" fill="url(#eBallR)"/><circle cx="60" cy="76" r="4.2" fill="url(#eBallR)"/>',
+    firework: () => '<defs><filter id="eFw" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6"/></filter></defs>'
+      + [['#FFD84D', 60, 56, 1], ['#FF7A9A', 22, 26, .55], ['#7AD8FF', 100, 30, .5]].map(([c, x, y, k]) => '<g transform="translate(' + x + ' ' + y + ') scale(' + k + ')"><g filter="url(#eFw)" opacity=".85">' + Array.from({ length: 16 }, (_, i) => '<path d="M0-14V-44" stroke="' + c + '" stroke-width="5" stroke-linecap="round" transform="rotate(' + (i * 22.5) + ')"/>').join('') + '</g>' + Array.from({ length: 16 }, (_, i) => '<path d="M0-14V-44" stroke="#FFF8D6" stroke-width="2" stroke-linecap="round" transform="rotate(' + (i * 22.5) + ')"/><circle r="3" fill="' + c + '" transform="rotate(' + (i * 22.5) + ') translate(0 -50)"/>').join('') + '<circle r="7" fill="#FFF8D6"/></g>').join(''),
+    heart: (c) => '<defs><radialGradient id="eHeart" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFD0E0"/><stop offset=".45" stop-color="' + c[0] + '"/><stop offset="1" stop-color="#A3123F"/></radialGradient><filter id="eHg" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter></defs>'
+      + '<g transform="translate(60 64) scale(5)"><path d="' + HEART + '" fill="' + c[0] + '" filter="url(#eHg)" opacity=".55"/><path d="' + HEART + '" fill="url(#eHeart)"/><path d="M-5.5-5c1.2-1.9 3.200-2.300 4.600-1.300" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.3" stroke-linecap="round"/></g>'
+      + '<g transform="translate(102 28) scale(1.7)"><path d="' + HEART + '" fill="url(#eHeart)"/></g><g transform="translate(18 92) scale(1.3)"><path d="' + HEART + '" fill="' + c[2] + '"/></g>'
+      + '<path d="M88 104l2.400 6 6 2.400-6 2.400-2.400 6-2.400-6-6-2.400 6-2.400z" fill="#fff"/>',
+    branch: (c) => '<defs><radialGradient id="eBl" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFD3E2"/><stop offset="1" stop-color="' + c[0] + '"/></radialGradient></defs>'
+      + '<path d="M4 108C38 88 62 64 116 14" fill="none" stroke="#6E3F28" stroke-width="5.5" stroke-linecap="round"/><path d="M48 76C64 76 76 66 84 52M84 36C92 40 100 38 108 30" fill="none" stroke="#6E3F28" stroke-width="3.5" stroke-linecap="round"/>'
+      + [[26, 92, 2.1], [50, 74, 2.4], [76, 54, 2.2], [100, 32, 2.4], [66, 60, 1.6], [106, 50, 1.7], [88, 22, 1.5]].map(([x, y, k]) => '<g transform="translate(' + x + ' ' + y + ') scale(' + k + ')"><g fill="url(#eBl)">' + [0, 72, 144, 216, 288].map((a) => '<ellipse cx="0" cy="-4.4" rx="3.3" ry="4.7" transform="rotate(' + a + ')"/>').join('') + '</g><circle r="1.6" fill="#FFC94A"/></g>').join('')
+      + '<g transform="translate(90 96) rotate(24) scale(1.5)">' + SHAPES.petal('#FFD3E2') + '</g><g transform="translate(36 34) rotate(-30) scale(1.3)">' + SHAPES.petal('#FFC1D6') + '</g>',
+    carnation: (c) => '<defs><radialGradient id="eCn" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#FFC6D2"/><stop offset=".6" stop-color="' + c[0] + '"/><stop offset="1" stop-color="' + c[1] + '"/></radialGradient></defs>'
+      + '<path d="M60 70C57 88 63 100 60 118" fill="none" stroke="#3E9B5A" stroke-width="5" stroke-linecap="round"/><path d="M60 98C46 88 34 92 28 102 40 108 52 106 60 98Z" fill="#4FB26A"/><path d="M61 90C74 80 86 82 92 92 80 99 70 97 61 90Z" fill="#3E9B5A"/>'
+      + '<path d="M50 66h20l-3 10H53z" fill="#6CC17F"/><g transform="translate(60 44) scale(3)">' + scalloped('url(#eCn)', c[1], 8) + '</g>'
+      + '<path d="M40 64q10 6 20 0" fill="none" stroke="#FFE08A" stroke-width="3" stroke-linecap="round"/>',
+    sun: () => '<defs><radialGradient id="eSun" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#FFFBD0"/><stop offset=".5" stop-color="#FFD84D"/><stop offset="1" stop-color="#FFA41B"/></radialGradient><filter id="eSg" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter></defs>'
+      + '<circle cx="62" cy="52" r="34" fill="#FFD84D" filter="url(#eSg)" opacity=".7"/>'
+      + Array.from({ length: 12 }, (_, i) => '<path d="M0-32V-44" stroke="#FFE27A" stroke-width="6" stroke-linecap="round" transform="translate(62 52) rotate(' + (i * 30) + ')"/>').join('')
+      + '<circle cx="62" cy="52" r="26" fill="url(#eSun)"/>'
+      + '<path d="M2 102q14-12 29 0t29 0t29 0t29 0" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M2 116q14-12 29 0t29 0t29 0t29 0" fill="none" stroke="#BDEBFF" stroke-width="5" stroke-linecap="round" opacity=".9"/>',
+    maple: (c) => '<defs><linearGradient id="eM1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC15A"/><stop offset="1" stop-color="' + c[0] + '"/></linearGradient><linearGradient id="eM2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F26B3A"/><stop offset="1" stop-color="' + c[1] + '"/></linearGradient></defs>'
+      + '<g transform="translate(48 50) rotate(-14) scale(4)"><path d="' + MAPLE + '" fill="url(#eM1)" stroke="url(#eM1)" stroke-width="1.2" stroke-linejoin="round"/><path d="M0 9V-4M0 0L-4-3M0 2L4-1" stroke="rgba(120,40,0,.35)" stroke-width=".6" fill="none"/></g>'
+      + '<g transform="translate(90 78) rotate(20) scale(2.9)"><path d="' + MAPLE + '" fill="url(#eM2)" stroke="url(#eM2)" stroke-width="1.2" stroke-linejoin="round"/></g>'
+      + '<g transform="translate(26 100) scale(2.4)">' + SHAPES.acorn(c[2]) + '</g>'
+  };
+  const emblem = (type, colors, x, y, size) => (type && EMBLEMS[type] ? `<g transform="translate(${x} ${y}) scale(${(size / 120).toFixed(3)})">${EMBLEMS[type](colors)}</g>` : '');
+  function garland(type, w, colors, seed) {
+    const n = 6, seg = w / n, r = rng(seed);
+    let wire = `M0 4`; for (let i = 0; i < n; i++) wire += ` Q${(seg * (i + .5)).toFixed(1)} 20 ${(seg * (i + 1)).toFixed(1)} 4`;
+    if (type === 'waves') {
+      return `<svg viewBox="0 0 ${w} 26" preserveAspectRatio="none" aria-hidden="true">${[0, 1].map((k) => `<path d="M0 ${9 + k * 5}${Array.from({ length: Math.ceil(w / 40) }, () => 'q10 -8 20 0t20 0').join('')}" fill="none" stroke="${colors[k]}" stroke-width="3.200" stroke-linecap="round" opacity="${k ? .55 : .9}"/>`).join('')}</svg>`;
+    }
+    let items = '';
+    for (let i = 0; i < n; i++) {
+      const x = seg * (i + .5), y = 12.5, c = colors[i % colors.length], d = (r() * 2).toFixed(1);
+      if (type === 'lights') items += `<g class="tw" style="--d:${d}s"><path d="M${x - 2} ${y - .5}h4l-1 4h-2z" fill="#3A3A3A"/><circle cx="${x}" cy="${y + 8}" r="5.200" fill="${c}"/><circle cx="${x}" cy="${y + 8}" r="9" fill="${c}" opacity=".25"/></g>`;
+      else if (type === 'hearts') items += `<g transform="translate(${x} ${y + 6}) scale(.8)" class="fl" style="--d:${d}s"><path d="${HEART}" fill="${c}"/></g>`;
+      else if (type === 'blossoms') items += `<g transform="translate(${x} ${y + 4}) scale(.95)" class="fl" style="--d:${d}s">${SHAPES.blossom(c, c)}</g>`;
+      else if (type === 'leaves') items += `<g transform="translate(${x} ${y + 5}) rotate(${(r() * 40 - 20).toFixed(0)}) scale(.75)" class="fl" style="--d:${d}s">${SHAPES.maple(c)}</g>`;
+      else if (type === 'stars') items += `<g transform="translate(${x} ${y + 5}) scale(.85)" class="tw" style="--d:${d}s"><path d="${STAR}" fill="${c}"/></g>`;
+      else if (type === 'carnations') items += `<g transform="translate(${x} ${y + 5}) scale(.8)" class="fl" style="--d:${d}s">${SHAPES.carnation(c, colors[(i + 1) % colors.length])}</g>`;
+    }
+    return `<svg viewBox="0 0 ${w} 26" preserveAspectRatio="none" aria-hidden="true"><path d="${wire}" fill="none" stroke="rgba(60,60,60,.55)" stroke-width="1.600"/>${items}</svg>`;
+  }
+  const ornSvg = (w, h, inner) => `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true">${inner}</svg>`;
+
+  /* 슬롯별 장식 생성 — 테마의 orn 설정(scatter 종류·색·emblem·garland)을 슬롯 크기에 맞춰 그린다 */
+  const on = (o) => o.scatter.length && !o.bannerOnly; // bannerOnly: 기본 테마처럼 배너에만 장식
+  const R3D = {
+    christmas: { foil: 'linear-gradient(135deg,#FFE7A3 0%,#D4A23A 22%,#FFF6D8 46%,#B7832A 70%,#F3D27A 100%)', sh: 'rgba(150,20,30,.42)' },
+    newyear: { foil: 'linear-gradient(135deg,#FFF0B8 0%,#E0A93B 24%,#FFF8DC 47%,#A9761C 72%,#F5D57E 100%)', sh: 'rgba(20,35,63,.42)' },
+    valentine: { foil: 'linear-gradient(135deg,#FFD9CF 0%,#E39A89 24%,#FFF1EC 47%,#C26E62 72%,#F7C3B5 100%)', sh: 'rgba(190,30,70,.36)' },
+    spring: { foil: 'linear-gradient(135deg,#FFE3EE 0%,#F4A9C6 24%,#FFFFFF 47%,#DDBDF0 72%,#FFD3E4 100%)', sh: 'rgba(225,90,140,.32)' },
+    family: { foil: 'linear-gradient(135deg,#FFE0C2 0%,#F09A74 24%,#FFF4EA 47%,#D46E56 72%,#FFCDAA 100%)', sh: 'rgba(200,50,70,.32)' },
+    summer: { foil: 'linear-gradient(135deg,#C9F3FF 0%,#5CC9F0 24%,#FFFFFF 47%,#8EE0C6 72%,#B5E5FF 100%)', sh: 'rgba(10,100,170,.32)' },
+    autumn: { foil: 'linear-gradient(135deg,#FFD9A8 0%,#C46F2A 24%,#FFE6C2 47%,#93501E 72%,#E7A257 100%)', sh: 'rgba(130,55,15,.38)' }
+  };
+  const slot = {
+    strip: (o, seed = 3) => (false ? ornSvg(390, 56, scatter(o.scatter, 390, 56, 12, seed, o.colors, { size: [.7, 1] })) : ''),
+    banner: (o, seed = 5) => (o.scatter.length ? ornSvg(358, 172, scatter(o.scatter, 358, 172, 10, seed, o.bcolors || o.colors, { size: [.7, 1.1], avoid: [0, .64, .06, .7] }) + emblem(o.emblem, o.ecolors, 226, 2, 128)) : ''),
+    card: (o, seed = 7) => (false ? ornSvg(172, 188, scatter(o.scatter, 172, 188, 6, seed, o.colors, { size: [.7, 1.1] })) : ''),
+    hero: (o, seed = 9) => (false ? ornSvg(220, 120, scatter(o.scatter, 220, 120, 8, seed, o.colors, { size: [.8, 1.3] })) : ''),
+    cta: (o, seed = 11) => (false ? ornSvg(390, 58, scatter(o.scatter, 390, 58, 8, seed, o.colors, { size: [.7, 1], avoid: [.18, .82, 0, 1] })) : ''),
+    mission: (o, seed = 13) => (false ? ornSvg(358, 110, scatter(o.scatter, 358, 110, 8, seed, o.colors, { size: [.7, 1.1], avoid: [0, .78, .06, .6] }) + emblem(o.emblem, o.ecolors, 290, 6, 60)) : '')
+  };
+
+  /* ── 상품·카테고리 일러스트(이미지 자리 대체) ── */
+  const svg = (vb, inner) => `<svg viewBox="${vb}" aria-hidden="true">${inner}</svg>`;
+  const ART = {
+    card: svg('0 0 176 116', `<rect x="22" y="20" width="132" height="78" rx="9" fill="#17171C"/><text x="88" y="48" font-size="6" fill="#aaa" text-anchor="middle" font-family="sans-serif">THANKS CARD</text><text x="88" y="68" font-size="18" font-weight="900" fill="#C8323C" text-anchor="middle" font-family="sans-serif">100,000원</text><rect x="132" y="78" width="14" height="14" rx="2" fill="#fff"/>`),
+    tumbler: svg('0 0 176 116', `<rect x="60" y="22" width="10" height="26" rx="4" fill="#8E7CD8" transform="rotate(14 65 35)"/><path d="M58 40h50l-4 62a8 8 0 0 1-8 7H70a8 8 0 0 1-8-7z" fill="#C9BEEE"/><path d="M58 40h50l-1 14H59z" fill="#A99BE2"/><path d="M108 56h12a8 8 0 0 1 0 22h-10" fill="none" stroke="#A99BE2" stroke-width="6" stroke-linecap="round"/><path d="M130 66c8-18 22-20 30-16-4 12-16 22-30 16z" fill="#4E9B6B"/>`),
+    phone: svg('0 0 176 116', `<rect x="46" y="16" width="52" height="92" rx="12" fill="#E98B4B"/><rect x="72" y="12" width="54" height="94" rx="12" fill="#ECECEF"/><circle cx="58" cy="30" r="5" fill="#2B2B30"/><circle cx="72" cy="30" r="5" fill="#2B2B30"/><rect x="104" y="22" width="22" height="80" rx="9" fill="#1C1C22" opacity=".9"/><circle cx="88" cy="32" r="4" fill="#3A3A40"/>`),
+    cookie: svg('0 0 176 116', `<rect x="14" y="14" width="148" height="88" rx="6" fill="#EFE2CD"/>${Array.from({ length: 24 }, (_, i) => `<rect x="${24 + (i % 8) * 17}" y="${24 + Math.floor(i / 8) * 25}" width="14" height="21" rx="4" fill="${i % 2 ? '#D9A24E' : '#E8B766'}"/>`).join('')}`),
+    bag: svg('0 0 120 100', `<path d="M38 36c0-16 8-24 22-24s22 8 22 24" fill="none" stroke="#2B2B2B" stroke-width="5"/><rect x="14" y="34" width="92" height="50" rx="14" fill="#3A3A3A"/><rect x="14" y="34" width="92" height="14" rx="7" fill="#4A4A4A"/><circle cx="60" cy="58" r="4" fill="#C9C9C9"/>`),
+    band: svg('0 0 120 160', `<rect x="26" y="0" width="68" height="160" rx="10" fill="#2F3F63"/><rect x="18" y="52" width="84" height="50" rx="8" fill="#8F8B84"/><rect x="26" y="66" width="68" height="22" rx="4" fill="#A8A49C"/>`),
+    blender: svg('0 0 120 150', `<path d="M36 18h48l-6 70H42z" fill="#CFE6F2" opacity=".9"/><path d="M42 88h36v10H42z" fill="#8A8F96"/><rect x="30" y="98" width="60" height="42" rx="10" fill="#4A4F57"/><rect x="40" y="10" width="40" height="10" rx="4" fill="#5A606A"/><path d="M84 30c14 0 14 34 0 34" fill="none" stroke="#7A808A" stroke-width="5"/>`),
+    gift: (() => svg('0 0 240 240', `<ellipse cx="120" cy="222" rx="80" ry="9" fill="rgba(0,0,0,.14)"/><rect class="g-body" x="40" y="104" width="160" height="112" rx="16"/><path d="M152 104h32a16 16 0 0 1 16 16v80a16 16 0 0 1-16 16h-32z" fill="rgba(0,0,0,.10)"/><rect class="g-lid" x="30" y="78" width="180" height="42" rx="14"/><rect x="38" y="82" width="164" height="10" rx="5" fill="rgba(255,255,255,.28)"/><rect x="40" y="118" width="160" height="8" fill="rgba(0,0,0,.12)"/><rect class="g-rib" x="102" y="78" width="36" height="138"/><rect x="114" y="78" width="7" height="138" fill="rgba(255,255,255,.32)"/><path class="g-rib" d="M120 80C96 24 42 36 72 74c13 11 36 9 48 6z"/><path class="g-rib" d="M120 80C144 24 198 36 168 74c-13 11-36 9-48 6z"/><rect class="g-rib" x="104" y="64" width="32" height="26" rx="11"/>`))(),
+    cube: svg('0 0 240 240', `<ellipse cx="120" cy="214" rx="76" ry="9" fill="rgba(0,0,0,.12)"/><path d="M120 34L196 76V160L120 202L44 160V76Z" class="g-body"/><path d="M120 34L196 76L120 118L44 76Z" class="g-lid"/><path d="M120 118V202L44 160V76Z" fill="rgba(0,0,0,.12)"/><path d="M120 34L196 76L120 118L44 76Z" fill="url(#sheen)"/><rect x="108" y="64" width="24" height="76" rx="4" class="g-rib" transform="rotate(0)"/>`)
+  };
+  const CATS = [
+    { label: '전체', img: 'cat-all', ic: `<rect x="6" y="6" width="9" height="9" rx="3" fill="#fff"/><circle cx="26" cy="11" r="5" fill="#fff"/><circle cx="11" cy="26" r="5" fill="#fff"/><path d="M26 21l5 5-5 5-5-5z" fill="#fff"/>` },
+    { label: '리퍼상품', img: 'cat-refurb', ic: `<path d="M10 22a12 12 0 1 0 6-14" fill="none" stroke="#F0A23B" stroke-width="7" stroke-linecap="round"/><path d="M8 6l10 3-7 8z" fill="#F0A23B"/>` },
+    { label: '기프티콘', img: 'cat-gifticon', ic: `<ellipse cx="20" cy="20" rx="15" ry="12" fill="#F0508C"/><text x="20" y="23" font-size="7" fill="#fff" text-anchor="middle" font-family="sans-serif">gifticon</text>` },
+    { label: '가전', img: 'cat-appliance', ic: `<rect x="9" y="6" width="22" height="30" rx="4" fill="#8FBFA6"/><rect x="13" y="12" width="14" height="10" rx="2" fill="#5E8E78"/><rect x="12" y="28" width="16" height="6" rx="2" fill="#E6E6E6"/>` },
+    { label: '식품', img: 'cat-food', ic: `<path d="M9 14h22l-2 20H11z" fill="#E7C08A"/><circle cx="16" cy="12" r="4" fill="#D9473A"/><circle cx="24" cy="10" r="4" fill="#4EA05E"/>` },
+    { label: '뷰티', img: 'cat-beauty', ic: `<rect x="6" y="14" width="28" height="18" rx="4" fill="#F28DAE"/><circle cx="14" cy="23" r="4" fill="#F7C6D6"/><circle cx="26" cy="23" r="4" fill="#E86A92"/><path d="M26 6l6 6-8 8z" fill="#D9473A"/>` },
+    { label: '문구', ic: `<path d="M8 30L26 8l6 6L14 36z" fill="#F0C14B"/><path d="M8 30l-2 6 6-2z" fill="#444"/>` }
+  ];
+
+  /* ── DOM 헬퍼 ── */
+  const h = (tag, props, ...kids) => {
+    const el = document.createElement(tag);
+    Object.entries(props || {}).forEach(([k, v]) => {
+      if (v == null || v === false) return;
+      if (k === 'class') el.className = v; else if (k === 'text') el.textContent = v; else if (k === 'style') el.style.cssText = v;
+      else if (k === 'html') el.innerHTML = v; else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    });
+    kids.flat().forEach((c) => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c)); });
+    return el;
+  };
+  const icon = (name, cls = '') => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('class', ('ic ' + cls).trim()); s.setAttribute('aria-hidden', 'true'); const u = document.createElementNS(NS, 'use'); u.setAttribute('href', '#i-' + name); s.append(u); return s; };
+  const art = (markup, cls = 'art', style = '') => h('span', { class: cls, style, 'aria-hidden': 'true', html: markup });
+  const orn = (markup, cls = '') => (markup ? h('div', { class: ('orn ' + cls).trim(), 'aria-hidden': 'true', html: markup }) : null);
+
+  /* ── 상태 ── */
+  const SCREENS = ['boxes', 'shop', 'detail', 'news', 'buy', 'home', 'mypage'];
+  const TABBED = (s) => ['boxes', 'shop', 'news', 'home', 'mypage'].includes(s);
+  const state = {
+    theme: params.get('theme') && (params.get('theme') === 'auto' || THEMES[params.get('theme')]) ? params.get('theme') : 'auto',
+    screen: SCREENS.includes(params.get('screen')) ? params.get('screen') : 'boxes',
+    date: /^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '') ? params.get('date') : todayKst()
+  };
+  const effective = () => (state.theme === 'auto' ? pickTheme(state.date) : state.theme);
+  const T = () => THEMES[effective()];
+  const go = (screen) => { state.screen = screen; render(); sync(); };
+
+  /* ── 화면 ── */
+  function shop() {
+    const t = T(), o = t.orn;
+    const items = [
+      { t: 'ThanksQR 적립금 100,000원권', s: 0, art: 'card', sold: true },
+      { t: '[르비에]대용량 텀블러 1.18L', s: 15, p: '30,000 P', art: 'tumbler' },
+      { t: '[브랜드] 프리미엄 스마트폰', s: 3, p: '980,000 P', art: 'phone' },
+      { t: '수제 마들렌·휘낭시에 선물세트', s: 8, p: '28,000 P', art: 'cookie' }
+    ];
+    return h('div', { class: 'screen has-tabs' },
+      h('header', { class: 'topbar' }, h('button', { class: 'iconbtn', type: 'button', 'aria-label': '뒤로', onClick: () => go('boxes') }, icon('back')), h('h1', { text: '포인트샵' }), h('div', { class: 'pbal' }, h('span', { class: 'pcoin', text: 'P' }), '1,289,050')),
+      h('div', { class: 'garland', style: 'top:56px', html: garlandFor(o) }),
+      h('div', { class: 'info' }, '보유 포인트로 원하는 상품을 선택하여 교환할 수 있습니다.', h('br'), '(단, 상품권 및 기프티콘은 합산 1인 1일 최대 4개 교환 가능합니다.)'),
+      h('div', { class: 'cats' }, CATS.map((c, i) => h('button', { class: 'cat', type: 'button', 'aria-pressed': String(i === 0) }, h('span', { class: 'ci' + (c.img ? ' img' : '') }, c.img ? h('img', { src: 'assets/' + c.img + '.png', alt: '' }) : svgInline('0 0 40 40', c.ic)), c.label))),
+      h('label', { class: 'search' }, icon('search'), h('span', { class: 'sr-only', text: '상품검색' }), h('input', { type: 'search', placeholder: '상품검색' })),
+      h('div', { class: 'sort' }, h('button', { type: 'button' }, '최신순 ▾'), h('span', {}, '전체 ', h('b', { text: '1,124' }), '개')),
+      h('div', { class: 'pgrid' }, items.map((it) => h('button', { class: 'prod', type: 'button', onClick: () => go('detail') }, h('span', { class: 'tile' }, h('img', { src: 'assets/prod-' + it.art + '.png', alt: '' })), h('div', { class: 'tt', text: it.t }), h('div', { class: 'st', text: '재고수량 : ' + it.s }), it.sold ? h('div', { class: 'sold', text: '매진' }) : h('div', { class: 'pr', text: it.p }))))
+    );
+  }
+  const svgInline = (vb, inner) => { const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', vb); s.setAttribute('aria-hidden', 'true'); s.innerHTML = inner; return s; };
+  const garlandFor = (o) => (o.garland ? garland(o.garland, 390, o.gcolors || o.colors, 21) : '');
+
+  const sticker = (o) => `<svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11" style="fill:var(--accent)" stroke="#fff" stroke-width="1.6"/><g transform="scale(.72)">${SHAPES[o.sticker]('#fff', '#FFE08A')}</g></svg>`;
+  const bannerEl = (t) => {
+    const o = t.orn, cp = t.copy;
+    if (t.bannerImg) return h('section', { class: 'banner img' }, h('img', { src: 'assets/' + t.bannerImg + '.png', alt: cp.banner }), h('button', { class: 'ghostbtn', type: 'button', 'aria-label': '포인트샵 바로가기', onClick: () => go('shop') }));
+    const [l1, l2] = cp.banner.split('|');
+    return h('section', { class: 'banner sb3' }, h('div', { class: 'spot' }), h('img', { class: 'r3d', src: 'assets/r3d-banner-' + state.id + '.png', alt: '' }), h('div', { class: 'grain' }),
+      h('p', { class: 'bt3d' }, h('span', { text: l1 }), l2 ? h('span', { class: 'hl', text: l2 }) : null),
+      h('button', { class: 'btn', type: 'button', onClick: () => go('shop') }, '포인트샵 바로가기'));
+  };
+  function boxes() {
+    const t = T(), o = t.orn, cp = t.copy;
+    const cards = [
+      { lb: '초콜릿박스', ds: '12,000원 이상의 상품으로 구성됩니다.', pill: '보유수량 : 99개', art: 'cube', go: 'detail' },
+      { lb: '찬스업 14회', ds: '100박스 한정! 더 좋은 상품을 받으세요!', pill: '남은시간 01:45:15', art: 'gift', go: 'detail' },
+      { lb: '찬스업 프리미엄', ds: '프리미엄 상품으로 구성된 찬스업 프리미엄', pill: '보유수량 : 19개', art: 'gift', go: 'buy' },
+      { lb: '푸드박스 14회', ds: '가볍게 즐기는 간식형 푸드박스', pill: '보유수량 : 39개', art: 'gift', go: 'detail' }
+    ];
+    return h('div', { class: 'screen gray has-tabs' },
+      h('header', { class: 'hbar' }, orn(slot.strip(o)),
+        h('span', { class: 'hi' }, h('span', { class: 'hcoin', text: 'P' }), '5,000'),
+        h('button', { class: 'hi', type: 'button' }, h('span', { class: 'hcoin bean', text: 'B' }), '30', icon('chev')),
+        h('button', { class: 'hi', type: 'button' }, h('span', { class: 'hcoin tag', text: '%' }), '2개', icon('chev')),
+        h('button', { class: 'hi right', type: 'button' }, '초코덕', icon('chev'))),
+      h('div', { class: 'garland', style: 'top:56px', html: garlandFor(o) }),
+      bannerEl(t),
+      h('div', { class: 'boxgrid' }, cards.map((c, i) => h('button', { class: 'bcard', type: 'button', onClick: () => go(c.go), style: `--ca:var(--c${i}-a);--cb:var(--c${i}-b);--ctag:var(--c${i}-tag);--gift:var(--c${i}-gift);--lid:var(--c${i}-lid)` },
+        h('div', { class: 'bframe' + (R3D[state.id] ? ' on' : '') }, h('div', { class: 'bimg' }, h('img', { class: 'real', src: 'assets/box-' + (i + 1) + '.png', alt: '' }), h('div', { class: 'pill', text: c.pill })), R3D[state.id] && (i === 0 || i === 3) ? h('img', { class: 'charm' + (i === 3 ? ' r' : ''), src: 'assets/r3d-charm-' + state.id + '.png', alt: '' }) : null),
+        h('div', { class: 'lb', text: c.lb }), h('div', { class: 'ds', text: c.ds }))))
+    );
+  }
+
+  function detail() {
+    const t = T(), o = t.orn;
+    return h('div', { class: 'screen' },
+      h('section', { class: 'hero' }, h('img', { src: 'assets/detail-hero.png', alt: '', style: 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover' }), orn(slot.hero(o), ''),
+        h('button', { class: 'iconbtn back', type: 'button', 'aria-label': '뒤로', onClick: () => go('shop') }, icon('back'))),
+      h('h1', { class: 'dtitle' }, h('em', { text: '[품절]' }), '[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙'),
+      h('div', { class: 'dprice', text: '₩ 2,850,000' }),
+      h('div', { class: 'dtabs' }, h('button', { type: 'button', 'aria-current': 'true', text: '상품상세' }), h('button', { type: 'button', text: '상품 리뷰' })),
+      h('div', { class: 'notice' }, h('b', { text: '- NOTICE -' }), h('p', { text: '위 상품의 가격은 판촉을 위한 마케팅 목적의 참고값으로, 실제 앱 내 구매 시 적용되는 가격이 아닙니다. 해당 가격은 손해배상 기준이나 상품 환급과는 관련이 없으니 참고해 주시기 바랍니다.' })),
+      h('div', { class: 'dimg' }, h('img', { src: 'assets/detail-band.png', alt: '', style: 'display:block;height:240px;width:auto;max-width:100%;object-fit:contain' })),
+      h('p', { class: 'dtext', text: '상품 상세 이미지와 설명이 이어집니다. (예시 영역)' }),
+      h('button', { class: 'cta', type: 'button', onClick: () => go('buy') }, R3D[state.id] ? h('img', { class: 'charm-s', src: 'assets/r3d-charm-' + state.id + '.png', alt: '' }) : null, h('span', { text: 'CHOCOLATE BOX 뽑기' }))
+    );
+  }
+
+  function news() {
+    const t = T(), o = t.orn, cp = t.copy;
+    const name = '[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙';
+    const rows = [['fill', 0, '₩5,850,000'], [null, 0, '24,000'], ['line', 1, '₩350,000'], ['line', 1, '₩350,000'], [null, 0, '24,000'], [null, 0, '24,000'], ['line', 2, '₩150,000'], [null, 0, '24,000'], [null, 0, '24,000'], [null, 0, '24,000'], ['fill', 3, '₩850,000'], [null, 0, '24,000']];
+    return h('div', { class: 'screen has-tabs' + (o.garland ? ' has-garland' : '') },
+      h('header', { class: 'topbar', style: 'border-bottom:0' }, h('h1', { text: '뉴스룸' })),
+      h('div', { class: 'garland', style: 'top:56px', html: garlandFor(o) }),
+      h('nav', { class: 'ntabs', 'aria-label': '뉴스룸 구분' }, h('button', { type: 'button', 'aria-current': 'true', text: '구매내역' }), h('button', { type: 'button', text: '명예의전당' }), h('button', { type: 'button', text: '리뷰(82)' }), h('button', { type: 'button' }, '상품목록', h('span', { class: 'dot' }))),
+      h('section', { class: 'car', 'aria-label': '실시간 하이라이트' },
+        h('div', { class: 'ncard c1' }), h('div', { class: 'ncard c2' }),
+        h('div', { class: 'ncard c0' }, h('div', { class: 'blob', html: `<svg viewBox="0 0 190 170" aria-hidden="true"><path d="M95 6c20 0 30 14 44 18 18 6 40 10 40 36 0 18-14 26-14 40 0 22 14 34 4 52-12 18-38 8-56 14-14 4-28 10-44 4-20-8-8-32-22-46C34 108 8 100 8 78c0-20 22-26 32-40C54 20 72 6 95 6z" fill="#fff"/><image href="assets/news-blender.png" x="55" y="10" width="80" height="158" preserveAspectRatio="xMidYMid meet"/></svg>` }), h('div', { class: 'who', text: '마마님 구매완료' }), h('div', { class: 'nm', text: '[브레빌] 블렌더프레시 엔 퓨이어스' }), h('div', { class: 'rp', text: '정가350,000원' }))),
+      h('div', { class: 'dots', 'aria-hidden': 'true' }, Array.from({ length: 12 }, () => h('i'))),
+      h('h2', { class: 'nh', text: '실시간 구매 내역' }),
+      h('div', { class: 'rows' }, rows.map(([kind, tier, price]) => h('div', { class: 'row' + (kind ? ' ' + kind : ''), style: kind ? `--tc:var(--t${tier})` : '' },
+        h('img', { class: 'th', src: 'assets/detail-hero.png', alt: '' }), h('div', { class: 'tx' }, h('small', { text: '마마님 구매완료' }), name, h('b', { text: price })), h('span', { class: 'when', text: '방금 전' })))),
+      h('div', { class: 'nnote', text: '실시간 구매내역은 최근 100건까지만 확인 가능합니다.' }),
+      h('section', { class: 'mission' + (R3D[state.id] ? ' has-charm' : '') }, R3D[state.id] ? h('img', { class: 'charm-m', src: 'assets/r3d-charm-' + state.id + '.png', alt: '' }) : null, h('b', { text: cp.mission }), h('button', { type: 'button', text: '미션 확인' }))
+    );
+  }
+
+  function buy() {
+    const t = T(), o = t.orn;
+    const DIM = new Set([3, 4, 8, 12, 19, 20, 22, 35, 46, 53, 54, 62, 63, 74, 82, 83, 84]);
+    const TAKEN = new Set([5, 28]);
+    const sel = new Set([29, 30]);
+    const ALLOW = 12;
+    const slotsEl = h('div', { class: 'slots' });
+    const pillEl = h('div', { class: 'floatpill' });
+    const cntEl = h('span');
+    const next = h('button', { class: 'next', type: 'button', text: '다음' });
+    const cells = [];
+    const refresh = () => {
+      const mine = [5, 28, ...[...sel].sort((a, b) => a - b)];
+      const slots = Math.max(10, mine.length + 1);
+      slotsEl.replaceChildren(...Array.from({ length: slots }, (_, i) => (i < mine.length ? h('div', { class: 'slot ' + (i < 2 ? 'old' : 'on'), text: String(mine[i]) }) : h('div', { class: 'slot', 'aria-hidden': 'true', text: '+' }))));
+      const left = ALLOW - mine.length;
+      cntEl.textContent = `${left}개 구매가능`; pillEl.textContent = `${left}개 구매가능`;
+      cells.forEach(([n, b]) => b.setAttribute('aria-pressed', String(sel.has(n))));
+    };
+    const grid = h('div', { class: 'ngrid' }, Array.from({ length: 100 }, (_, i) => {
+      const n = i + 1;
+      const b = h('button', { class: 'nc' + (TAKEN.has(n) ? ' taken' : ''), type: 'button', disabled: DIM.has(n) || TAKEN.has(n) || null, text: String(n), 'aria-label': n + '번 박스', 'aria-pressed': 'false' });
+      b.addEventListener('click', () => { if (sel.has(n)) sel.delete(n); else if (sel.size + 2 < ALLOW) sel.add(n); refresh(); });
+      cells.push([n, b]);
+      return b;
+    }));
+    const heroSvg = (() => {
+      const rays = Array.from({ length: 20 }, (_, i) => { const a0 = (i * 18 - 90) * Math.PI / 180, a1 = ((i + 1) * 18 - 90) * Math.PI / 180; return i % 2 ? '' : `<path d="M195 96L${(195 + 330 * Math.cos(a0)).toFixed(1)} ${(96 + 330 * Math.sin(a0)).toFixed(1)}L${(195 + 330 * Math.cos(a1)).toFixed(1)} ${(96 + 330 * Math.sin(a1)).toFixed(1)}Z" fill="#fff" opacity=".10"/>`; }).join('');
+      const sc = on(o) ? scatter(o.scatter, 390, 196, 24, 17, o.colors, { size: [.8, 1.5] }) : scatter(['star', 'dot'], 390, 196, 18, 17, ['#FFE9A0', '#FFFFFF'], { size: [.6, 1.1] });
+      return `<svg viewBox="0 0 390 196" aria-hidden="true"><defs><radialGradient id="hg" cx="50%" cy="48%" r="55%"><stop offset="0" stop-color="var(--glow)" stop-opacity=".75"/><stop offset="1" stop-color="var(--glow)" stop-opacity="0"/></radialGradient></defs><rect width="390" height="196" fill="url(#hg)"/>${rays}<ellipse cx="195" cy="176" rx="160" ry="16" fill="var(--glow)" opacity=".35"/>${R3D[state.id] ? '' : sc}</svg>${R3D[state.id] ? `<img class="r3d" src="assets/r3d-banner-${state.id}.png" alt="">` : ''}<svg class="ttl" viewBox="0 0 390 196" aria-hidden="true"><text x="195" y="92" text-anchor="middle" font-size="54" font-weight="900" font-style="italic" fill="url(#gold)" style="stroke:var(--stroke)" stroke-width="8" paint-order="stroke" stroke-linejoin="round" font-family="Noto Sans KR, sans-serif">CHANCE</text><g transform="translate(195 96)"><rect x="-26" y="-14" width="52" height="28" rx="9" fill="#fff" style="stroke:var(--stroke)" stroke-width="3"/><text x="0" y="8" text-anchor="middle" font-size="21" font-weight="900" style="fill:var(--stroke)" font-family="Noto Sans KR, sans-serif">UP</text></g><text x="195" y="146" text-anchor="middle" font-size="50" font-weight="900" font-style="italic" fill="url(#gold)" style="stroke:var(--stroke)" stroke-width="8" paint-order="stroke" stroke-linejoin="round" font-family="Noto Sans KR, sans-serif">PREMIUM</text></svg>`;
+    })();
+    refresh();
+    return h('div', { class: 'screen buy' },
+      h('header', { class: 'btop' }, h('button', { class: 'iconbtn', type: 'button', 'aria-label': '닫기', onClick: () => go('boxes') }, icon('close')), h('h1', { text: '2회차 구매하기' }), h('div', { class: 'bbal' }, h('i', { text: 'B' }), '240')),
+      h('div', { class: 'garland', style: 'top:52px', html: garlandFor(o) }),
+      h('div', { class: 'bhero', html: heroSvg }),
+      h('p', { class: 'bsub', text: '찬스업 프리미엄 박스' }),
+      grid, pillEl,
+      h('div', { class: 'sheet' }, h('div', { class: 'sh' }, h('div', {}, h('b', { text: '박스 선택하기' }), h('em', { text: '(1등 확률 4%)' })), cntEl), slotsEl, next)
+    );
+  }
+
+  const placeholder = (label) => h('div', { class: 'screen has-tabs' }, h('div', { class: 'placeholder', text: label + ' 화면은 이번 요청의 스크린샷에 없어 제외했어요.' }));
+  const BUILD = { boxes, shop, detail, news, buy, home: () => placeholder('Home'), mypage: () => placeholder('내보관함·앱테크') };
+  const TABS = [
+    { label: 'Home', icon: 'home', to: 'home' }, { label: '뉴스룸', icon: 'news', to: 'news', dot: true },
+    { label: '박스구매', icon: 'gift', to: 'boxes', on: (s) => ['boxes', 'shop'].includes(s) },
+    { label: '내보관함', icon: 'box', to: 'mypage' }, { label: '앱테크', icon: 'diamond', to: 'mypage' }
+  ];
+
+  const fmtWindow = (w) => (w ? `${w[0].replace('-', '/')} ~ ${w[1].replace('-', '/')}` : '날짜와 무관');
+  function render() {
+    const id = effective(), t = THEMES[id];
+    Object.entries(derive(t.seeds)).forEach(([k, v]) => root.style.setProperty(k, v));
+    root.dataset.theme = id; state.id = id;
+    const F = R3D[id]; root.style.setProperty('--foil', F ? F.foil : 'none'); root.style.setProperty('--foil-sh', F ? F.sh : 'transparent');
+    root.style.setProperty('--hl', t.orn.hl || '#FFD84D');
+    $('meta[name="theme-color"]').setAttribute('content', getComputedStyle(root).getPropertyValue('--header-bg').trim() || '#DC3328');
+    $('#screens').replaceChildren(BUILD[state.screen]());
+    const tabbed = TABBED(state.screen);
+    const tabbar = $('#tabbar');
+    tabbar.hidden = !tabbed;
+    tabbar.replaceChildren(...TABS.map((tab) => { const on = tab.on ? tab.on(state.screen) : state.screen === tab.to; return h('button', { class: 'tab', type: 'button', 'aria-current': on ? 'page' : null, onClick: () => go(tab.to) }, icon(tab.icon), tab.dot ? h('span', { class: 'dot' }) : null, tab.label); }));
+    document.querySelectorAll('#tgrid button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === state.theme)));
+    $('#sel-screen').value = ['boxes', 'shop', 'detail', 'news', 'buy'].includes(state.screen) ? state.screen : 'boxes';
+    $('#inp-date').value = state.date;
+    $('#panel-info').textContent = `${state.theme === 'auto' ? '자동 선택 → ' : ''}${t.label} · ${fmtWindow(t.window)}`;
+  }
+  function sync() {
+    const next = new URLSearchParams(location.search);
+    next.set('theme', state.theme); next.set('screen', state.screen);
+    state.date === todayKst() ? next.delete('date') : next.set('date', state.date);
+    try { history.replaceState(null, '', '?' + next.toString()); } catch (e) { /* file:// 등에서는 건너뜀 */ }
+  }
+
+  /* 패널 */
+  const tg = $('#tgrid');
+  tg.append(h('button', { type: 'button', 'data-t': 'auto', onClick: () => { state.theme = 'auto'; render(); sync(); } }, h('i', { style: 'background:conic-gradient(#C0262D,#1F6B3A,#0E7FB5,#B5561F,#C0262D)' }), '자동(날짜)'));
+  ['default', ...DATA.order].forEach((id) => tg.append(h('button', { type: 'button', 'data-t': id, onClick: () => { state.theme = id; render(); sync(); } }, h('i', { style: `background:${derive(THEMES[id].seeds)['--header-bg']}` }), THEMES[id].name)));
+  $('#sel-screen').addEventListener('change', (e) => go(e.target.value));
+  $('#inp-date').addEventListener('change', (e) => { if (e.target.value) { state.date = e.target.value; render(); sync(); } });
+  if (params.get('preview') === '0') $('#stage').classList.add('no-panel');
+  if (params.get('full') === '1') $('#app').classList.add('is-full');
+  render();
+})();
+</script>
+</body>
+</html>
