@@ -8,7 +8,8 @@ Renders the chocolatebox season boards in `../season-boards/`. Not app code.
     python3 $P/gem/gen.py models               # needs GEMINI_API_KEY
     python3 $P/gem/gen.py gen <model> all banner   # -> $P/gem/out/ (slots: see gem/prompts_data.py)
     python3 $P/gem/gen.py gen <model> christmas screen 1 shot1.png shot2.png   # full-screen restyle from screenshots
-    python3 $P/gem/build_prompts.py                # rewrites gem/prompts.md (copy-paste prompts for the Gemini app)
+    python3 $P/gem/build_prompts.py                # rewrites gem/prompts.md (image-slot prompts)
+    python3 $P/gem/page_prompts.py                 # rewrites gem/page-prompts.md (full-page prompts, 7 seasons x 5 screens)
     node $P/cap1.js $P default,christmas,... boxes,shop,detail,news,buy   # -> $P/design/phones/
     node $P/capframes.js $P
     mkdir -p $P/design/boards && node $P/boards.js $P   # -> $P/design/boards/*.png

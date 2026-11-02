@@ -1,0 +1,306 @@
+{
+ "default": {
+  "name": "기본",
+  "copy": {
+   "banner": "쇼핑의 즐거움이 가득!!",
+   "mission": "101번째 신규유저 초코미션빙고"
+  },
+  "header": "#DC3328",
+  "accent": "#D82B3A",
+  "cta": "#DC3328",
+  "tab": "#FDE2E5",
+  "info": "#E7F2FE",
+  "infoInk": "#1668C4",
+  "banner": [
+   "#150B2E",
+   "#33196F"
+  ],
+  "grid": [
+   "#1B0B4D",
+   "#3A1796"
+  ],
+  "cell": "#5A22D4",
+  "mine": "#22E5FF",
+  "taken": "#0E6B73",
+  "glow": "#6E8BFF",
+  "cards": [
+   "#F06A93",
+   "#EE4A5C",
+   "#6B3FE0",
+   "#F2C84B"
+  ],
+  "news": [
+   "#0A7E58",
+   "#6A35D8",
+   "#D6288E"
+  ],
+  "mission": "#D23750",
+  "hl": "#FFD84D"
+ },
+ "christmas": {
+  "name": "크리스마스",
+  "copy": {
+   "banner": "메리 크리스마스!|선물이 가득!!",
+   "mission": "크리스마스 초코미션빙고"
+  },
+  "header": "#C0262D",
+  "accent": "#C0262D",
+  "cta": "#1F7A44",
+  "tab": "#FDE2E3",
+  "info": "#E7FEF0",
+  "infoInk": "#1F7A44",
+  "banner": [
+   "#0F2A1D",
+   "#1F5B3A"
+  ],
+  "grid": [
+   "#0B1F3A",
+   "#16407A"
+  ],
+  "cell": "#1F5FBF",
+  "mine": "#FFD84D",
+  "taken": "#1E7A4F",
+  "glow": "#9CC8FF",
+  "cards": [
+   "#E0505E",
+   "#2E9E5B",
+   "#3A6FD8",
+   "#E8B33A"
+  ],
+  "news": [
+   "#1F7A44",
+   "#C0262D",
+   "#1F5FBF"
+  ],
+  "mission": "#C0262D",
+  "hl": "#FFD84D"
+ },
+ "newyear": {
+  "name": "신년",
+  "copy": {
+   "banner": "새해 복|많이 받으세요!!",
+   "mission": "신년 초코미션빙고"
+  },
+  "header": "#14233F",
+  "accent": "#9A6A12",
+  "cta": "#8A5F10",
+  "tab": "#FDF4E2",
+  "info": "#E7EFFE",
+  "infoInk": "#14233F",
+  "banner": [
+   "#0A1228",
+   "#26345E"
+  ],
+  "grid": [
+   "#0A1228",
+   "#1F2F66"
+  ],
+  "cell": "#3347A8",
+  "mine": "#FFD84D",
+  "taken": "#0E5C73",
+  "glow": "#E8C86A",
+  "cards": [
+   "#E8B84A",
+   "#E85A6B",
+   "#4A78E0",
+   "#9B6BE0"
+  ],
+  "news": [
+   "#1F2F66",
+   "#8A5F10",
+   "#B0243A"
+  ],
+  "mission": "#9A6A12",
+  "hl": "#FFD84D"
+ },
+ "valentine": {
+  "name": "발렌타인",
+  "copy": {
+   "banner": "달콤한 마음을|전해요!!",
+   "mission": "발렌타인 초코미션빙고"
+  },
+  "header": "#C2284E",
+  "accent": "#C2284E",
+  "cta": "#C2284E",
+  "tab": "#FDE2E9",
+  "info": "#FEE7EC",
+  "infoInk": "#C2284E",
+  "banner": [
+   "#3A0F2A",
+   "#8E1F4F"
+  ],
+  "grid": [
+   "#33082A",
+   "#7A1B55"
+  ],
+  "cell": "#A02A78",
+  "mine": "#FF9EC4",
+  "taken": "#5C2A7A",
+  "glow": "#FF8FB1",
+  "cards": [
+   "#F06A93",
+   "#E84A5F",
+   "#B5379A",
+   "#F29B7F"
+  ],
+  "news": [
+   "#B5214D",
+   "#7A2E8E",
+   "#D6288E"
+  ],
+  "mission": "#B5214D",
+  "hl": "#FFC2D8"
+ },
+ "spring": {
+  "name": "봄",
+  "copy": {
+   "banner": "봄맞이 쇼핑의|즐거움이 가득!!",
+   "mission": "봄맞이 초코미션빙고"
+  },
+  "header": "#CA456E",
+  "accent": "#C23A6A",
+  "cta": "#3A845C",
+  "tab": "#FDE2EC",
+  "info": "#E7FEF1",
+  "infoInk": "#387F58",
+  "banner": [
+   "#C93A6B",
+   "#F28DB0"
+  ],
+  "grid": [
+   "#10301F",
+   "#20603F"
+  ],
+  "cell": "#2F8F5F",
+  "mine": "#FFB6D0",
+  "taken": "#7A3A5C",
+  "glow": "#9BE0B5",
+  "cards": [
+   "#F59AB8",
+   "#8FCB8A",
+   "#F2C14E",
+   "#9BB8F0"
+  ],
+  "news": [
+   "#3F8F63",
+   "#CC4B73",
+   "#7A5BC0"
+  ],
+  "mission": "#3A845C",
+  "hl": "#FFF3B0"
+ },
+ "family": {
+  "name": "가정의 달",
+  "copy": {
+   "banner": "가정의 달,|감사를 전해요!!",
+   "mission": "가정의 달 초코미션빙고"
+  },
+  "header": "#C0344F",
+  "accent": "#B8334F",
+  "cta": "#2E7D52",
+  "tab": "#FDE2E8",
+  "info": "#E7FEF1",
+  "infoInk": "#2E7D52",
+  "banner": [
+   "#B32B52",
+   "#EE6F86"
+  ],
+  "grid": [
+   "#2A0F24",
+   "#6A2350"
+  ],
+  "cell": "#9B3070",
+  "mine": "#FFE08A",
+  "taken": "#2E6B5C",
+  "glow": "#FF9FB5",
+  "cards": [
+   "#F28FA5",
+   "#F5B35A",
+   "#6FB58A",
+   "#8FA6E8"
+  ],
+  "news": [
+   "#B8334F",
+   "#2E7D52",
+   "#B8691F"
+  ],
+  "mission": "#2E7D52",
+  "hl": "#FFE08A"
+ },
+ "summer": {
+  "name": "여름",
+  "copy": {
+   "banner": "시원한 여름,|쇼핑의 즐거움!!",
+   "mission": "서머 초코미션빙고"
+  },
+  "header": "#0D7AAE",
+  "accent": "#0E6FA5",
+  "cta": "#D1441B",
+  "tab": "#E2F4FD",
+  "info": "#E7F6FE",
+  "infoInk": "#0D75A7",
+  "banner": [
+   "#085E9C",
+   "#22AEE3"
+  ],
+  "grid": [
+   "#06284A",
+   "#0E5A8C"
+  ],
+  "cell": "#1A78B8",
+  "mine": "#FFE45C",
+  "taken": "#0E7A6A",
+  "glow": "#7AD8F0",
+  "cards": [
+   "#4CC3F0",
+   "#FF8A5B",
+   "#43C59E",
+   "#FFD34D"
+  ],
+  "news": [
+   "#0E7FB5",
+   "#E4572E",
+   "#1FA37A"
+  ],
+  "mission": "#D1441B",
+  "hl": "#FFE45C"
+ },
+ "autumn": {
+  "name": "가을",
+  "copy": {
+   "banner": "가을 맞이|쇼핑의 즐거움!!",
+   "mission": "가을 초코미션빙고"
+  },
+  "header": "#B5561F",
+  "accent": "#B5481A",
+  "cta": "#7A3E16",
+  "tab": "#FDEAE2",
+  "info": "#FEEFE7",
+  "infoInk": "#AE531E",
+  "banner": [
+   "#4A1F0C",
+   "#A8481A"
+  ],
+  "grid": [
+   "#2A1208",
+   "#6B2E14"
+  ],
+  "cell": "#9A4A22",
+  "mine": "#FFC247",
+  "taken": "#5C5A1E",
+  "glow": "#F2A65A",
+  "cards": [
+   "#E8793A",
+   "#C4472D",
+   "#D9A441",
+   "#8A9A3F"
+  ],
+  "news": [
+   "#B5561F",
+   "#7A5A12",
+   "#A6361E"
+  ],
+  "mission": "#A6361E",
+  "hl": "#FFC247"
+ }
+}
