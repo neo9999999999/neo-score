@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-11-03T22:18:16+09:00",
+    "updatedAt": "2026-11-03T23:57:31+09:00",
     "count": 2006,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,12 +1398,12 @@
   "reports": [
     {
       "date": "2026-11-03",
-      "marketBias": "neutral",
+      "marketBias": "bullish",
       "picks": [
         {
           "name": "한진",
           "code": "002320",
-          "score": 80.4,
+          "score": 82,
           "changePct": 23.08,
           "sector": null
         }
@@ -1421,8 +1421,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": 0.32,
-      "es": -0.14
+      "nq": 0.66,
+      "es": 0.17
     },
     {
       "date": "2026-11-02",
