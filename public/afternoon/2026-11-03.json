@@ -1,61 +1,61 @@
 {
   "date": "2026-11-03",
-  "generatedAt": "2026-11-03T01:57:38+09:00",
+  "generatedAt": "2026-11-03T22:18:16+09:00",
   "source": "quant",
   "type": "afternoon",
-  "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+0.39%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 0개를 대장주 후보로 추렸습니다.",
+  "marketBias": "neutral",
+  "summary": "미 선물은 나스닥 상승(+0.32%)·S&P 하락 흐름으로, 익일 한국 증시는 혼조 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 한진, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "28,644.25",
-      "change": "+110.25",
-      "changePct": "+0.39%",
+      "value": "28,216.5",
+      "change": "+89",
+      "changePct": "+0.32%",
       "dir": "up",
       "_raw": {
-        "close": 28644.25,
-        "prevClose": 28534,
-        "chgPct": 0.39
+        "close": 28216.5,
+        "prevClose": 28127.5,
+        "chgPct": 0.32
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,654.75",
-      "change": "+40.75",
-      "changePct": "+0.54%",
-      "dir": "up",
+      "value": "7,564",
+      "change": "-10.5",
+      "changePct": "-0.14%",
+      "dir": "down",
       "_raw": {
-        "close": 7654.75,
-        "prevClose": 7614,
-        "chgPct": 0.54
+        "close": 7564,
+        "prevClose": 7574.5,
+        "chgPct": -0.14
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "52,449",
-      "change": "+531",
-      "changePct": "+1.02%",
-      "dir": "up",
+      "value": "51,773",
+      "change": "-360",
+      "changePct": "-0.69%",
+      "dir": "down",
       "_raw": {
-        "close": 52449,
-        "prevClose": 51918,
-        "chgPct": 1.02
+        "close": 51773,
+        "prevClose": 52133,
+        "chgPct": -0.69
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "18.83",
-      "change": "-0.59",
-      "changePct": "-3.04%",
-      "dir": "down",
+      "value": "21.43",
+      "change": "+0.28",
+      "changePct": "+1.32%",
+      "dir": "up",
       "_raw": {
-        "close": 18.829999923706055,
-        "prevClose": 19.420000076293945,
-        "chgPct": -3.04
+        "close": 21.43000030517578,
+        "prevClose": 21.149999618530273,
+        "chgPct": 1.32
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "4.88%",
-      "change": "-0.05%p",
-      "changePct": "-0.91%",
+      "value": "4.89%",
+      "change": "-0.03%p",
+      "changePct": "-0.71%",
       "dir": "down",
       "_raw": {
-        "close": 4.883999824523926,
+        "close": 4.894000053405762,
         "prevClose": 4.928999900817871,
-        "chgPct": -0.91
+        "chgPct": -0.71
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,344.6원",
-      "change": "+6.58",
-      "changePct": "+0.49%",
+      "value": "1,344.3원",
+      "change": "+18.76",
+      "changePct": "+1.42%",
       "dir": "up",
       "_raw": {
-        "close": 1344.56005859375,
-        "prevClose": 1337.97998046875,
-        "chgPct": 0.49
+        "close": 1344.280029296875,
+        "prevClose": 1325.52001953125,
+        "chgPct": 1.42
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$96.85",
-      "change": "-7.27",
-      "changePct": "-6.98%",
-      "dir": "down",
+      "value": "$97.23",
+      "change": "+0.77",
+      "changePct": "+0.80%",
+      "dir": "up",
       "_raw": {
-        "close": 96.8499984741211,
-        "prevClose": 104.12000274658203,
-        "chgPct": -6.98
+        "close": 97.2300033569336,
+        "prevClose": 96.45999908447266,
+        "chgPct": 0.8
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "101.74",
-      "change": "-0.14",
-      "changePct": "-0.14%",
-      "dir": "down",
+      "value": "101.86",
+      "change": "+0.11",
+      "changePct": "+0.11%",
+      "dir": "up",
       "_raw": {
-        "close": 101.73500061035156,
-        "prevClose": 101.87999725341797,
-        "chgPct": -0.14
+        "close": 101.86000061035156,
+        "prevClose": 101.75,
+        "chgPct": 0.11
       }
     }
   ],
@@ -117,43 +117,70 @@
     {
       "key": "kospi",
       "label": "코스피",
-      "value": "5,730.74",
-      "change": "-206.92",
-      "changePct": "-3.48%",
+      "value": "5,648.79",
+      "change": "-210.29",
+      "changePct": "-3.59%",
       "dir": "down",
       "_raw": {
-        "close": 5730.740234375,
-        "prevClose": 5937.66015625,
-        "chgPct": -3.48
+        "close": 5648.7900390625,
+        "prevClose": 5859.080078125,
+        "chgPct": -3.59
       }
     },
     {
       "key": "kosdaq",
       "label": "코스닥",
-      "value": "724.38",
-      "change": "-28.85",
-      "changePct": "-3.83%",
+      "value": "704.39",
+      "change": "-29.97",
+      "changePct": "-4.08%",
       "dir": "down",
       "_raw": {
-        "close": 724.3800048828125,
-        "prevClose": 753.22998046875,
-        "chgPct": -3.83
+        "close": 704.3900146484375,
+        "prevClose": 734.3599853515625,
+        "chgPct": -4.08
       }
     }
   ],
-  "candidates": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "한진",
+      "code": "002320",
+      "market": "KOSPI",
+      "price": 20800,
+      "score": 80.4,
+      "changePct": 23.08,
+      "rangePos": 0.87,
+      "volSurge": 50.83,
+      "gapPct": -1.12,
+      "aboveMA": true,
+      "nearHighPct": 4.73,
+      "breakout": true,
+      "value": 38252947200,
+      "valueText": "383억",
+      "sector": null,
+      "expRet": -0.46,
+      "p3": 23.9,
+      "p5": 18,
+      "p3High": 58.3,
+      "p5High": 47.3,
+      "p5in5": 71.4,
+      "avgDays5": 1.6,
+      "hitRate": 41.4,
+      "supplyLabel": "수급 미확인",
+      "dongban": false,
+      "target3": true,
+      "reason": "종가 고가권 마감(강도 87%) · 거래량 평소 50.8배 · +23.08% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열"
+    }
+  ],
   "marketContext": {
-    "date": "2026-11-02",
+    "date": "2026-11-03",
     "sentiment": "bearish",
-    "title": "나스닥 -2.86% + 거시 부담 — 약세 경계, 방어적 대응 권고",
-    "summary": "간밤 나스닥은 전일 대비 -2.86%(급등락)으로 마감, S&P500은 -1.82%를 기록했습니다. 미 10년물 금리는 4.93% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,339원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -1.75(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 미 10년물·WTI 유가 / 부담 요인: 나스닥·S&P500·원/달러.",
+    "title": "나스닥 -1.07% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+    "summary": "간밤 나스닥은 전일 대비 -1.07%(큰 폭)으로 마감, S&P500은 -0.51%를 기록했습니다. 미 10년물 금리는 4.89% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,340원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -1.78(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 미 10년물 / 부담 요인: 나스닥·S&P500·원/달러·WTI 유가.",
     "sectors": [
       {
         "name": "조선",
-        "bias": "up"
-      },
-      {
-        "name": "원자력·전력기기",
         "bias": "up"
       },
       {
@@ -161,8 +188,12 @@
         "bias": "up"
       },
       {
-        "name": "방산·우주",
-        "bias": "up"
+        "name": "반도체",
+        "bias": "down"
+      },
+      {
+        "name": "금융",
+        "bias": "down"
       }
     ],
     "issues": [
@@ -180,11 +211,11 @@
       },
       {
         "category": "나스닥 동조",
-        "title": "나스닥 -2.86% 국내 반도체 동조 여부"
+        "title": "나스닥 -1.07% 국내 반도체 동조 여부"
       },
       {
         "category": "환율",
-        "title": "원/달러 1,339원"
+        "title": "원/달러 1,340원"
       }
     ]
   },
