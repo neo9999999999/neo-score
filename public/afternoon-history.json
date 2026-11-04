@@ -1,7 +1,7 @@
 {
   "meta": {
-    "updatedAt": "2026-11-04T22:29:40+09:00",
-    "count": 2007,
+    "updatedAt": "2026-11-05T00:17:57+09:00",
+    "count": 2008,
     "backfilledFrom": "2018-01-01"
   },
   "analysis": {
@@ -1396,6 +1396,34 @@
     }
   },
   "reports": [
+    {
+      "date": "2026-11-05",
+      "marketBias": "bullish",
+      "picks": [
+        {
+          "name": "한진",
+          "code": "002320",
+          "score": 86,
+          "changePct": 23.08,
+          "sector": null
+        }
+      ],
+      "marketContext": {
+        "sentiment": "bullish",
+        "topSectors": [
+          "바이오·제약",
+          "반도체",
+          "엔터·미디어"
+        ],
+        "issues": [
+          "전쟁·지정학 리스크 모니터링",
+          "미 연준 금리 경로",
+          "미-중 반도체 수출규제"
+        ]
+      },
+      "nq": 2.03,
+      "es": 1.75
+    },
     {
       "date": "2026-11-04",
       "marketBias": "bullish",
