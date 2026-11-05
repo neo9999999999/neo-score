@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-11-05T00:17:57+09:00",
+    "updatedAt": "2026-11-05T22:44:21+09:00",
     "count": 2008,
     "backfilledFrom": "2018-01-01"
   },
@@ -1398,22 +1398,29 @@
   "reports": [
     {
       "date": "2026-11-05",
-      "marketBias": "bullish",
+      "marketBias": "bearish",
       "picks": [
         {
-          "name": "한진",
-          "code": "002320",
-          "score": 86,
-          "changePct": 23.08,
+          "name": "제주항공",
+          "code": "089590",
+          "score": 88.8,
+          "changePct": 13.75,
           "sector": null
+        },
+        {
+          "name": "셀트리온",
+          "code": "068270",
+          "score": 86,
+          "changePct": 7.5,
+          "sector": "바이오·제약"
         }
       ],
       "marketContext": {
         "sentiment": "bullish",
         "topSectors": [
           "바이오·제약",
-          "반도체",
-          "엔터·미디어"
+          "엔터·미디어",
+          "AI·인터넷"
         ],
         "issues": [
           "전쟁·지정학 리스크 모니터링",
@@ -1421,8 +1428,8 @@
           "미-중 반도체 수출규제"
         ]
       },
-      "nq": 2.03,
-      "es": 1.75
+      "nq": -0.9,
+      "es": 0.07
     },
     {
       "date": "2026-11-04",
