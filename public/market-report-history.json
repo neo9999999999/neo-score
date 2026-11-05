@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updatedAt": "2026-11-05T11:41:20+09:00",
+    "updatedAt": "2026-11-05T12:00:03+09:00",
     "count": 252,
     "backfilledFrom": "2026-01-01"
   },
@@ -48,9 +48,9 @@
         {
           "key": "wti",
           "label": "WTI 유가",
-          "value": "$87.42",
-          "change": "-0.7",
-          "changePct": "-0.79%",
+          "value": "$87.36",
+          "change": "-0.76",
+          "changePct": "-0.86%",
           "dir": "down"
         },
         {
@@ -58,15 +58,15 @@
           "label": "달러인덱스",
           "value": "101.29",
           "change": "-0.22",
-          "changePct": "-0.21%",
+          "changePct": "-0.22%",
           "dir": "down"
         },
         {
           "key": "usdkrw",
           "label": "원/달러 환율",
-          "value": "1,343.6원",
-          "change": "+0.68",
-          "changePct": "+0.05%",
+          "value": "1,343.8원",
+          "change": "+0.88",
+          "changePct": "+0.07%",
           "dir": "up"
         },
         {
@@ -111,7 +111,7 @@
           "name": "한미약품",
           "code": "128940",
           "sector": "바이오·제약",
-          "changePct": 11.81
+          "changePct": 12.04
         }
       ]
     },

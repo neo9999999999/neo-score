@@ -1,6 +1,6 @@
 {
   "date": "2026-11-05",
-  "generatedAt": "2026-11-05T11:41:19+09:00",
+  "generatedAt": "2026-11-05T12:00:02+09:00",
   "source": "rule",
   "macroScore": 3.02,
   "signals": [
@@ -23,8 +23,8 @@
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "pct": 0.05,
-      "score": -0.03,
+      "pct": 0.07,
+      "score": -0.05,
       "fav": "bad",
       "note": "원화 약세 → 외국인 순매도 압력"
     },
@@ -39,8 +39,8 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "pct": -0.79,
-      "score": 0.24,
+      "pct": -0.86,
+      "score": 0.26,
       "fav": "good",
       "note": "유가 안정 → 물가·비용 부담 완화"
     }
@@ -65,9 +65,9 @@
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$87.42",
-      "change": "-0.7",
-      "changePct": "-0.79%",
+      "value": "$87.36",
+      "change": "-0.76",
+      "changePct": "-0.86%",
       "dir": "down"
     },
     {
@@ -75,15 +75,15 @@
       "label": "달러인덱스",
       "value": "101.29",
       "change": "-0.22",
-      "changePct": "-0.21%",
+      "changePct": "-0.22%",
       "dir": "down"
     },
     {
       "key": "usdkrw",
       "label": "원/달러 환율",
-      "value": "1,343.6원",
-      "change": "+0.68",
-      "changePct": "+0.05%",
+      "value": "1,343.8원",
+      "change": "+0.88",
+      "changePct": "+0.07%",
       "dir": "up"
     },
     {
@@ -149,15 +149,15 @@
     {
       "name": "바이오·제약",
       "bias": "up",
-      "reason": "전일 주도주 평균 +8.31% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +8.35% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
           "name": "셀트리온",
           "code": "068270",
           "market": "KOSPI",
-          "reason": "전일 +7.5% · 거래대금 1,835억 · 신고가 돌파 · 정배열",
+          "reason": "전일 +7.5% · 거래대금 2,046억 · 신고가 돌파 · 정배열",
           "changePct": 7.5,
-          "value": 183456490000,
+          "value": 204607975000,
           "breakout": true,
           "nearHigh": true,
           "aligned": true
@@ -166,9 +166,9 @@
           "name": "한미약품",
           "code": "128940",
           "market": "KOSPI",
-          "reason": "전일 +11.81% · 거래대금 618억",
-          "changePct": 11.81,
-          "value": 61808322500,
+          "reason": "전일 +12.04% · 거래대금 653억",
+          "changePct": 12.04,
+          "value": 65276016000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -177,9 +177,9 @@
           "name": "유한양행",
           "code": "000100",
           "market": "KOSPI",
-          "reason": "전일 +5.63% · 거래대금 135억",
-          "changePct": 5.63,
-          "value": 13493123000,
+          "reason": "전일 +5.5% · 거래대금 145억",
+          "changePct": 5.5,
+          "value": 14466045000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -190,15 +190,15 @@
     {
       "name": "엔터·미디어",
       "bias": "up",
-      "reason": "전일 주도주 평균 +8.37% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +8.7% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
           "name": "에스엠",
           "code": "041510",
           "market": "KOSDAQ",
-          "reason": "전일 +12.43% · 거래대금 62억",
+          "reason": "전일 +12.43% · 거래대금 66억",
           "changePct": 12.43,
-          "value": 6234431200,
+          "value": 6615078400,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -207,9 +207,9 @@
           "name": "하이브",
           "code": "352820",
           "market": "KOSPI",
-          "reason": "전일 +7.46% · 거래대금 453억",
-          "changePct": 7.46,
-          "value": 45279549200,
+          "reason": "전일 +8.19% · 거래대금 472억",
+          "changePct": 8.19,
+          "value": 47170887100,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -218,9 +218,9 @@
           "name": "와이지엔터테인먼트",
           "code": "122870",
           "market": "KOSDAQ",
-          "reason": "전일 +5.23% · 거래대금 20억",
-          "changePct": 5.23,
-          "value": 1961602500,
+          "reason": "전일 +5.48% · 거래대금 21억",
+          "changePct": 5.48,
+          "value": 2098926000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -231,15 +231,15 @@
     {
       "name": "AI·인터넷",
       "bias": "up",
-      "reason": "전일 주도주 평균 +5.19% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +5.83% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
           "name": "카카오",
           "code": "035720",
           "market": "KOSPI",
-          "reason": "전일 +9.62% · 거래대금 903억 · 거래량 2.0배",
-          "changePct": 9.62,
-          "value": 90261432800,
+          "reason": "전일 +9.97% · 거래대금 967억 · 거래량 2.2배",
+          "changePct": 9.97,
+          "value": 96711552000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -248,20 +248,20 @@
           "name": "NAVER",
           "code": "035420",
           "market": "KOSPI",
-          "reason": "전일 +7.26% · 거래대금 1,203억",
-          "changePct": 7.26,
-          "value": 120256693600,
+          "reason": "전일 +7.38% · 거래대금 1,292억",
+          "changePct": 7.38,
+          "value": 129176689600,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
         },
         {
-          "name": "솔트룩스",
-          "code": "304100",
+          "name": "한글과컴퓨터",
+          "code": "030520",
           "market": "KOSDAQ",
-          "reason": "전일 -1.31% · 거래대금 2억",
-          "changePct": -1.31,
-          "value": 170893800,
+          "reason": "전일 +0.13% · 거래대금 5억",
+          "changePct": 0.13,
+          "value": 521412750,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -272,15 +272,15 @@
     {
       "name": "자동차",
       "bias": "up",
-      "reason": "전일 주도주 평균 +4.32% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
+      "reason": "전일 주도주 평균 +4.52% — 실거래 데이터(등락·거래대금·신고가·정배열) 기준 전일 상위 섹터.",
       "stocks": [
         {
           "name": "기아",
           "code": "000270",
           "market": "KOSPI",
-          "reason": "전일 +5.64% · 거래대금 604억",
-          "changePct": 5.64,
-          "value": 60364788000,
+          "reason": "전일 +5.95% · 거래대금 654억",
+          "changePct": 5.95,
+          "value": 65423855000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -289,9 +289,9 @@
           "name": "현대모비스",
           "code": "012330",
           "market": "KOSPI",
-          "reason": "전일 +2.39% · 거래대금 687억",
-          "changePct": 2.39,
-          "value": 68672420000,
+          "reason": "전일 +2.68% · 거래대금 730억",
+          "changePct": 2.68,
+          "value": 73030491000,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -300,9 +300,9 @@
           "name": "현대차",
           "code": "005380",
           "market": "KOSPI",
-          "reason": "전일 +4.94% · 거래대금 1,866억",
+          "reason": "전일 +4.94% · 거래대금 1,945억",
           "changePct": 4.94,
-          "value": 186575637500,
+          "value": 194504012500,
           "breakout": false,
           "nearHigh": false,
           "aligned": false
@@ -388,14 +388,14 @@
     {
       "date": "환율",
       "day": "원/달러",
-      "title": "원/달러 1,343.6원 (+0.05%)",
+      "title": "원/달러 1,343.8원 (+0.07%)",
       "detail": "고환율 구간 — 외국인 순매수/순매도 방향을 좌우. 환율 안정 시 외인 수급 개선.",
       "importance": "high"
     },
     {
       "date": "유가",
       "day": "WTI",
-      "title": "WTI $87.42 (-0.79%)",
+      "title": "WTI $87.36 (-0.86%)",
       "detail": "정유·조선·해운·인플레 경로. 급등 시 항공·운송 부담, 하락 시 화학·소비 우호.",
       "importance": "high"
     },
@@ -409,7 +409,7 @@
     {
       "date": "달러",
       "day": "DXY",
-      "title": "달러인덱스 101.29 (-0.21%)",
+      "title": "달러인덱스 101.29 (-0.22%)",
       "detail": "달러 강세 시 신흥국·원화 약세 압력, 약세 시 위험자산 선호.",
       "importance": "low"
     }
