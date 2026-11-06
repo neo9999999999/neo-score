@@ -1,61 +1,61 @@
 {
   "date": "2026-11-06",
-  "generatedAt": "2026-11-06T22:28:29+09:00",
+  "generatedAt": "2026-11-06T23:55:05+09:00",
   "source": "quant",
   "type": "afternoon",
   "marketBias": "bullish",
-  "summary": "미 선물은 나스닥 상승(+1.31%)·S&P 보합 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 롯데렌탈, 신고가 돌파).",
+  "summary": "미 선물은 나스닥 상승(+1.93%)·S&P 상승 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 롯데렌탈, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "27,103.75",
-      "change": "+351.75",
-      "changePct": "+1.31%",
+      "value": "27,267.75",
+      "change": "+515.75",
+      "changePct": "+1.93%",
       "dir": "up",
       "_raw": {
-        "close": 27103.75,
+        "close": 27267.75,
         "prevClose": 26752,
-        "chgPct": 1.31
+        "chgPct": 1.93
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,390",
-      "change": "+7",
-      "changePct": "+0.09%",
+      "value": "7,433.75",
+      "change": "+50.75",
+      "changePct": "+0.69%",
       "dir": "up",
       "_raw": {
-        "close": 7390,
+        "close": 7433.75,
         "prevClose": 7383,
-        "chgPct": 0.09
+        "chgPct": 0.69
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "51,113",
-      "change": "-502",
-      "changePct": "-0.97%",
+      "value": "51,377",
+      "change": "-238",
+      "changePct": "-0.46%",
       "dir": "down",
       "_raw": {
-        "close": 51113,
+        "close": 51377,
         "prevClose": 51615,
-        "chgPct": -0.97
+        "chgPct": -0.46
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "27.76",
-      "change": "-0.42",
-      "changePct": "-1.49%",
+      "value": "25.29",
+      "change": "-2.89",
+      "changePct": "-10.26%",
       "dir": "down",
       "_raw": {
-        "close": 27.760000228881836,
+        "close": 25.290000915527344,
         "prevClose": 28.18000030517578,
-        "chgPct": -1.49
+        "chgPct": -10.26
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "4.84%",
-      "change": "-0.06%p",
-      "changePct": "-1.16%",
-      "dir": "down",
+      "value": "4.88%",
+      "change": "+0.04%p",
+      "changePct": "+0.85%",
+      "dir": "up",
       "_raw": {
-        "close": 4.836999893188477,
-        "prevClose": 4.894000053405762,
-        "chgPct": -1.16
+        "close": 4.877999782562256,
+        "prevClose": 4.836999893188477,
+        "chgPct": 0.85
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,356.9원",
-      "change": "+16.81",
-      "changePct": "+1.25%",
+      "value": "1,362.6원",
+      "change": "+22.51",
+      "changePct": "+1.68%",
       "dir": "up",
       "_raw": {
-        "close": 1356.8800048828125,
+        "close": 1362.5799560546875,
         "prevClose": 1340.0699462890625,
-        "chgPct": 1.25
+        "chgPct": 1.68
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$90.86",
-      "change": "+0.34",
-      "changePct": "+0.38%",
-      "dir": "up",
+      "value": "$90.56",
+      "change": "+0.04",
+      "changePct": "+0.04%",
+      "dir": "flat",
       "_raw": {
-        "close": 90.86000061035156,
+        "close": 90.55999755859375,
         "prevClose": 90.5199966430664,
-        "chgPct": 0.38
+        "chgPct": 0.04
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "102.06",
-      "change": "+0.5",
-      "changePct": "+0.50%",
+      "value": "102.26",
+      "change": "+0.71",
+      "changePct": "+0.70%",
       "dir": "up",
       "_raw": {
-        "close": 102.05500030517578,
+        "close": 102.25700378417969,
         "prevClose": 101.55000305175781,
-        "chgPct": 0.5
+        "chgPct": 0.7
       }
     }
   ],
@@ -148,7 +148,7 @@
       "code": "089860",
       "market": "KOSPI",
       "price": 58400,
-      "score": 82.5,
+      "score": 85,
       "changePct": 10.4,
       "rangePos": 0.5,
       "volSurge": 18.45,
