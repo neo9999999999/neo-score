@@ -1,61 +1,61 @@
 {
   "date": "2026-11-06",
-  "generatedAt": "2026-11-06T00:18:56+09:00",
+  "generatedAt": "2026-11-06T22:28:29+09:00",
   "source": "quant",
   "type": "afternoon",
-  "marketBias": "bearish",
-  "summary": "미 선물은 나스닥 하락(-3.74%)·S&P 하락 흐름으로, 익일 한국 증시는 약세 경계 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 0개를 대장주 후보로 추렸습니다.",
+  "marketBias": "bullish",
+  "summary": "미 선물은 나스닥 상승(+1.31%)·S&P 보합 흐름으로, 익일 한국 증시는 강세 우호 출발이 예상됩니다. 정배열 + 신고가 근접/돌파 종목 중 거래량·종가강도가 강한 1개를 대장주 후보로 추렸습니다 (1순위 롯데렌탈, 신고가 돌파).",
   "futures": [
     {
       "key": "nq",
       "label": "나스닥 선물",
-      "value": "27,497",
-      "change": "-1,069.75",
-      "changePct": "-3.74%",
-      "dir": "down",
+      "value": "27,103.75",
+      "change": "+351.75",
+      "changePct": "+1.31%",
+      "dir": "up",
       "_raw": {
-        "close": 27497,
-        "prevClose": 28566.75,
-        "chgPct": -3.74
+        "close": 27103.75,
+        "prevClose": 26752,
+        "chgPct": 1.31
       }
     },
     {
       "key": "es",
       "label": "S&P500 선물",
-      "value": "7,580.5",
-      "change": "-140",
-      "changePct": "-1.81%",
-      "dir": "down",
+      "value": "7,390",
+      "change": "+7",
+      "changePct": "+0.09%",
+      "dir": "up",
       "_raw": {
-        "close": 7580.5,
-        "prevClose": 7720.5,
-        "chgPct": -1.81
+        "close": 7390,
+        "prevClose": 7383,
+        "chgPct": 0.09
       }
     },
     {
       "key": "ym",
       "label": "다우 선물",
-      "value": "53,008",
-      "change": "-495",
-      "changePct": "-0.93%",
+      "value": "51,113",
+      "change": "-502",
+      "changePct": "-0.97%",
       "dir": "down",
       "_raw": {
-        "close": 53008,
-        "prevClose": 53503,
-        "chgPct": -0.93
+        "close": 51113,
+        "prevClose": 51615,
+        "chgPct": -0.97
       }
     },
     {
       "key": "vix",
       "label": "VIX",
-      "value": "21.01",
-      "change": "+4.4",
-      "changePct": "+26.49%",
-      "dir": "up",
+      "value": "27.76",
+      "change": "-0.42",
+      "changePct": "-1.49%",
+      "dir": "down",
       "_raw": {
-        "close": 21.010000228881836,
-        "prevClose": 16.610000610351562,
-        "chgPct": 26.49
+        "close": 27.760000228881836,
+        "prevClose": 28.18000030517578,
+        "chgPct": -1.49
       }
     }
   ],
@@ -63,53 +63,53 @@
     {
       "key": "ust10y",
       "label": "미 10년물 금리",
-      "value": "4.87%",
-      "change": "-0.02%p",
-      "changePct": "-0.49%",
+      "value": "4.84%",
+      "change": "-0.06%p",
+      "changePct": "-1.16%",
       "dir": "down",
       "_raw": {
-        "close": 4.869999885559082,
+        "close": 4.836999893188477,
         "prevClose": 4.894000053405762,
-        "chgPct": -0.49
+        "chgPct": -1.16
       }
     },
     {
       "key": "usdkrw",
       "label": "원/달러",
-      "value": "1,349.6원",
-      "change": "+6.74",
-      "changePct": "+0.50%",
+      "value": "1,356.9원",
+      "change": "+16.81",
+      "changePct": "+1.25%",
       "dir": "up",
       "_raw": {
-        "close": 1349.6400146484375,
-        "prevClose": 1342.9000244140625,
-        "chgPct": 0.5
+        "close": 1356.8800048828125,
+        "prevClose": 1340.0699462890625,
+        "chgPct": 1.25
       }
     },
     {
       "key": "wti",
       "label": "WTI 유가",
-      "value": "$90.03",
-      "change": "+1.91",
-      "changePct": "+2.17%",
+      "value": "$90.86",
+      "change": "+0.34",
+      "changePct": "+0.38%",
       "dir": "up",
       "_raw": {
-        "close": 90.02999877929688,
-        "prevClose": 88.12000274658203,
-        "chgPct": 2.17
+        "close": 90.86000061035156,
+        "prevClose": 90.5199966430664,
+        "chgPct": 0.38
       }
     },
     {
       "key": "dxy",
       "label": "달러인덱스",
-      "value": "101.63",
-      "change": "+0.12",
-      "changePct": "+0.11%",
+      "value": "102.06",
+      "change": "+0.5",
+      "changePct": "+0.50%",
       "dir": "up",
       "_raw": {
-        "close": 101.6259994506836,
-        "prevClose": 101.51000213623047,
-        "chgPct": 0.11
+        "close": 102.05500030517578,
+        "prevClose": 101.55000305175781,
+        "chgPct": 0.5
       }
     }
   ],
@@ -117,36 +117,67 @@
     {
       "key": "kospi",
       "label": "코스피",
-      "value": "5,683.8",
-      "change": "+35.01",
-      "changePct": "+0.62%",
-      "dir": "up",
+      "value": "5,059.69",
+      "change": "-324.11",
+      "changePct": "-6.02%",
+      "dir": "down",
       "_raw": {
-        "close": 5683.7998046875,
-        "prevClose": 5648.7900390625,
-        "chgPct": 0.62
+        "close": 5059.68994140625,
+        "prevClose": 5383.7998046875,
+        "chgPct": -6.02
       }
     },
     {
       "key": "kosdaq",
       "label": "코스닥",
-      "value": "714.95",
-      "change": "+10.56",
-      "changePct": "+1.50%",
-      "dir": "up",
+      "value": "644.27",
+      "change": "-34.14",
+      "changePct": "-5.03%",
+      "dir": "down",
       "_raw": {
-        "close": 714.9500122070312,
-        "prevClose": 704.3900146484375,
-        "chgPct": 1.5
+        "close": 644.27001953125,
+        "prevClose": 678.4099731445312,
+        "chgPct": -5.03
       }
     }
   ],
-  "candidates": [],
+  "candidates": [
+    {
+      "rank": 1,
+      "name": "롯데렌탈",
+      "code": "089860",
+      "market": "KOSPI",
+      "price": 58400,
+      "score": 82.5,
+      "changePct": 10.4,
+      "rangePos": 0.5,
+      "volSurge": 18.45,
+      "gapPct": 10.4,
+      "aboveMA": true,
+      "nearHighPct": 7.95,
+      "breakout": true,
+      "value": 140850229600,
+      "valueText": "1,409억",
+      "sector": null,
+      "expRet": 0.05,
+      "p3": 22.3,
+      "p5": 14,
+      "p3High": 54.9,
+      "p5High": 37.5,
+      "p5in5": 65.4,
+      "avgDays5": 1.8,
+      "hitRate": 45.2,
+      "supplyLabel": "수급 미확인",
+      "dongban": false,
+      "target3": true,
+      "reason": "종가 상단 마감(강도 50%) · 거래량 평소 18.4배 · +10.4% · 5·20일선 정배열 — 익일 연속 상승 기대. · 신고가 돌파 · 정배열"
+    }
+  ],
   "marketContext": {
-    "date": "2026-11-05",
-    "sentiment": "bullish",
-    "title": "나스닥 +1.44% 동조 — 반도체·AI 주도 강세 출발 기대",
-    "summary": "간밤 나스닥은 전일 대비 +1.44%(큰 폭)으로 마감, S&P500은 +1.58%를 기록했습니다. 미 10년물 금리는 4.89% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,344원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 +3.02(범위 ±3)으로, 오늘 국내증시는 강세 우호 출발이 기대됩니다. 우호 요인: 나스닥·S&P500·미 10년물·WTI 유가 / 부담 요인: 원/달러.",
+    "date": "2026-11-06",
+    "sentiment": "bearish",
+    "title": "나스닥 -5.52% + 거시 부담 — 약세 경계, 방어적 대응 권고",
+    "summary": "간밤 나스닥은 전일 대비 -5.52%(급등락)으로 마감, S&P500은 -4.36%를 기록했습니다. 미 10년물 금리는 4.84% — 4.8% 돌파, 성장주 밸류에이션 부담 극심. 원/달러 1,359원 — 1,380원 하회, 원화 강세로 외국인 수급 우호. 5개 거시지표 가중 신호 점수 -3.73(범위 ±3)으로, 오늘 국내증시는 약세 경계가 필요하며 방어적 대응을 권고합니다. 우호 요인: 미 10년물 / 부담 요인: 나스닥·S&P500·원/달러·WTI 유가.",
     "sectors": [
       {
         "name": "바이오·제약",
@@ -154,15 +185,15 @@
       },
       {
         "name": "엔터·미디어",
-        "bias": "up"
+        "bias": "down"
       },
       {
         "name": "AI·인터넷",
-        "bias": "up"
+        "bias": "down"
       },
       {
-        "name": "자동차",
-        "bias": "up"
+        "name": "반도체",
+        "bias": "down"
       }
     ],
     "issues": [
@@ -180,11 +211,11 @@
       },
       {
         "category": "나스닥 동조",
-        "title": "나스닥 +1.44% 국내 반도체 동조 여부"
+        "title": "나스닥 -5.52% 국내 반도체 동조 여부"
       },
       {
         "category": "환율",
-        "title": "원/달러 1,344원"
+        "title": "원/달러 1,359원"
       }
     ]
   },
