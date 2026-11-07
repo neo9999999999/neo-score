@@ -4,6 +4,7 @@
 
 ## 사용법
 
+0. 먼저 `chocolatebox-theme/DESIGN.md` 전체를 Gemini에 붙여넣고 "Read this DESIGN.md and follow it for every image in this chat."라고 보내세요. (Gemini의 Gem을 만들어 이 파일을 지침으로 넣어두면 매번 붙여넣을 필요가 없습니다.)
 1. 시즌마다 Gemini 대화를 하나 열고, 홈 → 포인트샵 → 상세 → 뉴스룸 → 구매하기 순서로 생성하세요.
 2. 원본 스크린샷을 같이 첨부하면 배치가 원본과 똑같이 나옵니다. 첨부하지 않아도 프롬프트만으로 화면 전체가 생성됩니다.
 3. 두 번째 화면부터 프롬프트 맨 앞에 이 한 줄을 붙이면 톤이 맞춰집니다: `Use exactly the same style, palette and decoration as the previous image.`
@@ -14,7 +15,7 @@
 ### 크리스마스 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스마스). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -31,7 +32,7 @@ LAYOUT, top to bottom:
 ### 크리스마스 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스마스). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -50,7 +51,7 @@ LAYOUT, top to bottom:
 ### 크리스마스 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스마스). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -69,7 +70,7 @@ LAYOUT, top to bottom:
 ### 크리스마스 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스마스). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -89,7 +90,7 @@ LAYOUT, top to bottom:
 ### 크리스마스 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스마스). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Christmas season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -108,7 +109,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #0B1F3A t
 ### 신년 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -125,7 +126,7 @@ LAYOUT, top to bottom:
 ### 신년 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -144,7 +145,7 @@ LAYOUT, top to bottom:
 ### 신년 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -163,7 +164,7 @@ LAYOUT, top to bottom:
 ### 신년 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -183,7 +184,7 @@ LAYOUT, top to bottom:
 ### 신년 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Lunar New Year season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -202,7 +203,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #0A1228 t
 ### 발렌타인 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타인). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -219,7 +220,7 @@ LAYOUT, top to bottom:
 ### 발렌타인 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타인). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -238,7 +239,7 @@ LAYOUT, top to bottom:
 ### 발렌타인 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타인). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -257,7 +258,7 @@ LAYOUT, top to bottom:
 ### 발렌타인 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타인). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -277,7 +278,7 @@ LAYOUT, top to bottom:
 ### 발렌타인 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타인). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Valentine's Day (chocolate gift brand) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -296,7 +297,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #33082A t
 ### 봄 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -313,7 +314,7 @@ LAYOUT, top to bottom:
 ### 봄 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -332,7 +333,7 @@ LAYOUT, top to bottom:
 ### 봄 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -351,7 +352,7 @@ LAYOUT, top to bottom:
 ### 봄 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -371,7 +372,7 @@ LAYOUT, top to bottom:
 ### 봄 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Spring cherry blossom season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -390,7 +391,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #10301F t
 ### 가정의 달 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 달). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -407,7 +408,7 @@ LAYOUT, top to bottom:
 ### 가정의 달 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 달). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -426,7 +427,7 @@ LAYOUT, top to bottom:
 ### 가정의 달 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 달). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -445,7 +446,7 @@ LAYOUT, top to bottom:
 ### 가정의 달 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 달). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -465,7 +466,7 @@ LAYOUT, top to bottom:
 ### 가정의 달 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 달). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Korean Family Month (May, Parents' Day) season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -484,7 +485,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #2A0F24 t
 ### 여름 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -501,7 +502,7 @@ LAYOUT, top to bottom:
 ### 여름 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -520,7 +521,7 @@ LAYOUT, top to bottom:
 ### 여름 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -539,7 +540,7 @@ LAYOUT, top to bottom:
 ### 여름 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -559,7 +560,7 @@ LAYOUT, top to bottom:
 ### 여름 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Summer season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -578,7 +579,7 @@ LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #06284A t
 ### 가을 · 박스구매 홈
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -595,7 +596,7 @@ LAYOUT, top to bottom:
 ### 가을 · 포인트샵
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -614,7 +615,7 @@ LAYOUT, top to bottom:
 ### 가을 · 상품상세
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -633,7 +634,7 @@ LAYOUT, top to bottom:
 ### 가을 · 뉴스룸
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
@@ -653,7 +654,7 @@ LAYOUT, top to bottom:
 ### 가을 · 구매하기
 
 ```
-Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
+Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for "chocolatebox", a Korean gift-box shopping app, in its Autumn season theme. If a screenshot is attached, keep its exact layout, element sizes and all of its text, and restyle only.
 
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 

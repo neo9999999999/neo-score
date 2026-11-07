@@ -13,6 +13,7 @@ ORDER = ['christmas', 'newyear', 'valentine', 'spring', 'family', 'summer', 'aut
 
 def common(s, t):
     return (
+        f"Follow the chocolatebox DESIGN.md given earlier in this chat (season: {s['ko']}). "
         f"Create a high-fidelity mobile app UI screen, 9:16 portrait (iPhone 390x844 layout), for \"chocolatebox\", a Korean "
         f"gift-box shopping app, in its {s['name']} season theme. If a screenshot is attached, keep its exact layout, element sizes "
         f"and all of its text, and restyle only.\n\n"
@@ -121,6 +122,7 @@ SCREENS = [('boxes', '박스구매 홈', boxes), ('shop', '포인트샵', shop),
 out = ['# Gemini 전체 페이지 프롬프트 — chocolatebox 시즌 테마', '',
        '시즌 7개 x 화면 5개 = 35개. 각 프롬프트 하나가 화면 한 장 전체(배치, 모든 한글 문구, 시즌 색, 장식)를 담고 있습니다.', '',
        '## 사용법', '',
+       '0. 먼저 `chocolatebox-theme/DESIGN.md` 전체를 Gemini에 붙여넣고 "Read this DESIGN.md and follow it for every image in this chat."라고 보내세요. (Gemini의 Gem을 만들어 이 파일을 지침으로 넣어두면 매번 붙여넣을 필요가 없습니다.)',
        '1. 시즌마다 Gemini 대화를 하나 열고, 홈 → 포인트샵 → 상세 → 뉴스룸 → 구매하기 순서로 생성하세요.',
        '2. 원본 스크린샷을 같이 첨부하면 배치가 원본과 똑같이 나옵니다. 첨부하지 않아도 프롬프트만으로 화면 전체가 생성됩니다.',
        '3. 두 번째 화면부터 프롬프트 맨 앞에 이 한 줄을 붙이면 톤이 맞춰집니다: `Use exactly the same style, palette and decoration as the previous image.`',
