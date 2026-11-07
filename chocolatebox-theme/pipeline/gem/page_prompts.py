@@ -23,7 +23,12 @@ def common(s, t):
         f"overlaps text. White content areas stay clean.\n\n"
         f"TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). "
         f"Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border "
-        f"is themed). No watermark, no device frame.\n\n")
+        f"is themed). No watermark, no device frame.\n\n"
+        f"AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original "
+        f"screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, "
+        f"flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its "
+        f"role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). "
+        f"Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.\n\n")
 
 
 def charm(s):
@@ -38,7 +43,7 @@ def boxes(s, t):
         "right side \"초코덕 >\" (white text).\n"
         f"2) A delicate garland of {s['motif']} hanging just below the header.\n"
         f"3) Main banner card (rounded corners, 16px side margins, about 190px tall): {s['bg']}. Premium 3D props on the left "
-        f"({s['left']}) and on the right ({s['right']}). Centered two-line 3D title \"{l1}\" (white) / \"{l2}\" ({t['hl']}), with a "
+        f"({s['left']}) and on the right ({s['right']}). Centered two-line 3D title \"{l1}\" / \"{l2}\" in white, both lines the same color (hierarchy from size and weight only), with a "
         f"white rounded button \"포인트샵 바로가기\" ({t['accent']} text) along the bottom of the card.\n"
         "4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, "
         "purple gift, yellow gift) and a white pill label: \"보유수량 : 99개\", \"남은시간 01:45:15\", \"보유수량 : 19개\", \"보유수량 : 39개\". "
@@ -123,7 +128,8 @@ out = ['# Gemini 전체 페이지 프롬프트 — chocolatebox 시즌 테마', 
        '시즌 7개 x 화면 5개 = 35개. 각 프롬프트 하나가 화면 한 장 전체(배치, 모든 한글 문구, 시즌 색, 장식)를 담고 있습니다.', '',
        '## 사용법', '',
        '0. 먼저 `chocolatebox-theme/DESIGN.md` 전체를 Gemini에 붙여넣고 "Read this DESIGN.md and follow it for every image in this chat."라고 보내세요. (Gemini의 Gem을 만들어 이 파일을 지침으로 넣어두면 매번 붙여넣을 필요가 없습니다.)',
-       '1. 시즌마다 Gemini 대화를 하나 열고, 홈 → 포인트샵 → 상세 → 뉴스룸 → 구매하기 순서로 생성하세요.',
+       '1. 시즌마다 Gemini 대화를 하나 열고, **박스구매 홈을 먼저 2~3번 생성해 가장 좋은 1장을 고르세요.** 이 1장이 그 시즌의 기준 이미지(visual target)입니다.',
+       '   나머지 화면(포인트샵 → 상세 → 뉴스룸 → 구매하기)은 기준 이미지를 같이 첨부하고 생성하세요. 색·질감·장식이 흔들리지 않습니다.',
        '2. 원본 스크린샷을 같이 첨부하면 배치가 원본과 똑같이 나옵니다. 첨부하지 않아도 프롬프트만으로 화면 전체가 생성됩니다.',
        '3. 두 번째 화면부터 프롬프트 맨 앞에 이 한 줄을 붙이면 톤이 맞춰집니다: `Use exactly the same style, palette and decoration as the previous image.`',
        '4. 한글이 깨진 곳은 "Fix the Korean text to match the prompt exactly, keep everything else." 로 한 번 더 요청하세요.', '']

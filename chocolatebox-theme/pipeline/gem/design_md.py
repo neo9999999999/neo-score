@@ -66,7 +66,7 @@ A('## 3. Typography')
 A('')
 A('| style | size / weight | use |')
 A('| --- | --- | --- |')
-for r in [('Banner title', '30 / 900, line-height 1.1, letter-spacing -0.03em, white + one highlighted line, stacked 1-4px dark shadow (3D extrude) + soft drop shadow', 'Main banner, centered, two lines'),
+for r in [('Banner title', '30 / 900, line-height 1.1, letter-spacing -0.03em, white on both lines (no single-word recolor), stacked 1-4px dark shadow (3D extrude) + soft drop shadow', 'Main banner, centered, two lines'),
           ('Buy title', '54 / 900 italic, gold gradient fill, 8px dark outline', '"CHANCE" / "PREMIUM" with white "UP" badge'),
           ('Header items', '16 / 800 white', 'Coins and counters in the header'),
           ('Card label', '16 / 500 in the card color', '"초콜릿박스", "찬스업 14회"...'),
@@ -123,17 +123,42 @@ for sk in ORDER:
     A('| --- | --- |')
     for k, v in [('header', t['header']), ('accent', t['accent']), ('cta', t['cta']), ('accent-tint', t['tab']),
                  ('info bg / ink', f"{t['info']} / {t['infoInk']}"), ('banner gradient', f"{t['banner'][0]} → {t['banner'][1]}"),
-                 ('banner highlight', t['hl']), ('buy gradient', f"{t['grid'][0]} → {t['grid'][1]}"), ('number tile', t['cell']),
+                 ('buy gradient', f"{t['grid'][0]} → {t['grid'][1]}"), ('number tile', t['cell']),
                  ('selected / taken', f"{t['mine']} / {t['taken']}"), ('stage glow', t['glow']), ('news cards', ', '.join(t['news'])),
                  ('mission', t['mission']), ('box-card foil', FOIL[sk])]:
         A(f'| {k} | `{v}` |')
     A('')
-    A(f"- Banner copy: \"{l1}\" / \"{l2}\" · Mission: \"{t['copy']['mission']}\"")
+    A(f"- Banner copy: \"{l1}\" / \"{l2}\" (both white) · Mission: \"{t['copy']['mission']}\"")
     A(f"- Hero 3D props — left: {s['left']}; right: {s['right']}")
     A(f"- Motif (garland, small accents): {s['motif']}")
     A(f"- Box-card border: {s['frame']}; corner charm: {s['charm']}")
     A('')
-A('## 8. Do / Don\'t')
+A('## 8. Anti-AI-slop rules')
+A('')
+A('Adapted from the Refero design skill (styles.refero.design). Gemini output must not look AI-generated.')
+A('')
+for r in [
+    'No indigo/violet drift. The default skin keeps its original brand purple; seasonal skins never slide into violet.',
+    'Cards only where the user taps: box cards, product tiles, news cards, purchase rows. No extra decorative boxes.',
+    'Light mode is the baseline. Only the buy (number-picking) screen is dark, as in the original app.',
+    'No emoji, no emoji-like icons, no decorative left accent stripes.',
+    'No single word recolored, italicized or swapped to another font for flair. Hierarchy comes from size, weight and layout.',
+    'Token roles are part of the token: accent = prices, active states, sold-out tags; CTA color = bottom purchase bar only; foil = box-card borders only; motif = garland and edge accents only.',
+    '60/30/10: 60-80% neutral white/gray surfaces, 10-20% text grays, 5-10% season color. Maximum 2 colors per component.',
+    'Media roles stay real: product photos and the 3D gift boxes are the real assets; seasonal props are rendered images, never CSS-like blobs or flat clip-art.',
+    'Identity test: with the season removed, the screen must still read as chocolatebox (3D gift boxes, P/B coins, black "다음" button, structure).',
+    'Copy test: no added copy. If text was not in the original screen, it does not appear.']:
+    A(f'- {r}')
+A('')
+A('## 9. Visual QA (check every Gemini result)')
+A('')
+A('- **P0** broken or unreadable: overlapping UI, garbled or wrong Korean text, missing key elements → regenerate.')
+A('- **P1** design drift: layout or proportions differ from the original, box images recolored, palette off-season, AI-slop tells above → regenerate with a corrective note.')
+A('- **P2** moderate mismatch: decoration too dense, contrast weak, one component off-token → fix with an edit prompt ("keep everything, only change …").')
+A('- **P3** polish: tiny spacing, shadow strength → acceptable for review; note it.')
+A('- Pass only with no P0/P1/P2. Compare every screen of a season against that season\'s approved home screen (visual target).')
+A('')
+A('## 10. Do / Don\'t')
 A('')
 A('- Do keep every screen\'s structure, sizes and copy identical to the original app.')
 A('- Do keep one consistent palette and render style across all five screens of a season.')
@@ -141,7 +166,7 @@ A('- Don\'t recolor or redraw the 3D box images, product photos or the coins.')
 A('- Don\'t put seasonal color on body text, sub-screen tabs or the white surfaces.')
 A('- Don\'t add new UI, badges, stickers or text that the original screen does not have.')
 A('')
-A('## 9. Known gaps')
+A('## 11. Known gaps')
 A('')
 A('- Dark mode, empty/error states, loading states, motion timing and push/email templates are not defined here; do not invent them.')
 A('- Screens not covered: Home tab, 내보관함, 앱테크. Apply the same overlay rules if needed, but no layout is specified.')

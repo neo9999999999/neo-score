@@ -6,7 +6,8 @@ Used by gen.py (API) and build_prompts.py (writes prompts.md for manual use in t
 STYLE = ('Premium 3D render, Cinema 4D / Octane style, soft studio lighting with gentle rim light, glossy clearcoat '
          'and satin materials, subtle depth of field, rich but tasteful colors, very high detail, polished commercial '
          'look for a Korean mobile shopping app. Not cluttered, no clip-art, no cartoon outlines.')
-NO_TEXT = 'No text, no letters, no numbers, no logos, no watermark.'
+NO_TEXT = ('No text, no letters, no numbers, no logos, no watermark. Avoid: indigo/violet color drift, emoji, flat clip-art, '
+           'generic abstract blobs or bokeh-only filler, muddy over-saturated gradients, props specific to no season.')
 
 # name, palette, background, props (left/right), motif (small repeatable elements), frame (box-card border)
 SEASONS = {

@@ -50,7 +50,7 @@ Policy: the season replaces `header`, `accent`, `cta`, `accent-tint`, the banner
 
 | style | size / weight | use |
 | --- | --- | --- |
-| Banner title | 30 / 900, line-height 1.1, letter-spacing -0.03em, white + one highlighted line, stacked 1-4px dark shadow (3D extrude) + soft drop shadow | Main banner, centered, two lines |
+| Banner title | 30 / 900, line-height 1.1, letter-spacing -0.03em, white on both lines (no single-word recolor), stacked 1-4px dark shadow (3D extrude) + soft drop shadow | Main banner, centered, two lines |
 | Buy title | 54 / 900 italic, gold gradient fill, 8px dark outline | "CHANCE" / "PREMIUM" with white "UP" badge |
 | Header items | 16 / 800 white | Coins and counters in the header |
 | Card label | 16 / 500 in the card color | "초콜릿박스", "찬스업 14회"... |
@@ -105,7 +105,6 @@ Mood: Christmas; palette deep emerald green, cranberry red, warm gold, snow whit
 | accent-tint | `#FDE2E3` |
 | info bg / ink | `#E7FEF0 / #1F7A44` |
 | banner gradient | `#0F2A1D → #1F5B3A` |
-| banner highlight | `#FFD84D` |
 | buy gradient | `#0B1F3A → #16407A` |
 | number tile | `#1F5FBF` |
 | selected / taken | `#FFD84D / #1E7A4F` |
@@ -114,7 +113,7 @@ Mood: Christmas; palette deep emerald green, cranberry red, warm gold, snow whit
 | mission | `#C0262D` |
 | box-card foil | `#FFE7A3 → #D4A23A → #FFF6D8 → #B7832A → #F3D27A` |
 
-- Banner copy: "메리 크리스마스!" / "선물이 가득!!" · Mission: "크리스마스 초코미션빙고"
+- Banner copy: "메리 크리스마스!" / "선물이 가득!!" (both white) · Mission: "크리스마스 초코미션빙고"
 - Hero 3D props — left: a stylized glossy Christmas tree with a gold star, a red-and-white candy cane, a metallic red ornament; right: a red gift box with a gold satin ribbon, a small white gift box with a green ribbon, metallic gold and blue ornaments
 - Motif (garland, small accents): tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs
 - Box-card border: thin brushed-gold foil border; corner charm: a single glossy metallic red Christmas ornament ball with a gold cap
@@ -131,7 +130,6 @@ Mood: Korean Lunar New Year; palette midnight navy, lucky red, antique gold, ivo
 | accent-tint | `#FDF4E2` |
 | info bg / ink | `#E7EFFE / #14233F` |
 | banner gradient | `#0A1228 → #26345E` |
-| banner highlight | `#FFD84D` |
 | buy gradient | `#0A1228 → #1F2F66` |
 | number tile | `#3347A8` |
 | selected / taken | `#FFD84D / #0E5C73` |
@@ -140,7 +138,7 @@ Mood: Korean Lunar New Year; palette midnight navy, lucky red, antique gold, ivo
 | mission | `#9A6A12` |
 | box-card foil | `#FFF0B8 → #E0A93B → #FFF8DC → #A9761C → #F5D57E` |
 
-- Banner copy: "새해 복" / "많이 받으세요!!" · Mission: "신년 초코미션빙고"
+- Banner copy: "새해 복" / "많이 받으세요!!" (both white) · Mission: "신년 초코미션빙고"
 - Hero 3D props — left: a red silk Korean lucky pouch (bokjumeoni) with gold cord and pleated top, antique gold Korean coins (round with a square hole); right: a navy silk bokjumeoni with gold cord, more gold coins, small gold stars
 - Motif (garland, small accents): gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line
 - Box-card border: thin gold-leaf border; corner charm: a single red silk Korean lucky pouch (bokjumeoni) with gold cord
@@ -157,7 +155,6 @@ Mood: Valentine's Day (chocolate gift brand); palette deep plum, ruby red, blush
 | accent-tint | `#FDE2E9` |
 | info bg / ink | `#FEE7EC / #C2284E` |
 | banner gradient | `#3A0F2A → #8E1F4F` |
-| banner highlight | `#FFC2D8` |
 | buy gradient | `#33082A → #7A1B55` |
 | number tile | `#A02A78` |
 | selected / taken | `#FF9EC4 / #5C2A7A` |
@@ -166,7 +163,7 @@ Mood: Valentine's Day (chocolate gift brand); palette deep plum, ruby red, blush
 | mission | `#B5214D` |
 | box-card foil | `#FFD9CF → #E39A89 → #FFF1EC → #C26E62 → #F7C3B5` |
 
-- Banner copy: "달콤한 마음을" / "전해요!!" · Mission: "발렌타인 초코미션빙고"
+- Banner copy: "달콤한 마음을" / "전해요!!" (both white) · Mission: "발렌타인 초코미션빙고"
 - Hero 3D props — left: a large glossy red 3D heart, a small pink heart, a dark chocolate truffle; right: a glossy milk-chocolate heart, white and cocoa-dusted chocolate truffles, rose-gold sparkles
 - Motif (garland, small accents): small glossy hearts, chocolate drizzle, rose-gold sparkles
 - Box-card border: thin rose-gold foil border; corner charm: a single glossy red 3D heart
@@ -183,7 +180,6 @@ Mood: Spring cherry blossom; palette soft sakura pink, fresh spring green, cream
 | accent-tint | `#FDE2EC` |
 | info bg / ink | `#E7FEF1 / #387F58` |
 | banner gradient | `#C93A6B → #F28DB0` |
-| banner highlight | `#FFF3B0` |
 | buy gradient | `#10301F → #20603F` |
 | number tile | `#2F8F5F` |
 | selected / taken | `#FFB6D0 / #7A3A5C` |
@@ -192,7 +188,7 @@ Mood: Spring cherry blossom; palette soft sakura pink, fresh spring green, cream
 | mission | `#3A845C` |
 | box-card foil | `#FFE3EE → #F4A9C6 → #FFFFFF → #DDBDF0 → #FFD3E4` |
 
-- Banner copy: "봄맞이 쇼핑의" / "즐거움이 가득!!" · Mission: "봄맞이 초코미션빙고"
+- Banner copy: "봄맞이 쇼핑의" / "즐거움이 가득!!" (both white) · Mission: "봄맞이 초코미션빙고"
 - Hero 3D props — left: a cherry blossom branch entering from the top-left with clusters of 3D sakura flowers (translucent petals, yellow stamens); right: a cherry blossom branch entering from the top-right with more sakura clusters
 - Motif (garland, small accents): falling sakura petals, small blossoms
 - Box-card border: thin pearl-pink iridescent border; corner charm: a single pink cherry blossom flower with yellow stamens
@@ -209,7 +205,6 @@ Mood: Korean Family Month (May, Parents' Day); palette warm coral rose, carnatio
 | accent-tint | `#FDE2E8` |
 | info bg / ink | `#E7FEF1 / #2E7D52` |
 | banner gradient | `#B32B52 → #EE6F86` |
-| banner highlight | `#FFE08A` |
 | buy gradient | `#2A0F24 → #6A2350` |
 | number tile | `#9B3070` |
 | selected / taken | `#FFE08A / #2E6B5C` |
@@ -218,7 +213,7 @@ Mood: Korean Family Month (May, Parents' Day); palette warm coral rose, carnatio
 | mission | `#2E7D52` |
 | box-card foil | `#FFE0C2 → #F09A74 → #FFF4EA → #D46E56 → #FFCDAA` |
 
-- Banner copy: "가정의 달," / "감사를 전해요!!" · Mission: "가정의 달 초코미션빙고"
+- Banner copy: "가정의 달," / "감사를 전해요!!" (both white) · Mission: "가정의 달 초코미션빙고"
 - Hero 3D props — left: a bouquet of red and pink carnations tied with a yellow satin ribbon, a small gold heart; right: a cream envelope sealed with a red heart, small glossy red and pink hearts
 - Motif (garland, small accents): small carnations, tiny hearts, ribbon curls
 - Box-card border: thin coral-gold foil border; corner charm: a single red carnation flower head with a short green calyx
@@ -235,7 +230,6 @@ Mood: Summer; palette ocean blue, aqua, coral pink, sunny yellow.
 | accent-tint | `#E2F4FD` |
 | info bg / ink | `#E7F6FE / #0D75A7` |
 | banner gradient | `#085E9C → #22AEE3` |
-| banner highlight | `#FFE45C` |
 | buy gradient | `#06284A → #0E5A8C` |
 | number tile | `#1A78B8` |
 | selected / taken | `#FFE45C / #0E7A6A` |
@@ -244,7 +238,7 @@ Mood: Summer; palette ocean blue, aqua, coral pink, sunny yellow.
 | mission | `#D1441B` |
 | box-card foil | `#C9F3FF → #5CC9F0 → #FFFFFF → #8EE0C6 → #B5E5FF` |
 
-- Banner copy: "시원한 여름," / "쇼핑의 즐거움!!" · Mission: "서머 초코미션빙고"
+- Banner copy: "시원한 여름," / "쇼핑의 즐거움!!" (both white) · Mission: "서머 초코미션빙고"
 - Hero 3D props — left: a glossy striped beach ball, a pastel blue-pink popsicle; right: a pink-and-white striped swim ring, a yellow popsicle, a watermelon slice
 - Motif (garland, small accents): water droplets, small bubbles, light caustics
 - Box-card border: thin aqua holographic border; corner charm: a single glossy striped beach ball
@@ -261,7 +255,6 @@ Mood: Autumn; palette burnt orange, maple red, mustard yellow, warm brown.
 | accent-tint | `#FDEAE2` |
 | info bg / ink | `#FEEFE7 / #AE531E` |
 | banner gradient | `#4A1F0C → #A8481A` |
-| banner highlight | `#FFC247` |
 | buy gradient | `#2A1208 → #6B2E14` |
 | number tile | `#9A4A22` |
 | selected / taken | `#FFC247 / #5C5A1E` |
@@ -270,12 +263,35 @@ Mood: Autumn; palette burnt orange, maple red, mustard yellow, warm brown.
 | mission | `#A6361E` |
 | box-card foil | `#FFD9A8 → #C46F2A → #FFE6C2 → #93501E → #E7A257` |
 
-- Banner copy: "가을 맞이" / "쇼핑의 즐거움!!" · Mission: "가을 초코미션빙고"
+- Banner copy: "가을 맞이" / "쇼핑의 즐거움!!" (both white) · Mission: "가을 초코미션빙고"
 - Hero 3D props — left: a large red maple leaf, a yellow maple leaf, acorns; right: a glossy Korean persimmon with green calyx, an orange maple leaf, a small acorn
 - Motif (garland, small accents): falling maple leaves, small acorns
 - Box-card border: thin copper foil border; corner charm: a single glossy red maple leaf
 
-## 8. Do / Don't
+## 8. Anti-AI-slop rules
+
+Adapted from the Refero design skill (styles.refero.design). Gemini output must not look AI-generated.
+
+- No indigo/violet drift. The default skin keeps its original brand purple; seasonal skins never slide into violet.
+- Cards only where the user taps: box cards, product tiles, news cards, purchase rows. No extra decorative boxes.
+- Light mode is the baseline. Only the buy (number-picking) screen is dark, as in the original app.
+- No emoji, no emoji-like icons, no decorative left accent stripes.
+- No single word recolored, italicized or swapped to another font for flair. Hierarchy comes from size, weight and layout.
+- Token roles are part of the token: accent = prices, active states, sold-out tags; CTA color = bottom purchase bar only; foil = box-card borders only; motif = garland and edge accents only.
+- 60/30/10: 60-80% neutral white/gray surfaces, 10-20% text grays, 5-10% season color. Maximum 2 colors per component.
+- Media roles stay real: product photos and the 3D gift boxes are the real assets; seasonal props are rendered images, never CSS-like blobs or flat clip-art.
+- Identity test: with the season removed, the screen must still read as chocolatebox (3D gift boxes, P/B coins, black "다음" button, structure).
+- Copy test: no added copy. If text was not in the original screen, it does not appear.
+
+## 9. Visual QA (check every Gemini result)
+
+- **P0** broken or unreadable: overlapping UI, garbled or wrong Korean text, missing key elements → regenerate.
+- **P1** design drift: layout or proportions differ from the original, box images recolored, palette off-season, AI-slop tells above → regenerate with a corrective note.
+- **P2** moderate mismatch: decoration too dense, contrast weak, one component off-token → fix with an edit prompt ("keep everything, only change …").
+- **P3** polish: tiny spacing, shadow strength → acceptable for review; note it.
+- Pass only with no P0/P1/P2. Compare every screen of a season against that season's approved home screen (visual target).
+
+## 10. Do / Don't
 
 - Do keep every screen's structure, sizes and copy identical to the original app.
 - Do keep one consistent palette and render style across all five screens of a season.
@@ -283,7 +299,7 @@ Mood: Autumn; palette burnt orange, maple red, mustard yellow, warm brown.
 - Don't put seasonal color on body text, sub-screen tabs or the white surfaces.
 - Don't add new UI, badges, stickers or text that the original screen does not have.
 
-## 9. Known gaps
+## 11. Known gaps
 
 - Dark mode, empty/error states, loading states, motion timing and push/email templates are not defined here; do not invent them.
 - Screens not covered: Home tab, 내보관함, 앱테크. Apply the same overlay rules if needed, but no layout is specified.

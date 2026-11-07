@@ -5,7 +5,8 @@
 ## 사용법
 
 0. 먼저 `chocolatebox-theme/DESIGN.md` 전체를 Gemini에 붙여넣고 "Read this DESIGN.md and follow it for every image in this chat."라고 보내세요. (Gemini의 Gem을 만들어 이 파일을 지침으로 넣어두면 매번 붙여넣을 필요가 없습니다.)
-1. 시즌마다 Gemini 대화를 하나 열고, 홈 → 포인트샵 → 상세 → 뉴스룸 → 구매하기 순서로 생성하세요.
+1. 시즌마다 Gemini 대화를 하나 열고, **박스구매 홈을 먼저 2~3번 생성해 가장 좋은 1장을 고르세요.** 이 1장이 그 시즌의 기준 이미지(visual target)입니다.
+   나머지 화면(포인트샵 → 상세 → 뉴스룸 → 구매하기)은 기준 이미지를 같이 첨부하고 생성하세요. 색·질감·장식이 흔들리지 않습니다.
 2. 원본 스크린샷을 같이 첨부하면 배치가 원본과 똑같이 나옵니다. 첨부하지 않아도 프롬프트만으로 화면 전체가 생성됩니다.
 3. 두 번째 화면부터 프롬프트 맨 앞에 이 한 줄을 붙이면 톤이 맞춰집니다: `Use exactly the same style, palette and decoration as the previous image.`
 4. 한글이 깨진 곳은 "Fix the Korean text to match the prompt exactly, keep everything else." 로 한 번 더 요청하세요.
@@ -21,10 +22,12 @@ THEME: palette deep emerald green, cranberry red, warm gold, snow white; header 
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #C0262D: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep emerald-green night background with a soft warm spotlight and gentle golden bokeh, light snow particles. Premium 3D props on the left (a stylized glossy Christmas tree with a gold star, a red-and-white candy cane, a metallic red ornament) and on the right (a red gift box with a gold satin ribbon, a small white gift box with a green ribbon, metallic gold and blue ornaments). Centered two-line 3D title "메리 크리스마스!" (white) / "선물이 가득!!" (#FFD84D), with a white rounded button "포인트샵 바로가기" (#C0262D text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep emerald-green night background with a soft warm spotlight and gentle golden bokeh, light snow particles. Premium 3D props on the left (a stylized glossy Christmas tree with a gold star, a red-and-white candy cane, a metallic red ornament) and on the right (a red gift box with a gold satin ribbon, a small white gift box with a green ribbon, metallic gold and blue ornaments). Centered two-line 3D title "메리 크리스마스!" / "선물이 가득!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#C0262D text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin brushed-gold foil border with a soft glow; a small 3D glossy metallic red Christmas ornament ball with a gold cap hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDE2E3 rounded pill, #C0262D icon and text), "내보관함", "앱테크".
 ```
@@ -37,6 +40,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스�
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) below it.
@@ -57,6 +62,8 @@ THEME: palette deep emerald green, cranberry red, warm gold, snow white; header 
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) in its bottom-right corner.
 2) Title: "[품절]" in #C0262D followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -75,6 +82,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 크리스�
 THEME: palette deep emerald green, cranberry red, warm gold, snow white; header #C0262D, accent #C0262D, CTA #1F7A44. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) below it.
@@ -96,6 +105,8 @@ THEME: palette deep emerald green, cranberry red, warm gold, snow white; header 
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #0B1F3A to #16407A):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (tiny warm string lights, small metallic ornaments, snowflakes, pine sprigs) below the top bar.
@@ -115,10 +126,12 @@ THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, ac
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #14233F: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep navy background with a golden radial glow and tiny gold sparkles. Premium 3D props on the left (a red silk Korean lucky pouch (bokjumeoni) with gold cord and pleated top, antique gold Korean coins (round with a square hole)) and on the right (a navy silk bokjumeoni with gold cord, more gold coins, small gold stars). Centered two-line 3D title "새해 복" (white) / "많이 받으세요!!" (#FFD84D), with a white rounded button "포인트샵 바로가기" (#9A6A12 text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep navy background with a golden radial glow and tiny gold sparkles. Premium 3D props on the left (a red silk Korean lucky pouch (bokjumeoni) with gold cord and pleated top, antique gold Korean coins (round with a square hole)) and on the right (a navy silk bokjumeoni with gold cord, more gold coins, small gold stars). Centered two-line 3D title "새해 복" / "많이 받으세요!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#9A6A12 text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin gold-leaf border with a soft glow; a small 3D red silk Korean lucky pouch (bokjumeoni) with gold cord hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDF4E2 rounded pill, #9A6A12 icon and text), "내보관함", "앱테크".
 ```
@@ -131,6 +144,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). C
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) below it.
@@ -151,6 +166,8 @@ THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, ac
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) in its bottom-right corner.
 2) Title: "[품절]" in #9A6A12 followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -169,6 +186,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 신년). C
 THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, accent #9A6A12, CTA #8A5F10. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) below it.
@@ -190,6 +209,8 @@ THEME: palette midnight navy, lucky red, antique gold, ivory; header #14233F, ac
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #0A1228 to #1F2F66):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (gold sparkles, small gold coins, tiny traditional Korean cloud patterns in gold line) below the top bar.
@@ -209,10 +230,12 @@ THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold;
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #C2284E: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of small glossy hearts, chocolate drizzle, rose-gold sparkles hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep plum / wine background with a soft pink spotlight. Premium 3D props on the left (a large glossy red 3D heart, a small pink heart, a dark chocolate truffle) and on the right (a glossy milk-chocolate heart, white and cocoa-dusted chocolate truffles, rose-gold sparkles). Centered two-line 3D title "달콤한 마음을" (white) / "전해요!!" (#FFC2D8), with a white rounded button "포인트샵 바로가기" (#C2284E text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Deep plum / wine background with a soft pink spotlight. Premium 3D props on the left (a large glossy red 3D heart, a small pink heart, a dark chocolate truffle) and on the right (a glossy milk-chocolate heart, white and cocoa-dusted chocolate truffles, rose-gold sparkles). Centered two-line 3D title "달콤한 마음을" / "전해요!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#C2284E text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin rose-gold foil border with a soft glow; a small 3D glossy red 3D heart hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDE2E9 rounded pill, #C2284E icon and text), "내보관함", "앱테크".
 ```
@@ -225,6 +248,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타�
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (small glossy hearts, chocolate drizzle, rose-gold sparkles) below it.
@@ -245,6 +270,8 @@ THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold;
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (small glossy hearts, chocolate drizzle, rose-gold sparkles) in its bottom-right corner.
 2) Title: "[품절]" in #C2284E followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -263,6 +290,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 발렌타�
 THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold; header #C2284E, accent #C2284E, CTA #C2284E. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small glossy hearts, chocolate drizzle, rose-gold sparkles) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (small glossy hearts, chocolate drizzle, rose-gold sparkles) below it.
@@ -284,6 +313,8 @@ THEME: palette deep plum, ruby red, blush pink, milk-chocolate brown, rose gold;
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #33082A to #7A1B55):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (small glossy hearts, chocolate drizzle, rose-gold sparkles) below the top bar.
@@ -303,10 +334,12 @@ THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #CA456E: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of falling sakura petals, small blossoms hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Soft rose-pink gradient background with a bright airy center. Premium 3D props on the left (a cherry blossom branch entering from the top-left with clusters of 3D sakura flowers (translucent petals, yellow stamens)) and on the right (a cherry blossom branch entering from the top-right with more sakura clusters). Centered two-line 3D title "봄맞이 쇼핑의" (white) / "즐거움이 가득!!" (#FFF3B0), with a white rounded button "포인트샵 바로가기" (#C23A6A text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Soft rose-pink gradient background with a bright airy center. Premium 3D props on the left (a cherry blossom branch entering from the top-left with clusters of 3D sakura flowers (translucent petals, yellow stamens)) and on the right (a cherry blossom branch entering from the top-right with more sakura clusters). Centered two-line 3D title "봄맞이 쇼핑의" / "즐거움이 가득!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#C23A6A text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin pearl-pink iridescent border with a soft glow; a small 3D pink cherry blossom flower with yellow stamens hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDE2EC rounded pill, #C23A6A icon and text), "내보관함", "앱테크".
 ```
@@ -319,6 +352,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Crea
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (falling sakura petals, small blossoms) below it.
@@ -339,6 +374,8 @@ THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (falling sakura petals, small blossoms) in its bottom-right corner.
 2) Title: "[품절]" in #C23A6A followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -357,6 +394,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 봄). Crea
 THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E, accent #C23A6A, CTA #3A845C. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling sakura petals, small blossoms) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (falling sakura petals, small blossoms) below it.
@@ -378,6 +417,8 @@ THEME: palette soft sakura pink, fresh spring green, cream white; header #CA456E
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #10301F to #20603F):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (falling sakura petals, small blossoms) below the top bar.
@@ -397,10 +438,12 @@ THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F,
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #C0344F: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of small carnations, tiny hearts, ribbon curls hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Warm rose / coral background with a soft cream spotlight. Premium 3D props on the left (a bouquet of red and pink carnations tied with a yellow satin ribbon, a small gold heart) and on the right (a cream envelope sealed with a red heart, small glossy red and pink hearts). Centered two-line 3D title "가정의 달," (white) / "감사를 전해요!!" (#FFE08A), with a white rounded button "포인트샵 바로가기" (#B8334F text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Warm rose / coral background with a soft cream spotlight. Premium 3D props on the left (a bouquet of red and pink carnations tied with a yellow satin ribbon, a small gold heart) and on the right (a cream envelope sealed with a red heart, small glossy red and pink hearts). Centered two-line 3D title "가정의 달," / "감사를 전해요!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#B8334F text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin coral-gold foil border with a soft glow; a small 3D red carnation flower head with a short green calyx hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDE2E8 rounded pill, #B8334F icon and text), "내보관함", "앱테크".
 ```
@@ -413,6 +456,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (small carnations, tiny hearts, ribbon curls) below it.
@@ -433,6 +478,8 @@ THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F,
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (small carnations, tiny hearts, ribbon curls) in its bottom-right corner.
 2) Title: "[품절]" in #B8334F followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -451,6 +498,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가정의 
 THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F, accent #B8334F, CTA #2E7D52. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (small carnations, tiny hearts, ribbon curls) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (small carnations, tiny hearts, ribbon curls) below it.
@@ -472,6 +521,8 @@ THEME: palette warm coral rose, carnation red, cream, soft gold; header #C0344F,
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #2A0F24 to #6A2350):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (small carnations, tiny hearts, ribbon curls) below the top bar.
@@ -491,10 +542,12 @@ THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accen
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #0D7AAE: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of water droplets, small bubbles, light caustics hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Bright ocean-blue gradient background with sunlight caustics. Premium 3D props on the left (a glossy striped beach ball, a pastel blue-pink popsicle) and on the right (a pink-and-white striped swim ring, a yellow popsicle, a watermelon slice). Centered two-line 3D title "시원한 여름," (white) / "쇼핑의 즐거움!!" (#FFE45C), with a white rounded button "포인트샵 바로가기" (#0E6FA5 text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Bright ocean-blue gradient background with sunlight caustics. Premium 3D props on the left (a glossy striped beach ball, a pastel blue-pink popsicle) and on the right (a pink-and-white striped swim ring, a yellow popsicle, a watermelon slice). Centered two-line 3D title "시원한 여름," / "쇼핑의 즐거움!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#0E6FA5 text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin aqua holographic border with a soft glow; a small 3D glossy striped beach ball hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #E2F4FD rounded pill, #0E6FA5 icon and text), "내보관함", "앱테크".
 ```
@@ -507,6 +560,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). C
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (water droplets, small bubbles, light caustics) below it.
@@ -527,6 +582,8 @@ THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accen
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (water droplets, small bubbles, light caustics) in its bottom-right corner.
 2) Title: "[품절]" in #0E6FA5 followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -545,6 +602,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 여름). C
 THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accent #0E6FA5, CTA #D1441B. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (water droplets, small bubbles, light caustics) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (water droplets, small bubbles, light caustics) below it.
@@ -566,6 +625,8 @@ THEME: palette ocean blue, aqua, coral pink, sunny yellow; header #0D7AAE, accen
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #06284A to #0E5A8C):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
 2) Seasonal garland (water droplets, small bubbles, light caustics) below the top bar.
@@ -585,10 +646,12 @@ THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B556
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Header bar, solid #B5561F: white coin chip "P" + "5,000", dark-brown coin "B" + "30 >", white square "%" + "2개 >", right side "초코덕 >" (white text).
 2) A delicate garland of falling maple leaves, small acorns hanging just below the header.
-3) Main banner card (rounded corners, 16px side margins, about 190px tall): Warm burnt-orange to brown background with a golden afternoon glow. Premium 3D props on the left (a large red maple leaf, a yellow maple leaf, acorns) and on the right (a glossy Korean persimmon with green calyx, an orange maple leaf, a small acorn). Centered two-line 3D title "가을 맞이" (white) / "쇼핑의 즐거움!!" (#FFC247), with a white rounded button "포인트샵 바로가기" (#B5481A text) along the bottom of the card.
+3) Main banner card (rounded corners, 16px side margins, about 190px tall): Warm burnt-orange to brown background with a golden afternoon glow. Premium 3D props on the left (a large red maple leaf, a yellow maple leaf, acorns) and on the right (a glossy Korean persimmon with green calyx, an orange maple leaf, a small acorn). Centered two-line 3D title "가을 맞이" / "쇼핑의 즐거움!!" in white, both lines the same color (hierarchy from size and weight only), with a white rounded button "포인트샵 바로가기" (#B5481A text) along the bottom of the card.
 4) 2x2 grid of box cards (rounded corners) on a light gray page. Each card keeps its 3D gift-box image (pink cube, red gift, purple gift, yellow gift) and a white pill label: "보유수량 : 99개", "남은시간 01:45:15", "보유수량 : 19개", "보유수량 : 39개". Every card gets a thin copper foil border with a soft glow; a small 3D glossy red maple leaf hangs on the top-left corner of the first card and the top-right corner of the last card. Under each card a colored label and a dark description: "초콜릿박스" / "12,000원 이상의 상품으로 구성됩니다.", "찬스업 14회" / "100박스 한정! 더 좋은 상품을 받으세요!", "찬스업 프리미엄" / "프리미엄 상품으로 구성된 찬스업 프리미엄", "푸드박스 14회" / "가볍게 즐기는 간식형 푸드박스".
 5) White bottom tab bar: "Home", "뉴스룸" (small red dot), "박스구매" (active: #FDEAE2 rounded pill, #B5481A icon and text), "내보관함", "앱테크".
 ```
@@ -601,6 +664,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). C
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar: back arrow, centered "포인트샵", right a black coin "P" + "1,289,050". A thin seasonal garland (falling maple leaves, small acorns) below it.
@@ -621,6 +686,8 @@ THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B556
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
 
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
+
 LAYOUT, top to bottom:
 1) Full-width product hero photo (black-and-white photo of a Celine bag on an antique carved table) with a back arrow. Keep the photo itself untouched; only a small seasonal accent (falling maple leaves, small acorns) in its bottom-right corner.
 2) Title: "[품절]" in #B5481A followed by "[셀린느] 미디움 베사체 트리옹프 서플 내추럴 카프스킨 블랙".
@@ -639,6 +706,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). C
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom:
 1) White top bar with centered "뉴스룸"; a thin seasonal garland (falling maple leaves, small acorns) below it.
@@ -659,6 +728,8 @@ Follow the chocolatebox DESIGN.md given earlier in this chat (season: 가을). C
 THEME: palette burnt orange, maple red, mustard yellow, warm brown; header #B5561F, accent #B5481A, CTA #7A3E16. Mood: premium, clean and festive but restrained, like a top-tier Korean commerce app's seasonal event skin. Seasonal illustrations are premium 3D renders (Cinema 4D / Octane, glossy and satin materials, soft studio light). Decoration (falling maple leaves, small acorns) stays near edges and never overlaps text. White content areas stay clean.
 
 TEXT: render every Korean string exactly as written inside quotes, crisp sans-serif (Pretendard / Apple SD Gothic Neo style). Do not add, translate or change any text. Keep the 3D gift-box images inside the box cards as they are (only the card border is themed). No watermark, no device frame.
+
+AVOID (AI-slop tells): indigo/violet drift, emoji or emoji-like icons, decorative cards or boxes that the original screen does not have, decorative left accent stripes, a single word recolored or swapped to another font for flair, flat clip-art, generic abstract blobs, dark-mode drift (only the buy screen is dark), season color used outside its role (accent only for prices/active states, CTA color only for the bottom bar, foil only for box-card borders). Keep 60-80% of the screen neutral white/gray, season color concentrated in the header, key visual and CTA.
 
 LAYOUT, top to bottom (dark, game-like screen with a vertical gradient #2A1208 to #6B2E14):
 1) Top bar: white close X, centered "2회차 구매하기", right a dark-brown coin "B" + "240" (lavender text).
